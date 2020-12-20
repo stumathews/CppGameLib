@@ -1,0 +1,24 @@
+<!-- Settings -->
+<settings>
+	<global>
+		<!-- 20 times a second = 50 milliseconds, 1 second is 20*50 = 1000 milliseconds -->
+		<setting name="tick_time_ms" type="int">50</setting>
+		<setting name="square_width" type="int">30</setting>
+		<setting name="sprite_width" type="int">100</setting>
+		<setting name="max_loops" type="int">4</setting>
+		<setting name="screen_width" type="int">800</setting>
+		<setting name="screen_height" type="int">600</setting>
+		<setting name="frames_per_row" type="int">3</setting>
+		<setting name="frames_per_column" type="int">3</setting>
+		<setting name="verbose" type="bool">true</setting>
+		<setting name="use_3d_render_manager" type="bool">true</setting>
+		<setting name="author" type="string">Stuart</setting>
+		<setting name="longnumber" type="long">123456789</setting>
+	</global>
+	<player>
+		<setting name="player_init_pos_x" type="int">100</setting>
+		<setting name="player_init_pos_y" type="int">100</setting>
+		<setting name="move_interval" type="int">2</setting>
+	</player>
+
+</settings>

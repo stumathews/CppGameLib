@@ -75,6 +75,7 @@ namespace gamelib
 						break;
 
 					case SDLK_q:
+					case SDLK_ESCAPE:
 						run_and_log("Player pressed quit!", config->verbose, [&]()
 						{
 							game_world->is_game_done = 1;

@@ -15,6 +15,11 @@ namespace gamelib
 		this->config = config;
 	}
 
+	size_t event_manager::count_ready()
+	{
+		return primary_event_queue_.size() + secondary_event_queue_.size();
+	}
+
 	bool event_manager::initialize()
 	{
 		return run_and_log("event_manager::initialize()", config->verbose, [&]()
@@ -82,6 +87,11 @@ namespace gamelib
 			primary_event_queue_.push(secondary_event_queue_.front());
 			secondary_event_queue_.pop();
 		}
+	}
+
+	std::map<event_type, std::vector<event_subscriber*>> event_manager::get_subscriptions() const
+	{
+		return event_subscribers_;
 	}
 }
 

@@ -11,9 +11,10 @@ namespace gamelib
 {
 	class event_manager
 	{
+		// Primary queue used for event processing
 		std::queue<std::shared_ptr<event>> primary_event_queue_;
 		
-		// used to hold events occuring out of processing of primary events
+		// used to hold events occurring out of processing of primary events
 		std::queue<std::shared_ptr<event>> secondary_event_queue_;
 
 		// Event subscribers (aka event handlers)
@@ -24,6 +25,7 @@ namespace gamelib
 		public:
 		event_manager(std::shared_ptr<global_config> config);
 		~event_manager() = default;
+		size_t count_ready();
 
 		// Cannot copy an event manager
 		event_manager(event_manager const&) = delete;
@@ -46,6 +48,9 @@ namespace gamelib
 		// Primary queue is incremented with event when an event is raised via the raise_event() function. This can be one at any time.
 		// secondary queue is composed automatically of events that occured while processing the primary queue. 
 		void process_all_events();
+
+		[[nodiscard]] std::map<event_type, std::vector<event_subscriber*>> get_subscriptions() const;
+
 	};
 }
 

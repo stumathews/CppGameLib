@@ -8,7 +8,6 @@
 #include "graphic/sdl_graphics_manager.h"
 #include "resource/resource_manager.h"
 #include "scene/scene_manager.h"
-#include "scene/Square.h"
 
 
 #pragma comment(lib, "cppgamelib")

@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Assets>
+  <Asset uid="1" scene="0" name="MainTheme.wav" type="music" filename="Assets/Music/MainTheme.wav"></Asset>
+  <Asset uid="2" scene="0" name="scratch.wav" type="fx" filename="Assets/scratch.wav"></Asset>
+  <Asset uid="3" scene="0" name="high.wav" type="fx" filename="Assets/high.wav"></Asset>
+  <Asset uid="4" scene="0" name="medium.wav" type="fx" filename="Assets/medium.wav"></Asset>
+  <Asset uid="5" scene="0" name="low.wav" type="fx" filename="Assets/low.wav"></Asset>  
+  <Asset uid="6" scene="1" name="p1.png" type="graphic" filename="Assets/Platformer/Base pack/Player/p1_front.png"></Asset>
+  <Asset uid="7" scene="2" name="p2.png" type="graphic" filename="Assets/Platformer/Base pack/Player/p2_front.png" isAnimated="false" numKeyFrames="12"></Asset>
+  <Asset uid="8" scene="2" name="p3.png" type="graphic" filename="Assets/Platformer/Base pack/Player/p3_front.png" isAnimated="false" numKeyFrames="0"></Asset>
+  <Asset uid="9" scene="3" name="p1.png" type="graphic" filename="Assets/Platformer/Base pack/Player/p1_walk/p1_walk.png" isAnimated="true" numKeyFrames="11" keyFrameHeight="97" keyFrameWidth="73"></Asset>
+  <Asset uid="10" scene="3" name="p2.png" type="graphic" filename="Assets/Platformer/Base pack/Player/p2_walk/p2_walk.png" isAnimated="true" numKeyFrames="11" keyFrameHeight="97" keyFrameWidth="73"></Asset>
+  <Asset uid="11" scene="3" name="p3.png" type="graphic" filename="Assets/Platformer/Base pack/Player/p3_walk/p3_walk.png" isAnimated="true" numKeyFrames="11" keyFrameHeight="97" keyFrameWidth="73"></Asset>
+  <Asset uid="12" scene="0" name="arial.ttf" type="font" filename="Assets/fonts/arial.ttf"></Asset>
+</Assets>

@@ -100,13 +100,13 @@ namespace gamelib
 	/**
 	 Index Resources.xml file
 	 */
-	void resource_manager::read_resources()
+	void resource_manager::read_resources(string resources_file_path)
 	{	
 		logger::log_message("resource_manager: reading resources.xml.");
 		
 		XMLDocument doc;
 		
-		doc.LoadFile( "game/resources.xml" ); // Load the list of resources
+		doc.LoadFile( resources_file_path.c_str() ); // Load the list of resources
 		
 		if(doc.ErrorID() == 0)
 		{		
@@ -143,7 +143,7 @@ namespace gamelib
 		}
 		else
 		{
-			//throw game_exception("Failed to load resources file", "resource manager");
+			throw exception("Failed to load resources file");
 		}
 
 		log_message(to_string(resource_count) + string(" assets available in resource manager."));

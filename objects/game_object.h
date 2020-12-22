@@ -49,6 +49,7 @@ namespace gamelib
 		bool is_resource_loaded() const;
 
 	private:
+		int id;
 		std::string tag;
 		bool is_traveling_left;
 		int red, blue, green;
@@ -56,6 +57,7 @@ namespace gamelib
 		std::map<std::string, std::shared_ptr<component>> components;
 		SDL_Color color_key = {};
 		int move_interval = global_config::move_interval; // move by intervals of 10 pixels
+		std::shared_ptr<asset> underlying_asset;
 
 	};
 }

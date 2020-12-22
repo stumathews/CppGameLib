@@ -13,11 +13,7 @@
 namespace gamelib
 {
 	class resource_manager final : public event_subscriber, public std::enable_shared_from_this<resource_manager>
-	{
-		std::shared_ptr<global_config> config;
-		std::shared_ptr<sdl_graphics_manager> graphics_admin;
-		std::shared_ptr<font_manager> font_admin;
-		std::shared_ptr<audio_manager> audio_admin;
+	{		
 	    public:
 		resource_manager(std::shared_ptr<global_config> c, std::shared_ptr<sdl_graphics_manager> g, std::shared_ptr<font_manager> f, std::shared_ptr<audio_manager> );
 			
@@ -26,12 +22,17 @@ namespace gamelib
 		int get_resource_count() const { return resource_count; }
 		std::vector<std::shared_ptr<event>> handle_event(std::shared_ptr<event> the_event) override;
 		void unload();
-
+		
 		bool initialize(std::shared_ptr<event_manager> event_admin);
 	    std::string get_subscriber_name() override;
-		void read_resources();
+		void read_resources(std::string resources_file_path = "game/resources.xml");
+		int get_resource_unloaded_count() const { return unloaded_resources_count; }
+	    int get_resource_loaded_count() const { return loaded_resources_count; }
 	private:
-
+		std::shared_ptr<global_config> config;
+		std::shared_ptr<sdl_graphics_manager> graphics_admin;
+		std::shared_ptr<font_manager> font_admin;
+		std::shared_ptr<audio_manager> audio_admin;
 		void load_level_assets(int level);
 	    void store_asset(const std::shared_ptr<asset>& the_asset);
 		std::map<int, std::vector<std::shared_ptr<asset>>> resources_by_scene;   

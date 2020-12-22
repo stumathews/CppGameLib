@@ -37,8 +37,8 @@ namespace gamelib
 	}
 
 
-	scene_manager::scene_manager(shared_ptr<event_manager> ea, shared_ptr<global_config> c, shared_ptr<resource_manager> resource_admin)
-	: event_admin(ea), config(c), resource_admin(resource_admin)
+	scene_manager::scene_manager(shared_ptr<event_manager> ea, shared_ptr<global_config> c, shared_ptr<resource_manager> resource_admin,  std::string scene_folder)
+	: event_admin(ea), config(c), resource_admin(resource_admin), scene_folder(scene_folder)
 	{
 	}
 
@@ -81,19 +81,19 @@ namespace gamelib
 		switch(scene)
 		{
 		case 1:			
-			scene_name = "game/scene1.xml";
+			scene_name = scene_folder + "scene1.xml";
 			break;
 		case 2:
-			scene_name = "game/scene2.xml";
+			scene_name = scene_folder + "scene2.xml";
 			break;
 		case 3:
-			scene_name = "game/scene3.xml";
+			scene_name = scene_folder +"scene3.xml";
 			break;
 		case 4:
-			scene_name = "game/scene4.xml";
+			scene_name = scene_folder + "scene4.xml";
 			break;
 		default:
-			scene_name = "game/scene1.xml";
+			scene_name = scene_folder + "scene1.xml";
 		}
 
 		if(!scene_name.empty())
@@ -209,24 +209,24 @@ namespace gamelib
 
 							if(key == "name")
 							{
-								the_layer->name = key;
+								the_layer->name = value;
 								continue;
 							}
 
 							if(key == "posx")
 							{
-								the_layer->x = 0;
+								the_layer->x = static_cast<int>(std::atoi(value.c_str()));
 								continue;
 							}
 
 							if(key == "posy") 
 							{
-								the_layer->y = 0;
+								the_layer->y = static_cast<int>(std::atoi(value.c_str()));
 								continue;
 							}
 
 							if(key == "visible")
-								the_layer->visible = value == "true" ? true : false;
+								the_layer->visible = (value == "true") ? true : false;
 						}
 
 						// Process contents of the layer 

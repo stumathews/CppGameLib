@@ -7,7 +7,7 @@ TEST(SettingsManager, OpenFileTest)
 {
 	const auto expected_settings_count = 15;
 	settings_manager settings;
-	EXPECT_TRUE(settings.load("settings.xml"));
+	EXPECT_TRUE(settings.load("settings.xml")); 
 
 	// Should have loaded 13 settings by default from the settings file
 	EXPECT_TRUE(settings.count() == expected_settings_count);

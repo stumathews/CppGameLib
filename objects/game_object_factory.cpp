@@ -18,7 +18,7 @@ namespace gamelib
 	game_object_factory::game_object_factory() = default;
 	game_object_factory::~game_object_factory() = default;
 
-	shared_ptr<game_object> game_object_factory::build_game_object(tinyxml2::XMLElement * scene_object_xml, std::shared_ptr<resource_manager> resource_admin) const
+	shared_ptr<game_object> game_object_factory::build_game_object(XMLElement * scene_object_xml, std::shared_ptr<resource_manager> resource_admin) const
 	{
 		uint red = 0, green = 0, blue = 0;	
 		uint x = 0, y = 0;
@@ -27,23 +27,24 @@ namespace gamelib
 		
 		auto empty_game_object = shared_ptr<game_object>(nullptr);
 
-		for(auto scene_obj_att = scene_object_xml->FirstAttribute(); scene_obj_att; scene_obj_att = scene_obj_att->Next()) 
+		for(const auto* scene_obj_att = scene_object_xml->FirstAttribute(); scene_obj_att; scene_obj_att = scene_obj_att->Next()) 
 		{
 			std::string detail_name(scene_obj_att->Name());
 			std::string detail_value(scene_obj_att->Value());		
 			
 			if(detail_name == "resourceId") 
 			{
-				auto meta = resource_admin->get(atoi(detail_value.c_str()));
-				if(meta != nullptr)
+				const auto resource_id = detail_value.c_str();
+				auto asset_data = resource_admin->get(std::atoi(resource_id));
+				if(asset_data != nullptr)
 				{
-					if(!meta->type._Equal("graphic"))
-						throw exception(("Cannot load non graphic resource: " + meta->name + " type=" + meta->type).c_str());
+					if(!asset_data->type._Equal("graphic"))
+						throw exception(("Cannot load non graphic resource: " + asset_data->name + " type=" + asset_data->type).c_str());
 
-					if(meta == nullptr)
+					if(asset_data == nullptr)
 						throw exception(("Could not load resource meta data for resource id:" + detail_value).c_str());
 
-					resource = std::dynamic_pointer_cast<graphic_resource>(meta);
+					resource = std::dynamic_pointer_cast<graphic_resource>(asset_data);
 				}
 			}
 
@@ -117,6 +118,7 @@ namespace gamelib
 		game_object->set_graphic_resource(resource);
 		game_object->is_color_key_enabled = color_key_enabled;
 		game_object->is_visible = visible;
+		
 
 		if (game_object->is_color_key_enabled)
 			game_object->set_color_key(red, green, blue);

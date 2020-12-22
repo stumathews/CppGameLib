@@ -2,6 +2,7 @@
 #include "AudioResource.h"
 #include <memory>
 #include <tinyxml2.h>
+
 namespace gamelib
 {
 	class audio_manager

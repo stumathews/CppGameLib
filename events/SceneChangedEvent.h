@@ -11,6 +11,7 @@ namespace gamelib
 			scene_id = level;
 		}
 		int scene_id;
+		std::string scene_file_path;
 		std::string to_str() override;
 	};
 }

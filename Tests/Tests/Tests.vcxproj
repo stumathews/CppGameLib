@@ -64,6 +64,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="Resources.xml" />
+    <Xml Include="scene1.xml" />
     <Xml Include="settings.xml" />
   </ItemGroup>
   <ItemDefinitionGroup />

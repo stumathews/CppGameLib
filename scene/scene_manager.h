@@ -17,7 +17,7 @@ namespace gamelib
 		shared_ptr<global_config> config;
 		shared_ptr<resource_manager> resource_admin;
 	public:
-		scene_manager(shared_ptr<event_manager> ea, shared_ptr<global_config> c, shared_ptr<resource_manager> resource_admin);	
+		scene_manager(shared_ptr<event_manager> ea, shared_ptr<global_config> c, shared_ptr<resource_manager> resource_admin, std::string scene_folder = "game/");	
 		scene_manager(const scene_manager &) = default;
 		scene_manager(scene_manager &&) = default;
 	    scene_manager& operator=(scene_manager const&)  = delete;
@@ -43,7 +43,8 @@ namespace gamelib
 			
 		list<shared_ptr<layer>> layers;
 		string current_scene_name = {};
-		bool is_initialized = false;	
+		bool is_initialized = false;
+		std::string scene_folder;
 	};
 }
 #endif

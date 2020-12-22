@@ -24,9 +24,9 @@ namespace gamelib
 		const char* SETTINGS_SECTION = "settings";
 		public:
 		settings_manager(){ load(); }
-			bool load(std::string filename_path = "settings.xml");
-			bool add_setting(std::string section, std::string key, setting_details);
-			setting_details get(std::string section, std::string name);
+		bool load(std::string filename_path = "settings.xml");
+		bool add_setting(std::string section, std::string key, setting_details);
+		setting_details get(std::string section, std::string name);
 		bool get_bool(std::string section, std::string name);
 		int get_int(std::string section, std::string name);
 		std::string get_string(std::string section, std::string name);

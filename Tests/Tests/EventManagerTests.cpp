@@ -28,18 +28,17 @@ class EventManager : public ::testing::Test {
   {
 	 event_admin = create_event_manager();
   	 event_admin->initialize();
-     const auto the_event = make_shared<do_logic_update_event>(f);
   }
 
-  //void TearDown() override {}
+  void TearDown() override {}
 
-  shared_ptr<global_config> create_config()
+  static shared_ptr<global_config> create_config()
   {
 	shared_ptr<global_config> config(new global_config);
   	return config;
   }
 
-  shared_ptr<event_manager> create_event_manager( shared_ptr<global_config> config = shared_ptr<global_config>(new global_config))
+  static shared_ptr<event_manager> create_event_manager(shared_ptr<global_config> config = shared_ptr<global_config>(new global_config))
   {
   	shared_ptr<event_manager> event_admin(new event_manager(config));
   	return event_admin;

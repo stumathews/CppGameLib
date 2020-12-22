@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scene id="1">
+  <layer name="player0" posx="0" posy="0" visible="true">
+	<objects>	  
+     <object posx="400" posy="100" resourceId="6" visible="true" colourKey="true" r="0" g="255" b="0"></object>
+	</objects>
+  </layer>
+</scene>

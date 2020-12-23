@@ -22,7 +22,7 @@ namespace gamelib
 		virtual ~game_structure() override;
 		void init_game_world_data() const;
 		bool initialize_sdl(int screen_width, int screen_height);		
-		std::shared_ptr<player> create_player() const;
+		[[nodiscard]] std::shared_ptr<player> create_player() const;
 		void setup_player() const;
 		bool initialize();
 		bool game_loop();
@@ -31,9 +31,10 @@ namespace gamelib
 		void player_update();
 		void get_input();		
 		void draw(float);
-		bool load_content() const;
+		[[nodiscard]] bool load_content() const;
 		static long get_tick_now();
 		void spare_time(long) const;
+
 		bool unload();	 // releases resources
 
 		std::vector<std::shared_ptr<event>> handle_event(std::shared_ptr<event> the_event) override;

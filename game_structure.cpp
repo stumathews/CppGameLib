@@ -277,9 +277,14 @@ namespace gamelib
 	 */
 	bool game_structure::initialize()
 	{
-		// Initialize the settings mnager
+		// Initialize the settings manager
 		const auto settings_admin_initialized_ok = settings_admin->load("game/settings.xml");
-		return run_and_log("game_structure::initialize()", settings_admin->get_bool("global","verbose"), [&]()
+		
+		const auto be_verbose = settings_admin->get_bool("global","verbose");
+		const auto screen_width = settings_admin->get_int("global", "screen_width");
+		const auto screen_height = settings_admin->get_int("global", "screen_height");
+		
+		return run_and_log("game_structure::initialize()", be_verbose, [&]()
 		{			
 			// Initialize resource manager
 			const auto resource_admin_initialized_ok = log_if_false(resource_admin->initialize(event_admin), "Could not initialize resource manager");
@@ -291,16 +296,17 @@ namespace gamelib
 			const auto scene_admin_initialized_ok = log_if_false(scene_admin->initialize(), "Could not initialize scene manager");
 
 			// Initialize SDL
-			const auto sdl_initialize_ok = log_if_false(initialize_sdl(settings_admin->get_int("global", "screen_width"), settings_admin->get_int("global", "screen_height")), "Could not initialize SDL, aborting.");
-			
+			const auto sdl_initialize_ok = log_if_false(initialize_sdl(screen_width, screen_height), "Could not initialize SDL, aborting.");
+
+			// Final check
 			if(failed(sdl_initialize_ok) || 
 			   failed(event_admin_initialized_ok) ||
 			   failed(resource_admin_initialized_ok) || 
 			   failed(scene_admin_initialized_ok) ||
-				failed(settings_admin_initialized_ok)) 
+			   failed(settings_admin_initialized_ok)) 
 				return false;		
 
-			// Start the first scene
+			// Start level/scence 1
 			scene_admin->start_scene(1);
 			
 			return true;
@@ -314,18 +320,17 @@ namespace gamelib
 	{
 		auto tick_count_at_last_call = get_tick_now();
 		const auto max_loops = settings_admin->get_int("global", "max_loops");
-				
+		const auto tick_time_ms = settings_admin->get_int("global", "tick_time_ms");
+		
 		while (!game_world->is_game_done) // main game loop
 		{
 			const auto new_time =  get_tick_now();
 			auto frame_ticks = 0;  // Number of ticks in the update call	
 			auto num_loops = 0;  // Number of loops ??
 			auto ticks_since = new_time - tick_count_at_last_call;
-			auto tick_time_ms = settings_admin->get_int("global", "tick_time_ms");
-			/* New frame, happens consistently every 50 milliseconds. Ie 20 times a second.
-			  20 times a second = 50 milliseconds
-			  1 second is 20*50 = 1000 milliseconds
-			*/
+			
+			// New frame, happens consistently every 50 milliseconds. Ie 20 times a second. 20 times a second = 50 milliseconds. 1 second is 20*50 = 1000 milliseconds
+			
 			while (ticks_since > settings_admin->get_int("global", "tick_time_ms") && num_loops < max_loops)
 			{
 				update();		
@@ -352,8 +357,7 @@ namespace gamelib
 		std::cout << "Game done" << std::endl;
 		return true;
 	}
-
-
+	
 	bool game_structure::load_content() const
 	{
 		resource_admin->read_resources();

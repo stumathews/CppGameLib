@@ -253,6 +253,11 @@ namespace gamelib
 		init_game_world_data();
 	}
 
+	game_structure::~game_structure()
+	{
+		unload();
+	}
+
 	void game_structure::init_game_world_data() const
 	{
 		game_world->is_game_done = false;
@@ -287,16 +292,16 @@ namespace gamelib
 		return run_and_log("game_structure::initialize()", be_verbose, [&]()
 		{			
 			// Initialize resource manager
-			const auto resource_admin_initialized_ok = log_if_false(resource_admin->initialize(event_admin), "Could not initialize resource manager");
+			const auto resource_admin_initialized_ok = log_if_false(resource_admin->initialize(event_admin), "Could not initialize resource manager", settings_admin);
 
 			// Initialize event manager
-			const auto event_admin_initialized_ok = log_if_false(event_admin->initialize(), "Could not initialize event manager");
+			const auto event_admin_initialized_ok = log_if_false(event_admin->initialize(), "Could not initialize event manager", settings_admin);
 
 			// Initialize scene_manager
-			const auto scene_admin_initialized_ok = log_if_false(scene_admin->initialize(), "Could not initialize scene manager");
+			const auto scene_admin_initialized_ok = log_if_false(scene_admin->initialize(), "Could not initialize scene manager", settings_admin);
 
 			// Initialize SDL
-			const auto sdl_initialize_ok = log_if_false(initialize_sdl(screen_width, screen_height), "Could not initialize SDL, aborting.");
+			const auto sdl_initialize_ok = log_if_false(initialize_sdl(screen_width, screen_height), "Could not initialize SDL, aborting.", settings_admin);
 
 			// Final check
 			if(failed(sdl_initialize_ok) || 

@@ -32,11 +32,11 @@ namespace gamelib
 		{
 			std::string detail_name(scene_obj_att->Name());
 			std::string detail_value(scene_obj_att->Value());		
-			
+
 			if(detail_name == "resourceId") 
 			{
-				const auto resource_id = detail_value.c_str();
-				auto asset_data = resource_admin->get(std::atoi(resource_id));
+				const auto* const resource_id = detail_value.c_str();
+				auto asset_data = resource_admin->get(static_cast<int>(std::atoi(resource_id)));
 				if(asset_data != nullptr)
 				{
 					if(!asset_data->type._Equal("graphic"))

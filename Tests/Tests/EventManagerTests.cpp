@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "common/global_config.h"
+#include "common/static_config.h"
 #include "events/DoLogicUpdateEvent.h"
 #include "events/event_manager.h"
 
@@ -24,6 +24,13 @@ public:
 
 class EventManager : public ::testing::Test {
  protected:
+  
+  shared_ptr<event_manager> event_admin;
+  dummy_subscriber subscriber;	
+  do_logic_update_event logic_update_event;
+  const shared_ptr<do_logic_update_event> the_event = make_shared<do_logic_update_event>(logic_update_event);
+  const event_type event_type = event_type::DoLogicUpdateEventType;
+
   void SetUp() override
   {
 	 event_admin = create_event_manager();
@@ -31,24 +38,13 @@ class EventManager : public ::testing::Test {
   }
 
   void TearDown() override {}
-
-  static shared_ptr<global_config> create_config()
-  {
-	shared_ptr<global_config> config(new global_config);
-  	return config;
+  static shared_ptr<static_config> create_config() {	
+  	return make_shared<static_config>();
   }
 
-  static shared_ptr<event_manager> create_event_manager(shared_ptr<global_config> config = shared_ptr<global_config>(new global_config))
-  {
-  	shared_ptr<event_manager> event_admin(new event_manager(config));
-  	return event_admin;
+  static shared_ptr<event_manager> create_event_manager(shared_ptr<settings_manager> config = make_shared<settings_manager>()) {
+  	return make_shared<event_manager>(config);
   }
-
-	shared_ptr<event_manager> event_admin;
-	dummy_subscriber subscriber;	
-	do_logic_update_event f;
-	const shared_ptr<do_logic_update_event> the_event = make_shared<do_logic_update_event>(f);
-	const event_type event_type = event_type::DoLogicUpdateEventType;
 	
 };
 

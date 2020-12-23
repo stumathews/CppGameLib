@@ -8,8 +8,9 @@ using namespace std;
 
 namespace gamelib
 {
-	player::player(int x, int y, int w,  std::shared_ptr<resource_manager> resource_admin): square(x, y, w, resource_admin, true, true)
+	player::player(int x, int y, int w,  std::shared_ptr<resource_manager> resource_admin, std::shared_ptr<settings_manager> settings_admin): square(x, y, w, resource_admin, true, true, true, settings_admin)
 	{
+		
 		const auto player = std::make_shared<player_component>(constants::playerComponentName, x, y, w, w);
 		set_tag(constants::playerTag);
 		add_component(player);

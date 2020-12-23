@@ -56,7 +56,7 @@ namespace gamelib
 		std::shared_ptr<graphic_resource> graphic; // can be shared by other actors
 		std::map<std::string, std::shared_ptr<component>> components;
 		SDL_Color color_key = {};
-		int move_interval = global_config::move_interval; // move by intervals of 10 pixels
+		int move_interval = static_config::move_interval; // move by intervals of 10 pixels
 		std::shared_ptr<asset> underlying_asset;
 
 	};

@@ -13,7 +13,7 @@
 //#include "../game/exceptions/game_exception.h"
 #include "audio/AudioManager.h"
 #include "common/Common.h"
-#include "common/global_config.h"
+#include "common/static_config.h"
 #include "events/AddGameObjectToCurrentSceneEvent.h"
 #include "events/DoLogicUpdateEvent.h"
 #include "events/event_manager.h"
@@ -42,74 +42,74 @@ namespace gamelib
 					{
 					case SDLK_w:
 					case SDLK_UP:
-						run_and_log("Player pressed up!", config->verbose, [&]()
+						run_and_log("Player pressed up!", settings_admin->get_bool("global", "verbose"), [&]()
 						{
 							event_admin->raise_event(std::make_unique<position_change_event>(Direction::Up), this);
 							return true;
-						});
+						}, true, true, settings_admin);
 						break;
 					case SDLK_s:
 					case SDLK_DOWN:
-						run_and_log("Player pressed down!", config->verbose, [&]()
+						run_and_log("Player pressed down!", settings_admin->get_bool("global", "verbose"), [&]()
 						{
 							event_admin->raise_event(std::make_unique<position_change_event>(Direction::Down), this);
 							return true;
-						});
+						}, true, true, settings_admin);
 						break;
 					case SDLK_a:
 					case SDLK_LEFT:
-						run_and_log("Player pressed left!", config->verbose, [&]()
+						run_and_log("Player pressed left!", settings_admin->get_bool("global", "verbose"), [&]()
 						{
 							event_admin->raise_event(std::make_unique<position_change_event>(Direction::Left), this);
 							return true;
-						});
+						}, true, true, settings_admin);
 						break;
 
 					case SDLK_d:
 					case SDLK_RIGHT:
-						run_and_log("Player pressed right!", config->verbose, [&]()
+						run_and_log("Player pressed right!", settings_admin->get_bool("global", "verbose"), [&]()
 						{
 							event_admin->raise_event(std::make_unique<position_change_event>(Direction::Right), this);
 							return true;
-						});
+						}, true, true, settings_admin);
 						break;
 
 					case SDLK_q:
 					case SDLK_ESCAPE:
-						run_and_log("Player pressed quit!", config->verbose, [&]()
+						run_and_log("Player pressed quit!", settings_admin->get_bool("global", "verbose"), [&]()
 						{
 							game_world->is_game_done = 1;
 							return true;
-						});
+						}, true, true, settings_admin);
 						break;
 					case SDLK_j:
-						run_and_log("Change to level 1", config->verbose, [&]()
+						run_and_log("Change to level 1", settings_admin->get_bool("global", "verbose"), [&]()
 						{
 							event_admin->raise_event(std::make_unique<scene_changed_event>(1), this);
 							return true;
-						});
+						}, true, true, settings_admin);
 						break;
 					case SDLK_k:
-						run_and_log("Change to level 2", config->verbose, [&]()
+						run_and_log("Change to level 2", settings_admin->get_bool("global", "verbose"), [&]()
 						{
 							event_admin->raise_event(std::make_unique<scene_changed_event>(2), this);
 							return true;
-						});
+						}, true, true, settings_admin);
 						break;
 					case SDLK_l:
-						run_and_log("Change to level 3", config->verbose, [&]()
+						run_and_log("Change to level 3", settings_admin->get_bool("global", "verbose"), [&]()
 						{
 							event_admin->raise_event(std::make_unique<scene_changed_event>(3), this);
 							return true;
-						});
+						}, true, true, settings_admin);
 						break;
 
 					case SDLK_x:
-						run_and_log("Change to level 4", config->verbose, [&]()
+						run_and_log("Change to level 4", settings_admin->get_bool("global", "verbose"), [&]()
 						{
 							event_admin->raise_event(std::make_unique<scene_changed_event>(4), this);
 							return true;
-						});
+						}, true, true, settings_admin);
 						break;
 					case SDLK_1:
 						Mix_PlayChannel(-1, audio_manager::to_resource(resource_admin->get("high.wav"))->as_fx(), 0);
@@ -139,10 +139,13 @@ namespace gamelib
 					case SDLK_0:
 						Mix_HaltMusic();
 						break;
-
+					case SDLK_r:
+						settings_admin->reload();
+						log_message("Settings reloaded", settings_admin->get_bool("global", "verbose"), false);
+						break;
 					default:
 						std::cout << "Unknown control key" << std::endl;
-						log_message("Unknown control key", config->verbose);
+						log_message("Unknown control key", settings_admin->get_bool("global", "verbose"));
 						break;
 					}
 				}
@@ -241,13 +244,13 @@ namespace gamelib
 
 	game_structure::game_structure(std::shared_ptr<event_manager> event_admin,
 		std::shared_ptr<resource_manager> resource_admin,
-		std::shared_ptr<global_config> config,
+		std::shared_ptr<settings_manager> config,
 		std::shared_ptr<game_world_data> game_world,
 		std::shared_ptr<scene_manager> scene_admin,
 		std::shared_ptr<sdl_graphics_manager> graphics_admin)
 	: event_admin(event_admin),
 	resource_admin(resource_admin),
-	config(config),
+	settings_admin(config),
 	game_world(game_world),
 	scene_admin(scene_admin),
 	graphics_admin(graphics_admin)
@@ -265,7 +268,7 @@ namespace gamelib
 
 	shared_ptr<player> game_structure::create_player() const
 	{
-		return make_shared<player>(player(config->player_init_pos_x, config->player_init_pos_y, config->square_width / 2, resource_admin));
+		return make_shared<player>(player(settings_admin->get_int("player","player_init_pos_x"), settings_admin->get_int("player", "player_init_pos_y"), settings_admin->get_int("global", "square_width") / 2, resource_admin, settings_admin));
 	}
 
 	void game_structure::setup_player() const
@@ -280,8 +283,10 @@ namespace gamelib
 	 */
 	bool game_structure::initialize()
 	{
-		return run_and_log("game_structure::initialize()", config->verbose, [&]()
-		{
+		// Initialize the settings mnager
+		const auto settings_admin_initialized_ok = settings_admin->load("game/settings.xml");
+		return run_and_log("game_structure::initialize()", settings_admin->get_bool("global","verbose"), [&]()
+		{			
 			// Initialize resource manager
 			const auto resource_admin_initialized_ok = log_if_false(resource_admin->initialize(event_admin), "Could not initialize resource manager");
 
@@ -292,19 +297,20 @@ namespace gamelib
 			const auto scene_admin_initialized_ok = log_if_false(scene_admin->initialize(), "Could not initialize scene manager");
 
 			// Initialize SDL
-			const auto sdl_initialize_ok = log_if_false(initialize_sdl(config->screen_width, config->screen_height), "Could not initialize SDL, aborting.");
+			const auto sdl_initialize_ok = log_if_false(initialize_sdl(settings_admin->get_int("global", "screen_width"), settings_admin->get_int("global", "screen_height")), "Could not initialize SDL, aborting.");
 			
 			if(failed(sdl_initialize_ok) || 
 			   failed(event_admin_initialized_ok) ||
 			   failed(resource_admin_initialized_ok) || 
-			   failed(scene_admin_initialized_ok)) 
+			   failed(scene_admin_initialized_ok) ||
+				failed(settings_admin_initialized_ok)) 
 				return false;		
 
 			// Start the first scene
 			scene_admin->start_scene(1);
 			
 			return true;
-		});
+		}, true, true, settings_admin);
 	}
 
 	/**
@@ -313,40 +319,40 @@ namespace gamelib
 	bool game_structure::game_loop()
 	{
 		auto tick_count_at_last_call = get_tick_now();
-		const auto max_loops = config->max_loops;
-
+		const auto max_loops = settings_admin->get_int("global", "max_loops");
+				
 		while (!game_world->is_game_done) // main game loop
 		{
 			const auto new_time =  get_tick_now();
 			auto frame_ticks = 0;  // Number of ticks in the update call	
 			auto num_loops = 0;  // Number of loops ??
 			auto ticks_since = new_time - tick_count_at_last_call;
-
+			auto tick_time_ms = settings_admin->get_int("global", "tick_time_ms");
 			/* New frame, happens consistently every 50 milliseconds. Ie 20 times a second.
 			  20 times a second = 50 milliseconds
 			  1 second is 20*50 = 1000 milliseconds
 			*/
-			while (ticks_since > config->tick_time_ms && num_loops < max_loops)
+			while (ticks_since > settings_admin->get_int("global", "tick_time_ms") && num_loops < max_loops)
 			{
 				update();		
-				tick_count_at_last_call += config->tick_time_ms; // tickCountAtLastCall is now been +TickTime more since the last time. update it
-				frame_ticks += config->tick_time_ms; num_loops++;
+				tick_count_at_last_call += tick_time_ms; // tickCountAtLastCall is now been +TickTime more since the last time. update it
+				frame_ticks += tick_time_ms; num_loops++;
 				ticks_since = new_time - tick_count_at_last_call;
 			}
 
 			spare_time(frame_ticks); // handle player input, general housekeeping (Event Manager processing)
 
-			if (game_world->is_network_game || ticks_since <= config->tick_time_ms)
+			if (game_world->is_network_game || ticks_since <= tick_time_ms)
 			{
 				if (game_world->can_render)
 				{
-					const auto percent_outside_frame = static_cast<float>(ticks_since / config->tick_time_ms) * 100; // NOLINT(bugprone-integer-division)				
+					const auto percent_outside_frame = static_cast<float>(ticks_since / tick_time_ms) * 100; // NOLINT(bugprone-integer-division)				
 					draw(percent_outside_frame);
 				}
 			}
 			else
 			{
-				tick_count_at_last_call = new_time - config->tick_time_ms;
+				tick_count_at_last_call = new_time - tick_time_ms;
 			}
 		}
 		std::cout << "Game done" << std::endl;
@@ -359,7 +365,7 @@ namespace gamelib
 		resource_admin->read_resources();
 			
 		// Generate the level's rooms
-		for (const auto& room: level_generator::generate_level(resource_admin))
+		for (const auto& room: level_generator::generate_level(resource_admin, settings_admin))
 		{	
 			// room's will want to know when the player moved for collision detection etc
 			room->subscribe_to_event(event_type::PlayerMovedEventType, event_admin);

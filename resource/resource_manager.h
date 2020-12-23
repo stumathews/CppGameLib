@@ -4,7 +4,7 @@
 #include <memory>
 #include "asset/asset.h"
 #include "audio/AudioManager.h"
-#include "common/global_config.h"
+#include "common/static_config.h"
 #include "events/event_manager.h"
 #include "events/event_subscriber.h"
 #include "font/font_manager.h"
@@ -15,7 +15,7 @@ namespace gamelib
 	class resource_manager final : public event_subscriber, public std::enable_shared_from_this<resource_manager>
 	{		
 	    public:
-		resource_manager(std::shared_ptr<global_config> c, std::shared_ptr<sdl_graphics_manager> g, std::shared_ptr<font_manager> f, std::shared_ptr<audio_manager> );
+		resource_manager(std::shared_ptr<settings_manager> config, std::shared_ptr<sdl_graphics_manager> graphics_admin, std::shared_ptr<font_manager> font_admin, std::shared_ptr<audio_manager>, std::shared_ptr<logger> the_logger = std::make_shared<logger>());
 			
 		std::shared_ptr<asset> get(const std::string& name);
 		std::shared_ptr<asset> get(int uuid);
@@ -29,10 +29,11 @@ namespace gamelib
 		int get_resource_unloaded_count() const { return unloaded_resources_count; }
 	    int get_resource_loaded_count() const { return loaded_resources_count; }
 	private:
-		std::shared_ptr<global_config> config;
+		std::shared_ptr<settings_manager> config;
 		std::shared_ptr<sdl_graphics_manager> graphics_admin;
 		std::shared_ptr<font_manager> font_admin;
 		std::shared_ptr<audio_manager> audio_admin;
+		std::shared_ptr<logger> the_logger;
 		void load_level_assets(int level);
 	    void store_asset(const std::shared_ptr<asset>& the_asset);
 		std::map<int, std::vector<std::shared_ptr<asset>>> resources_by_scene;   

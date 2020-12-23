@@ -15,9 +15,9 @@ using namespace std;
 namespace gamelib
 {
 
-	sdl_graphics_manager::sdl_graphics_manager(shared_ptr<event_manager> event_admin)
-	: event_subscriber(), event_admin(event_admin)
-	{
+	sdl_graphics_manager::sdl_graphics_manager(shared_ptr<event_manager> event_admin, std::shared_ptr<logger> the_logger)
+	: event_subscriber(), event_admin(event_admin), the_logger(std::move(the_logger))
+{
 		event_admin->subscribe_to_event(event_type::PlayerMovedEventType, this);
 	}
 
@@ -98,18 +98,18 @@ namespace gamelib
 
 	bool sdl_graphics_manager::initialize(const uint width, const uint height, const char * window_title)
 	{
-		logger::log_message("sdl_graphics_manager::Initialize()");
+		the_logger->log_message("sdl_graphics_manager::Initialize()");
 		
 		if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0)
 		{
-			logger::log_message(string("SDL could not initialize:") + const_cast<char*>(SDL_GetError()));
+			the_logger->log_message(string("SDL could not initialize:") + const_cast<char*>(SDL_GetError()));
 			return false;
 		}
 
 		const int imgFlags = IMG_INIT_PNG;
 		if( !( IMG_Init( imgFlags ) & imgFlags ) )
 		{
-			logger::log_message(string("SDL_image could not initialize:") + const_cast<char*>(SDL_GetError()));
+			the_logger->log_message(string("SDL_image could not initialize:") + const_cast<char*>(SDL_GetError()));
 			return false;
 		}
 
@@ -137,11 +137,11 @@ namespace gamelib
 		}
 
 
-		logger::log_message("sdl_graphics_manager ready.");
+		the_logger->log_message("sdl_graphics_manager ready.");
 		return true;
 	}
 
-	std::shared_ptr<asset> sdl_graphics_manager::create_asset(tinyxml2::XMLElement * element, std::shared_ptr<global_config> config)
+	std::shared_ptr<asset> sdl_graphics_manager::create_asset(tinyxml2::XMLElement * element, std::shared_ptr<settings_manager> config)
 	{		
 		auto is_animated = false;
 		auto num_key_frames = 12, key_frame_height = 64, key_frame_width = 64;

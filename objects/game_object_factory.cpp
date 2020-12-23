@@ -96,7 +96,7 @@ namespace gamelib
 		if(resource == nullptr)
 		{
 			// Square
-			game_object = std::make_shared<square>(x, y, global_config::square_width, resource_admin);
+			game_object = std::make_shared<square>(x, y, static_config::square_width, resource_admin);
 			return game_object;		
 		}
 
@@ -106,7 +106,7 @@ namespace gamelib
 		if(resource->is_animated)
 		{
 			// Sprite		
-			game_object = std::make_shared<sprite>(x, y, global_config::sprite_width, resource->num_key_frames, global_config::frames_per_row, global_config::frames_per_column, resource->key_frame_width, resource->key_frame_height);
+			game_object = std::make_shared<sprite>(x, y, static_config::sprite_width, resource->num_key_frames, static_config::frames_per_row, static_config::frames_per_column, resource->key_frame_width, resource->key_frame_height);
 			std::dynamic_pointer_cast<sprite>(game_object)->play();
 		} 
 		else

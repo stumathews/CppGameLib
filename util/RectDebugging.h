@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 
-#include "common/global_config.h"
+#include "common/static_config.h"
 #include "font/font_resource.h"
 #include "resource/resource_manager.h"
 using namespace std;

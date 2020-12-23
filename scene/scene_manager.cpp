@@ -16,7 +16,7 @@ namespace gamelib
 
 	bool scene_manager::initialize()
 	{
-		is_initialized = run_and_log("scene_manager::initialize()", config->verbose, [&]()
+		is_initialized = run_and_log("scene_manager::initialize()", config->get_bool("global", "verbose"), [&]()
 		{
 			// I care about when the level changes
 			event_admin->subscribe_to_event(event_type::LevelChangedEventType, this);
@@ -25,7 +25,7 @@ namespace gamelib
 			event_admin->subscribe_to_event(event_type::AddGameObjectToCurrentScene, this);	
 
 			return true;
-		});
+		}, true, true, config);
 		return is_initialized;
 	}
 
@@ -37,7 +37,7 @@ namespace gamelib
 	}
 
 
-	scene_manager::scene_manager(shared_ptr<event_manager> ea, shared_ptr<global_config> c, shared_ptr<resource_manager> resource_admin,  std::string scene_folder)
+	scene_manager::scene_manager(shared_ptr<event_manager> ea, shared_ptr<settings_manager> c, shared_ptr<resource_manager> resource_admin,  std::string scene_folder)
 	: event_admin(ea), config(c), resource_admin(resource_admin), scene_folder(scene_folder)
 	{
 	}

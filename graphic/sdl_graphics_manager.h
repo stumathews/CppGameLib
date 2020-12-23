@@ -17,9 +17,10 @@ namespace gamelib
 	class sdl_graphics_manager final : public event_subscriber, public std::enable_shared_from_this<sdl_graphics_manager>
 	{
 		std::shared_ptr<event_manager> event_admin;
+		std::shared_ptr<logger> the_logger;
 	public:
 		
-		sdl_graphics_manager(std::shared_ptr<event_manager> event_admin);
+		sdl_graphics_manager(std::shared_ptr<event_manager> event_admin, std::shared_ptr<logger> the_logger = std::make_shared<logger>());
 		~sdl_graphics_manager() override;
 		sdl_graphics_manager(sdl_graphics_manager const&)  = delete;		
 		sdl_graphics_manager(sdl_graphics_manager &&other);		
@@ -31,7 +32,7 @@ namespace gamelib
 		SDL_Renderer* window_renderer = nullptr; //The window renderer
 		SDL_Surface* window_surface = nullptr; 
 
-		std::shared_ptr<asset> create_asset(tinyxml2::XMLElement * asset_xml_element, std::shared_ptr<global_config> config);
+		std::shared_ptr<asset> create_asset(tinyxml2::XMLElement * asset_xml_element, std::shared_ptr<settings_manager> config);
 		
 		bool initialize(const uint width = 800, uint height = 600, const char* window_title = nullptr);	
 

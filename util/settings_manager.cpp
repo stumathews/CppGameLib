@@ -40,8 +40,14 @@ namespace gamelib
 		throw exception("Setting is not a long");
 	}
 
+	bool settings_manager::reload()
+	{
+		return load(settings_file_path);
+	}
+
 	bool settings_manager::load(string filename_path)
-	{		
+	{
+		this->settings_file_path = filename_path;
 		settings.clear(); // effectively this is reloading the settings from scratch each time
 		
 		tinyxml2::XMLDocument doc;

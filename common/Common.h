@@ -2,6 +2,9 @@
 #define COMMON_H
 
 #include <functional>
+#include <memory>
+#include <memory>
+#include <memory>
 #include <SDL.h>
 #include <vector>
 #include <memory>
@@ -17,19 +20,19 @@ namespace gamelib
 		return std::static_pointer_cast<R>(the_asset);
 	}
 
-	inline bool succeeded(const bool condition, const std::string message)
+	inline bool succeeded(const bool condition, const std::string message, std::shared_ptr<logger> the_logger = std::make_shared<logger>())
 	{
 		const auto is = condition == true;
 		if(is == true)
-			logger::log_message(message);
+			the_logger->log_message(message);
 		return is;
 	}
 
-	inline bool failed(bool condition,  std::string message = "", bool ignore = false)
+	inline bool failed(bool condition,  std::string message = "", bool ignore = false, std::shared_ptr<logger> the_logger = std::make_shared<logger>())
 	{
 		const auto is = condition == false;
 		if(is == false)
-			logger::log_message(message);
+			the_logger->log_message(message);
 		return ignore == true ? !ignore : is;
 	}
 
@@ -48,20 +51,20 @@ namespace gamelib
 		std::vector<std::shared_ptr<game_object>> game_objects;
 	};
 
-	inline void log_message(const std::string &message, const bool be_verbose = global_config::verbose, bool is_fatal = false)
+	inline void log_message(const std::string &message, const bool be_verbose = false, bool is_fatal = false, const std::shared_ptr<logger> the_logger = std::make_shared<logger>())
 	{
-		logger::log_message(message, be_verbose);
+		the_logger->log_message(message, be_verbose);
 		if(is_fatal)
 		{
-			logger::log_message("Fatal error encountered.", be_verbose);
+			the_logger->log_message("Fatal error encountered.", be_verbose);
 			std::string key;
 			std::cin >> key;
 		}
 	}
 
-	inline bool run_and_log(const std::string &message, bool verbose, const std::function<bool()>& action, bool print_finished = true, bool run_if = true)
+	inline bool run_and_log(const std::string &message, bool verbose, const std::function<bool()>& action, bool print_finished = true, bool run_if = true, std::shared_ptr<settings_manager> settings_admin = std::make_shared<settings_manager>())
 	{
-		log_message(message);
+		log_message(message, settings_admin->get_bool("global","verbose"));
 		bool result;
 		if(run_if)
 		{
@@ -84,10 +87,12 @@ namespace gamelib
 		return static_cast<typename std::underlying_type<ENUM>::type>(value);
 	}
 
-	inline bool log_if_false(bool condition, std::string message)
+	inline bool log_if_false(bool condition, std::string message, std::shared_ptr<settings_manager> settings = std::make_shared<settings_manager>(), std::shared_ptr<logger> the_logger = std::make_shared<logger>())
 	{
-		if(condition == false)
-			log_message(message);
+		if(condition == false){
+			
+			log_message(message, settings->get_bool("global","verbose"), false, the_logger);
+		}
 		return condition;
 	}
 }

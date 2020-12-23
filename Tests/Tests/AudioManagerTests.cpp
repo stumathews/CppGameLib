@@ -10,13 +10,12 @@ class AudioManager : public testing::Test {
  protected:
   void SetUp() override
   {  	
-  	const shared_ptr<global_config> global_config(new gamelib::global_config);
-	const shared_ptr<event_manager> event_admin(new event_manager(global_config));		
+  	const shared_ptr<settings_manager> settings_admin(new settings_manager);
+	const shared_ptr<event_manager> event_admin(new event_manager(settings_admin));		
 	const shared_ptr<font_manager> font_admin(new font_manager);		
 	audio_admin = create_audio_manager();
 	const shared_ptr<sdl_graphics_manager> graphics_admin(new sdl_graphics_manager(event_admin));		
-	const shared_ptr<resource_manager> resource_admin(new resource_manager(global_config, graphics_admin, font_admin, audio_admin ));
-
+	const shared_ptr<resource_manager> resource_admin(new resource_manager(settings_admin, graphics_admin, font_admin, audio_admin));
     const shared_ptr<audio_resource> ptr(new audio_resource(0, RESOURCE_NAME, RESOURCE_PATH, RESOURCE_TYPE, RESOURCE_SCENE, resource_admin));
   	
   	audio_asset_ptr = dynamic_pointer_cast<asset>(ptr);

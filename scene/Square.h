@@ -11,8 +11,10 @@ namespace gamelib
 	{
 	private:
 		 std::shared_ptr<resource_manager> resource_admin;
+		
 	    int width;
-	protected:
+		 
+	 protected:
 		bool walls[4]{};
 		std::shared_ptr<rect_details> rect_details_;
 	    [[nodiscard]] std::shared_ptr<rect_details> get_rect_details() const;
@@ -20,7 +22,7 @@ namespace gamelib
 		SDL_Rect player_bounds_;
 		SDL_Rect my_bounds_;
 	public: 
-		square(int x, int y, int rw, std::shared_ptr<resource_manager> resource_admin,  bool fill = false, bool supports_move_logic = true, bool is_visible = true);
+		square(int x, int y, int rw, std::shared_ptr<resource_manager> resource_admin,  bool fill = false, bool supports_move_logic = true, bool is_visible = true, std::shared_ptr<settings_manager> settings_admin = std::make_shared<settings_manager>());
 
 	    int get_x() const;
 	    int get_y() const;
@@ -35,6 +37,8 @@ namespace gamelib
 	    void draw(SDL_Renderer* renderer) override;
 	    virtual ~square() override;
 	    void update() override;
+
+		std::shared_ptr<settings_manager> settings_admin;
 	};
 }
 

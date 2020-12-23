@@ -36,6 +36,7 @@
     <IncludePath>C:\Users\Stuart\git\cppgamelib;$(IncludePath)</IncludePath>
     <SourcePath>$(SourcePath)</SourcePath>
     <LibraryPath>C:\SDL\SDL2\lib\x86;C:\SDL\SDL2_image-2.0.4\lib\x86;C:\SDL\SDL2_mixer-devel-2.0.4-VC\SDL2_mixer-2.0.4\lib\x86;C:\SDL\SDL2_ttf-2.0.15\lib\x86;$(LibraryPath)</LibraryPath>
+    <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -43,17 +44,12 @@
   <ItemGroup>
     <ClCompile Include="AudioManagerTests.cpp" />
     <ClCompile Include="FontManagerTests.cpp" />
+    <ClCompile Include="pch.cpp" />
     <ClCompile Include="ResourceManagerTests.cpp" />
     <ClCompile Include="SceneManagerTests.cpp" />
     <ClCompile Include="SDLGraphicsManagerTests.cpp" />
     <ClCompile Include="SettingsManagerTests.cpp" />
     <ClCompile Include="EventManagerTests.cpp" />
-    <ClCompile Include="pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -75,7 +71,7 @@
   </ImportGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>

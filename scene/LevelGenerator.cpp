@@ -5,13 +5,13 @@ using namespace std;
 
 namespace gamelib
 {
-	vector<shared_ptr<square>> level_generator::generate_level( std::shared_ptr<resource_manager> resource_admin)
+	vector<shared_ptr<square>> level_generator::generate_level( std::shared_ptr<resource_manager> resource_admin, shared_ptr<settings_manager> settings_admin)
 	{
 		srand(static_cast<unsigned>(time(nullptr)));
 
-		const auto screen_width = global_config::screen_width;
-		const auto screen_height = global_config::screen_height;	
-		const auto square_width = global_config::square_width;
+		const auto screen_width = static_config::screen_width;
+		const auto screen_height = static_config::screen_height;	
+		const auto square_width = static_config::square_width;
 		const auto max_rows = screen_width/square_width;
 		const auto max_columns = screen_height/square_width;
 		
@@ -25,7 +25,7 @@ namespace gamelib
 			for(auto x = 0; x < max_rows; x++)
 			{
 				auto support_move_logic = false;
-				auto game_object = std::make_shared<square>(x * square_width, y * square_width, square_width, resource_admin, support_move_logic);				
+				auto game_object = std::make_shared<square>(x * square_width, y * square_width, square_width, resource_admin, support_move_logic, false, true, settings_admin);				
 				game_object->set_tag(std::to_string(count++));
 				mazeGrid.push_back(game_object);			
 			}

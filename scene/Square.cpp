@@ -74,7 +74,7 @@ namespace gamelib
 			SDL_RenderFillRect(renderer, &my_bounds_);
 		}
 
-		if(global_config::print_debugging_text)
+		if(settings_admin->get_bool("global", "print_debugging_text"))
 		  RectDebugging::printInRect(renderer, get_tag().c_str(), &my_bounds_, resource_admin); 
 	}
 
@@ -83,9 +83,9 @@ namespace gamelib
 		return rect_details_;
 	}
 
-	square::square(int x, int y, int rw, std::shared_ptr<resource_manager> resource_admin, bool fill,  bool supports_move_logic, bool is_visible)
-	: game_object(x, y), width(rw), fill(fill), player_bounds_({}), my_bounds_({x, y, rw, rw}), resource_admin(resource_admin)
-	{ 
+	square::square(int x, int y, int rw, std::shared_ptr<resource_manager> resource_admin, bool fill,  bool supports_move_logic, bool is_visible, std::shared_ptr<settings_manager> settings_admin)
+	: game_object(x, y), width(rw), fill(fill), player_bounds_({}), my_bounds_({x, y, rw, rw}), resource_admin(resource_admin), settings_admin(std::move(settings_admin))
+{
 	  this->rect_details_ = make_shared<rect_details>(x, y, rw, rw);  
 	  this->supports_move_logic = supports_move_logic;   
 	  walls[0] = true;

@@ -11,7 +11,7 @@ namespace gamelib
 	{
 		std::shared_ptr<event_manager> event_admin;
 		std::shared_ptr<resource_manager> resource_admin;
-		std::shared_ptr<global_config> config;
+		std::shared_ptr<settings_manager> settings_admin;
 		std::shared_ptr<game_world_data> game_world;
 		std::shared_ptr<scene_manager> scene_admin;
 		std::shared_ptr<sdl_graphics_manager> graphics_admin;
@@ -19,7 +19,7 @@ namespace gamelib
 		game_structure(
 		std::shared_ptr<event_manager> event_admin,
 		std::shared_ptr<resource_manager> resource_admin,
-		std::shared_ptr<global_config> config,
+		std::shared_ptr<settings_manager> config,
 		std::shared_ptr<game_world_data> game_world,
 		std::shared_ptr<scene_manager> scene_admin,
 		std::shared_ptr<sdl_graphics_manager> graphics_admin);

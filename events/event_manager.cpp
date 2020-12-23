@@ -10,8 +10,7 @@ using namespace std;
 namespace gamelib
 {
 
-	event_manager::event_manager(shared_ptr<global_config> config)
-	{
+	event_manager::event_manager(shared_ptr<settings_manager> config, std::shared_ptr<logger> the_logger): the_logger(std::move(the_logger)) {
 		this->config = config;
 	}
 
@@ -22,10 +21,11 @@ namespace gamelib
 
 	bool event_manager::initialize()
 	{
-		return run_and_log("event_manager::initialize()", config->verbose, [&]()
+		
+		return run_and_log("event_manager::initialize()", config->get_bool("global", "verbose"), [&]()
 		{
 			return true;
-		});
+		}, true, true, config);
 	}
 
 	void event_manager::raise_event(const shared_ptr<event> event, event_subscriber* you)  // NOLINT(performance-unnecessary-value-param)
@@ -33,7 +33,7 @@ namespace gamelib
 		auto const log = "event_manager: " + you->get_subscriber_name()  + string(" raised to event ") + event->to_str();
 		
 		if(event->type != event_type::DoLogicUpdateEventType)
-			logger::log_message(log);
+			the_logger->log_message(log);
 
 		primary_event_queue_.push(event);
 	}
@@ -41,7 +41,7 @@ namespace gamelib
 	void event_manager::subscribe_to_event(const event_type type, event_subscriber* you)
 	{
 		auto const message = "event_manager: "+you->get_subscriber_name() + string(" subscribed to event ") + type;
-		logger::log_message(message);
+		the_logger->log_message(message);
 		
 		event_subscribers_[type].push_back(you);	
 	}

@@ -5,7 +5,9 @@
 #include <map>
 #include <queue>
 #include "Event.h"
-#include "common/global_config.h"
+#include "common/static_config.h"
+#include "common/Logger.h"
+#include "util/settings_manager.h"
 
 namespace gamelib
 {
@@ -20,10 +22,11 @@ namespace gamelib
 		// Event subscribers (aka event handlers)
 		std::map<event_type, std::vector<event_subscriber*>> event_subscribers_;
 
-		std::shared_ptr<global_config> config;
-		
-		public:
-		event_manager(std::shared_ptr<global_config> config);
+		std::shared_ptr<settings_manager> config;
+		std::shared_ptr<logger> the_logger;
+
+	public:
+		event_manager(std::shared_ptr<settings_manager> config, std::shared_ptr<logger> the_logger = std::make_shared<logger>());
 		~event_manager() = default;
 		size_t count_ready();
 

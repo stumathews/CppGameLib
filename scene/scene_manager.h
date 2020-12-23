@@ -14,10 +14,10 @@ namespace gamelib
 	class scene_manager final : public event_subscriber
 	{
 		shared_ptr<event_manager> event_admin;
-		shared_ptr<global_config> config;
+		shared_ptr<settings_manager> config;
 		shared_ptr<resource_manager> resource_admin;
 	public:
-		scene_manager(shared_ptr<event_manager> ea, shared_ptr<global_config> c, shared_ptr<resource_manager> resource_admin, std::string scene_folder = "game/");	
+		scene_manager(shared_ptr<event_manager> ea, shared_ptr<settings_manager> c, shared_ptr<resource_manager> resource_admin, std::string scene_folder = "game/");	
 		scene_manager(const scene_manager &) = default;
 		scene_manager(scene_manager &&) = default;
 	    scene_manager& operator=(scene_manager const&)  = delete;

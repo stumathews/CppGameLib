@@ -2,7 +2,7 @@
 
 
 #include "audio/AudioManager.h"
-#include "common/global_config.h"
+#include "common/static_config.h"
 #include "events/event_manager.h"
 #include "font/font_manager.h"
 #include "graphic/sdl_graphics_manager.h"
@@ -16,7 +16,7 @@ using namespace gamelib;
 
 int main(int argc, char **argv)
 {
-	const shared_ptr<gamelib::global_config> global_config(new gamelib::global_config);
+	const shared_ptr<gamelib::static_config> global_config(new gamelib::static_config);
 	const shared_ptr<gamelib::event_manager> event_admin(new gamelib::event_manager(global_config));
 		event_admin->initialize();
 	const shared_ptr<gamelib::font_manager> font_admin(new gamelib::font_manager);		

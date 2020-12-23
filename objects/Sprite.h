@@ -8,9 +8,9 @@ namespace gamelib
 	private:
 		unsigned long m_TimeLastFrame;
 	public:
-		sprite(uint xPos, uint yPos, uint speed = 0, uint totalFrames = 1, uint framesPerRow = 1, uint framesPerColumn = 1, uint frameWidth = 0, uint frame = 0) : 
+		sprite(uint xPos, uint yPos, uint speed, uint totalFrames, uint framesPerRow, uint framesPerColumn, uint frameWidth, uint frame, bool is_visible, std::shared_ptr<settings_manager> settings_admin) : 
 			m_Speed(100), m_TotalFrames(totalFrames), m_FramesPerRow(framesPerRow), m_FramesPerColumn(framesPerColumn),
-			m_CurrentFrame(0), m_FrameHeight(64), m_FrameWidth(64), m_StartFrame(0), m_TimeLastFrame(0), game_object(xPos, yPos) { }
+			m_CurrentFrame(0), m_FrameHeight(64), m_FrameWidth(64), m_StartFrame(0), m_TimeLastFrame(0), game_object(xPos, yPos, is_visible, settings_admin) { }
 		
 		uint m_TotalFrames;
 		uint m_FramesPerRow;

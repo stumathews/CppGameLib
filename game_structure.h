@@ -25,7 +25,7 @@ namespace gamelib
 		std::shared_ptr<sdl_graphics_manager> graphics_admin);
 		~game_structure() { unload(); }
 		
-		void init_game_world_data();
+		void init_game_world_data() const;
 		bool initialize_sdl(int screen_width, int screen_height);
 		
 		std::shared_ptr<player> create_player() const;
@@ -35,7 +35,7 @@ namespace gamelib
 		bool game_loop();
 
 		void update();
-		void world_update();
+		void world_update() const;
 		void player_update();
 		void get_input();
 		
@@ -50,7 +50,7 @@ namespace gamelib
 		/***
 		 Ask the event manager to process events
 		 */
-		void spare_time(long);
+		void spare_time(long) const;
 
 		bool unload();	 // releases resources
 

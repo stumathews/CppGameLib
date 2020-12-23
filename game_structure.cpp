@@ -7,13 +7,8 @@
 #include <SDL_ttf.h>
 #include "game_structure.h"
 #include <functional>
-
-
-
-//#include "../game/exceptions/game_exception.h"
 #include "audio/AudioManager.h"
 #include "common/Common.h"
-#include "common/static_config.h"
 #include "events/AddGameObjectToCurrentSceneEvent.h"
 #include "events/DoLogicUpdateEvent.h"
 #include "events/event_manager.h"
@@ -27,7 +22,6 @@
 
 namespace gamelib
 {
-
 	void game_structure::get_input()
 	{
 		SDL_Event sdl_event;
@@ -181,7 +175,7 @@ namespace gamelib
 	/***
 	 * Updates, monitors what the world is doing around the player. This is usually what the player reacts to
 	 */
-	void game_structure::world_update()
+	void game_structure::world_update() const
 	{
 		const auto update_event = make_shared<do_logic_update_event>();
 		// Ask the event manager to notify event subscribers to update their logic now
@@ -208,7 +202,7 @@ namespace gamelib
 		return timeGetTime();
 	}
 
-	void game_structure::spare_time(long frame_time)
+	void game_structure::spare_time(long frame_time) const
 	{
 		event_admin->process_all_events();
 	}
@@ -259,7 +253,7 @@ namespace gamelib
 		init_game_world_data();
 	}
 
-	void game_structure::init_game_world_data()
+	void game_structure::init_game_world_data() const
 	{
 		game_world->is_game_done = false;
 		game_world->is_network_game = false;

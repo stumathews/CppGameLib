@@ -1,7 +1,6 @@
 #pragma once
 #include <map>
 #include <string>
-#include "common/static_config.h"
 
 namespace gamelib
 {

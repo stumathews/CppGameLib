@@ -1,6 +1,5 @@
 #pragma once
 #include <memory>
-#include <vector>
 #include "font_resource.h"
 #include "asset/asset.h"
 

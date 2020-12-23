@@ -1,5 +1,4 @@
 #include "AudioResource.h"
-#include <iostream>
 #include <SDL_mixer.h>
 #include "resource/resource_manager.h"
 

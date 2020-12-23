@@ -4,7 +4,6 @@
 #include <memory>
 #include "asset/asset.h"
 #include "audio/AudioManager.h"
-#include "common/static_config.h"
 #include "events/event_manager.h"
 #include "events/event_subscriber.h"
 #include "font/font_manager.h"

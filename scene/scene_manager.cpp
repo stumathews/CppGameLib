@@ -241,7 +241,7 @@ namespace gamelib
 										continue;
 
 									// populate the list of game objects in this layer
-									the_layer->game_objects.push_back(game_object_factory::get_instance().build_game_object(object, resource_admin));																
+									the_layer->game_objects.push_back(game_object_factory::get_instance().build_game_object(object, resource_admin, config));																
 								}
 							}
 						}

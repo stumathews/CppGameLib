@@ -1,6 +1,7 @@
 #include "game_object_factory.h"
 #include "game_object.h"
 #include "Sprite.h"
+#include "common/static_config.h"
 #include "resource/resource_manager.h"
 #include "scene/Square.h"
 
@@ -18,7 +19,7 @@ namespace gamelib
 	game_object_factory::game_object_factory() = default;
 	game_object_factory::~game_object_factory() = default;
 
-	shared_ptr<game_object> game_object_factory::build_game_object(XMLElement * scene_object_xml, std::shared_ptr<resource_manager> resource_admin) const
+	shared_ptr<game_object> game_object_factory::build_game_object(XMLElement * scene_object_xml, std::shared_ptr<resource_manager> resource_admin, std::shared_ptr<settings_manager> settings_admin) const
 	{
 		uint red = 0, green = 0, blue = 0;	
 		uint x = 0, y = 0;
@@ -88,15 +89,15 @@ namespace gamelib
 				blue = std::stoi(detail_value);
 		}
 			
-		return initialize_game_object(empty_game_object, x, y, resource, color_key_enabled, visible, red, green, blue, resource_admin);		
+		return initialize_game_object(empty_game_object, x, y, visible, resource, color_key_enabled, red, green, blue, resource_admin, settings_admin);		
 	}
 
-	std::shared_ptr<game_object>& game_object_factory::initialize_game_object(std::shared_ptr<game_object>& game_object, uint x, uint y, std::shared_ptr<graphic_resource>& resource, const bool color_key_enabled, bool visible, const uint& red, const uint& green, const uint& blue, std::shared_ptr<resource_manager> resource_admin) const
+	std::shared_ptr<game_object>& game_object_factory::initialize_game_object(std::shared_ptr<game_object>& game_object, uint x, uint y, bool is_visible, std::shared_ptr<graphic_resource>& resource, const bool color_key_enabled, const uint& red, const uint& green, const uint& blue, std::shared_ptr<resource_manager> resource_admin, std::shared_ptr<settings_manager> settings_admin) const
 	{	
 		if(resource == nullptr)
-		{
+		{			
 			// Square
-			game_object = std::make_shared<square>(x, y, static_config::square_width, resource_admin);
+			game_object = std::make_shared<square>(x, y, settings_admin->get_int("global", "square_width"), resource_admin);
 			return game_object;		
 		}
 
@@ -106,18 +107,21 @@ namespace gamelib
 		if(resource->is_animated)
 		{
 			// Sprite		
-			game_object = std::make_shared<sprite>(x, y, static_config::sprite_width, resource->num_key_frames, static_config::frames_per_row, static_config::frames_per_column, resource->key_frame_width, resource->key_frame_height);
+			game_object = std::make_shared<sprite>(x, y, settings_admin->get_int("global","sprite_width"),
+				resource->num_key_frames, static_config::frames_per_row,
+				static_config::frames_per_column, resource->key_frame_width,
+				resource->key_frame_height, is_visible, settings_admin);
 			std::dynamic_pointer_cast<sprite>(game_object)->play();
 		} 
 		else
 		{
 			// 2D Sprite (no animation)
-			game_object = std::make_shared<sprite>(x, y);	
+			game_object = std::make_shared<sprite>(x, y, 1, 1, static_config::frames_per_row, static_config::frames_per_column, resource->key_frame_width, 1, is_visible, settings_admin);	
 		}
 		
 		game_object->set_graphic_resource(resource);
 		game_object->is_color_key_enabled = color_key_enabled;
-		game_object->is_visible = visible;
+		game_object->is_visible = is_visible;
 		
 
 		if (game_object->is_color_key_enabled)

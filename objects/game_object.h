@@ -17,9 +17,11 @@ namespace gamelib
 		bool is_color_key_enabled;
 		int x;
 		int y;
+		int move_interval;
+		std::shared_ptr<settings_manager> settings_admin;
 
-		game_object(bool is_visible = true);
-		game_object(int x, int y, bool is_visible = true);
+		game_object(bool is_visible, std::shared_ptr<settings_manager> settings_admin);
+		game_object(int x, int y, bool is_visible, std::shared_ptr<settings_manager> settings_admin);
 
 		void subscribe_to_event(event_type type, std::shared_ptr<event_manager> event_admin);
 		void raise_event(const std::shared_ptr<event>& the_event, std::shared_ptr<event_manager> event_admin);
@@ -56,7 +58,6 @@ namespace gamelib
 		std::shared_ptr<graphic_resource> graphic; // can be shared by other actors
 		std::map<std::string, std::shared_ptr<component>> components;
 		SDL_Color color_key = {};
-		int move_interval = static_config::move_interval; // move by intervals of 10 pixels
 		std::shared_ptr<asset> underlying_asset;
 
 	};

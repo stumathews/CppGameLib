@@ -5,7 +5,6 @@
 #include <memory>
 #include <memory>
 #include <memory>
-#include <SDL.h>
 #include <vector>
 #include <memory>
 #include "asset/asset.h"

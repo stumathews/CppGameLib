@@ -1,11 +1,8 @@
 #include "graphic_resource.h"
-#include <iostream>
 #include <SDL_image.h>
 #include "sdl_graphics_manager.h"
 #include <SDL.h>
 #include "common/Common.h"
-#include "common/static_config.h"
-#include <common/Logger.h>
 
 using namespace std;
 

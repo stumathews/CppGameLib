@@ -6,7 +6,6 @@
 
 namespace gamelib
 {
-	class static_config;
 	class sdl_graphics_manager;
 
 	// A stand-alone graphics resource with backing storage that can load and unload itself

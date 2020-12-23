@@ -5,7 +5,6 @@
 #include <map>
 #include <queue>
 #include "Event.h"
-#include "common/static_config.h"
 #include "common/Logger.h"
 #include "util/settings_manager.h"
 

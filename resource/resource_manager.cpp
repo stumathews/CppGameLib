@@ -6,7 +6,6 @@
 //#include "game/exceptions/game_exception.h"
 #include "audio/AudioManager.h"
 #include "common/Common.h"
-#include "common/static_config.h"
 #include "events/event_manager.h"
 #include "events/SceneChangedEvent.h"
 #include "font/font_manager.h"

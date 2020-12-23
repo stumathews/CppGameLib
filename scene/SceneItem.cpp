@@ -1,14 +1,14 @@
-#include "SceneItem.h"
-
-
-namespace gamelib
-{
-	SceneItem::SceneItem()
-	{
-	}
-
-
-	SceneItem::~SceneItem()
-	{
-	}
-}
+//#include "SceneItem.h"
+//
+//
+//namespace gamelib
+//{
+//	SceneItem::SceneItem()
+//	{
+//	}
+//
+//
+//	SceneItem::~SceneItem()
+//	{
+//	}
+//}

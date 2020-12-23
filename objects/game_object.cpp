@@ -1,6 +1,5 @@
 #include "game_object.h"
 #include <memory>
-#include <iostream>
 #include <SDL_mixer.h>
 
 
@@ -75,7 +74,7 @@ namespace gamelib
 	}
 
 	void game_object::move_down()
-	{
+	{		
 		y += move_interval;
 	}
 
@@ -114,11 +113,13 @@ namespace gamelib
 		}
 	}*/
 
-	game_object::game_object(bool is_visible): event_subscriber(), supports_move_logic(true), is_visible(is_visible), is_color_key_enabled(false), x(0), y(0), is_traveling_left(false), red(0x00), blue(0xFF), green(0x00)
-	{	
+	game_object::game_object(bool is_visible, std::shared_ptr<settings_manager> settings_admin): event_subscriber(), supports_move_logic(true), is_visible(is_visible), is_color_key_enabled(false), x(0), y(0), is_traveling_left(false), red(0x00), blue(0xFF), green(0x00), settings_admin(std::move(settings_admin))
+	{
+		is_visible = true;
+		move_interval = settings_admin->get_int("global","move_interval");
 	}
 
-	game_object::game_object(const int x, const int y, bool is_visible): event_subscriber(), supports_move_logic(false), is_visible(is_visible), x(x), y(y)
+	game_object::game_object(const int x, const int y, bool is_visible, std::shared_ptr<settings_manager> settings_admin): event_subscriber(), supports_move_logic(false), is_visible(is_visible), x(x), y(y), settings_admin(std::move(settings_admin))
 	{
 		red = 0x00;
 		blue = 0xFF;
@@ -126,6 +127,7 @@ namespace gamelib
 		is_traveling_left = false;
 		is_visible = true;
 		is_color_key_enabled = false;
+		is_visible = true;
 	}
 
 

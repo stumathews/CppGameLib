@@ -9,9 +9,9 @@ namespace gamelib
 	{
 		srand(static_cast<unsigned>(time(nullptr)));
 
-		const auto screen_width = static_config::screen_width;
-		const auto screen_height = static_config::screen_height;	
-		const auto square_width = static_config::square_width;
+		const auto screen_width = settings_admin->get_int("global","screen_width");
+		const auto screen_height = settings_admin->get_int("global","screen_height");
+		const auto square_width = settings_admin->get_int("global","square_width");
 		const auto max_rows = screen_width/square_width;
 		const auto max_columns = screen_height/square_width;
 		

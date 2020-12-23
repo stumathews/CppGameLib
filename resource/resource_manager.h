@@ -11,6 +11,9 @@
 
 namespace gamelib
 {
+	/***
+	 * co-ordinates the resources in the game - such as holding definitions of all the resources/assets in the game
+	 */
 	class resource_manager final : public event_subscriber, public std::enable_shared_from_this<resource_manager>
 	{		
 	    public:

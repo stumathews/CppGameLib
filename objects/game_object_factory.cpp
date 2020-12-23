@@ -121,8 +121,7 @@ namespace gamelib
 		
 		game_object->set_graphic_resource(resource);
 		game_object->is_color_key_enabled = color_key_enabled;
-		game_object->is_visible = is_visible;
-		
+		game_object->is_visible = is_visible;		
 
 		if (game_object->is_color_key_enabled)
 			game_object->set_color_key(red, green, blue);

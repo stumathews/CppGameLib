@@ -6,7 +6,9 @@
 
 namespace gamelib
 {
-
+	/***
+	 * logical structure of the game such as the game initialization, game loop etc.
+	 */
 	class game_structure final : public event_subscriber
 	{
 		std::shared_ptr<event_manager> event_admin;

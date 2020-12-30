@@ -12,9 +12,11 @@ namespace gamelib
 	private:
 		 std::shared_ptr<resource_manager> resource_admin;
 		
-	    int width;
-		 
+	    
+		int number;
+		 bool is_player_in_room;
 	 protected:
+		int width;
 		bool walls[4]{};
 		std::shared_ptr<rect_details> rect_details_;
 	    [[nodiscard]] std::shared_ptr<rect_details> get_rect_details() const;
@@ -22,7 +24,7 @@ namespace gamelib
 		SDL_Rect player_bounds_;
 		SDL_Rect my_bounds_;
 	public: 
-		square(int x, int y, int rw, std::shared_ptr<resource_manager> resource_admin,  bool fill = false, bool supports_move_logic = true, bool is_visible = true, std::shared_ptr<settings_manager> settings_admin = std::make_shared<settings_manager>());
+		square(int number, int x, int y, int rw, std::shared_ptr<resource_manager> resource_admin,  bool fill = false, bool supports_move_logic = true, bool is_visible = true, std::shared_ptr<settings_manager> settings_admin = std::make_shared<settings_manager>());
 
 	    int get_x() const;
 	    int get_y() const;
@@ -30,10 +32,12 @@ namespace gamelib
 	    int get_h() const;
 
 	    bool is_walled(int wall);
-	    void remove_wall(int wall);
+		 bool is_walled_0_based(int wall);
+		 void remove_wall(int wall);
 		std::string get_identifier() override;
 
 		std::vector<std::shared_ptr<event>> handle_event(std::shared_ptr<event> event) override;
+		void load_settings(std::shared_ptr<settings_manager> settings_admin) override;
 	    void draw(SDL_Renderer* renderer) override;
 	    virtual ~square() override;
 	    void update() override;

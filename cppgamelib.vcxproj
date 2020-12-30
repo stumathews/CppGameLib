@@ -182,6 +182,8 @@
     <ClInclude Include="font\font_resource.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="game_structure.h" />
+    <ClInclude Include="objects\game_world_component.h" />
+    <ClInclude Include="objects\game_world_data.h" />
     <ClInclude Include="graphic\Drawing.h" />
     <ClInclude Include="graphic\graphic_resource.h" />
     <ClInclude Include="graphic\sdl_graphics_manager.h" />
@@ -194,7 +196,6 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource\resource_manager.h" />
     <ClInclude Include="scene\Layer.h" />
-    <ClInclude Include="scene\LevelGenerator.h" />
     <ClInclude Include="scene\rect_details.h" />
     <ClInclude Include="scene\SceneItem.h" />
     <ClInclude Include="scene\scene_manager.h" />
@@ -223,6 +224,8 @@
     <ClCompile Include="font\font_manager.cpp" />
     <ClCompile Include="font\font_resource.cpp" />
     <ClCompile Include="game_structure.cpp" />
+    <ClCompile Include="objects\game_world_component.cpp" />
+    <ClCompile Include="objects\game_world_data.cpp" />
     <ClCompile Include="graphic\Drawing.cpp" />
     <ClCompile Include="graphic\graphic_resource.cpp" />
     <ClCompile Include="graphic\sdl_graphics_manager.cpp" />
@@ -234,7 +237,6 @@
     <ClCompile Include="objects\Sprite.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="resource\resource_manager.cpp" />
-    <ClCompile Include="scene\LevelGenerator.cpp" />
     <ClCompile Include="scene\rect_details.cpp" />
     <ClCompile Include="scene\SceneItem.cpp" />
     <ClCompile Include="scene\scene_manager.cpp" />

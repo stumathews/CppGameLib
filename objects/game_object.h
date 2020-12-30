@@ -8,6 +8,14 @@
 
 namespace gamelib
 {
+	enum class object_type
+	{
+		undefined,
+		game_world,
+		square,
+		player,
+		sprite, 
+	};
 
 	class game_object : public event_subscriber
 	{
@@ -19,9 +27,11 @@ namespace gamelib
 		int y;
 		int move_interval;
 		std::shared_ptr<settings_manager> settings_admin;
+		
 
-		game_object(bool is_visible, std::shared_ptr<settings_manager> settings_admin);
-		game_object(int x, int y, bool is_visible, std::shared_ptr<settings_manager> settings_admin);
+		void init_defaults(object_type type, bool is_visible, std::shared_ptr<settings_manager> settings, int x, int y);
+		game_object(bool is_visible, std::shared_ptr<settings_manager> settings_admin, object_type type);
+		game_object(int x, int y, bool is_visible, std::shared_ptr<settings_manager> settings_admin, object_type type);
 
 		void subscribe_to_event(event_type type, std::shared_ptr<event_manager> event_admin);
 		void raise_event(const std::shared_ptr<event>& the_event, std::shared_ptr<event_manager> event_admin);
@@ -35,13 +45,16 @@ namespace gamelib
 		virtual void move_left();
 		virtual void move_right();
 		virtual std::string get_identifier();
+		virtual void load_settings(std::shared_ptr<settings_manager> settings_admin);
 
 		void change_object_position(std::shared_ptr<event> the_event);
 		std::vector<std::shared_ptr<event>> handle_event(const std::shared_ptr<event> event) override;  // NOLINT(readability-inconsistent-declaration-parameter-name)
 		//void detect_side_collision(std::shared_ptr<sdl_graphics_manager> graphics_admin,  std::shared_ptr<resource_manager> resource_admin);
 		void set_color_key(Uint8 r, Uint8 g, Uint8 b);
+
 		void add_component(const std::shared_ptr<component>& component);
 		bool is_player();
+
 		std::shared_ptr<component> find_component(std::string name);
 		bool has_component(std::string name);
 		std::string get_tag() const;
@@ -49,8 +62,9 @@ namespace gamelib
 		std::string get_subscriber_name() override;
 		void draw_resource(SDL_Renderer* renderer) const;
 		bool is_resource_loaded() const;
-
+		object_type get_type()const { return type; }
 	private:
+		object_type type;
 		int id;
 		std::string tag;
 		bool is_traveling_left;

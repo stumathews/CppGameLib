@@ -97,9 +97,11 @@ namespace gamelib
 		if(resource == nullptr)
 		{			
 			// Square
-			game_object = std::make_shared<square>(x, y, settings_admin->get_int("global", "square_width"), resource_admin);
+			game_object = std::make_shared<square>(-1, x, y, settings_admin->get_int("global", "square_width"), resource_admin);
 			return game_object;		
 		}
+
+		
 
 		if( (red < 0 || red > 255)  || (blue < 0 || blue > 255) || (green < 0 || green > 255) )
 			throw exception("Invalid color values when constructing game object");
@@ -118,7 +120,8 @@ namespace gamelib
 			// 2D Sprite (no animation)
 			game_object = std::make_shared<sprite>(x, y, 1, 1, static_config::frames_per_row, static_config::frames_per_column, resource->key_frame_width, 1, is_visible, settings_admin);	
 		}
-		
+
+		game_object->load_settings(settings_admin);
 		game_object->set_graphic_resource(resource);
 		game_object->is_color_key_enabled = color_key_enabled;
 		game_object->is_visible = is_visible;		

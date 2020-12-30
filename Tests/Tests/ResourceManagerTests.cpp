@@ -37,7 +37,7 @@ class ResourceManager : public testing::Test {
   shared_ptr<sdl_graphics_manager> graphics_admin;
   shared_ptr<audio_manager> audio_admin;
 
-  void test_asset_against_baseline(shared_ptr<asset> asset)
+  void test_asset_against_baseline(shared_ptr<asset> asset) const
   {
 	EXPECT_EQ(asset->uid, exp_uid) << "uid is incorrect";
 	EXPECT_EQ(asset->scene, exp_scene) << "Scene was incorrect";
@@ -51,6 +51,8 @@ class ResourceManager : public testing::Test {
 TEST_F(ResourceManager, Initialize)
 {
 	EXPECT_TRUE(resource_admin->initialize(event_admin)) << "Expected resource manager initialization to succeed";
+	EXPECT_EQ(event_admin->get_subscriptions()[event_type::LevelChangedEventType].size(), 1) << "Expected to subscribe to LevelChangedEventType";
+	EXPECT_STREQ(event_admin->get_subscriptions()[event_type::LevelChangedEventType][0]->get_subscriber_name().c_str(), resource_admin->get_subscriber_name().c_str()) << "Unexpected subscriber";
 }
 
 TEST_F(ResourceManager, read_resources)
@@ -59,23 +61,23 @@ TEST_F(ResourceManager, read_resources)
 	EXPECT_EQ(resource_admin->get_resource_count(), 12) << "Expected 12 assets to be loaded";
 }
 
-TEST_F(ResourceManager, get_string)
+TEST_F(ResourceManager, get_resource_via_string)
 {
 	resource_admin->read_resources(resource_file_path);
 
-	// When fetching an asset
+	// When fetching an asset using string identifier
 	const auto asset = resource_admin->get(exp_name);
 
 	// Ensure the asset is populated correctly
 	test_asset_against_baseline(asset);
 }
-TEST_F(ResourceManager, get_int)
+TEST_F(ResourceManager, get_resource_via_int)
 {
 	resource_admin->read_resources(resource_file_path);
 
-	// When fetching an asset
+	// When fetching an asset using integer uid
 	const auto asset = resource_admin->get(exp_uid);
-
+	
 	// Ensure the asset is populated correctly
 	test_asset_against_baseline(asset);
 }

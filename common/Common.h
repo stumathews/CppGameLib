@@ -34,22 +34,7 @@ namespace gamelib
 			the_logger->log_message(message);
 		return ignore == true ? !ignore : is;
 	}
-
-	struct game_world_data 
-	{
-		int x = 0;
-		int y = 0;
-		int w = 0;
-		int h = 0;
-		
-		bool is_game_done = false;
-		bool is_network_game = false;
-		bool can_render = true;
-			
-		// List of game objects
-		std::vector<std::shared_ptr<game_object>> game_objects;
-	};
-
+	
 	inline void log_message(const std::string &message, const bool be_verbose = false, bool is_fatal = false, const std::shared_ptr<logger> the_logger = std::make_shared<logger>())
 	{
 		the_logger->log_message(message, be_verbose);

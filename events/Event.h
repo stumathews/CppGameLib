@@ -10,7 +10,8 @@ namespace gamelib
 		DoLogicUpdateEventType,
 		AddGameObjectToCurrentScene,
 		PlayerMovedEventType,
-		scene_loaded
+		scene_loaded,
+		SettingsReloaded
 	};
 
 	class event
@@ -21,7 +22,7 @@ namespace gamelib
 		bool processed = false;
 		event_type type;
 		virtual event_type get_type();
-		virtual std::string to_str() = 0;
+		virtual std::string to_str();
 		virtual ~event() = default;
 	};
 

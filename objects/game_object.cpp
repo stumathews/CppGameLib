@@ -113,21 +113,36 @@ namespace gamelib
 		}
 	}*/
 
-	game_object::game_object(bool is_visible, std::shared_ptr<settings_manager> settings_admin): event_subscriber(), supports_move_logic(true), is_visible(is_visible), is_color_key_enabled(false), x(0), y(0), is_traveling_left(false), red(0x00), blue(0xFF), green(0x00), settings_admin(std::move(settings_admin))
+	void game_object::load_settings(std::shared_ptr<settings_manager> settings_admin)
 	{
-		is_visible = true;
-		move_interval = settings_admin->get_int("global","move_interval");
+		move_interval = settings_admin->get_int("player","move_interval");
 	}
 
-	game_object::game_object(const int x, const int y, bool is_visible, std::shared_ptr<settings_manager> settings_admin): event_subscriber(), supports_move_logic(false), is_visible(is_visible), x(x), y(y), settings_admin(std::move(settings_admin))
+	void game_object::init_defaults(object_type type, bool is_visible, shared_ptr<settings_manager> settings, int x, int y)
 	{
-		red = 0x00;
-		blue = 0xFF;
-		green = 0x00;
-		is_traveling_left = false;
-		is_visible = true;
-		is_color_key_enabled = false;
-		is_visible = true;
+		 this->type = type;
+		 supports_move_logic = true;
+		 this->is_visible = is_visible;
+		 is_color_key_enabled = false;
+		 this->x = x;
+		 this->y = y;
+		 is_traveling_left = false;
+		 red = 0x00;
+		 blue = 0xFF;
+		 green = 0x00;
+		 settings_admin = settings;
+	}
+
+	game_object::game_object(bool is_visible, std::shared_ptr<settings_manager> settings_admin, object_type type): event_subscriber()
+	{
+		init_defaults(type, is_visible, settings_admin, 0, 0);
+	}
+
+	game_object::game_object(const int x, const int y, bool is_visible, std::shared_ptr<settings_manager> settings_admin, object_type type): event_subscriber(),
+	supports_move_logic(false)
+	{
+		init_defaults(type, is_visible, settings_admin, x, y);
+		load_settings(settings_admin);
 	}
 
 
@@ -174,7 +189,7 @@ namespace gamelib
 		const auto resource = get_graphic_asset();
 		if(resource != nullptr && resource->type == "graphic")
 		{
-			SDL_Rect draw_location = { x, y, 100,100 };
+			SDL_Rect draw_location = { x, y, 50,50 };
 			auto* const rect = get_graphic_asset()->is_animated
 				                   ?  &graphic->view_port
 				                   : nullptr;

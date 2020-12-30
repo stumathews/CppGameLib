@@ -13,27 +13,45 @@ namespace gamelib
 	{	
 		auto new_events(game_object::handle_event(event));  // Moves the square, if its set to be movable
 
-		if(event->type == event_type::PlayerMovedEventType)
+		switch(event->type)
 		{
-			const auto moved_event = std::static_pointer_cast<player_moved_event>(event);
-			const auto player = moved_event->get_player_component();
-			// determine where the player is
-			player_bounds_ = 	
-			{ 
-				player->x, 
-				player->y, 
-				player->w, 	
-				player->h 
-			};
-		}
+		case event_type::PlayerMovedEventType:
+			{
+				const auto moved_event = std::static_pointer_cast<player_moved_event>(event);
+				const auto player = moved_event->get_player_component();
 
-		if(event->type == event_type::PositionChangeEventType)
-		{
+				if(is_player_in_room = (player->x >= my_bounds_.x && player->x < my_bounds_.x + my_bounds_.w) && (
+					player->y >= my_bounds_.y && player->y < my_bounds_.y + my_bounds_.h))
+					player->room = number;
+
+				// determine where the player is
+				player_bounds_ = 	
+				{ 
+					player->x, 
+					player->y, 
+					player->w, 	
+					player->h 
+				};
+				
+				
+			}
+			break;
+		case event_type::PositionChangeEventType:			
 			rect_details_->init(get_x(), get_y(), get_w(), get_h());
 			my_bounds_ = { get_x(), get_y(), get_w(), get_h() };
+			break;
+		case event_type::SettingsReloaded:
+			load_settings(settings_admin);
+			break;
 		}
 		
 		return new_events;
+	}
+
+	void square::load_settings(std::shared_ptr<settings_manager> settings_admin)
+	{
+		game_object::load_settings(settings_admin);
+		fill = settings_admin->get_bool("room_fill", "enable");
 	}
 
 	void square::draw(SDL_Renderer* renderer)
@@ -68,9 +86,14 @@ namespace gamelib
 		if (have_left_wall) 
 			SDL_RenderDrawLine(renderer, dx,dy,ax,ay);
 
-		if(fill & SDL_HasIntersection(&my_bounds_, &player_bounds_))
+		if(fill && is_player_in_room)
 		{
-			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+			auto r = settings_admin->get_int("room_fill","r");
+			auto g = settings_admin->get_int("room_fill","g");
+			auto b = settings_admin->get_int("room_fill","b");
+			auto a = settings_admin->get_int("room_fill","a");
+			
+			SDL_SetRenderDrawColor(renderer, r, g, b, a);
 			SDL_RenderFillRect(renderer, &my_bounds_);
 		}
 
@@ -83,9 +106,10 @@ namespace gamelib
 		return rect_details_;
 	}
 
-	square::square(int x, int y, int rw, std::shared_ptr<resource_manager> resource_admin, bool fill,  bool supports_move_logic, bool is_visible, std::shared_ptr<settings_manager> settings_admin)
-	: game_object(x, y, is_visible, settings_admin), width(rw), fill(fill), player_bounds_({}), my_bounds_({x, y, rw, rw}), resource_admin(resource_admin), settings_admin(std::move(settings_admin))
+	square::square(int number, int x, int y, int rw, std::shared_ptr<resource_manager> resource_admin, bool fill,  bool supports_move_logic, bool is_visible, std::shared_ptr<settings_manager> settings_admin)
+	: game_object(x, y, is_visible, settings_admin, object_type::square), width(rw), fill(fill), player_bounds_({}), my_bounds_({x, y, rw, rw}), resource_admin(resource_admin), settings_admin(settings_admin)
 {
+		this->number = number;
 	  this->rect_details_ = make_shared<rect_details>(x, y, rw, rw);  
 	  this->supports_move_logic = supports_move_logic;   
 	  walls[0] = true;
@@ -116,7 +140,12 @@ namespace gamelib
 
 	bool square::is_walled(int wall)
 	{
-		return walls[wall - 1];
+		return walls[wall-1];
+	}
+
+	bool square::is_walled_0_based(int wall)
+	{
+		return walls[wall];
 	}
 
 	void square::update()

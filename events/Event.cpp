@@ -13,6 +13,11 @@ namespace gamelib
 		return type;
 	}
 
+	std::string event::to_str()
+	{
+		return "generic event";
+	}
+
 	std::string operator+(const std::string& str, const event_type type)
 	{
 		return str + std::to_string(as_integer(type));

@@ -1,5 +1,6 @@
 #pragma once
 #include "Component.h"
+#include "scene/Square.h"
 
 namespace gamelib
 {
@@ -10,5 +11,6 @@ namespace gamelib
 		{
 		}
 		int x, y, w, h;
+		int room;
 	};
 }

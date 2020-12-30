@@ -9,6 +9,7 @@
 #include <functional>
 #include "audio/AudioManager.h"
 #include "common/Common.h"
+#include "common/constants.h"
 #include "events/AddGameObjectToCurrentSceneEvent.h"
 #include "events/DoLogicUpdateEvent.h"
 #include "events/event_manager.h"
@@ -17,7 +18,6 @@
 #include "graphic/sdl_graphics_manager.h"
 #include "objects/Player.h"
 #include "resource/resource_manager.h"
-#include "scene/LevelGenerator.h"
 #include "scene/scene_manager.h"
 
 namespace gamelib
@@ -72,7 +72,7 @@ namespace gamelib
 					case SDLK_ESCAPE:
 						run_and_log("Player pressed quit!", settings_admin->get_bool("global", "verbose"), [&]()
 						{
-							game_world->is_game_done = 1;
+							world->is_game_done = 1;
 							return true;
 						}, true, true, settings_admin);
 						break;
@@ -135,6 +135,7 @@ namespace gamelib
 						break;
 					case SDLK_r:
 						settings_admin->reload();
+						event_admin->raise_event(make_shared<event>(event_type::SettingsReloaded), this);
 						log_message("Settings reloaded", settings_admin->get_bool("global", "verbose"), false);
 						break;
 					default:
@@ -146,7 +147,7 @@ namespace gamelib
 			}
 			else
 			{
-				game_world->is_game_done = true;
+				world->is_game_done = true;
 			}
 		}
 	}
@@ -239,18 +240,16 @@ namespace gamelib
 	game_structure::game_structure(std::shared_ptr<event_manager> event_admin,
 		std::shared_ptr<resource_manager> resource_admin,
 		std::shared_ptr<settings_manager> config,
-		std::shared_ptr<game_world_data> game_world,
+		std::shared_ptr<game_world_data> world,
 		std::shared_ptr<scene_manager> scene_admin,
 		std::shared_ptr<sdl_graphics_manager> graphics_admin)
 	: event_admin(event_admin),
 	resource_admin(resource_admin),
 	settings_admin(config),
-	game_world(game_world),
+	world(world),
 	scene_admin(scene_admin),
 	graphics_admin(graphics_admin)
 	{
-		
-		init_game_world_data();
 	}
 
 	game_structure::~game_structure()
@@ -258,24 +257,7 @@ namespace gamelib
 		unload();
 	}
 
-	void game_structure::init_game_world_data() const
-	{
-		game_world->is_game_done = false;
-		game_world->is_network_game = false;
-		game_world->can_render = true;
-	}
-
-	shared_ptr<player> game_structure::create_player() const
-	{
-		return make_shared<player>(player(settings_admin->get_int("player","player_init_pos_x"), settings_admin->get_int("player", "player_init_pos_y"), settings_admin->get_int("global", "square_width") / 2, resource_admin, settings_admin));
-	}
-
-	void game_structure::setup_player() const
-	{
-		const auto the_player = create_player();	
-		the_player->subscribe_to_event(event_type::PositionChangeEventType, event_admin);	
-		the_player->raise_event(std::make_shared<add_game_object_to_current_scene_event>(the_player, 100), event_admin);
-	}
+	
 
 	/**
 	 Initializes resource manager and SDL
@@ -327,7 +309,7 @@ namespace gamelib
 		const auto max_loops = settings_admin->get_int("global", "max_loops");
 		const auto tick_time_ms = settings_admin->get_int("global", "tick_time_ms");
 		
-		while (!game_world->is_game_done) // main game loop
+		while (!world->is_game_done) // main game loop
 		{
 			const auto new_time =  get_tick_now();
 			auto frame_ticks = 0;  // Number of ticks in the update call	
@@ -346,9 +328,9 @@ namespace gamelib
 
 			spare_time(frame_ticks); // handle player input, general housekeeping (Event Manager processing)
 
-			if (game_world->is_network_game || ticks_since <= tick_time_ms)
+			if (world->is_network_game || ticks_since <= tick_time_ms)
 			{
-				if (game_world->can_render)
+				if (world->can_render)
 				{
 					const auto percent_outside_frame = static_cast<float>(ticks_since / tick_time_ms) * 100; // NOLINT(bugprone-integer-division)				
 					draw(percent_outside_frame);
@@ -365,20 +347,7 @@ namespace gamelib
 	
 	bool game_structure::load_content() const
 	{
-		resource_admin->read_resources();
-			
-		// Generate the level's rooms
-		for (const auto& room: level_generator::generate_level(resource_admin, settings_admin))
-		{	
-			// room's will want to know when the player moved for collision detection etc
-			room->subscribe_to_event(event_type::PlayerMovedEventType, event_admin);
-			
-			// Add each room to the scene
-			room->raise_event(std::make_shared<add_game_object_to_current_scene_event>(std::dynamic_pointer_cast<square>(room)), event_admin);	
-		}
-
-		// Create the player
-		setup_player();
+		
 
 		return true;	
 	}

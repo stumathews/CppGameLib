@@ -1,6 +1,6 @@
 #pragma once
 #include <SDL.h>
-#include "rect_details.h"
+#include "abcd_rectangle.h"
 #include "objects/game_object.h"
 
 namespace gamelib
@@ -13,19 +13,51 @@ namespace gamelib
 		 std::shared_ptr<resource_manager> resource_admin;
 		
 	    
-		int number;
-		 bool is_player_in_room;
+		
+		 bool is_player_in_room;	
+		SDL_Rect player_bounds;
 	 protected:
+		int number;
 		int width;
 		bool walls[4]{};
-		std::shared_ptr<rect_details> rect_details_;
-	    [[nodiscard]] std::shared_ptr<rect_details> get_rect_details() const;
+		std::shared_ptr<abcd_rectangle> abcd;
+	    [[nodiscard]] std::shared_ptr<abcd_rectangle> get_abcd() const;
 		int fill = true;
-		SDL_Rect player_bounds_;
-		SDL_Rect my_bounds_;
+		SDL_Rect bounds;
+		int top_room_index, right_room_index, bottom_room_index, left_room_index = -1;
 	public: 
 		square(int number, int x, int y, int rw, std::shared_ptr<resource_manager> resource_admin,  bool fill = false, bool supports_move_logic = true, bool is_visible = true, std::shared_ptr<settings_manager> settings_admin = std::make_shared<settings_manager>());
 
+		object_type get_type() override { return object_type::square; }
+		void set_adjacent_room_index(int top_index, int right_index, int bottom_index, int left_index)
+		{
+			this->top_room_index = top_index;
+			this->right_room_index = right_index;
+			this->bottom_room_index = bottom_index;
+			this->left_room_index = left_index;
+		}
+
+		int get_adjacent_index_for_wall(int index) const
+		{
+			switch(index)
+			{
+			case 0:
+				return top_room_index;
+				break;
+			case 1:
+				return right_room_index;
+				break;
+			case 2:
+				return bottom_room_index;
+				break;
+			case 3:
+				return left_room_index;
+				break;
+			default:
+				return -1;
+			}
+		}
+		
 	    int get_x() const;
 	    int get_y() const;
 	    int get_w() const;

@@ -196,7 +196,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource\resource_manager.h" />
     <ClInclude Include="scene\Layer.h" />
-    <ClInclude Include="scene\rect_details.h" />
+    <ClInclude Include="scene\abcd_rectangle.h" />
     <ClInclude Include="scene\SceneItem.h" />
     <ClInclude Include="scene\scene_manager.h" />
     <ClInclude Include="scene\Square.h" />
@@ -237,7 +237,7 @@
     <ClCompile Include="objects\Sprite.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="resource\resource_manager.cpp" />
-    <ClCompile Include="scene\rect_details.cpp" />
+    <ClCompile Include="scene\abcd_rectangle.cpp" />
     <ClCompile Include="scene\SceneItem.cpp" />
     <ClCompile Include="scene\scene_manager.cpp" />
     <ClCompile Include="scene\Square.cpp" />

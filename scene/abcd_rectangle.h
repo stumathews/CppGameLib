@@ -4,11 +4,12 @@
 
 namespace gamelib
 {
-	class rect_details
+	class abcd_rectangle
 	{
 	public:
-		rect_details(const SDL_Rect rect) : rect_details(rect.x, rect.y, rect.w, rect.h){}
-		rect_details(int x, int y, int w, int h) : x(x), y(y),w(w),h(h){}
+		abcd_rectangle(const SDL_Rect rect) : abcd_rectangle(rect.x, rect.y, rect.w, rect.h) {}
+		abcd_rectangle(int x, int y, int w, int h) : x(x), y(y), w(w), h(h) {}
+		
 		int get_ax() const;
 		int get_ay() const;
 		int get_bx() const;
@@ -23,7 +24,7 @@ namespace gamelib
 		void set_h(int h);
 		void set_w(int w);
 
-		void init(int x, int y, int w, int h);
+		void reinitialize(int x, int y, int w, int h);
 
 		coordinate<int> get_a1(int intervalOfWOrH) const;
 

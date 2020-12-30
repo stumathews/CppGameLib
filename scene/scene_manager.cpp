@@ -37,6 +37,7 @@ namespace gamelib
 	}
 
 
+
 	scene_manager::scene_manager(shared_ptr<event_manager> ea, shared_ptr<settings_manager> c, shared_ptr<resource_manager> resource_admin,  std::string scene_folder)
 	: event_admin(ea), config(c), resource_admin(resource_admin), scene_folder(scene_folder)
 	{

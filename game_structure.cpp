@@ -138,6 +138,10 @@ namespace gamelib
 						event_admin->raise_event(make_shared<event>(event_type::SettingsReloaded), this);
 						log_message("Settings reloaded", settings_admin->get_bool("global", "verbose"), false);
 						break;
+					case SDLK_g:						
+						event_admin->raise_event(make_shared<event>(event_type::GenerateNewLevel), this);
+						log_message("Generating new level", settings_admin->get_bool("global", "verbose"), false);
+						break;
 					default:
 						std::cout << "Unknown control key" << std::endl;
 						log_message("Unknown control key", settings_admin->get_bool("global", "verbose"));
@@ -345,12 +349,5 @@ namespace gamelib
 		return true;
 	}
 	
-	bool game_structure::load_content() const
-	{
-		
-
-		return true;	
-	}
-
 }
 

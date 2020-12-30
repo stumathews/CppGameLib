@@ -14,7 +14,7 @@ using namespace std;
 namespace gamelib
 {
 
-	void game_object::change_object_position(const std::shared_ptr<event> the_event)
+	void game_object::change_internal_position(const std::shared_ptr<event> the_event)
 	{
 		const auto event = std::dynamic_pointer_cast<position_change_event>(the_event);
 		if(event->direction == Direction::Up && supports_move_logic)					
@@ -32,16 +32,7 @@ namespace gamelib
 
 	vector<shared_ptr<event>> game_object::handle_event(const std::shared_ptr<event> the_event)
 	{
-		switch(the_event->type)  // NOLINT(clang-diagnostic-switch-enum)
-		{
-			case event_type::PositionChangeEventType:
-				change_object_position(the_event);	
-				break;
-			case event_type::DoLogicUpdateEventType:
-				update();
-				break;
-			default: break ;  // NOLINT(clang-diagnostic-covered-switch-default)
-		}
+		// We dont handle any events
 		return vector<shared_ptr<event>>();
 	}
 
@@ -118,9 +109,8 @@ namespace gamelib
 		move_interval = settings_admin->get_int("player","move_interval");
 	}
 
-	void game_object::init_defaults(object_type type, bool is_visible, shared_ptr<settings_manager> settings, int x, int y)
+	void game_object::init_defaults( bool is_visible, shared_ptr<settings_manager> settings, int x, int y)
 	{
-		 this->type = type;
 		 supports_move_logic = true;
 		 this->is_visible = is_visible;
 		 is_color_key_enabled = false;
@@ -133,15 +123,15 @@ namespace gamelib
 		 settings_admin = settings;
 	}
 
-	game_object::game_object(bool is_visible, std::shared_ptr<settings_manager> settings_admin, object_type type): event_subscriber()
+	game_object::game_object(bool is_visible, std::shared_ptr<settings_manager> settings_admin): event_subscriber()
 	{
-		init_defaults(type, is_visible, settings_admin, 0, 0);
+		init_defaults(is_visible, settings_admin, 0, 0);
 	}
 
-	game_object::game_object(const int x, const int y, bool is_visible, std::shared_ptr<settings_manager> settings_admin, object_type type): event_subscriber(),
+	game_object::game_object(const int x, const int y, bool is_visible, std::shared_ptr<settings_manager> settings_admin): event_subscriber(),
 	supports_move_logic(false)
 	{
-		init_defaults(type, is_visible, settings_admin, x, y);
+		init_defaults(is_visible, settings_admin, x, y);
 		load_settings(settings_admin);
 	}
 
@@ -156,11 +146,6 @@ namespace gamelib
 	void game_object::add_component(const shared_ptr<component>& component)
 	{
 		components[component->get_name()] = component;
-	}
-
-	bool game_object::is_player()
-	{
-		return find_component(constants::playerComponentName) != nullptr;
 	}
 
 	shared_ptr<component> game_object::find_component(string name)

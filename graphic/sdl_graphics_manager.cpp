@@ -17,7 +17,7 @@ namespace gamelib
 
 	sdl_graphics_manager::sdl_graphics_manager(shared_ptr<event_manager> event_admin, std::shared_ptr<logger> the_logger)
 	: event_subscriber(), event_admin(event_admin), the_logger(std::move(the_logger))
-{
+	{
 		event_admin->subscribe_to_event(event_type::PlayerMovedEventType, this);
 	}
 
@@ -184,18 +184,19 @@ namespace gamelib
 	void sdl_graphics_manager::clear_draw_present(std::function<void(SDL_Renderer* renderer)> &render_routine) const
 	{
 		// backup current render color
-		Uint8 r, g, b, a;
-		SDL_GetRenderDrawColor(window_renderer, &r, &g, &b, &a);
+		SDL_Color render_color;
+		SDL_GetRenderDrawColor(window_renderer, &render_color.r, &render_color.g, &render_color.b, &render_color.a);
 		
 		SDL_RenderClear(window_renderer);
 			render_routine(window_renderer);
-			SDL_SetRenderDrawColor(window_renderer, r, g, b, a); // nb: restore whatever the render routine set as the draw color to
+		SDL_SetRenderDrawColor(window_renderer, render_color.r, render_color.g, render_color.b, render_color.a); // nb: restore whatever the render routine set as the draw color to
 		SDL_RenderPresent(window_renderer);
 	}
 
 	// Draws all the actors in the scene
 	void sdl_graphics_manager::draw_current_scene(std::shared_ptr<scene_manager> scene_admin) const
 	{
+		// local-func
 		auto render_all_objects = static_cast<render_func>([&](SDL_Renderer*)
 		{
 			const auto &current_scene = scene_admin;

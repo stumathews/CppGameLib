@@ -7,68 +7,103 @@
 #include "common/Common.h"
 #include "common/constants.h"
 #include "events/player_moved_event.h"
+#include "events/PositionChangeEvent.h"
 using namespace std;
 
 namespace gamelib
 {
-	player::player(int x, int y, int w,  std::shared_ptr<resource_manager> resource_admin, std::shared_ptr<settings_manager> settings_admin): square(0, x, y, w, resource_admin, true, true, true, settings_admin)
-	{
-		
-		const auto player = std::make_shared<player_component>(constants::playerComponentName, x, y, w, w);
-		set_tag(constants::playerTag);
-		add_component(player);		
+	player::player(int x, int y, int w,  std::shared_ptr<resource_manager> resource_admin, std::shared_ptr<settings_manager> settings): square(0, x, y, w, resource_admin, true, true, true, settings)
+	{	
 	}
 
-	void player::load_settings(std::shared_ptr<settings_manager> settings_admin)
+	void player::load_settings(std::shared_ptr<settings_manager> settings)
 	{
-		game_object::load_settings(settings_admin);
-		width = settings_admin->get_int("player","box_width");
-		draw_box = settings_admin->get_bool("player","draw_box");
+		// Call base
+		square::load_settings(settings);
+		x = settings->get_int("player","x");
+		y = settings->get_int("player","y");
+		 
+		width = settings->get_int("player","box_width");
+		draw_box = settings->get_bool("player","draw_box");
 	}
 	
 	vector<shared_ptr<event>> player::handle_event(const std::shared_ptr<event> the_event)
-	{	
-		// Process GameObject events
-		auto created_events(game_object::handle_event(the_event));
+	{
+		vector<shared_ptr<event>> created_events;
 
-		// Process Square events
+		// Call base class
 		for(auto &e : square::handle_event(the_event)) 
 			created_events.push_back(e);
 		
 		// Process Player events
 		if(event_type::PositionChangeEventType == the_event->type)
 		{
-			auto player = static_pointer_cast<player_component>(find_component(constants::playerComponentName));
+						
+			const auto position_changed_event = dynamic_pointer_cast<position_change_event>(the_event);
+			const auto move_direction = position_changed_event->direction;
+			
+			auto component = make_shared<player_component>(constants::playerComponentName, shared_from_this());
+			
 			auto game_world = static_pointer_cast<game_world_component>(find_component(constants::game_world))->get_data();
-			auto room = dynamic_pointer_cast<square>(game_world->game_objects[player->room < 0 ? 0 : player->room]);
-			const auto is_moving_right = player_bounds_.x <  get_x();
-			const auto is_moving_down = player_bounds_.y < get_y();
-			
-			const auto can_move_right = is_moving_right && !room->is_walled_0_based(1);
-			const auto can_move_left = !is_moving_right && !room->is_walled_0_based(3);
-			const auto can_move_down = is_moving_down && !room->is_walled_0_based(2);
-			const auto can_move_up = !is_moving_down && !room->is_walled_0_based(0);
-			const auto valid_move = can_move_right || can_move_left || can_move_down || can_move_up;
-			if(!valid_move){
-				log_message("Invalid move", settings_admin->get_bool("player", "verbose"));
-			}
-			
-			player_bounds_.x = player->x = get_x();
-			player_bounds_.y = player->y = get_y();
-			player_bounds_.w = player->w = get_w();
-			player_bounds_.h = player->h = get_h();
 
+			auto room = dynamic_pointer_cast<square>(game_world->game_objects[within_room_index < 0 ? 0 : within_room_index]);
+			auto above_room = dynamic_pointer_cast<square>(game_world->game_objects[room->get_adjacent_index_for_wall(0) < 0 ? 0 : room->get_adjacent_index_for_wall(0)]);
+			auto right_room = dynamic_pointer_cast<square>(game_world->game_objects[room->get_adjacent_index_for_wall(1) < 0 ? 0 : room->get_adjacent_index_for_wall(1)]);
+			auto bottom_room = dynamic_pointer_cast<square>(game_world->game_objects[room->get_adjacent_index_for_wall(2) < 0 ? 0 : room->get_adjacent_index_for_wall(2)]);
+			auto left_room = dynamic_pointer_cast<square>(game_world->game_objects[room->get_adjacent_index_for_wall(3) < 0 ? 0 : room->get_adjacent_index_for_wall(3)]);
 			
-			created_events.push_back(make_shared<player_moved_event>(player));
+			const auto is_moving_right = move_direction == Direction::Right;
+			const auto is_moving_down = move_direction == Direction::Down;
+			const auto is_moving_up = move_direction == Direction::Up;
+			const auto is_moving_left = move_direction == Direction::Left;
+			
+			const auto can_move_right = is_moving_right && !room->is_walled_0_based(1) && !right_room->is_walled_0_based(3);
+			const auto can_move_left = is_moving_left && !room->is_walled_0_based(3) && !left_room->is_walled_0_based(1);
+			const auto can_move_down = is_moving_down && !room->is_walled_0_based(2) && !bottom_room->is_walled_0_based(0);
+			const auto can_move_up = is_moving_up && !room->is_walled_0_based(0 )&& !above_room->is_walled_0_based(2);
+			const auto is_valid_move = move_direction == Direction::Down && can_move_down || move_direction == Direction::Left && can_move_left || move_direction == Direction::Right && can_move_right || move_direction == Direction::Up && can_move_up;
+			
+			if(!is_valid_move){
+				log_message("Invalid move", settings_admin->get_bool("player", "verbose"));
+				return created_events;
+			}
+
+			if(is_moving_down)
+				y = bottom_room->get_y() + 1;
+			
+			if(is_moving_up)
+				y = above_room->get_y() + 1;
+			
+			if(is_moving_right)
+				x = right_room->get_x() + 1;
+			
+			if(is_moving_left)
+				x = left_room->get_x() + 1;
+			
+			// Update our internal co-ordinates
+			change_internal_position(the_event);
+			
+			// Now that the internal position of the square has changed (see game_object), update position structures
+			abcd->reinitialize(get_x(), get_y(), get_w(), get_h());
+			bounds = { get_x(), get_y(), get_w(), get_h() };
+									
+			created_events.push_back(make_shared<player_moved_event>(component));
 		}
+
+		if(event_type::DoLogicUpdateEventType  == the_event->type)
+		{
+				update();
+		}
+		
 		return created_events;
 	}
 
 	void player::draw(SDL_Renderer* renderer)
 	{
 	  // Let the player draw itself
-		if(draw_box)
-			SDL_RenderDrawRect(renderer, &player_bounds_);
+		if(draw_box){			
+			SDL_RenderDrawRect(renderer, &bounds);
+		}
 	}
 
 	string player::get_identifier()

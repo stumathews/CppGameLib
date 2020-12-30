@@ -22,7 +22,6 @@ namespace gamelib
 		game_structure(std::shared_ptr<event_manager> event_admin, std::shared_ptr<resource_manager> resource_admin, std::shared_ptr<settings_manager> config, std::shared_ptr<game_world_data> world, std::shared_ptr<scene_manager> scene_admin, std::shared_ptr<sdl_graphics_manager> graphics_admin);
 		virtual ~game_structure() override;
 		bool initialize_sdl(int screen_width, int screen_height);	
-		void setup_player(std::shared_ptr<vector<shared_ptr<square>>>) const;
 		bool initialize();
 		bool game_loop();
 		void update();
@@ -30,7 +29,6 @@ namespace gamelib
 		void player_update();
 		void get_input();		
 		void draw(float);
-		[[nodiscard]] bool load_content() const;
 		static long get_tick_now();
 		void spare_time(long) const;
 		bool unload();	 // releases resources

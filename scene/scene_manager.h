@@ -22,7 +22,7 @@ namespace gamelib
 		scene_manager(scene_manager &&) = default;
 	    scene_manager& operator=(scene_manager const&)  = delete;
 		scene_manager& operator=(scene_manager &&) = default;
-		~scene_manager() = default;
+		virtual ~scene_manager() = default;
 
 		bool initialize();	
 		void start_scene(int scene_id);

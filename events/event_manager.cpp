@@ -14,7 +14,7 @@ namespace gamelib
 		this->config = config;
 	}
 
-	size_t event_manager::count_ready()
+	size_t event_manager::count_ready() const
 	{
 		return primary_event_queue_.size() + secondary_event_queue_.size();
 	}

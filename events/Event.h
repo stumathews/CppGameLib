@@ -11,7 +11,8 @@ namespace gamelib
 		AddGameObjectToCurrentScene,
 		PlayerMovedEventType,
 		scene_loaded,
-		SettingsReloaded
+		SettingsReloaded,
+		GenerateNewLevel,
 	};
 
 	class event

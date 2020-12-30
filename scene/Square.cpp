@@ -8,44 +8,37 @@ using namespace std;
 namespace gamelib
 {
 	square::~square() = default;
-
+		
 	vector<shared_ptr<event>> square::handle_event(const std::shared_ptr<event> event)
 	{	
-		auto new_events(game_object::handle_event(event));  // Moves the square, if its set to be movable
+		auto any_generated_events(game_object::handle_event(event));  // Moves the square, if its set to be movable
 
-		switch(event->type)
+		if(event->type == event_type::PlayerMovedEventType)
+		{			
+			const auto moved_event = std::static_pointer_cast<player_moved_event>(event);				
+			const auto player_component = moved_event->get_player_component();
+			const auto player = player_component->the_player;
+
+			if(get_type() == object_type::player)
+				return any_generated_events;
+			
+			// Determine if the player's coordinates are within room
+			is_player_in_room = (player->x >= bounds.x && player->x < bounds.x + bounds.w) && (player->y >= bounds.y && player->y < bounds.y + bounds.h);
+			
+			// Update the player's knowledge of which room its in
+			if(is_player_in_room)
+				player->within_room_index = number;
+
+			// Update square's knowledge of player's bounds for layer use
+			player_bounds = { player->get_x(), player->get_y(), player->get_w(), 	player->get_h()  };
+		}
+
+		if( event->type == event_type::SettingsReloaded)
 		{
-		case event_type::PlayerMovedEventType:
-			{
-				const auto moved_event = std::static_pointer_cast<player_moved_event>(event);
-				const auto player = moved_event->get_player_component();
-
-				if(is_player_in_room = (player->x >= my_bounds_.x && player->x < my_bounds_.x + my_bounds_.w) && (
-					player->y >= my_bounds_.y && player->y < my_bounds_.y + my_bounds_.h))
-					player->room = number;
-
-				// determine where the player is
-				player_bounds_ = 	
-				{ 
-					player->x, 
-					player->y, 
-					player->w, 	
-					player->h 
-				};
-				
-				
-			}
-			break;
-		case event_type::PositionChangeEventType:			
-			rect_details_->init(get_x(), get_y(), get_w(), get_h());
-			my_bounds_ = { get_x(), get_y(), get_w(), get_h() };
-			break;
-		case event_type::SettingsReloaded:
-			load_settings(settings_admin);
-			break;
+			load_settings(settings_admin);			
 		}
 		
-		return new_events;
+		return any_generated_events;
 	}
 
 	void square::load_settings(std::shared_ptr<settings_manager> settings_admin)
@@ -59,7 +52,7 @@ namespace gamelib
 		// black
 		SDL_SetRenderDrawColor(renderer, 0, 0,0,0);
 		
-		const auto rect = get_rect_details();
+		const auto rect = get_abcd();
 		const auto ax = rect->get_ax();
 		const auto ay = rect->get_ay();
 		const auto bx = rect->get_bx();
@@ -94,23 +87,23 @@ namespace gamelib
 			auto a = settings_admin->get_int("room_fill","a");
 			
 			SDL_SetRenderDrawColor(renderer, r, g, b, a);
-			SDL_RenderFillRect(renderer, &my_bounds_);
+			SDL_RenderFillRect(renderer, &bounds);
 		}
 
 		if(settings_admin->get_bool("global", "print_debugging_text"))
-		  RectDebugging::printInRect(renderer, get_tag().c_str(), &my_bounds_, resource_admin); 
+		  RectDebugging::printInRect(renderer, get_tag().c_str(), &bounds, resource_admin); 
 	}
 
-	shared_ptr<rect_details> square::get_rect_details() const
+	shared_ptr<abcd_rectangle> square::get_abcd() const
 	{
-		return rect_details_;
+		return abcd;
 	}
 
 	square::square(int number, int x, int y, int rw, std::shared_ptr<resource_manager> resource_admin, bool fill,  bool supports_move_logic, bool is_visible, std::shared_ptr<settings_manager> settings_admin)
-	: game_object(x, y, is_visible, settings_admin, object_type::square), width(rw), fill(fill), player_bounds_({}), my_bounds_({x, y, rw, rw}), resource_admin(resource_admin), settings_admin(settings_admin)
+	: game_object(x, y, is_visible, settings_admin), width(rw), fill(fill), player_bounds({}), bounds({x, y, rw, rw}), resource_admin(resource_admin), settings_admin(settings_admin)
 {
-		this->number = number;
-	  this->rect_details_ = make_shared<rect_details>(x, y, rw, rw);  
+	  this->number = number;
+	  this->abcd = make_shared<abcd_rectangle>(x, y, rw, rw);  
 	  this->supports_move_logic = supports_move_logic;   
 	  walls[0] = true;
 	  walls[1] = true;

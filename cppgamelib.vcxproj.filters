@@ -42,9 +42,6 @@
     <ClInclude Include="scene\Layer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scene\rect_details.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="scene\scene_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -156,6 +153,9 @@
     <ClInclude Include="objects\game_world_component.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="scene\abcd_rectangle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -174,9 +174,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="tinyxml2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="scene\rect_details.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="scene\scene_manager.cpp">
@@ -270,6 +267,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="objects\game_world_component.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\abcd_rectangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

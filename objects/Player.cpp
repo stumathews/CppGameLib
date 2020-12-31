@@ -8,6 +8,8 @@
 #include "common/constants.h"
 #include "events/player_moved_event.h"
 #include "events/PositionChangeEvent.h"
+#include <functional>
+
 using namespace std;
 
 namespace gamelib
@@ -24,11 +26,27 @@ namespace gamelib
 		square::load_settings(settings);
 		x = settings->get_int("player","x");
 		y = settings->get_int("player","y");
-		 
-		width = settings->get_int("player","box_width");
+		
 		draw_box = settings->get_bool("player","draw_box");
 	}
-	
+
+	void player::center_player_in_room(shared_ptr<square> target_room)
+	{
+		const std::function<coordinate<int>(square, player)> center_player = [](square room, player p)
+		{
+			auto const room_x_mid = room.get_x() + (room.get_w() / 2);
+			auto const room_y_mid = room.get_y() + (room.get_h() / 2);
+			auto const x = room_x_mid - p.get_w() /2;
+			auto const y = room_y_mid - p.get_h() /2;
+			
+			return coordinate<int>(x, y);
+		};
+		
+		const auto coords = center_player(*target_room, *this);
+		y = coords.get_y();
+		x = coords.get_x();
+	}
+
 	vector<shared_ptr<event>> player::handle_event(const std::shared_ptr<event> the_event)
 	{
 		vector<shared_ptr<event>> created_events;
@@ -82,20 +100,20 @@ namespace gamelib
 				return created_events;
 			}
 
-			if(is_moving_down)
-				y = bottom_room->get_y() + 1;
 			
-			if(is_moving_up)
-				y = above_room->get_y() + 1;
+
+			if(is_moving_down) 
+				center_player_in_room(bottom_room);			
+			
+			if(is_moving_up) 
+				center_player_in_room(above_room);			
+			
 			
 			if(is_moving_right)
-				x = right_room->get_x() + 1;
+				center_player_in_room(right_room);
 			
 			if(is_moving_left)
-				x = left_room->get_x() + 1;
-			
-			// Update our internal co-ordinates
-			change_internal_position(the_event);
+				center_player_in_room(left_room);
 			
 			// Now that the internal position of the square has changed (see game_object), update position structures
 			abcd->reinitialize(get_x(), get_y(), get_w(), get_h());
@@ -114,10 +132,9 @@ namespace gamelib
 
 	void player::draw(SDL_Renderer* renderer)
 	{
-	  // Let the player draw itself
-		if(draw_box){			
-			SDL_RenderDrawRect(renderer, &bounds);
-		}
+		square::draw(renderer);
+		
+		fill_me(renderer);
 	}
 
 	string player::get_identifier()

@@ -18,15 +18,10 @@ namespace gamelib
 	sdl_graphics_manager::sdl_graphics_manager(shared_ptr<event_manager> event_admin, std::shared_ptr<logger> the_logger)
 	: event_subscriber(), event_admin(event_admin), the_logger(std::move(the_logger))
 	{
-		event_admin->subscribe_to_event(event_type::PlayerMovedEventType, this);
 	}
 
 	vector<shared_ptr<event>> sdl_graphics_manager::handle_event(const std::shared_ptr<event> the_event)
 	{
-		if(the_event->type == event_type::PlayerMovedEventType)
-		{
-			//draw_current_scene();		
-		}
 		return vector<shared_ptr<event>>();
 	}
 

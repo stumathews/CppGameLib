@@ -43,8 +43,19 @@ namespace gamelib
 
 	void square::load_settings(std::shared_ptr<settings_manager> settings_admin)
 	{
-		game_object::load_settings(settings_admin);
+		game_object::load_settings(settings_admin);		
 		fill = settings_admin->get_bool("room_fill", "enable");
+	}
+
+	void square::fill_me(SDL_Renderer* renderer) const
+	{
+		auto r = settings_admin->get_int("room_fill","r");
+		auto g = settings_admin->get_int("room_fill","g");
+		auto b = settings_admin->get_int("room_fill","b");
+		auto a = settings_admin->get_int("room_fill","a");
+			
+		SDL_SetRenderDrawColor(renderer, r, g, b, a);
+		SDL_RenderFillRect(renderer, &bounds);
 	}
 
 	void square::draw(SDL_Renderer* renderer)
@@ -81,17 +92,11 @@ namespace gamelib
 
 		if(fill && is_player_in_room)
 		{
-			auto r = settings_admin->get_int("room_fill","r");
-			auto g = settings_admin->get_int("room_fill","g");
-			auto b = settings_admin->get_int("room_fill","b");
-			auto a = settings_admin->get_int("room_fill","a");
-			
-			SDL_SetRenderDrawColor(renderer, r, g, b, a);
-			SDL_RenderFillRect(renderer, &bounds);
+			gamelib::square::fill_me(renderer);
 		}
 
 		if(settings_admin->get_bool("global", "print_debugging_text"))
-		  RectDebugging::printInRect(renderer, get_tag().c_str(), &bounds, resource_admin); 
+		  RectDebugging::printInRect(renderer, get_tag(), &bounds, resource_admin); 
 	}
 
 	shared_ptr<abcd_rectangle> square::get_abcd() const

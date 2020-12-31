@@ -14,9 +14,9 @@ namespace gamelib
 		std::shared_ptr<event_manager> event_admin;
 	public:
 		int within_room_index = 0;
-		void set_room_within(size_t index){ within_room_index = index; }
 		player(int x, int y, int w, int h, std::shared_ptr<resource_manager> resource_admin, std::shared_ptr<settings_manager> setting, std::shared_ptr<event_manager> event_admin);
 		void load_settings(std::shared_ptr<settings_manager> settings) override;
+		void center_player_in_room(std::shared_ptr<square> target_room);
 		std::vector<std::shared_ptr<event>> handle_event(std::shared_ptr<event> event) override;
 		void draw(SDL_Renderer* renderer) override;
 		std::string get_identifier() override;

@@ -9,12 +9,9 @@ namespace gamelib
 
 	class square : public game_object 
 	{
-	private:
-		 std::shared_ptr<resource_manager> resource_admin;
-		
-	    
-		
-		 bool is_player_in_room;	
+		std::shared_ptr<resource_manager> resource_admin;		
+		bool is_player_in_room = false;
+		bool fill = false;
 		SDL_Rect player_bounds;
 	 protected:
 		int number;
@@ -22,9 +19,9 @@ namespace gamelib
 		bool walls[4]{};
 		std::shared_ptr<abcd_rectangle> abcd;
 	    [[nodiscard]] std::shared_ptr<abcd_rectangle> get_abcd() const;
-		int fill = true;
 		SDL_Rect bounds;
 		int top_room_index, right_room_index, bottom_room_index, left_room_index = -1;
+		void fill_me(SDL_Renderer* renderer) const;
 	public: 
 		square(int number, int x, int y, int rw, int rh, std::shared_ptr<resource_manager> resource_admin,  bool fill = false, bool supports_move_logic = true, bool is_visible = true, std::shared_ptr<settings_manager> settings_admin = std::make_shared<settings_manager>());
 
@@ -70,7 +67,8 @@ namespace gamelib
 
 		std::vector<std::shared_ptr<event>> handle_event(std::shared_ptr<event> event) override;
 		void load_settings(std::shared_ptr<settings_manager> settings_admin) override;
-	    void draw(SDL_Renderer* renderer) override;
+		 
+		 void draw(SDL_Renderer* renderer) override;
 	    virtual ~square() override;
 	    void update() override;
 

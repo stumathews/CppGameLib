@@ -23,11 +23,15 @@ namespace gamelib
 
 		std::shared_ptr<settings_manager> config;
 		std::shared_ptr<logger> the_logger;
+		bool resetting = false;
 
 	public:
 		event_manager(std::shared_ptr<settings_manager> config, std::shared_ptr<logger> the_logger = std::make_shared<logger>());
 		~event_manager() = default;
 		size_t count_ready() const;
+
+		// Clears subscribers, primary and secondary queues
+		void reset();
 
 		// Cannot copy an event manager
 		event_manager(event_manager const&) = delete;

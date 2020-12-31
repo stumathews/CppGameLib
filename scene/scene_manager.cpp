@@ -22,7 +22,8 @@ namespace gamelib
 			event_admin->subscribe_to_event(event_type::LevelChangedEventType, this);
 
 			// I care about when I'm asked to add game object to current scene
-			event_admin->subscribe_to_event(event_type::AddGameObjectToCurrentScene, this);	
+			event_admin->subscribe_to_event(event_type::AddGameObjectToCurrentScene, this);
+			event_admin->subscribe_to_event(event_type::GenerateNewLevel, this);			
 
 			return true;
 		}, true, true, config);
@@ -62,6 +63,7 @@ namespace gamelib
 			break;
 			case event_type::PlayerMovedEventType: break;
 			case event_type::scene_loaded: break;
+				break;
 		}
 		
 		return vector<shared_ptr<event>>();

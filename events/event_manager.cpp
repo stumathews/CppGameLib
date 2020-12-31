@@ -19,6 +19,15 @@ namespace gamelib
 		return primary_event_queue_.size() + secondary_event_queue_.size();
 	}
 
+	void event_manager::reset()
+	{
+		std::queue<shared_ptr<event>> empty;
+		  std::swap( primary_event_queue_, empty );
+		  std::swap( secondary_event_queue_, empty );
+		//this->event_subscribers_.clear();
+		  
+	}
+
 	bool event_manager::initialize()
 	{
 		
@@ -50,6 +59,8 @@ namespace gamelib
 	{
 		for (const auto& subscriber :  event_subscribers_[event->type])
 		{
+			if(event_subscribers_.empty()) return; // if reset()
+			
 			// allow subscriber to process the event
 			for(const auto &secondary_event : subscriber->handle_event(event))
 			{
@@ -76,8 +87,9 @@ namespace gamelib
 			// get subscribers of this event type
 			
 			dispatch_event_to_subscriber(event);
-			
-			primary_event_queue_.pop();
+
+			if(!primary_event_queue_.empty())
+				primary_event_queue_.pop();
 		}
 
 		// Process the secondary queue once primary queue is processed

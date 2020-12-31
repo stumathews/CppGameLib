@@ -5,7 +5,7 @@ using namespace std;
 
 TEST(SettingsManager, OpenFileTest)
 {
-	const auto expected_settings_count = 15;
+	const auto expected_settings_count = 32;
 	settings_manager settings;
 	EXPECT_TRUE(settings.load("settings.xml")); 
 
@@ -15,7 +15,7 @@ TEST(SettingsManager, OpenFileTest)
 
 TEST(SettingsManager, AddSetting)
 {
-	const auto expected_settings_count = 18;
+	const auto expected_settings_count = 35;
 	settings_manager settings;
 	settings.load();	
 	settings.add_setting("global", "name", setting_details("name", "mazer", "string"));

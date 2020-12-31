@@ -12,7 +12,7 @@ using namespace std;
 
 namespace gamelib
 {
-	player::player(int x, int y, int w,  std::shared_ptr<resource_manager> resource_admin, std::shared_ptr<settings_manager> settings): square(0, x, y, w, resource_admin, true, true, true, settings)
+	player::player(int x, int y, int w, int h, std::shared_ptr<resource_manager> resource_admin, std::shared_ptr<settings_manager> settings): square(0, x, y, w, h, resource_admin, true, true, true, settings)
 	{	
 	}
 
@@ -46,11 +46,20 @@ namespace gamelib
 			
 			auto game_world = static_pointer_cast<game_world_component>(find_component(constants::game_world))->get_data();
 
-			auto room = dynamic_pointer_cast<square>(game_world->game_objects[within_room_index < 0 ? 0 : within_room_index]);
-			auto above_room = dynamic_pointer_cast<square>(game_world->game_objects[room->get_adjacent_index_for_wall(0) < 0 ? 0 : room->get_adjacent_index_for_wall(0)]);
-			auto right_room = dynamic_pointer_cast<square>(game_world->game_objects[room->get_adjacent_index_for_wall(1) < 0 ? 0 : room->get_adjacent_index_for_wall(1)]);
-			auto bottom_room = dynamic_pointer_cast<square>(game_world->game_objects[room->get_adjacent_index_for_wall(2) < 0 ? 0 : room->get_adjacent_index_for_wall(2)]);
-			auto left_room = dynamic_pointer_cast<square>(game_world->game_objects[room->get_adjacent_index_for_wall(3) < 0 ? 0 : room->get_adjacent_index_for_wall(3)]);
+			const auto last_room_index = game_world->game_objects.size() -1; /* discount player object */
+			const auto first_room_index = 0;
+
+			auto room = dynamic_pointer_cast<square>(game_world->game_objects[within_room_index < first_room_index ? first_room_index : within_room_index]);
+			
+			const auto room_above_index = room->get_adjacent_index_for_wall(0) < first_room_index ? first_room_index : room->get_adjacent_index_for_wall(0);
+			const auto room_right_index = room->get_adjacent_index_for_wall(1) < first_room_index ? first_room_index : room->get_adjacent_index_for_wall(1);			
+			const auto room_bottom_index = room->get_adjacent_index_for_wall(2) > last_room_index ? last_room_index : room->get_adjacent_index_for_wall(2);
+			const auto room_left_index = room->get_adjacent_index_for_wall(3) < 0 ? 0 : room->get_adjacent_index_for_wall(3);
+			
+			auto above_room = dynamic_pointer_cast<square>(game_world->game_objects[room_above_index]);
+			auto right_room = dynamic_pointer_cast<square>(game_world->game_objects[room_right_index]);
+			auto bottom_room = dynamic_pointer_cast<square>(game_world->game_objects[room_bottom_index]);
+			auto left_room = dynamic_pointer_cast<square>(game_world->game_objects[room_left_index]);
 			
 			const auto is_moving_right = move_direction == Direction::Right;
 			const auto is_moving_down = move_direction == Direction::Down;
@@ -61,6 +70,7 @@ namespace gamelib
 			const auto can_move_left = is_moving_left && !room->is_walled_0_based(3) && !left_room->is_walled_0_based(1);
 			const auto can_move_down = is_moving_down && !room->is_walled_0_based(2) && !bottom_room->is_walled_0_based(0);
 			const auto can_move_up = is_moving_up && !room->is_walled_0_based(0 )&& !above_room->is_walled_0_based(2);
+			
 			const auto is_valid_move = move_direction == Direction::Down && can_move_down || move_direction == Direction::Left && can_move_left || move_direction == Direction::Right && can_move_right || move_direction == Direction::Up && can_move_up;
 			
 			if(!is_valid_move){

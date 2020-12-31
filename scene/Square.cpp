@@ -30,7 +30,7 @@ namespace gamelib
 				player->within_room_index = number;
 
 			// Update square's knowledge of player's bounds for layer use
-			player_bounds = { player->get_x(), player->get_y(), player->get_w(), 	player->get_h()  };
+			player_bounds = { player->get_x(), player->get_y(), player->get_w(), player->get_h()  };
 		}
 
 		if( event->type == event_type::SettingsReloaded)
@@ -99,11 +99,13 @@ namespace gamelib
 		return abcd;
 	}
 
-	square::square(int number, int x, int y, int rw, std::shared_ptr<resource_manager> resource_admin, bool fill,  bool supports_move_logic, bool is_visible, std::shared_ptr<settings_manager> settings_admin)
-	: game_object(x, y, is_visible, settings_admin), width(rw), fill(fill), player_bounds({}), bounds({x, y, rw, rw}), resource_admin(resource_admin), settings_admin(settings_admin)
+	square::square(int number, int x, int y, int rw, int rh, std::shared_ptr<resource_manager> resource_admin,
+	               bool fill, bool supports_move_logic, bool is_visible,
+	               std::shared_ptr<settings_manager> settings_admin)
+	: game_object(x, y, is_visible, settings_admin), width(rw), height(rh), fill(fill), player_bounds({}), bounds({x, y, rw, rh}), resource_admin(resource_admin), settings_admin(settings_admin)
 {
 	  this->number = number;
-	  this->abcd = make_shared<abcd_rectangle>(x, y, rw, rw);  
+	  this->abcd = make_shared<abcd_rectangle>(x, y, rw, rh);  
 	  this->supports_move_logic = supports_move_logic;   
 	  walls[0] = true;
 	  walls[1] = true;
@@ -128,7 +130,7 @@ namespace gamelib
 
 	int square::get_h() const
 	{
-		return width;
+		return height;
 	}
 
 	bool square::is_walled(int wall)

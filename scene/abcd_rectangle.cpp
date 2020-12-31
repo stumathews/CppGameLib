@@ -30,7 +30,7 @@ namespace gamelib
 
 	int abcd_rectangle::get_cy() const
 	{
-		return get_by() + w;
+		return get_by() + h;
 	}
 
 	int abcd_rectangle::get_dx() const
@@ -40,7 +40,7 @@ namespace gamelib
 
 	int abcd_rectangle::get_dy() const
 	{
-		return get_ay() + w;
+		return get_ay() + h;
 	}
 
 	void abcd_rectangle::set_x(int x)
@@ -71,9 +71,14 @@ namespace gamelib
 		set_h(h);
 	}
 
-	coordinate<int> abcd_rectangle::get_a1(int intervalOfWOrH) const
+	/*coordinate<int> abcd_rectangle::get_a1(int intervalOfWOrH) const
 	{
 		return {get_ax() + this->w * intervalOfWOrH, get_ay()};
+	}
+
+	coordinate<int> abcd_rectangle::get_a2(int intervalOfWOrH) const
+	{
+		return {get_ax(), get_ay() + (this->w * intervalOfWOrH)};
 	}
 
 	coordinate<int> abcd_rectangle::get_b1(int intervalOfWOrH) const
@@ -91,10 +96,7 @@ namespace gamelib
 		return {get_dx() + (this->w * intervalOfWOrH), get_dy()};
 	}
 
-	coordinate<int> abcd_rectangle::get_a2(int intervalOfWOrH) const
-	{
-		return {get_ax(), get_ay() + (this->w * intervalOfWOrH)};
-	}
+	
 
 	coordinate<int> abcd_rectangle::get_b2(int intervalOfWOrH) const
 	{
@@ -109,5 +111,5 @@ namespace gamelib
 	coordinate<int> abcd_rectangle::get_d2(int intervalOfWOrH) const
 	{
 		return {get_dx(), get_dy() - this->w * intervalOfWOrH};
-	}
+	}*/
 }

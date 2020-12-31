@@ -95,9 +95,15 @@ namespace gamelib
 	std::shared_ptr<game_object>& game_object_factory::initialize_game_object(std::shared_ptr<game_object>& game_object, uint x, uint y, bool is_visible, std::shared_ptr<graphic_resource>& resource, const bool color_key_enabled, const uint& red, const uint& green, const uint& blue, std::shared_ptr<resource_manager> resource_admin, std::shared_ptr<settings_manager> settings_admin) const
 	{	
 		if(resource == nullptr)
-		{			
+		{
+			const auto rows = settings_admin->get_int("grid","rows");
+			const auto cols = settings_admin->get_int("grid","cols");
+			const auto screen_width = settings_admin->get_int("global","screen_width");
+			const auto screen_height = settings_admin->get_int("global","screen_height");
+			const auto square_width = screen_width / cols; //settings_admin->get_int("global","square_width");
+			const auto square_height = screen_height / rows;
 			// Square
-			game_object = std::make_shared<square>(-1, x, y, settings_admin->get_int("global", "square_width"), resource_admin);
+			game_object = std::make_shared<square>(-1, x, y, square_width, square_height, resource_admin);
 			return game_object;		
 		}
 

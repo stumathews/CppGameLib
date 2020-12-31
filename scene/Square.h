@@ -18,7 +18,7 @@ namespace gamelib
 		SDL_Rect player_bounds;
 	 protected:
 		int number;
-		int width;
+		int width, height;
 		bool walls[4]{};
 		std::shared_ptr<abcd_rectangle> abcd;
 	    [[nodiscard]] std::shared_ptr<abcd_rectangle> get_abcd() const;
@@ -26,7 +26,7 @@ namespace gamelib
 		SDL_Rect bounds;
 		int top_room_index, right_room_index, bottom_room_index, left_room_index = -1;
 	public: 
-		square(int number, int x, int y, int rw, std::shared_ptr<resource_manager> resource_admin,  bool fill = false, bool supports_move_logic = true, bool is_visible = true, std::shared_ptr<settings_manager> settings_admin = std::make_shared<settings_manager>());
+		square(int number, int x, int y, int rw, int rh, std::shared_ptr<resource_manager> resource_admin,  bool fill = false, bool supports_move_logic = true, bool is_visible = true, std::shared_ptr<settings_manager> settings_admin = std::make_shared<settings_manager>());
 
 		object_type get_type() override { return object_type::square; }
 		void set_adjacent_room_index(int top_index, int right_index, int bottom_index, int left_index)

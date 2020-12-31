@@ -3,8 +3,8 @@
 	<global>
 		<!-- 20 times a second = 50 milliseconds, 1 second is 20*50 = 1000 milliseconds -->
 		<setting name="tick_time_ms" type="int">50</setting>
-		<setting name="square_width" type="int">30</setting>
-		<setting name="sprite_width" type="int">100</setting>
+		<setting name="square_width" type="int">150</setting>
+		<setting name="sprite_width" type="int">50</setting>
 		<setting name="max_loops" type="int">4</setting>
 		<setting name="screen_width" type="int">800</setting>
 		<setting name="screen_height" type="int">600</setting>
@@ -12,13 +12,34 @@
 		<setting name="frames_per_column" type="int">3</setting>
 		<setting name="verbose" type="bool">true</setting>
 		<setting name="use_3d_render_manager" type="bool">true</setting>
+		<setting name="print_debugging_text" type="bool">false</setting>
 		<setting name="author" type="string">Stuart</setting>
 		<setting name="longnumber" type="long">123456789</setting>
 	</global>
+	<grid>
+		<setting name="rows" type="int">20</setting>
+		<setting name="cols" type="int">20</setting>
+	</grid>
 	<player>
-		<setting name="player_init_pos_x" type="int">100</setting>
-		<setting name="player_init_pos_y" type="int">100</setting>
-		<setting name="move_interval" type="int">2</setting>
+		<setting name="player_init_pos_x" type="int">0</setting>
+		<setting name="player_init_pos_y" type="int">0</setting>
+		<setting name="x" type="int">400</setting>
+		<setting name="y" type="int">400</setting>
+		<setting name="move_interval" type="int">1</setting>
+		<setting name="draw_box" type="bool">false</setting>
+		<setting name="box_width" type="int">49</setting>
+		<setting name="r" type="int">0</setting>
+		<setting name="g" type="int">255</setting>
+		<setting name="b" type="int">0</setting>
+		<setting name="a" type="int">0</setting> 
+		<setting name="verbose" type="bool">true</setting>
 	</player>
+	<room_fill>
+		<setting name="r" type="int">255</setting>
+		<setting name="g" type="int">255</setting>
+		<setting name="b" type="int">0</setting>
+		<setting name="a" type="int">0</setting>
+		<setting name="enable" type="bool">true</setting>
+	</room_fill>
 
 </settings>

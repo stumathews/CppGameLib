@@ -99,8 +99,15 @@ namespace gamelib
 
 		if(!scene_name.empty())
 		{
-			load_scene_file(scene_name, resource_admin);
-			raise_scene_loaded_event(scene, scene_name);
+			try 
+			{
+				load_scene_file(scene_name, resource_admin);
+				raise_scene_loaded_event(scene, scene_name);
+			} catch(exception &e)
+			{
+				log_message(string("Cloud not load scene file: ") + string(e.what()));
+				throw;
+			}
 		}
 	}
 

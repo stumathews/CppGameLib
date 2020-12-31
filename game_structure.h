@@ -18,8 +18,13 @@ namespace gamelib
 		std::shared_ptr<scene_manager> scene_admin;
 		std::shared_ptr<sdl_graphics_manager> graphics_admin;
 		std::shared_ptr<game_world_data> world;
+		std::shared_ptr<audio_manager> audio_admin;
+		std::function<void()> get_input_func;
 	public:
-		game_structure(std::shared_ptr<event_manager> event_admin, std::shared_ptr<resource_manager> resource_admin, std::shared_ptr<settings_manager> config, std::shared_ptr<game_world_data> world, std::shared_ptr<scene_manager> scene_admin, std::shared_ptr<sdl_graphics_manager> graphics_admin);
+		game_structure(std::shared_ptr<event_manager> event_admin, std::shared_ptr<resource_manager> resource_admin,
+		               std::shared_ptr<settings_manager> config, std::shared_ptr<game_world_data> world,
+		               std::shared_ptr<scene_manager> scene_admin, std::shared_ptr<sdl_graphics_manager> graphics_admin,
+		               std::shared_ptr<audio_manager> audio_admin, std::function<void()> get_input_func);
 		virtual ~game_structure() override;
 		bool initialize_sdl(int screen_width, int screen_height);	
 		bool initialize();
@@ -27,7 +32,6 @@ namespace gamelib
 		void update();
 		void world_update() const;
 		void player_update();
-		void get_input();		
 		void draw(float);
 		static long get_tick_now();
 		void spare_time(long) const;

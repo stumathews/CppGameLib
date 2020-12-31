@@ -12,8 +12,10 @@ using namespace std;
 
 namespace gamelib
 {
-	player::player(int x, int y, int w, int h, std::shared_ptr<resource_manager> resource_admin, std::shared_ptr<settings_manager> settings): square(0, x, y, w, h, resource_admin, true, true, true, settings)
-	{	
+	player::player(int x, int y, int w, int h, std::shared_ptr<resource_manager> resource_admin, std::shared_ptr<settings_manager> settings, std::shared_ptr<event_manager> event_admin):
+		square(0, x, y, w, h, resource_admin, true, true, true, settings), draw_box(false),
+		event_admin(std::move(event_admin))
+	{
 	}
 
 	void player::load_settings(std::shared_ptr<settings_manager> settings)
@@ -75,6 +77,8 @@ namespace gamelib
 			
 			if(!is_valid_move){
 				log_message("Invalid move", settings_admin->get_bool("player", "verbose"));
+				event_admin->raise_event(make_shared<event>(event_type::InvalidMove), this);
+				
 				return created_events;
 			}
 

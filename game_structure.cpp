@@ -22,147 +22,14 @@
 
 namespace gamelib
 {
-	void game_structure::get_input()
-	{
-		SDL_Event sdl_event;
-		
-		while(SDL_PollEvent(&sdl_event) != 0)
-		{
-			if(sdl_event.type != SDL_QUIT)
-			{
-				if (sdl_event.type == SDL_KEYDOWN)
-				{
-					switch (sdl_event.key.keysym.sym)
-					{
-					case SDLK_w:
-					case SDLK_UP:
-						run_and_log("Player pressed up!", settings_admin->get_bool("global", "verbose"), [&]()
-						{
-							event_admin->raise_event(std::make_unique<position_change_event>(Direction::Up), this);
-							return true;
-						}, true, true, settings_admin);
-						break;
-					case SDLK_s:
-					case SDLK_DOWN:
-						run_and_log("Player pressed down!", settings_admin->get_bool("global", "verbose"), [&]()
-						{
-							event_admin->raise_event(std::make_unique<position_change_event>(Direction::Down), this);
-							return true;
-						}, true, true, settings_admin);
-						break;
-					case SDLK_a:
-					case SDLK_LEFT:
-						run_and_log("Player pressed left!", settings_admin->get_bool("global", "verbose"), [&]()
-						{
-							event_admin->raise_event(std::make_unique<position_change_event>(Direction::Left), this);
-							return true;
-						}, true, true, settings_admin);
-						break;
-
-					case SDLK_d:
-					case SDLK_RIGHT:
-						run_and_log("Player pressed right!", settings_admin->get_bool("global", "verbose"), [&]()
-						{
-							event_admin->raise_event(std::make_unique<position_change_event>(Direction::Right), this);
-							return true;
-						}, true, true, settings_admin);
-						break;
-
-					case SDLK_q:
-					case SDLK_ESCAPE:
-						run_and_log("Player pressed quit!", settings_admin->get_bool("global", "verbose"), [&]()
-						{
-							world->is_game_done = 1;
-							return true;
-						}, true, true, settings_admin);
-						break;
-					case SDLK_j:
-						run_and_log("Change to level 1", settings_admin->get_bool("global", "verbose"), [&]()
-						{
-							event_admin->raise_event(std::make_unique<scene_changed_event>(1), this);
-							return true;
-						}, true, true, settings_admin);
-						break;
-					case SDLK_k:
-						run_and_log("Change to level 2", settings_admin->get_bool("global", "verbose"), [&]()
-						{
-							event_admin->raise_event(std::make_unique<scene_changed_event>(2), this);
-							return true;
-						}, true, true, settings_admin);
-						break;
-					case SDLK_l:
-						run_and_log("Change to level 3", settings_admin->get_bool("global", "verbose"), [&]()
-						{
-							event_admin->raise_event(std::make_unique<scene_changed_event>(3), this);
-							return true;
-						}, true, true, settings_admin);
-						break;
-
-					case SDLK_x:
-						run_and_log("Change to level 4", settings_admin->get_bool("global", "verbose"), [&]()
-						{
-							event_admin->raise_event(std::make_unique<scene_changed_event>(4), this);
-							return true;
-						}, true, true, settings_admin);
-						break;
-					case SDLK_1:
-						Mix_PlayChannel(-1, audio_manager::to_resource(resource_admin->get("high.wav"))->as_fx(), 0);
-						break;
-					case SDLK_2:
-						Mix_PlayChannel(-1, audio_manager::to_resource(resource_admin->get("medium.wav"))->as_fx(), 0);
-						break;
-					case SDLK_3:
-						Mix_PlayChannel(-1,  audio_manager::to_resource(resource_admin->get("low.wav"))->as_fx(), 0);
-						break;
-					case SDLK_4:
-						Mix_PlayChannel(-1, audio_manager::to_resource(resource_admin->get("scratch.wav"))->as_fx(), 0);
-						break;
-					case SDLK_9:
-						if (Mix_PlayingMusic() == 0)
-						{
-							Mix_PlayMusic(audio_manager::to_resource(resource_admin->get("MainTheme.wav"))->as_music(), -1);
-						}
-						else
-						{
-							if (Mix_PausedMusic() == 1)
-								Mix_ResumeMusic();
-							else
-								Mix_PauseMusic();
-						}
-						break;
-					case SDLK_0:
-						Mix_HaltMusic();
-						break;
-					case SDLK_r:
-						settings_admin->reload();
-						event_admin->raise_event(make_shared<event>(event_type::SettingsReloaded), this);
-						log_message("Settings reloaded", settings_admin->get_bool("global", "verbose"), false);
-						break;
-					case SDLK_g:						
-						event_admin->raise_event(make_shared<event>(event_type::GenerateNewLevel), this);
-						log_message("Generating new level", settings_admin->get_bool("global", "verbose"), false);
-						break;
-					default:
-						std::cout << "Unknown control key" << std::endl;
-						log_message("Unknown control key", settings_admin->get_bool("global", "verbose"));
-						break;
-					}
-				}
-			}
-			else
-			{
-				world->is_game_done = true;
-			}
-		}
-	}
-
+	
 	/***
 	 * Keeps and updated snapshot of the player state
 	 */
 	void game_structure::player_update()
 	{
 		// Read from game controller
-		get_input();	
+		get_input_func();	
 	}
 
 
@@ -246,14 +113,14 @@ namespace gamelib
 		std::shared_ptr<settings_manager> config,
 		std::shared_ptr<game_world_data> world,
 		std::shared_ptr<scene_manager> scene_admin,
-		std::shared_ptr<sdl_graphics_manager> graphics_admin)
+		std::shared_ptr<sdl_graphics_manager> graphics_admin, std::shared_ptr<audio_manager> audio_admin, std::function<void()> get_input_func)
 	: event_admin(event_admin),
 	resource_admin(resource_admin),
 	settings_admin(config),
 	world(world),
 	scene_admin(scene_admin),
-	graphics_admin(graphics_admin)
-	{
+	graphics_admin(graphics_admin), audio_admin(std::move(audio_admin)), get_input_func(std::move(get_input_func))
+{
 	}
 
 	game_structure::~game_structure()

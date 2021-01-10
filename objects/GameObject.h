@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include "Component.h"
 #include <graphic/graphic_resource.h>
+
 #include "events/event_manager.h"
 
 namespace gamelib
@@ -12,13 +13,13 @@ namespace gamelib
 	{
 		undefined,
 		game_world,
-		square,
+		room,
 		player,
 		sprite,
 		pickup,
 	};
 
-	class game_object : public event_subscriber
+	class GameObject : public IEventSubscriber
 	{
 	public:
 		bool supports_move_logic;
@@ -26,21 +27,21 @@ namespace gamelib
 		bool is_color_key_enabled;
 		int x;
 		int y;
-		int move_interval;
+		int move_interval;		
+		SDL_Rect bounds;
 		std::shared_ptr<settings_manager> settings_admin;
 		
-
 		void init_defaults(bool is_visible, std::shared_ptr<settings_manager> settings, int x, int y);
 		
-		game_object(bool is_visible, std::shared_ptr<settings_manager> settings_admin);
-		game_object(int x, int y, bool is_visible, std::shared_ptr<settings_manager> settings_admin);
+		GameObject(bool is_visible, std::shared_ptr<settings_manager> settings_admin);
+		GameObject(int x, int y, bool is_visible, std::shared_ptr<settings_manager> settings_admin);
 
 		void subscribe_to_event(event_type type, std::shared_ptr<event_manager> event_admin);
 		void raise_event(const std::shared_ptr<event>& the_event, std::shared_ptr<event_manager> event_admin);
 		std::shared_ptr<graphic_resource> get_graphic_asset() const;
 		void set_graphic_resource(std::shared_ptr<graphic_resource> graphic);
 
-		void virtual draw(SDL_Renderer* renderer) = 0;	
+		
 		void virtual update() = 0;
 		virtual void move_up();
 		virtual void move_down();
@@ -63,6 +64,7 @@ namespace gamelib
 		void set_tag(std::string tag);
 		std::string get_subscriber_name() override;
 		void draw_resource(SDL_Renderer* renderer) const;
+		void virtual draw(SDL_Renderer* renderer);
 		bool is_resource_loaded() const;
 	private:
 		int id;

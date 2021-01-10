@@ -6,7 +6,7 @@
 using namespace std;
 using namespace gamelib;
 
-class dummy_subscriber final : public event_subscriber
+class dummy_subscriber final : public IEventSubscriber
 {
 public:
 	bool handle_event_received = false;

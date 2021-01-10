@@ -4,7 +4,7 @@
 #include <tinyxml2.h>
 #include <SDL_mixer.h>
 
-#include "events/event_subscriber.h"
+#include "events/IEventSubscriber.h"
 
 namespace gamelib
 {

@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include "tinyxml2.h"
-#include "game_object.h"
+#include "GameObject.h"
 namespace gamelib
 {
 	class resource_manager;
@@ -14,8 +14,8 @@ namespace gamelib
 		 ~game_object_factory();
 		void operator=(game_object_factory const&)  = delete;
 		 
-		std::shared_ptr<game_object> build_game_object(tinyxml2::XMLElement * scene_object_xml, std::shared_ptr<resource_manager> resource_admin,  std::shared_ptr<settings_manager> settings_admin) const;
-		std::shared_ptr<game_object>& initialize_game_object(std::shared_ptr<game_object>& game_object, uint x, uint y, bool is_visible, std::shared_ptr<graphic_resource>& resource, bool color_key_enabled, const uint& red, const uint& green, const uint& blue, std::shared_ptr<resource_manager> resource_admin, std::shared_ptr<settings_manager> settings_admin) const;
+		std::shared_ptr<GameObject> build_game_object(tinyxml2::XMLElement * scene_object_xml, std::shared_ptr<resource_manager> resource_admin,  std::shared_ptr<settings_manager> settings_admin) const;
+		std::shared_ptr<GameObject>& initialize_game_object(std::shared_ptr<GameObject>& game_object, uint x, uint y, bool is_visible, std::shared_ptr<graphic_resource>& resource, bool color_key_enabled, const uint& red, const uint& green, const uint& blue, std::shared_ptr<resource_manager> resource_admin, std::shared_ptr<settings_manager> settings_admin) const;
 	private:
 		static game_object_factory& m_Instance;
 		 game_object_factory();

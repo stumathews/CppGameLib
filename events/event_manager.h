@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
-#include "event_subscriber.h"
+#include "IEventSubscriber.h"
 #include <map>
 #include <queue>
 #include "Event.h"
@@ -19,7 +19,7 @@ namespace gamelib
 		std::queue<std::shared_ptr<event>> secondary_event_queue_;
 
 		// Event subscribers (aka event handlers)
-		std::map<event_type, std::vector<event_subscriber*>> event_subscribers_;
+		std::map<event_type, std::vector<IEventSubscriber*>> event_subscribers_;
 
 		std::shared_ptr<settings_manager> config;
 		std::shared_ptr<logger> the_logger;
@@ -42,10 +42,10 @@ namespace gamelib
 		bool initialize();
 		
 		// Raise an arbitrary event
-		void raise_event(const std::shared_ptr<event> event, event_subscriber* you);
+		void raise_event(const std::shared_ptr<event> event, IEventSubscriber* you);
 
 		// Add yourself as an event handler (aka event subscriber) to handle an event of type event_type
-		void subscribe_to_event(event_type type, event_subscriber* you);
+		void subscribe_to_event(event_type type, IEventSubscriber* you);
 
 		// Directly send event to subscriber without going through the event queue
 		void dispatch_event_to_subscriber(const std::shared_ptr<event>& event);
@@ -55,7 +55,7 @@ namespace gamelib
 		// secondary queue is composed automatically of events that occured while processing the primary queue. 
 		void process_all_events();
 
-		[[nodiscard]] std::map<event_type, std::vector<event_subscriber*>> get_subscriptions() const;
+		[[nodiscard]] std::map<event_type, std::vector<IEventSubscriber*>> get_subscriptions() const;
 
 	};
 }

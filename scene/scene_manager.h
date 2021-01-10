@@ -3,7 +3,7 @@
 
 #include <list>
 #include "Layer.h"
-#include "events/event_subscriber.h"
+#include "events/IEventSubscriber.h"
 #include "resource/resource_manager.h"
 
 using namespace std;
@@ -11,7 +11,7 @@ using namespace std;
 namespace gamelib
 {
 	// Represents the current scene
-	class scene_manager final : public event_subscriber
+	class scene_manager final : public IEventSubscriber
 	{
 		shared_ptr<event_manager> event_admin;
 		shared_ptr<settings_manager> config;
@@ -28,7 +28,7 @@ namespace gamelib
 		void start_scene(int scene_id);
 		list<shared_ptr<layer>> get_scene_layers() const;
 	private:
-		void add_to_scene(const shared_ptr<game_object>& game_object);	
+		void add_to_scene(const shared_ptr<GameObject>& game_object);	
 		void load_new_scene(const shared_ptr<event> &the_event, shared_ptr<resource_manager> resource_admin);
 		bool load_scene_file(const string &filename, shared_ptr<resource_manager> resource_admin);		
 		void remove_layer(const string &name);

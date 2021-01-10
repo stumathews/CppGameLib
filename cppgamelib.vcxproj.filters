@@ -48,9 +48,6 @@
     <ClInclude Include="scene\SceneItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scene\Square.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="font\font_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -99,9 +96,6 @@
     <ClInclude Include="events\event_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="events\event_subscriber.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="events\Events.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -115,9 +109,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="objects\Component.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="objects\game_object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="objects\game_object_factory.h">
@@ -156,6 +147,18 @@
     <ClInclude Include="scene\abcd_rectangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="events\IEventSubscriber.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\Room.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="objects\GameObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="objects\DrawingBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -180,9 +183,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="scene\SceneItem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="scene\Square.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="font\font_manager.cpp">
@@ -215,9 +215,6 @@
     <ClCompile Include="events\event_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="events\event_subscriber.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="events\player_moved_event.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -231,9 +228,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="objects\Component.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="objects\game_object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="objects\game_object_factory.cpp">
@@ -270,6 +264,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="scene\abcd_rectangle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="events\IEventSubscriber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\Room.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\GameObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\DrawingBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

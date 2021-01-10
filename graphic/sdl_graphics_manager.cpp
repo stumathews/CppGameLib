@@ -16,7 +16,7 @@ namespace gamelib
 {
 
 	sdl_graphics_manager::sdl_graphics_manager(shared_ptr<event_manager> event_admin, std::shared_ptr<logger> the_logger)
-	: event_subscriber(), event_admin(event_admin), the_logger(std::move(the_logger))
+	: IEventSubscriber(), event_admin(event_admin), the_logger(std::move(the_logger))
 	{
 	}
 
@@ -179,7 +179,7 @@ namespace gamelib
 	void sdl_graphics_manager::clear_draw_present(std::function<void(SDL_Renderer* renderer)> &render_routine) const
 	{
 		// backup current render color
-		SDL_Color render_color;
+		SDL_Color render_color = {0};
 		SDL_GetRenderDrawColor(window_renderer, &render_color.r, &render_color.g, &render_color.b, &render_color.a);
 		
 		SDL_RenderClear(window_renderer);

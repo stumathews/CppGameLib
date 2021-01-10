@@ -167,12 +167,13 @@
     <ClInclude Include="common\static_config.h" />
     <ClInclude Include="common\Logger.h" />
     <ClInclude Include="common\TypeAliases.h" />
+    <ClInclude Include="objects\DrawingBase.h" />
     <ClInclude Include="events\AddGameObjectToCurrentSceneEvent.h" />
     <ClInclude Include="events\DoLogicUpdateEvent.h" />
     <ClInclude Include="events\Event.h" />
     <ClInclude Include="events\Events.h" />
     <ClInclude Include="events\event_manager.h" />
-    <ClInclude Include="events\event_subscriber.h" />
+    <ClInclude Include="events\IEventSubscriber.h" />
     <ClInclude Include="events\player_moved_event.h" />
     <ClInclude Include="events\PositionChangeEvent.h" />
     <ClInclude Include="events\SceneChangedEvent.h" />
@@ -188,7 +189,7 @@
     <ClInclude Include="graphic\graphic_resource.h" />
     <ClInclude Include="graphic\sdl_graphics_manager.h" />
     <ClInclude Include="objects\Component.h" />
-    <ClInclude Include="objects\game_object.h" />
+    <ClInclude Include="objects\GameObject.h" />
     <ClInclude Include="objects\game_object_factory.h" />
     <ClInclude Include="objects\Player.h" />
     <ClInclude Include="objects\player_component.h" />
@@ -199,7 +200,7 @@
     <ClInclude Include="scene\abcd_rectangle.h" />
     <ClInclude Include="scene\SceneItem.h" />
     <ClInclude Include="scene\scene_manager.h" />
-    <ClInclude Include="scene\Square.h" />
+    <ClInclude Include="scene\Room.h" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="util\COMUtils.h" />
     <ClInclude Include="util\RectDebugging.h" />
@@ -211,11 +212,12 @@
     <ClCompile Include="audio\AudioManager.cpp" />
     <ClCompile Include="audio\AudioResource.cpp" />
     <ClCompile Include="cppgamelib.cpp" />
+    <ClCompile Include="objects\DrawingBase.cpp" />
     <ClCompile Include="events\AddGameObjectToCurrentSceneEvent.cpp" />
     <ClCompile Include="events\DoLogicUpdateEvent.cpp" />
     <ClCompile Include="events\Event.cpp" />
     <ClCompile Include="events\event_manager.cpp" />
-    <ClCompile Include="events\event_subscriber.cpp" />
+    <ClCompile Include="events\IEventSubscriber.cpp" />
     <ClCompile Include="events\player_moved_event.cpp" />
     <ClCompile Include="events\PositionChangeEvent.cpp" />
     <ClCompile Include="events\SceneChangedEvent.cpp" />
@@ -230,7 +232,7 @@
     <ClCompile Include="graphic\graphic_resource.cpp" />
     <ClCompile Include="graphic\sdl_graphics_manager.cpp" />
     <ClCompile Include="objects\Component.cpp" />
-    <ClCompile Include="objects\game_object.cpp" />
+    <ClCompile Include="objects\GameObject.cpp" />
     <ClCompile Include="objects\game_object_factory.cpp" />
     <ClCompile Include="objects\Player.cpp" />
     <ClCompile Include="objects\player_component.cpp" />
@@ -240,7 +242,7 @@
     <ClCompile Include="scene\abcd_rectangle.cpp" />
     <ClCompile Include="scene\SceneItem.cpp" />
     <ClCompile Include="scene\scene_manager.cpp" />
-    <ClCompile Include="scene\Square.cpp" />
+    <ClCompile Include="scene\Room.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="util\RectDebugging.cpp" />
     <ClCompile Include="util\settings_manager.cpp" />

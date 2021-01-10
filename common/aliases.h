@@ -7,9 +7,9 @@
 
 namespace gamelib
 {
-	class game_object;
+	class GameObject;
 	typedef unsigned int uint;
 	typedef std::vector<std::shared_ptr<event>> events;
 	typedef std::function<void(SDL_Renderer* renderer)> render_func;
-	typedef std::vector<std::shared_ptr<game_object>> game_objects;
+	typedef std::vector<std::shared_ptr<GameObject>> game_objects;
 }

@@ -5,7 +5,7 @@
 
 namespace gamelib
 {
-	class game_object;
+	class GameObject;
 
 	class layer
 	{
@@ -15,7 +15,7 @@ namespace gamelib
 		float x = 0;
 		float y = 0;
 		std::string name;
-		std::list<std::shared_ptr<game_object>> game_objects;
+		std::list<std::shared_ptr<GameObject>> game_objects;
 	};
 }
 

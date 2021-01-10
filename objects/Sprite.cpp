@@ -4,7 +4,7 @@
 
 namespace gamelib
 {
-	void sprite::update()
+	void Sprite::update()
 	{
 		const unsigned long time_since_last_frame = timeGetTime() - m_TimeLastFrame;
 		if(time_since_last_frame >= m_Speed) 
@@ -20,7 +20,7 @@ namespace gamelib
 		}
 	}
 
-	void sprite::play()
+	void Sprite::play()
 	{
 		const auto resource = get_graphic_asset();
 		if(!is_resource_loaded())
@@ -33,12 +33,12 @@ namespace gamelib
 		m_TimeLastFrame = timeGetTime();
 	}
 
-	void sprite::stop()
+	void Sprite::stop()
 	{
 		stopped = true;
 	}
 
-	void sprite::set_frame_rect(uint FrameNumber) const
+	void Sprite::set_frame_rect(uint FrameNumber) const
 	{
 		if(!is_resource_loaded())
 			return;

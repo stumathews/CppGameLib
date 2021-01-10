@@ -2,7 +2,7 @@
 #include <memory>
 #include <vector>
 
-#include "game_object.h"
+#include "GameObject.h"
 
 class game_world_data 
 {
@@ -17,6 +17,6 @@ public:
 	bool can_render = true;
 		
 	// List of game objects
-	std::vector<std::shared_ptr<gamelib::game_object>> game_objects;
+	std::vector<std::shared_ptr<gamelib::GameObject>> game_objects;
 };
 

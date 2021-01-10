@@ -3,7 +3,7 @@
 #include "events/event_manager.h"
 #include "font/font_manager.h"
 #include "graphic/sdl_graphics_manager.h"
-#include "objects/game_object.h"
+#include "objects/GameObject.h"
 #include "resource/resource_manager.h"
 #include "scene/scene_manager.h"
 

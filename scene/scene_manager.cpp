@@ -113,7 +113,7 @@ namespace gamelib
 		}
 	}
 
-	void scene_manager::add_to_scene(const std::shared_ptr<game_object>& game_object)
+	void scene_manager::add_to_scene(const std::shared_ptr<GameObject>& game_object)
 	{
 		// add to last layer of the scene
 		layers.back()->game_objects.push_back(game_object);

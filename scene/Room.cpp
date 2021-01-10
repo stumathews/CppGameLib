@@ -1,4 +1,4 @@
-#include "Square.h"
+#include "Room.h"
 #include "util/RectDebugging.h"
 #include <events/player_moved_event.h>
 
@@ -7,11 +7,11 @@ using namespace std;
 
 namespace gamelib
 {
-	square::~square() = default;
+	Room::~Room() = default;
 		
-	vector<shared_ptr<event>> square::handle_event(const std::shared_ptr<event> event)
+	vector<shared_ptr<event>> Room::handle_event(const std::shared_ptr<event> event)
 	{	
-		auto any_generated_events(game_object::handle_event(event));
+		auto any_generated_events(GameObject::handle_event(event));
 
 		if(event->type == event_type::PlayerMovedEventType)
 		{			
@@ -23,14 +23,14 @@ namespace gamelib
 				return any_generated_events;
 
 			// Determine if the player's coordinates are within room
-			is_player_in_square = (player->x >= bounds.x && player->x < bounds.x + bounds.w) && (player->y >= bounds.y && player->y < bounds.y + bounds.h);
+			is_player_in_room = (player->x >= bounds.x && player->x < bounds.x + bounds.w) && (player->y >= bounds.y && player->y < bounds.y + bounds.h);
 			
 			// Update the player's knowledge of which room its in
-			if(is_player_in_square)
+			if(is_player_in_room)
 				player->within_room_index = number;
 
 			// Update square's knowledge of player's bounds for layer use
-			player_bounds = { player->get_x(), player->get_y(), player->get_w(), player->get_h()  };
+			player_bounds = { player->x, player->y, player->width, player->height  };
 		}
 
 		if( event->type == event_type::SettingsReloaded)
@@ -45,19 +45,13 @@ namespace gamelib
 		return any_generated_events;
 	}
 
-	void square::load_settings(std::shared_ptr<settings_manager> settings_admin)
+	void Room::load_settings(std::shared_ptr<settings_manager> settings_admin)
 	{
-		game_object::load_settings(settings_admin);		
+		GameObject::load_settings(settings_admin);		
 		fill = settings_admin->get_bool("room_fill", "enable");
 	}
 
-	void square::fill_me(SDL_Renderer* renderer, const SDL_Color color) const
-	{			
-		SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-		SDL_RenderFillRect(renderer, &bounds);
-	}
-
-	void square::draw(SDL_Renderer* renderer)
+	void Room::draw(SDL_Renderer* renderer)
 	{
 		// black
 		SDL_SetRenderDrawColor(renderer, 0, 0,0,0);
@@ -91,7 +85,7 @@ namespace gamelib
 				
 		if(fill)
 		{
-			fill_me(renderer, { 255, 0 ,0 ,0});
+			DrawFilledRect(renderer, &bounds, { 255, 0 ,0 ,0});
 		}
 		
 
@@ -99,30 +93,28 @@ namespace gamelib
 		  RectDebugging::printInRect(renderer, get_tag(), &bounds, resource_admin); 
 	}
 
-	shared_ptr<abcd_rectangle> square::get_abcd() const
+	shared_ptr<abcd_rectangle> Room::get_abcd() const
 	{
 		return abcd;
 	}
 
-	square::square(int number, int x, int y, int rw, int rh, const std::shared_ptr<resource_manager> resource_admin,
-	               bool fill, const bool supports_move_logic, const bool is_visible,
-	               const std::shared_ptr<settings_manager> settings_admin, square_role role)
-		: game_object(x, y, is_visible, settings_admin), resource_admin(resource_admin), fill(fill), player_bounds({}), role(role),
-		  width(rw),
-		  height(rh), bounds({x, y, rw, rh}), top_room_index(0), right_room_index(0),
-		  bottom_room_index(0),
-		  settings_admin(settings_admin)
+	Room::Room(int number, int x, int y, int rw, int rh, const std::shared_ptr<resource_manager> resource_admin, bool fill, const std::shared_ptr<settings_manager> settings)
+		: DrawingBase(x, y, true, settings), resource_admin(resource_admin), fill(fill), player_bounds({}),
+		 top_room_index(0), right_room_index(0),  bottom_room_index(0), width(rw), height(rh)
 	{
+		this->bounds = {x, y, rw, rh};
+		this->width = rw;
+		this->height = rh;
 		this->number = number;
 		this->abcd = make_shared<abcd_rectangle>(x, y, rw, rh);
-		this->supports_move_logic = supports_move_logic;
+		this->supports_move_logic = false;
 		walls[0] = true;
 		walls[1] = true;
 		walls[2] = true;
 		walls[3] = true;
 	}
 
-	void square::set_adjacent_room_index(const int top_index, const int right_index, const int bottom_index, const int left_index)
+	void Room::set_adjacent_room_index(const int top_index, const int right_index, const int bottom_index, const int left_index)
 	{
 		this->top_room_index = top_index;
 		this->right_room_index = right_index;
@@ -130,7 +122,7 @@ namespace gamelib
 		this->left_room_index = left_index;
 	}
 
-	int square::get_adjacent_index_for_wall(int index) const
+	int Room::get_adjacent_index_for_wall(int index) const
 	{
 		switch (index)
 		{
@@ -151,46 +143,46 @@ namespace gamelib
 		}
 	}
 
-	int square::get_x() const
+	int Room::get_x() const
 	{
 		return this->x;
 	}
 
-	int square::get_y() const
+	int Room::get_y() const
 	{
 		return this->y;
 	}
 
-	int square::get_w() const
+	int Room::get_w() const
 	{
 		return width;
 	}
 
-	int square::get_h() const
+	int Room::get_h() const
 	{
 		return height;
 	}
 
-	bool square::is_walled(int wall)
+	bool Room::is_walled(int wall)
 	{
 		return walls[wall-1];
 	}
 
-	bool square::is_walled_0_based(int wall)
+	bool Room::is_walled_0_based(int wall)
 	{
 		return walls[wall];
 	}
 
-	void square::update()
+	void Room::update()
 	{
 	}
 
-	void square::remove_wall(int wall)
+	void Room::remove_wall(int wall)
 	{
 		this->walls[wall - 1] = false;
 	}
 
-	string square::get_identifier()
+	string Room::get_identifier()
 	{
 		return "square";
 	}

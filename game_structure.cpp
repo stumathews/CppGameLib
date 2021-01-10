@@ -53,6 +53,7 @@ namespace gamelib
 		// Ask the event manager to notify event subscribers to update their logic now
 		//event_admin->raise_event(update_event, this);
 		event_admin->dispatch_event_to_subscriber(update_event);
+		
 	}
 
 	// This is basically the update functions which is run x FPS to maintain a timed series on constant updates 

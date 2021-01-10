@@ -1,4 +1,4 @@
-#include "game_object.h"
+#include "GameObject.h"
 #include <memory>
 #include <SDL_mixer.h>
 
@@ -14,7 +14,7 @@ using namespace std;
 namespace gamelib
 {
 
-	void game_object::change_internal_position(const std::shared_ptr<event> the_event)
+	void GameObject::change_internal_position(const std::shared_ptr<event> the_event)
 	{
 		const auto event = std::dynamic_pointer_cast<position_change_event>(the_event);
 		if(event->direction == Direction::Up && supports_move_logic)					
@@ -30,28 +30,28 @@ namespace gamelib
 			move_right();
 	}
 
-	vector<shared_ptr<event>> game_object::handle_event(const std::shared_ptr<event> the_event)
+	vector<shared_ptr<event>> GameObject::handle_event(const std::shared_ptr<event> the_event)
 	{
 		// We dont handle any events
 		return vector<shared_ptr<event>>();
 	}
 
-	void game_object::subscribe_to_event(event_type type, shared_ptr<event_manager> event_admin)
+	void GameObject::subscribe_to_event(event_type type, shared_ptr<event_manager> event_admin)
 	{
 		event_admin->subscribe_to_event(type, this);
 	}
 
-	void game_object::raise_event(const shared_ptr<event>& the_event, shared_ptr<event_manager> event_admin)
+	void GameObject::raise_event(const shared_ptr<event>& the_event, shared_ptr<event_manager> event_admin)
 	{
 		event_admin->raise_event(the_event, this);
 	}
 
-	shared_ptr<graphic_resource> game_object::get_graphic_asset() const
+	shared_ptr<graphic_resource> GameObject::get_graphic_asset() const
 	{
 		return graphic;
 	}
 
-	void game_object::draw(SDL_Renderer * renderer)
+	void GameObject::draw(SDL_Renderer * renderer)
 	{
 		if(!is_visible)
 			return;
@@ -59,27 +59,27 @@ namespace gamelib
 		draw_resource(renderer);
 	}
 
-	void game_object::move_up()
+	void GameObject::move_up()
 	{
 		y -= move_interval;
 	}
 
-	void game_object::move_down()
+	void GameObject::move_down()
 	{		
 		y += move_interval;
 	}
 
-	void game_object::move_left()
+	void GameObject::move_left()
 	{
 		x -= move_interval;
 	}
 
-	void game_object::move_right()
+	void GameObject::move_right()
 	{
 		x += move_interval;
 	}
 
-	string game_object::get_identifier()
+	string GameObject::get_identifier()
 	{
 		return "game_object";
 	}
@@ -104,13 +104,14 @@ namespace gamelib
 		}
 	}*/
 
-	void game_object::load_settings(std::shared_ptr<settings_manager> settings_admin)
+	void GameObject::load_settings(std::shared_ptr<settings_manager> settings_admin)
 	{
 		move_interval = settings_admin->get_int("player","move_interval");
 	}
 
-	void game_object::init_defaults( bool is_visible, shared_ptr<settings_manager> settings, int x, int y)
+	void GameObject::init_defaults( bool is_visible, shared_ptr<settings_manager> settings, int x, int y)
 	{
+		 this->bounds = { x, y, 0 ,0};
 		 supports_move_logic = true;
 		 this->is_visible = is_visible;
 		 is_color_key_enabled = false;
@@ -123,12 +124,12 @@ namespace gamelib
 		 settings_admin = settings;
 	}
 
-	game_object::game_object(bool is_visible, std::shared_ptr<settings_manager> settings_admin): event_subscriber()
+	GameObject::GameObject(bool is_visible, std::shared_ptr<settings_manager> settings_admin): IEventSubscriber()
 	{
 		init_defaults(is_visible, settings_admin, 0, 0);
 	}
 
-	game_object::game_object(const int x, const int y, bool is_visible, std::shared_ptr<settings_manager> settings_admin): event_subscriber(),
+	GameObject::GameObject(const int x, const int y, bool is_visible, std::shared_ptr<settings_manager> settings_admin): IEventSubscriber(),
 	supports_move_logic(false)
 	{
 		init_defaults(is_visible, settings_admin, x, y);
@@ -136,40 +137,40 @@ namespace gamelib
 	}
 
 
-	void game_object::set_color_key(const Uint8 r, const Uint8 g, const Uint8 b)
+	void GameObject::set_color_key(const Uint8 r, const Uint8 g, const Uint8 b)
 	{
 		color_key.r = r;
 		color_key.g = g;
 		color_key.b = b;
 	}
 
-	void game_object::add_component(const shared_ptr<component>& component)
+	void GameObject::add_component(const shared_ptr<component>& component)
 	{
 		components[component->get_name()] = component;
 	}
 
-	shared_ptr<component> game_object::find_component(string name)
+	shared_ptr<component> GameObject::find_component(string name)
 	{
 		return components[name];
 	}
 
-	bool game_object::has_component(string name)
+	bool GameObject::has_component(string name)
 	{
 		return components.find(name) != components.end();
 	}
 
-	void game_object::set_tag(const string tag)
+	void GameObject::set_tag(const string tag)
 	{
 		this->tag = tag;
 	}
 
-	string game_object::get_subscriber_name()
+	string GameObject::get_subscriber_name()
 	{
 		return "game_object";
 	}
 
 
-	void game_object::draw_resource(SDL_Renderer* renderer) const
+	void GameObject::draw_resource(SDL_Renderer* renderer) const
 	{
 		const auto resource = get_graphic_asset();
 		if(resource != nullptr && resource->type == "graphic")
@@ -182,19 +183,19 @@ namespace gamelib
 		}
 	}
 
-	bool game_object::is_resource_loaded() const
+	bool GameObject::is_resource_loaded() const
 	{
 		return graphic != nullptr;
 	}
 
 
 
-	string game_object::get_tag() const
+	string GameObject::get_tag() const
 	{
 		return this->tag;
 	}
 
-	void game_object::set_graphic_resource(shared_ptr<graphic_resource> graphic)
+	void GameObject::set_graphic_resource(shared_ptr<graphic_resource> graphic)
 	{
 		this->graphic = graphic;
 	}

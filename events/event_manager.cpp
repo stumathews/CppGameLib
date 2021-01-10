@@ -2,7 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include "Event.h"
-#include "event_subscriber.h"
+#include "IEventSubscriber.h"
 #include "common/Common.h"
 #include "util/RectDebugging.h"
 
@@ -37,7 +37,7 @@ namespace gamelib
 		}, true, true, config);
 	}
 
-	void event_manager::raise_event(const shared_ptr<event> event, event_subscriber* you)  // NOLINT(performance-unnecessary-value-param)
+	void event_manager::raise_event(const shared_ptr<event> event, IEventSubscriber* you)  // NOLINT(performance-unnecessary-value-param)
 	{
 		auto const log = "event_manager: " + you->get_subscriber_name()  + string(" raised to event ") + event->to_str();
 		
@@ -47,7 +47,7 @@ namespace gamelib
 		primary_event_queue_.push(event);
 	}
 
-	void event_manager::subscribe_to_event(const event_type type, event_subscriber* you)
+	void event_manager::subscribe_to_event(const event_type type, IEventSubscriber* you)
 	{
 		auto const message = "event_manager: "+you->get_subscriber_name() + string(" subscribed to event ") + type;
 		the_logger->log_message(message);
@@ -101,7 +101,7 @@ namespace gamelib
 		}
 	}
 
-	std::map<event_type, std::vector<event_subscriber*>> event_manager::get_subscriptions() const
+	std::map<event_type, std::vector<IEventSubscriber*>> event_manager::get_subscriptions() const
 	{
 		return event_subscribers_;
 	}

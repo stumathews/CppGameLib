@@ -31,7 +31,7 @@ namespace gamelib
 		void update() override;
 		void play();
 		void stop();
-		void setFrameRect(uint FrameNumber);
+		void set_frame_rect(uint FrameNumber) const;
 		virtual ~sprite(){};
 		bool stopped = false;
 	};

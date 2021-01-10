@@ -14,7 +14,8 @@ namespace gamelib
 		game_world,
 		square,
 		player,
-		sprite, 
+		sprite,
+		pickup,
 	};
 
 	class game_object : public event_subscriber

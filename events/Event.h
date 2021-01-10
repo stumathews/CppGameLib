@@ -13,7 +13,8 @@ namespace gamelib
 		scene_loaded,
 		SettingsReloaded,
 		GenerateNewLevel,
-		InvalidMove
+		InvalidMove,
+		Fire
 	};
 
 	class event

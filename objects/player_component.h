@@ -11,6 +11,7 @@ namespace gamelib
 		player_component(std::string component_name, std::shared_ptr<player> player);
 
 		std::shared_ptr<player> the_player;
+		
 		int room;
 	};
 }

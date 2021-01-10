@@ -6,13 +6,14 @@ namespace gamelib
 {
 	void sprite::update()
 	{
-		const unsigned long timeSincelastFrame = timeGetTime() - m_TimeLastFrame;
-		if(timeSincelastFrame >= m_Speed) {
+		const unsigned long time_since_last_frame = timeGetTime() - m_TimeLastFrame;
+		if(time_since_last_frame >= m_Speed) 
+		{
 			m_CurrentFrame++;
 			if(m_CurrentFrame >= m_TotalFrames) 
 				m_CurrentFrame = m_StartFrame;
 
-			setFrameRect(m_CurrentFrame);
+			set_frame_rect(m_CurrentFrame);
 
 			m_TimeLastFrame = timeGetTime();
 		
@@ -28,7 +29,7 @@ namespace gamelib
 		//m_FrameWidth =  TmpSurface->w/m_FramesPerRow;
 		//m_FrameHeight = TmpSurface->h/m_FramesPerColumn;
 		m_CurrentFrame = m_StartFrame;
-		setFrameRect(m_CurrentFrame);
+		set_frame_rect(m_CurrentFrame);
 		m_TimeLastFrame = timeGetTime();
 	}
 
@@ -37,7 +38,7 @@ namespace gamelib
 		stopped = true;
 	}
 
-	void sprite::setFrameRect(uint FrameNumber)
+	void sprite::set_frame_rect(uint FrameNumber) const
 	{
 		if(!is_resource_loaded())
 			return;

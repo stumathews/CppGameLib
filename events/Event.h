@@ -15,7 +15,8 @@ namespace gamelib
 		GenerateNewLevel,
 		InvalidMove,
 		Fire,
-		FetchedPickup
+		FetchedPickup,
+		GameObject
 	};
 
 	class event

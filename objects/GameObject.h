@@ -22,6 +22,7 @@ namespace gamelib
 	class GameObject : public IEventSubscriber
 	{
 	public:
+		int id;
 		bool supports_move_logic;
 		bool is_visible;
 		bool is_color_key_enabled;
@@ -30,6 +31,7 @@ namespace gamelib
 		int move_interval;		
 		SDL_Rect bounds;
 		std::shared_ptr<settings_manager> settings_admin;
+		bool is_active = true;
 		
 		void init_defaults(bool is_visible, std::shared_ptr<settings_manager> settings, int x, int y);
 		
@@ -52,8 +54,7 @@ namespace gamelib
 		virtual object_type get_type() = 0;
 
 		virtual void change_internal_position(std::shared_ptr<event> the_event);
-		virtual std::vector<std::shared_ptr<event>> handle_event(const std::shared_ptr<event> event) override;  // NOLINT(readability-inconsistent-declaration-parameter-name)
-		//void detect_side_collision(std::shared_ptr<sdl_graphics_manager> graphics_admin,  std::shared_ptr<resource_manager> resource_admin);
+		std::vector<std::shared_ptr<event>> handle_event( std::shared_ptr<event> event) override;
 		void set_color_key(Uint8 r, Uint8 g, Uint8 b);
 
 		void add_component(const std::shared_ptr<component>& component);
@@ -67,7 +68,7 @@ namespace gamelib
 		void virtual draw(SDL_Renderer* renderer);
 		bool is_resource_loaded() const;
 	private:
-		int id;
+		
 		std::string tag;
 		bool is_traveling_left;
 		int red, blue, green;
@@ -75,7 +76,7 @@ namespace gamelib
 		std::map<std::string, std::shared_ptr<component>> components;
 		SDL_Color color_key = {};
 		std::shared_ptr<asset> underlying_asset;
-
+		static int ids;
 	};
 }
 

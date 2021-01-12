@@ -3,6 +3,8 @@
 #include "tinyxml2.h"
 #include <memory>
 #include <list>
+
+#include "GameObjectEvent.h"
 #include "common/Common.h"
 #include "events/AddGameObjectToCurrentSceneEvent.h"
 #include "events/event_manager.h"
@@ -23,7 +25,8 @@ namespace gamelib
 
 			// I care about when I'm asked to add game object to current scene
 			event_admin->subscribe_to_event(event_type::AddGameObjectToCurrentScene, this);
-			event_admin->subscribe_to_event(event_type::GenerateNewLevel, this);			
+			event_admin->subscribe_to_event(event_type::GenerateNewLevel, this);
+			event_admin->subscribe_to_event(event_type::GameObject, this);
 
 			return true;
 		}, true, true, config);
@@ -63,10 +66,22 @@ namespace gamelib
 			break;
 			case event_type::PlayerMovedEventType: break;
 			case event_type::scene_loaded: break;
+			case event_type::GameObject:
+				const auto game_object_event = dynamic_pointer_cast<GameObjectEvent>(the_event);
+				if( game_object_event->context == GameObjectEventContext::Remove)
+					remove_from_layers(game_object_event->game_object->id);				
 				break;
 		}
 		
 		return vector<shared_ptr<event>>();
+	}
+
+	void scene_manager::remove_from_layers(int game_object_id)
+	{
+		for_each(begin(layers), end(layers), [&](shared_ptr<layer> layer)
+		{
+			layer->game_objects.remove_if([=](shared_ptr<GameObject> game_object){ return game_object->id == game_object_id; });
+		});
 	}
 
 	void scene_manager::load_new_scene(const std::shared_ptr<event>& the_event, shared_ptr<resource_manager> resource_admin)

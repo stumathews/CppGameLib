@@ -82,13 +82,10 @@ namespace gamelib
 		
 		if (have_left_wall) 
 			SDL_RenderDrawLine(renderer, dx,dy,ax,ay);
-				
-		if(fill)
-		{
-			DrawFilledRect(renderer, &bounds, { 255, 0 ,0 ,0});
-		}
 		
-
+		if(fill)
+			DrawFilledRect(renderer, &bounds, { 255, 0 ,0 ,0});
+		
 		if(settings_admin->get_bool("global", "print_debugging_text"))
 		  RectDebugging::printInRect(renderer, get_tag(), &bounds, resource_admin); 
 	}

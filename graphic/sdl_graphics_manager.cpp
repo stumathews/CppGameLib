@@ -203,7 +203,8 @@ namespace gamelib
 				{
 					for (const auto& game_object : layer->game_objects)
 					{
-						game_object->draw(window_renderer);
+						if(game_object && game_object->is_active)
+							game_object->draw(window_renderer);
 					}
 				}
 			}

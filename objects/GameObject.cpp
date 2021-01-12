@@ -13,7 +13,7 @@ using namespace std;
 
 namespace gamelib
 {
-
+	int GameObject::ids = 0;
 	void GameObject::change_internal_position(const std::shared_ptr<event> the_event)
 	{
 		const auto event = std::dynamic_pointer_cast<position_change_event>(the_event);
@@ -122,6 +122,7 @@ namespace gamelib
 		 blue = 0xFF;
 		 green = 0x00;
 		 settings_admin = settings;
+		 id = ids++;
 	}
 
 	GameObject::GameObject(bool is_visible, std::shared_ptr<settings_manager> settings_admin): IEventSubscriber()
@@ -133,7 +134,7 @@ namespace gamelib
 	supports_move_logic(false)
 	{
 		init_defaults(is_visible, settings_admin, x, y);
-		load_settings(settings_admin);
+		GameObject::load_settings(settings_admin);
 	}
 
 

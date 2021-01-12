@@ -2,9 +2,12 @@
 
 #include "audio/AudioManager.h"
 #include "resource/resource_manager.h"
+#include "objects/GameObject.h"
 
 using namespace std;
 using namespace gamelib;
+
+int GameObject::ids = 0;
 
 class AudioManager : public testing::Test {
  protected:

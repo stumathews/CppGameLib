@@ -38,8 +38,9 @@ namespace gamelib
 
 		// Event management
 		static void update();
-		vector<shared_ptr<event>> handle_event(shared_ptr<event> the_event) override;	
-	    string get_subscriber_name() override;
+		vector<shared_ptr<event>> handle_event(shared_ptr<event> the_event) override;
+		void remove_from_layers(int game_object_id);
+		string get_subscriber_name() override;
 			
 		list<shared_ptr<layer>> layers;
 		string current_scene_name = {};

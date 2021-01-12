@@ -159,7 +159,7 @@
     <ClInclude Include="objects\DrawingBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameObjectEvent.h">
+    <ClInclude Include="events\GameObjectEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -281,7 +281,7 @@
     <ClCompile Include="objects\DrawingBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameObjectEvent.cpp">
+    <ClCompile Include="events\GameObjectEvent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

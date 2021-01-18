@@ -52,7 +52,7 @@ TEST_F(ResourceManager, Initialize)
 {
 	EXPECT_TRUE(resource_admin->initialize(event_admin)) << "Expected resource manager initialization to succeed";
 	EXPECT_EQ(event_admin->get_subscriptions()[event_type::LevelChangedEventType].size(), 1) << "Expected to subscribe to LevelChangedEventType";
-	EXPECT_STREQ(event_admin->get_subscriptions()[event_type::LevelChangedEventType][0]->get_subscriber_name().c_str(), resource_admin->get_subscriber_name().c_str()) << "Unexpected subscriber";
+	EXPECT_STREQ(event_admin->get_subscriptions()[event_type::LevelChangedEventType][0].lock()->get_subscriber_name().c_str(), resource_admin->get_subscriber_name().c_str()) << "Unexpected subscriber";
 }
 
 TEST_F(ResourceManager, read_resources)

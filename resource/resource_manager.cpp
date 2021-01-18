@@ -30,7 +30,7 @@ namespace gamelib
 	{
 		return run_and_log("resource_manager::initialize()", config->get_bool("global", "verbose"), [&]()
 		{			
-			event_admin->subscribe_to_event(event_type::LevelChangedEventType, this); // we will load the resources for the level that has been loaded
+			event_admin->subscribe_to_event(event_type::LevelChangedEventType, shared_from_this()); // we will load the resources for the level that has been loaded
 			return true;
 		}, true, true, config);
 	}

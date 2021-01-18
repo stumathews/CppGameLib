@@ -120,7 +120,7 @@ namespace gamelib
 			
 			if(!is_valid_move){
 				log_message("Invalid move", settings_admin->get_bool("player", "verbose"));
-				event_admin->raise_event(make_shared<event>(event_type::InvalidMove), this);				
+				event_admin->raise_event(make_shared<event>(event_type::InvalidMove), GameObject::downcasted_shared_from_this<Player>());				
 				return created_events;
 			}
 			
@@ -137,7 +137,7 @@ namespace gamelib
 				center_player_in_room(left_room);
 
 			// Player moved, tell the world about my move!
-			auto component = make_shared<player_component>(constants::playerComponentName, shared_from_this());	
+			auto component = make_shared<player_component>(constants::playerComponentName, GameObject::downcasted_shared_from_this<Player>());	
 			created_events.push_back(make_shared<player_moved_event>(component, move_direction));
 		}
 

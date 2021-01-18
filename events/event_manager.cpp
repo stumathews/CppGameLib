@@ -34,41 +34,46 @@ namespace gamelib
 		
 		return run_and_log("event_manager::initialize()", config->get_bool("global", "verbose"), [&]()
 		{
-				subscribe_to_event(gamelib::event_type::GameObject, this);
+				subscribe_to_event(gamelib::event_type::GameObject, shared_from_this());
 			return true;
 		}, true, true, config);
 	}
 
-	void event_manager::raise_event(const shared_ptr<event> event, IEventSubscriber* you)  // NOLINT(performance-unnecessary-value-param)
-	{
+	void event_manager::raise_event(const shared_ptr<event> event, shared_ptr<IEventSubscriber> you)  // NOLINT(performance-unnecessary-value-param)
+	{		
 		auto const log = "event_manager: " + you->get_subscriber_name()  + string(" raised to event ") + event->to_str();
 		
 		if(event->type != event_type::DoLogicUpdateEventType)
 			the_logger->log_message(log);
 
-		primary_event_queue_.push(event);
+		primary_event_queue_.push(event);		
 	}
 
-	void event_manager::subscribe_to_event(const event_type type, IEventSubscriber* you)
+	void event_manager::subscribe_to_event(const event_type type, weak_ptr<IEventSubscriber> pYou)
 	{
-		auto const message = "event_manager: "+you->get_subscriber_name() + string(" subscribed to event ") + type;
-		the_logger->log_message(message);
+		if(auto you = pYou.lock())
+		{
+			auto const message = "event_manager: "+you->get_subscriber_name() + string(" subscribed to event ") + type;
+			the_logger->log_message(message);
 		
-		event_subscribers_[type].push_back(you);	
+			event_subscribers_[type].push_back(you);
+		}
 	}
 
 	void event_manager::dispatch_event_to_subscriber(const shared_ptr<event>& event)
 	{
-		for (const auto& subscriber :  event_subscribers_[event->type])
+		for (const auto& pSubscriber :  event_subscribers_[event->type])
 		{
 			if(event_subscribers_.empty()) return; // if reset()
-			
-			// allow subscriber to process the event
-			for(const auto &secondary_event : subscriber->handle_event(event))
+			if(auto subscriber = pSubscriber.lock())
 			{
-				// any results from processing are put onto the secondary queue
-				secondary_event_queue_.push(secondary_event);
-			}			
+				// allow subscriber to process the event
+				for(const auto &secondary_event : subscriber->handle_event(event))
+				{
+					// any results from processing are put onto the secondary queue
+					secondary_event_queue_.push(secondary_event);
+				}	
+			}
 		}
 		event->processed = true;
 	}
@@ -103,7 +108,7 @@ namespace gamelib
 		}
 	}
 
-	std::map<event_type, std::vector<IEventSubscriber*>> event_manager::get_subscriptions() const
+	std::map<event_type, std::vector<weak_ptr<IEventSubscriber>>> event_manager::get_subscriptions() const
 	{
 		return event_subscribers_;
 	}
@@ -131,11 +136,14 @@ namespace gamelib
 			auto &subscribers = pair.second;
 			if(type != pair.first)
 				continue;
-			std::remove_if(begin(subscribers), end(subscribers), [&](IEventSubscriber* candidate) 
+			std::remove_if(begin(subscribers), end(subscribers), [&](weak_ptr<IEventSubscriber> pCandidate) 
 				{
-					return candidate == nullptr 
-						? false 
-						: candidate->get_subscriber_id() == subscription_id; 
+					if(auto candidate = pCandidate.lock())
+					{
+						return candidate == nullptr 
+							? false 
+							: candidate->get_subscriber_id() == subscription_id; 
+					}
 				});
 		}
 		

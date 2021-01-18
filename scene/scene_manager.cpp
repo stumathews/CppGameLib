@@ -21,12 +21,12 @@ namespace gamelib
 		is_initialized = run_and_log("scene_manager::initialize()", config->get_bool("global", "verbose"), [&]()
 		{
 			// I care about when the level changes
-			event_admin->subscribe_to_event(event_type::LevelChangedEventType, this);
+			event_admin->subscribe_to_event(event_type::LevelChangedEventType, shared_from_this());
 
 			// I care about when I'm asked to add game object to current scene
-			event_admin->subscribe_to_event(event_type::AddGameObjectToCurrentScene, this);
-			event_admin->subscribe_to_event(event_type::GenerateNewLevel, this);
-			event_admin->subscribe_to_event(event_type::GameObject, this);
+			event_admin->subscribe_to_event(event_type::AddGameObjectToCurrentScene, shared_from_this());
+			event_admin->subscribe_to_event(event_type::GenerateNewLevel, shared_from_this());
+			event_admin->subscribe_to_event(event_type::GameObject, shared_from_this());
 
 			return true;
 		}, true, true, config);
@@ -37,7 +37,7 @@ namespace gamelib
 	{
 		// Emit event to switch to scene 1 on initialization of scene manager.
 		// This triggers usually the resource_manager that loads the resources in for the scene (see resource_manager::process_events etc..)
-		event_admin->raise_event(std::make_shared<scene_changed_event>(scene_id), this);
+		event_admin->raise_event(std::make_shared<scene_changed_event>(scene_id), shared_from_this());
 	}
 
 
@@ -98,7 +98,7 @@ namespace gamelib
 		auto raise_scene_loaded_event = [this](int scene_id, const string& scene_name)
 		{
 			log_message("Scene "+ to_string(scene_id) +" : "+ scene_name +" loaded.");
-			event_admin->raise_event(make_unique<scene_loaded_event>(scene_id), this);
+			event_admin->raise_event(make_unique<scene_loaded_event>(scene_id), shared_from_this());
 		};
 
 		string scene_name;

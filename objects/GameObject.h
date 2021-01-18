@@ -5,6 +5,7 @@
 #include "Component.h"
 #include <graphic/graphic_resource.h>
 #include "events/event_manager.h"
+#include <objects/MultipleInheritableEnableSharedFromThis.h>
 
 namespace gamelib
 {
@@ -18,7 +19,7 @@ namespace gamelib
 		pickup,
 	};
 
-	class GameObject : public IEventSubscriber
+	class GameObject : public IEventSubscriber, public inheritable_enable_shared_from_this<IEventSubscriber>
 	{
 	public:
 		int id;

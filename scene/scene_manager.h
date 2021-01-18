@@ -6,13 +6,14 @@
 #include "events/EventSubscriber.h"
 #include "resource/resource_manager.h"
 #include "objects/game_world_data.h"
+#include <objects/MultipleInheritableEnableSharedFromThis.h>
 
 using namespace std;
 
 namespace gamelib
 {
 	// Represents the current scene
-	class scene_manager final : public EventSubscriber
+	class scene_manager final : public EventSubscriber, public inheritable_enable_shared_from_this<IEventSubscriber>
 	{
 		shared_ptr<event_manager> event_admin;
 		shared_ptr<settings_manager> config;

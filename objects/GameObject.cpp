@@ -38,12 +38,12 @@ namespace gamelib
 
 	void GameObject::subscribe_to_event(event_type type, shared_ptr<event_manager> event_admin)
 	{
-		event_admin->subscribe_to_event(type, this);
+		event_admin->subscribe_to_event(type, shared_from_this());
 	}
 
 	void GameObject::raise_event(const shared_ptr<event>& the_event, shared_ptr<event_manager> event_admin)
 	{
-		event_admin->raise_event(the_event, this);
+		event_admin->raise_event(the_event, shared_from_this());
 	}
 
 	shared_ptr<graphic_resource> GameObject::get_graphic_asset() const

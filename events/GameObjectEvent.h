@@ -9,7 +9,8 @@ namespace gamelib
 
 	enum class GameObjectEventContext
 	{
-		Remove
+		Remove,
+		RemoveSubscription
 	};
 
 	class GameObjectEvent : public event

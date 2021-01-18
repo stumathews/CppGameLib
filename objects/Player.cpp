@@ -90,7 +90,11 @@ namespace gamelib
 			auto game_world = static_pointer_cast<game_world_component>(find_component(constants::game_world))->get_data();
 			
 			const auto last_room_index = count_if(begin(game_world->game_objects), end(game_world->game_objects),
-			                                      [](shared_ptr<GameObject> g){ return g->get_type() == object_type::room; });
+			                                      [](weak_ptr<GameObject> g){
+					if(auto ptr = g.lock()){
+						return ptr->get_type() == object_type::room;
+					}
+				});
 			const auto first_room_index = 0;
 
 			auto current_room = dynamic_pointer_cast<Room>(game_world->game_objects[within_room_index < first_room_index ? first_room_index : within_room_index]);			

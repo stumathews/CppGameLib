@@ -1,6 +1,6 @@
 #pragma once
 #include "common/Common.h"
-#include "events/IEventSubscriber.h"
+#include "events/EventSubscriber.h"
 #include "objects/game_world_data.h"
 #include "objects/Player.h"
 #include "scene/scene_manager.h"
@@ -10,7 +10,7 @@ namespace gamelib
 	/***
 	 * logical structure of the game such as the game initialization, game loop etc.
 	 */
-	class game_structure final : public IEventSubscriber
+	class game_structure final : public EventSubscriber
 	{
 		std::shared_ptr<event_manager> event_admin;
 		std::shared_ptr<resource_manager> resource_admin;

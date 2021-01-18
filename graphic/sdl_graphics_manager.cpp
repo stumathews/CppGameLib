@@ -16,7 +16,7 @@ namespace gamelib
 {
 
 	sdl_graphics_manager::sdl_graphics_manager(shared_ptr<event_manager> event_admin, std::shared_ptr<logger> the_logger)
-	: IEventSubscriber(), event_admin(event_admin), the_logger(std::move(the_logger))
+	: EventSubscriber(), event_admin(event_admin), the_logger(std::move(the_logger))
 	{
 	}
 
@@ -203,8 +203,11 @@ namespace gamelib
 				{
 					for (const auto& game_object : layer->game_objects)
 					{
-						if(game_object && game_object->is_active)
-							game_object->draw(window_renderer);
+						if(auto go = game_object.lock())
+						{
+							if(go && go->is_active)
+								go->draw(window_renderer);
+						}
 					}
 				}
 			}

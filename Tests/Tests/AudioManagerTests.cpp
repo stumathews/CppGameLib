@@ -7,7 +7,7 @@
 using namespace std;
 using namespace gamelib;
 
-int GameObject::ids = 0;
+//int GameObject::ids = 0;
 
 class AudioManager : public testing::Test {
  protected:

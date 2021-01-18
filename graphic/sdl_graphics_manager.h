@@ -7,14 +7,14 @@
 #include "SDL.h"
 #include <functional>
 #include "events/event_manager.h"
-#include "events/IEventSubscriber.h"
+#include "events/EventSubscriber.h"
 
 
 namespace gamelib
 {
 	class scene_manager;
 
-	class sdl_graphics_manager final : public IEventSubscriber, public std::enable_shared_from_this<sdl_graphics_manager>
+	class sdl_graphics_manager final : public EventSubscriber, public std::enable_shared_from_this<sdl_graphics_manager>
 	{
 		std::shared_ptr<event_manager> event_admin;
 		std::shared_ptr<logger> the_logger;

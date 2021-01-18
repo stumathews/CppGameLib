@@ -4,7 +4,6 @@
 #include <SDL.h>
 #include "Component.h"
 #include <graphic/graphic_resource.h>
-
 #include "events/event_manager.h"
 
 namespace gamelib
@@ -67,6 +66,7 @@ namespace gamelib
 		void draw_resource(SDL_Renderer* renderer) const;
 		void virtual draw(SDL_Renderer* renderer);
 		bool is_resource_loaded() const;
+		virtual int get_subscriber_id() override { return id; }
 	private:
 		
 		std::string tag;

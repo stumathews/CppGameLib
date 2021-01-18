@@ -79,6 +79,11 @@ namespace gamelib
 		}
 		return condition;
 	}
+
+	inline int get_random_int(const int min, const int max)
+	{
+		return rand() % (max - min + 1) + min;
+	}
 }
 
 

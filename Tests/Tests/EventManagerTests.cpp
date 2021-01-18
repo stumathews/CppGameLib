@@ -2,11 +2,12 @@
 #include "common/static_config.h"
 #include "events/DoLogicUpdateEvent.h"
 #include "events/event_manager.h"
+#include <events/EventSubscriber.h>
 
 using namespace std;
 using namespace gamelib;
 
-class dummy_subscriber final : public IEventSubscriber
+class dummy_subscriber final : public EventSubscriber
 {
 public:
 	bool handle_event_received = false;

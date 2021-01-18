@@ -15,7 +15,7 @@ namespace gamelib
 		float x = 0;
 		float y = 0;
 		std::string name;
-		std::list<std::shared_ptr<GameObject>> game_objects;
+		std::list<std::weak_ptr<GameObject>> game_objects;
 	};
 }
 

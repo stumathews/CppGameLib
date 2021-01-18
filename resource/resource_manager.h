@@ -5,7 +5,7 @@
 #include "asset/asset.h"
 #include "audio/AudioManager.h"
 #include "events/event_manager.h"
-#include "events/IEventSubscriber.h"
+#include "events/EventSubscriber.h"
 #include "font/font_manager.h"
 #include "graphic/sdl_graphics_manager.h"
 
@@ -14,7 +14,7 @@ namespace gamelib
 	/***
 	 * co-ordinates the resources in the game - such as holding definitions of all the resources/assets in the game
 	 */
-	class resource_manager final : public IEventSubscriber, public std::enable_shared_from_this<resource_manager>
+	class resource_manager final : public EventSubscriber, public std::enable_shared_from_this<resource_manager>
 	{		
 	    public:
 		resource_manager(std::shared_ptr<settings_manager> config, std::shared_ptr<sdl_graphics_manager> graphics_admin, std::shared_ptr<font_manager> font_admin, std::shared_ptr<audio_manager>, std::shared_ptr<logger> the_logger = std::make_shared<logger>());

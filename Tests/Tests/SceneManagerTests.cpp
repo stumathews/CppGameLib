@@ -20,7 +20,8 @@ class SceneManager : public testing::Test {
 	graphics_admin = make_shared<sdl_graphics_manager>(event_admin);
   	audio_admin = make_shared<audio_manager>();
 	resource_admin = make_shared<resource_manager>(config, graphics_admin, font_admin, audio_admin);
-  	scene_admin = make_shared<scene_manager>(event_admin, config, resource_admin, ""/* root folder is scene folder */);
+	world = make_shared<game_world_data>();
+  	scene_admin = make_shared<scene_manager>(event_admin, config, resource_admin, world, ""/* root folder is scene folder */);
   }
     
   //void TearDown() override {}
@@ -32,6 +33,7 @@ class SceneManager : public testing::Test {
   shared_ptr<sdl_graphics_manager> graphics_admin;
   shared_ptr<audio_manager> audio_admin;
   shared_ptr<scene_manager> scene_admin;
+  shared_ptr<game_world_data> world;
 	
 };
 
@@ -40,7 +42,7 @@ TEST_F(SceneManager, Initialize)
 	EXPECT_TRUE(scene_admin->initialize());
 	EXPECT_EQ(event_admin->get_subscriptions()[event_type::LevelChangedEventType].size(), 1) << "Scene manager not automatically subscribed to LevelChangedEventType event";
 	EXPECT_EQ(event_admin->get_subscriptions()[event_type::AddGameObjectToCurrentScene].size(), 1) << "Scene manager not automatically subscribed to AddGameObjectToCurrentScene event";
-	EXPECT_EQ(event_admin->get_subscriptions().size(), 3) << "Expected only 3 subscriptions to be made initially, included subscription by graphics manager";
+	EXPECT_EQ(event_admin->get_subscriptions().size(), 4) << "Expected only 3 subscriptions to be made initially, included subscription by graphics manager";
 }
 
 TEST_F(SceneManager, get_scene_layers)
@@ -60,7 +62,7 @@ TEST_F(SceneManager, get_scene_layers)
 	EXPECT_TRUE(layer->visible) << "Layer not visible";
 	EXPECT_EQ(layer->zorder, 0) << "Z-order is wrong";
 	EXPECT_EQ(layer->game_objects.size(), 1) << "Expected 1 game object in the layer";	
-	EXPECT_STREQ(game_object->get_identifier().c_str(), "square") << "Wrong game object";
+	EXPECT_STREQ(game_object.lock()->get_identifier().c_str(), "square") << "Wrong game object";
 		
 }
 

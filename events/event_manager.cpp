@@ -5,6 +5,7 @@
 #include "IEventSubscriber.h"
 #include "common/Common.h"
 #include "util/RectDebugging.h"
+#include <events/GameObjectEvent.h>
 
 using namespace std;
 namespace gamelib
@@ -33,6 +34,7 @@ namespace gamelib
 		
 		return run_and_log("event_manager::initialize()", config->get_bool("global", "verbose"), [&]()
 		{
+				subscribe_to_event(gamelib::event_type::GameObject, this);
 			return true;
 		}, true, true, config);
 	}
@@ -104,6 +106,40 @@ namespace gamelib
 	std::map<event_type, std::vector<IEventSubscriber*>> event_manager::get_subscriptions() const
 	{
 		return event_subscribers_;
+	}
+	std::vector<std::shared_ptr<event>> event_manager::handle_event(std::shared_ptr<event> evt)
+	{
+		std::vector<std::shared_ptr<event>> generated_events;
+
+		if(evt->type == gamelib::event_type::GameObject)
+		{
+			const auto game_object_event = dynamic_pointer_cast<gamelib::GameObjectEvent>(evt);
+			//remove_subscription(game_object_event->game_object->id, gamelib::event_type::PositionChangeEventType);
+		}
+
+		return generated_events;
+	}
+	std::string event_manager::get_subscriber_name()
+	{
+		return "event_manager";
+	}
+	void event_manager::remove_subscription(const int subscription_id, gamelib::event_type type)
+	{
+		for(auto &pair : event_subscribers_ )
+		{
+			auto &type = pair.first;
+			auto &subscribers = pair.second;
+			if(type != pair.first)
+				continue;
+			std::remove_if(begin(subscribers), end(subscribers), [&](IEventSubscriber* candidate) 
+				{
+					return candidate == nullptr 
+						? false 
+						: candidate->get_subscriber_id() == subscription_id; 
+				});
+		}
+		
+		int i = 0;
 	}
 }
 

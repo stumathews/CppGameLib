@@ -162,6 +162,12 @@
     <ClInclude Include="events\GameObjectEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="events\EventSubscriber.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="objects\MultipleInheritableEnableSharedFromThis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -282,6 +288,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="events\GameObjectEvent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="events\EventSubscriber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\MultipleInheritableEnableSharedFromThis.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

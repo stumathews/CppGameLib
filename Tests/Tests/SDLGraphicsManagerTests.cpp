@@ -21,7 +21,8 @@ class SDLGraphicsManager : public testing::Test {
 	graphics_admin = make_shared<sdl_graphics_manager>(event_admin);
   	audio_admin = make_shared<audio_manager>();
 	resource_admin = make_shared<resource_manager>(config, graphics_admin, font_admin, audio_admin);
-  	scene_admin = make_shared<scene_manager>(event_admin, config, resource_admin, ""/* root folder is scene folder */);
+	world = make_shared<game_world_data>();
+  	scene_admin = make_shared<scene_manager>(event_admin, config, resource_admin, world, ""/* root folder is scene folder */);
   }
     
   //void TearDown() override {}
@@ -33,6 +34,7 @@ class SDLGraphicsManager : public testing::Test {
   shared_ptr<sdl_graphics_manager> graphics_admin;
   shared_ptr<audio_manager> audio_admin;
   shared_ptr<scene_manager> scene_admin;
+  shared_ptr<game_world_data> world;
 	
 };
 

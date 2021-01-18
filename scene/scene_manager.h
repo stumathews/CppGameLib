@@ -3,21 +3,23 @@
 
 #include <list>
 #include "Layer.h"
-#include "events/IEventSubscriber.h"
+#include "events/EventSubscriber.h"
 #include "resource/resource_manager.h"
+#include "objects/game_world_data.h"
 
 using namespace std;
 
 namespace gamelib
 {
 	// Represents the current scene
-	class scene_manager final : public IEventSubscriber
+	class scene_manager final : public EventSubscriber
 	{
 		shared_ptr<event_manager> event_admin;
 		shared_ptr<settings_manager> config;
 		shared_ptr<resource_manager> resource_admin;
+		shared_ptr<game_world_data> world;
 	public:
-		scene_manager(shared_ptr<event_manager> ea, shared_ptr<settings_manager> c, shared_ptr<resource_manager> resource_admin, std::string scene_folder = "game/");	
+		scene_manager(shared_ptr<event_manager> ea, shared_ptr<settings_manager> c, shared_ptr<resource_manager> resource_admin, std::shared_ptr<game_world_data> world, std::string scene_folder = "game/");	
 		scene_manager(const scene_manager &) = default;
 		scene_manager(scene_manager &&) = default;
 	    scene_manager& operator=(scene_manager const&)  = delete;

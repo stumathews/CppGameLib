@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
-#include "IEventSubscriber.h"
+#include "EventSubscriber.h"
 #include <map>
 #include <queue>
 #include "Event.h"
@@ -10,7 +10,7 @@
 
 namespace gamelib
 {
-	class event_manager
+	class event_manager : public EventSubscriber
 	{
 		// Primary queue used for event processing
 		std::queue<std::shared_ptr<event>> primary_event_queue_;
@@ -56,6 +56,15 @@ namespace gamelib
 		void process_all_events();
 
 		[[nodiscard]] std::map<event_type, std::vector<IEventSubscriber*>> get_subscriptions() const;
+
+
+		// Inherited via IEventSubscriber
+		
+		virtual std::vector<std::shared_ptr<event>> handle_event(std::shared_ptr<event> evt) override;
+
+		virtual std::string get_subscriber_name() override;
+
+		void remove_subscription(const int subscription_id, gamelib::event_type type);
 
 	};
 }

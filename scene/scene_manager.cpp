@@ -4,7 +4,7 @@
 #include <memory>
 #include <list>
 
-#include "GameObjectEvent.h"
+#include "events/GameObjectEvent.h"
 #include "common/Common.h"
 #include "events/AddGameObjectToCurrentSceneEvent.h"
 #include "events/event_manager.h"
@@ -42,8 +42,8 @@ namespace gamelib
 
 
 
-	scene_manager::scene_manager(shared_ptr<event_manager> ea, shared_ptr<settings_manager> c, shared_ptr<resource_manager> resource_admin,  std::string scene_folder)
-	: event_admin(ea), config(c), resource_admin(resource_admin), scene_folder(scene_folder)
+	scene_manager::scene_manager(shared_ptr<event_manager> ea, shared_ptr<settings_manager> c, shared_ptr<resource_manager> resource_admin, std::shared_ptr<game_world_data> world, std::string scene_folder)
+	: event_admin(ea), config(c), resource_admin(resource_admin), scene_folder(scene_folder), world(world)
 	{
 	}
 
@@ -80,7 +80,14 @@ namespace gamelib
 	{
 		for_each(begin(layers), end(layers), [&](shared_ptr<layer> layer)
 		{
-			layer->game_objects.remove_if([=](shared_ptr<GameObject> game_object){ return game_object->id == game_object_id; });
+			layer->game_objects.remove_if([=](weak_ptr<GameObject> game_object)
+			{
+				if(auto ptr = game_object.lock())
+				{
+					return ptr->id == game_object_id;
+				}
+			});
+			
 		});
 	}
 
@@ -265,8 +272,12 @@ namespace gamelib
 									if(object == nullptr)
 										continue;
 
-									// populate the list of game objects in this layer
-									the_layer->game_objects.push_back(game_object_factory::get_instance().build_game_object(object, resource_admin, config));																
+									//
+									auto game_object = game_object_factory::get_instance().build_game_object(object, resource_admin, config);
+									world->game_objects.push_back(game_object);
+
+									// Keep track of the game object in this layer
+									the_layer->game_objects.push_back(game_object);																
 								}
 							}
 						}

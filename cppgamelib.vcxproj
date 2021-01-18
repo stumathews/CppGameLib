@@ -167,7 +167,9 @@
     <ClInclude Include="common\static_config.h" />
     <ClInclude Include="common\Logger.h" />
     <ClInclude Include="common\TypeAliases.h" />
+    <ClInclude Include="events\EventSubscriber.h" />
     <ClInclude Include="events\GameObjectEvent.h" />
+    <ClInclude Include="objects\MultipleInheritableEnableSharedFromThis.h" />
     <ClInclude Include="objects\DrawingBase.h" />
     <ClInclude Include="events\AddGameObjectToCurrentSceneEvent.h" />
     <ClInclude Include="events\DoLogicUpdateEvent.h" />
@@ -213,7 +215,9 @@
     <ClCompile Include="audio\AudioManager.cpp" />
     <ClCompile Include="audio\AudioResource.cpp" />
     <ClCompile Include="cppgamelib.cpp" />
+    <ClCompile Include="events\EventSubscriber.cpp" />
     <ClCompile Include="events\GameObjectEvent.cpp" />
+    <ClCompile Include="objects\MultipleInheritableEnableSharedFromThis.cpp" />
     <ClCompile Include="objects\DrawingBase.cpp" />
     <ClCompile Include="events\AddGameObjectToCurrentSceneEvent.cpp" />
     <ClCompile Include="events\DoLogicUpdateEvent.cpp" />

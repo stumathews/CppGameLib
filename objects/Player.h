@@ -6,11 +6,12 @@
 #include "DrawingBase.h"
 #include "events/Event.h"
 #include "scene/Room.h"
+#include <objects/MultipleInheritableEnableSharedFromThis.h>
 
 namespace gamelib
 {
 	
-	class Player final : public DrawingBase, public std::enable_shared_from_this<Player>
+	class Player final : public DrawingBase, public inheritable_enable_shared_from_this<Player>
 	{
 		bool draw_box = false;
 		std::shared_ptr<event_manager> event_admin;

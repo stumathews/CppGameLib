@@ -8,7 +8,7 @@ namespace gamelib
 {
 	class ResourceManager;
 
-	class audio_resource final : public asset
+	class audio_resource final : public Asset
 	{
 		ResourceManager& resource_admin;
 	public:
@@ -23,11 +23,11 @@ namespace gamelib
 
 		
 		//Load the resource onto the surface
-		void load() override;
+		void Load() override;
 		bool is_fx() const;
 
 		// a render resource can unload itself from memory
-		bool unload() override;
+		bool Unload() override;
 	};
 }
 

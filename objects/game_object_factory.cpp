@@ -10,133 +10,309 @@ using namespace std;
 
 namespace gamelib
 {
-	game_object_factory& game_object_factory::get_instance()
-	{
-		static game_object_factory instance;
-		return instance;
-	}
 
-	game_object_factory::game_object_factory() = default;
-	game_object_factory::~game_object_factory() = default;
-
-	shared_ptr<GameObject> game_object_factory::build_game_object(XMLElement * scene_object_xml, ResourceManager& resource_admin, SettingsManager& settings_admin, EventManager& event_admin) const
+	/// <summary>
+	/// Build Game object from XML
+	/// </summary>
+	/// <param name="scene_object_xml">XML element describing game object</param>
+	/// <returns></returns>
+	shared_ptr<GameObject> GameObjectFactory::BuildGameObject( 	XMLElement * scene_object_xml, 
+																ResourceManager& resourceManager, 
+																SettingsManager& settingsManager, 
+																EventManager& eventManager) const
 	{
-		uint red = 0, green = 0, blue = 0;	
-		uint x = 0, y = 0;
-		auto visible = false, color_key_enabled = false;
-		shared_ptr<graphic_resource> resource;
+		// Game Object details:
+		uint redValue = 0;
+		uint greenValue = 0;
+		uint blueValue = 0;
+		uint x = 0;
+		uint y = 0;
+		auto isVisible = false;
+		auto isColourKeyEnabled = false;
+
+		// Generic asset we will construct
+		shared_ptr<Asset> asset;
 		
-		auto empty_game_object = shared_ptr<GameObject>(nullptr);
+		auto emptyGameObject = shared_ptr<GameObject>(nullptr);
 
-		for(const auto* scene_obj_att = scene_object_xml->FirstAttribute(); scene_obj_att; scene_obj_att = scene_obj_att->Next()) 
+		for(const auto* sceneObjectAttribute = scene_object_xml->FirstAttribute(); sceneObjectAttribute; sceneObjectAttribute = sceneObjectAttribute->Next()) 
 		{
-			std::string detail_name(scene_obj_att->Name());
-			std::string detail_value(scene_obj_att->Value());		
+			// Extract/Save details about the object
 
-			if(detail_name == "resourceId") 
+			string attributeName(sceneObjectAttribute->Name());
+			string attributeValue(sceneObjectAttribute->Value());		
+						
+			if(attributeName == "resourceId") 
 			{
-				const auto* const resource_id = detail_value.c_str();
-				auto asset_data = resource_admin.get(static_cast<int>(std::atoi(resource_id)));
-				if(asset_data != nullptr)
-				{
-					if(!asset_data->type._Equal("graphic"))
-						throw exception(("Cannot load non graphic resource: " + asset_data->name + " type=" + asset_data->type).c_str());
+				// This object is associated with a resource, so use the resource manager
 
-					if(asset_data == nullptr)
-						throw exception(("Could not load resource meta data for resource id:" + detail_value).c_str());
-
-					resource = std::dynamic_pointer_cast<graphic_resource>(asset_data);
-				}
+				OnResourceIdParse(attributeValue, resourceManager, asset);
+				continue; // Move to the next attribute on element
 			}
-
+			
 			// Object's initial x position
-			if(detail_name == "posx")
+			if(attributeName == "posx")
 			{
-				x = std::stoi(detail_value);
-				continue;
+				OnPosXParse(x, attributeValue);
+				continue; // Move to the next attribute on element
 			}
 
 			// Object initial visibility setting
-			if(detail_name == "visible")
+			if(attributeName == "visible")
 			{
-				visible = detail_value._Equal("true") ? true : false;			
+				OnVisibleParse(isVisible, attributeValue);
+				continue; // Move to the next attribute on element
 			}
 
 			// object initial y position
-			if(detail_name == "posy")
+			if(attributeName == "posy")
 			{
-				y = stoi(detail_value);
-				continue;
+				OnPosYParse(y, attributeValue);
+				continue; // Move to the next attribute on element
 			}
 
 			// object's associated colour key
-			if(detail_name == "colourKey") 
+			if(attributeName == "colourKey") 
 			{
-				color_key_enabled = detail_value._Equal("true") ? true : false;			
-				continue;
+				OnColourKeyParse(isColourKeyEnabled, attributeValue);
+				continue; // Move to the next attribute on element
 			}
 
-			// Objects color
-			if(detail_name._Equal("r")) {
-				red = stoi(detail_value);
-				continue;
+			// Objects red color
+			if(attributeName._Equal("r")) 
+			{
+				OnRedParse(redValue, attributeValue);
+				continue; // Move to the next attribute on element
 			}
-			if(detail_name == "g") {
-				green = std::stoi(detail_value);
-				continue;
+
+			// Objects green color
+			if(attributeName == "g") 
+			{
+				OnGreenParse(greenValue, attributeValue);
+				continue; // Move to the next attribute on element
 			}
-			if(detail_name == "b")
-				blue = std::stoi(detail_value);
+
+			// Objects blue color
+			if (attributeName == "b")
+			{
+				OnBlueParse(blueValue, attributeValue);
+				continue; // Move to the next attribute on element
+			}
 		}
 			
-		return initialize_game_object(empty_game_object, x, y, visible, resource, color_key_enabled, red, green, blue, resource_admin, settings_admin, event_admin);		
+		// Take all the discovered details about the scene object and make a Game Object fom it
+		return InitializeGameObject(emptyGameObject, x, y, isVisible, asset, isColourKeyEnabled, redValue, greenValue, blueValue, resourceManager, settingsManager, eventManager);		
 	}
 
-	std::shared_ptr<GameObject>& game_object_factory::initialize_game_object(std::shared_ptr<GameObject>& game_object, uint x, uint y, bool is_visible, std::shared_ptr<graphic_resource>& resource, const bool color_key_enabled, const uint& red, const uint& green, const uint& blue, ResourceManager& resource_admin, SettingsManager& settings_admin, EventManager& event_admin) const
-	{	
-		if(resource == nullptr)
+	/// <summary>
+	/// Parse the Resource Id attribute for scene object
+	/// </summary>
+	void GameObjectFactory::OnResourceIdParse(std::string& detail_value, gamelib::ResourceManager& resourceManager, std::shared_ptr<gamelib::Asset>& resource) const
+	{
+		// Extract/Save resource Id from XML
+		const auto* const resourceIdString = detail_value.c_str();
+
+		// Turn it into an integer
+		int resourceId = static_cast<int>(atoi(resourceIdString));
+
+		// Get generic asset info about this resource
+		auto asset = resourceManager.GetAssetInfo(resourceId);
+		if (asset != nullptr)
 		{
-			const auto rows = settings_admin.get_int("grid","rows");
-			const auto cols = settings_admin.get_int("grid","cols");
-			const auto screen_width = settings_admin.get_int("global","screen_width");
-			const auto screen_height = settings_admin.get_int("global","screen_height");
-			const auto square_width = screen_width / cols; //settings_admin.get_int("global","square_width");
-			const auto square_height = screen_height / rows;
-			// Square
-			game_object = std::make_shared<Room>(-1, x, y, square_width, square_height, resource_admin, settings_admin, event_admin);
-			return game_object;		
+			GetInstance().ThrowCouldNotFindAssetException(asset, detail_value);
+
+			if (!asset->type._Equal("graphic"))
+			{
+				throw exception("Cannot load non graphic asset yet...");
+			}
+
+			resource = asset;
 		}
+	}
 
-		
-
-		if( (red < 0 || red > 255)  || (blue < 0 || blue > 255) || (green < 0 || green > 255) )
-			throw exception("Invalid color values when constructing game object");
-		
-		if(resource->is_animated)
+	/// <summary>
+	/// Create a game object from the resource details
+	/// </summary>
+	shared_ptr<GameObject>& GameObjectFactory::InitializeGameObject(shared_ptr<GameObject>& gameObject,
+																	uint x,
+																	uint y,
+																	bool isVisible,
+																	shared_ptr<Asset>& asset,
+																	const bool colourKeyEnabled,
+																	const uint& red,
+																	const uint& green,
+																	const uint& blue,
+																	ResourceManager& resourceManager,
+																	SettingsManager& settingsManager,
+																	EventManager& eventManager) const
+	{
+		if (asset == nullptr)
 		{
-			// Sprite		
-			game_object = std::shared_ptr<Sprite>(new Sprite(x, y, settings_admin.get_int("global","sprite_width"),
-				resource->num_key_frames, static_config::frames_per_row,
-				static_config::frames_per_column, resource->key_frame_width,
-				resource->key_frame_height, is_visible, settings_admin, event_admin));
-			std::dynamic_pointer_cast<Sprite>(game_object)->play();
-		} 
+			throw exception("Not supported resource type");
+		}
+		
+		// Initialize asset type = Graphic
+		if (asset->type._Equal("graphic"))
+		{		
+			shared_ptr<GraphicAsset> graphic = dynamic_pointer_cast<GraphicAsset>(asset);
+			// If no graphic resource is associated with this game object, we'll make it a simple geometric Room object
+			bool isGraphicValid = graphic != nullptr;
+
+			if (!isGraphicValid)
+			{
+				throw exception("Not supported resource type");
+			}
+
+			if ((red < 0 || red > 255) || (blue < 0 || blue > 255) || (green < 0 || green > 255))
+			{
+				throw exception("Invalid color values when constructing game object");
+			}
+
+			auto framesPerRow = static_config::frames_per_row; // number of frames in a row in the sprite sheet
+			auto framesPerColumn = static_config::frames_per_column; // number of frames in a column in the sprite sheet
+			auto numKeyFrames = 0;
+			auto speed = 0;
+			auto keyFrameWidth = 0;
+			auto keyFrameHeight = 0;
+
+			// Is it an animated Sprite
+			if (graphic->IsAnimated())
+			{
+				// Sprite
+				numKeyFrames = graphic->GetNumKeyFrames();
+				auto spriteWidth = settingsManager.get_int("global", "sprite_width"); // Should probably be reading this from the object details in the resource file/object
+				speed = spriteWidth;
+				keyFrameWidth = graphic->GetKeyFrameWidth();
+				keyFrameHeight = graphic->GetKeyFrameHeight();
+			}
+			else
+			{
+				// 2D Sprite (with no animation)
+				numKeyFrames = 1;
+				speed = 1;
+				keyFrameWidth = graphic->GetKeyFrameWidth();
+				keyFrameHeight = 1;
+			}
+
+			// An Animated Sprite can represent a moving (animated) sprite or a static (non-moving) sprite
+			gameObject = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, speed, numKeyFrames, framesPerRow, framesPerColumn, keyFrameWidth, keyFrameHeight, isVisible, settingsManager, eventManager));
+
+			if (graphic->IsAnimated())
+			{
+				// Start the animation for the animated sprite
+				dynamic_pointer_cast<AnimatedSprite>(gameObject)->PlayAnimation();
+			}
+
+			// Set the graphic on the game object
+			gameObject->SetGraphic(graphic);
+		}
 		else
 		{
-			// 2D Sprite (no animation)
-			game_object = std::shared_ptr<Sprite>(new Sprite(x, y, 1, 1, static_config::frames_per_row, static_config::frames_per_column, resource->key_frame_width, 1, is_visible, settings_admin, event_admin));	
+			auto message = string("Not supported resource type:") + asset->type;
+			throw exception(message.c_str());
 		}
 
-		game_object->load_settings(settings_admin);
-		game_object->set_graphic(resource);
-		game_object->is_color_key_enabled = color_key_enabled;
-		game_object->is_visible = is_visible;		
+		// Load the game objects individual settings
+		gameObject->LoadSettings(settingsManager);
 
-		if (game_object->is_color_key_enabled)
-			game_object->set_color_key(red, green, blue);
+		// Set the colour key on the game object
+		gameObject->isColorKeyEnabled = colourKeyEnabled;
 
-		return game_object;
+		// Set the game object's visibility
+		gameObject->isVisible = isVisible;
+
+		if (gameObject->isColorKeyEnabled)
+		{
+			gameObject->SetColourKey(red, green, blue);
+		}
+
+		return gameObject;
 	}
+
+
+	/// <summary>
+	/// Parse the blue attribute for scene object
+	/// </summary>
+	void GameObjectFactory::OnBlueParse(gamelib::uint& blue, std::string& detail_value) const
+	{
+		blue = stoi(detail_value);
 	}
+
+	/// <summary>
+	/// Parse the green attribute for scene object
+	/// </summary>
+	void GameObjectFactory::OnGreenParse(gamelib::uint& green, std::string& detail_value) const
+	{
+		green = stoi(detail_value);
+	}
+
+	/// <summary>
+	/// Parse the red attribute for scene object
+	/// </summary>
+	void GameObjectFactory::OnRedParse(gamelib::uint& red, std::string& detail_value) const
+	{
+		red = stoi(detail_value);
+	}
+
+	/// <summary>
+	/// Parse the colour key attribute for scene object
+	/// </summary>
+	void GameObjectFactory::OnColourKeyParse(bool& color_key_enabled, std::string& detail_value) const
+	{
+		color_key_enabled = detail_value._Equal("true") ? true : false;
+	}
+
+	/// <summary>
+	/// Parse the y attribute for scene object
+	/// </summary>
+	void GameObjectFactory::OnPosYParse(gamelib::uint& y, std::string& detail_value) const
+	{
+		y = stoi(detail_value);
+	}
+
+	/// <summary>
+	/// Parse the visible attribute for scene object
+	/// </summary>
+	void GameObjectFactory::OnVisibleParse(bool& visible, std::string& detail_value) const
+	{
+		visible = detail_value._Equal("true") ? true : false;
+	}
+
+	/// <summary>
+	/// Parse the x attribute for scene object
+	/// </summary>
+	void GameObjectFactory::OnPosXParse(gamelib::uint& x, std::string& detail_value) const
+	{
+		x = stoi(detail_value);
+	}
+
+	/// <summary>
+	/// Could not find asset error
+	/// </summary>
+	void GameObjectFactory::ThrowCouldNotFindAssetException(std::shared_ptr<gamelib::Asset>& asset, std::string& detail_value) const
+	{
+		if (!asset->type._Equal("graphic"))
+		{
+			throw exception(("Cannot load non graphic resource: " + asset->name + " type=" + asset->type).c_str());
+		}
+
+		if (asset == nullptr)
+		{
+			throw exception(("Could not load resource meta data for resource id:" + detail_value).c_str());
+		}
+	}
+	
+	/// <summary>
+	/// Singleton
+	/// </summary>
+	/// <returns>GameObjectFactory</returns>
+	GameObjectFactory& GameObjectFactory::GetInstance()
+	{
+		static GameObjectFactory instance;
+		return instance;
+	}
+
+	
+}
 
 

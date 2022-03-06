@@ -1,10 +1,10 @@
 #include "DrawingBase.h"
 namespace gamelib
 {
-	void DrawingBase::DrawFilledRect(SDL_Renderer* renderer, SDL_Rect* r, SDL_Color c)
+	void DrawableGameObject::DrawFilledRect(SDL_Renderer* renderer, SDL_Rect* rect, SDL_Color colour)
 	{
-		SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a);
-		SDL_RenderDrawRect(renderer, r);
-		SDL_RenderFillRect(renderer, r);
+		SDL_SetRenderDrawColor(renderer, colour.r, colour.g, colour.b, colour.a);
+		SDL_RenderDrawRect(renderer, rect);
+		SDL_RenderFillRect(renderer, rect);
 	}
 }

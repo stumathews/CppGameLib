@@ -19,73 +19,191 @@
 #include "resource/ResourceManager.h"
 #include "scene/SceneManager.h"
 
+using namespace std;
+
 namespace gamelib
 {
+	/// <summary>
+	/// Create the game structure
+	/// </summary>
+	/// <param name="eventAdmin">Event manager</param>
+	/// <param name="resource_admin">Resource manager</param>
+	/// <param name="config">Settings manager</param>
+	/// <param name="world"></param>
+	/// <param name="scene_admin"></param>
+	/// <param name="graphics_admin"></param>
+	/// <param name="audio_admin"></param>
+	/// <param name="get_input_func"></param>
+	/// <param name="Logger"></param>
+	GameStructure::GameStructure(EventManager& eventManager, 
+						ResourceManager& resourceManager,
+		                SettingsManager& settingsManager, GameWorldData& world,
+		                SceneManager& sceneManager, SDLGraphicsManager& graphicsManager,
+		                AudioManager& audoManager, std::function<void()> getControllerInputFunction,
+					    Logger& Logger)
+			: _eventManager(eventManager), 
+			_resourceManager(resourceManager),
+			_settingsManager(settingsManager),
+			_gameWorld(world),
+			_sceneManager(sceneManager),
+			_graphicsManager(graphicsManager), 
+			_audioManager(audoManager), 
+			_getControllerInputFunction(std::move(getControllerInputFunction)),
+			_gameLogger(Logger) { }
+
+	/// <summary>
+	/// tear down and unloda game subsystems when the game shuts down
+	/// </summary>
+	GameStructure::~GameStructure()
+	{
+		UnloadGameSubsystems();
+	}
 	
-	/***
-	 * Keeps and updated snapshot of the player state
-	 */
+	/// <summary>
+	///  Initializes game subsystems resource manager and SDL	
+	/// </summary>
+	/// <returns>true if subsystems initialised, false otherwise</returns>
+	bool GameStructure::InitializeGameSubSystems()
+	{
+		// Initialize the settings manager
+		const auto settings_admin_initialized_ok = _settingsManager.load("game/settings.xml");
+		
+		// Load key game subsystem settings
+		const auto be_verbose = _settingsManager.get_bool("global","verbose");
+		const auto screen_width = _settingsManager.get_int("global", "screen_width");
+		const auto screen_height = _settingsManager.get_int("global", "screen_height");
+		
+		// Perform the initialiation
+		return LogThis("GameStructure::initialize()", be_verbose, [&]()
+		{			
+			// Initialize resource manager
+			const auto resource_admin_initialized_ok = LogOnFailure(_resourceManager.Initialize(_eventManager), "Could not initialize resource manager", _settingsManager, _gameLogger);
+
+			// Initialize event manager
+			const auto eventAdmin_initialized_ok = LogOnFailure(_eventManager.Initialize(), "Could not initialize event manager", _settingsManager, _gameLogger);
+
+			// Initialize SceneManager
+			const auto scene_admin_initialized_ok = LogOnFailure(_sceneManager.Initialize(), "Could not initialsettings->ize scene manager", _settingsManager, _gameLogger);
+
+			// Initialize SDL
+			const auto sdl_initialize_ok = LogOnFailure(InitializeSDL(screen_width, screen_height), "Could not initialize SDL, aborting.", _settingsManager, _gameLogger);
+
+			// Final check to see if all subsystems are initialised ok
+			if(failed(sdl_initialize_ok, _gameLogger) || 
+			   failed(eventAdmin_initialized_ok, _gameLogger) ||
+			   failed(resource_admin_initialized_ok, _gameLogger) || 
+			   failed(scene_admin_initialized_ok, _gameLogger) ||
+			   failed(settings_admin_initialized_ok, _gameLogger)) 
+				return false;	
+						
+			return true;
+		}, _settingsManager, true, true);
+	}
+
+	
+	/// <summary>
+	/// Keeps and updated snapshot of the player state
+	/// </summary>
 	void GameStructure::ReadKeyboard()
 	{
 		// Read from game controller
-		get_input_func();	
+		_getControllerInputFunction();	
 	}
 
-
-	vector<shared_ptr<event>> GameStructure::handle_event(std::shared_ptr<event> the_event)
+	/// <summary>
+	/// Handle top-level game events
+	/// </summary>
+	/// <param name="the_event">The incoming event</param>
+	/// <returns>List of generated events that occured while processing this event</returns>
+	vector<shared_ptr<Event>> GameStructure::HandleEvent(std::shared_ptr<Event> the_event)
 	{
 		// GameStructure does not subscribe to any events
-		return vector<shared_ptr<event>>();
+		return vector<shared_ptr<Event>>();
 	}
 
-	string GameStructure::get_subscriber_name()
+	/// <summary>
+	/// Indicate who we are in the event system
+	/// </summary>
+	/// <returns></returns>
+	string GameStructure::GetSubscriberName()
 	{
-		return "GameStructure";
+		return "Game";
 	}
 
-	/***
-	 * Updates, monitors what the world is doing around the player. This is usually what the player reacts to
-	 */
-	void GameStructure::world_update() const
+	
+	/// <summary>
+	/// Updates, monitors what the world is doing around the player. This is usually what the player reacts to
+	/// </summary>
+	void GameStructure::UpdateWorld() const
 	{
-		// Send update event to all subscribers
-		eventAdmin.dispatch_event_to_subscriber(make_shared<do_logic_update_event>());		
+		// Send Update event to all subscribers who support updates
+		_eventManager.DispatchEventToSubscriber(make_shared<do_logic_update_event>());		
 	}
 
-	// This is basically the update functions which is run x FPS to maintain a timed series on constant updates 
-	// that simulates constant movement for example or time intervals in a non-time related game (turn based game eg)
-	// This is where you would make state changes in the game such as decreasing ammo etc
-	void GameStructure::update()
+	/// <summary>
+	/// Update logic in game.
+	/// Is run x FPS to maintain a timed series on constant updates
+	/// </summary>
+	void GameStructure::Update()
 	{	
 		// Read input from player
 		ReadKeyboard();
 		
 		// make the game do something now...show game activity that the user will then respond to
 		// this generates game play
-		world_update();
+		UpdateWorld();
 	}
 
-	// Gets time in milliseconds now
-	long GameStructure::get_tick_now()
+	/// <summary>
+	/// Gets time in milliseconds now
+	/// </summary>
+	/// <returns>Time In Milliseconds</returns>
+	long GameStructure::GetTimeNowMs() 
 	{
 		return timeGetTime();
 	}
 
-	void GameStructure::spare_time(long frame_time) const 	{ eventAdmin.process_all_events(); }
-
-	void GameStructure::draw(float percent_within_tick) { graphics_admin.DrawCurrentScene(scene_admin); }
-
-	bool GameStructure::initialize_sdl(const int screen_width, const int screen_height)
+	/// <summary>
+	/// Process all pending events
+	/// </summary>
+	/// <param name="frame_time"></param>
+	void GameStructure::HandleSpareTime(long frame_time) const 	
 	{
-		return log_if_false(graphics_admin.initialize(screen_width, screen_height), "Failed to initialize SDL graphics manager", settings, gameLogger);
+		// Contacts all event subscribers for all events that are currently waiting to be processed in the event queue
+		_eventManager.ProcessAllEvents(); 
+	}
+
+	/// <summary>
+	/// Draws the game
+	/// </summary>
+	/// <param name="percent_within_tick"></param>
+	void GameStructure::Draw(float percent_within_tick) 
+	{
+		// Draws the current scene
+		_graphicsManager.DrawCurrentScene(_sceneManager); 
+	}
+
+	/// <summary>
+	/// Initialized SDL
+	/// </summary>
+	/// <param name="screen_width">Width of the screen</param>
+	/// <param name="screen_height">Height of the screen</param>
+	/// <returns>true if SDL is successfully initialized, false otherwise</returns>
+	bool GameStructure::InitializeSDL(const int screenWidth, const int screenHeight)
+	{
+		return LogOnFailure(_graphicsManager.initialize(screenWidth, screenHeight), "Failed to initialize SDL graphics manager", _settingsManager, _gameLogger);
 	}
 
 
-	bool GameStructure::unload()
+	/// <summary>
+	/// Unload and uninitialize key game sybsystems incl SDL, Image and font libraries and the resource manager
+	/// </summary>
+	/// <returns>true if unloading succeeded, false otherwise</returns>
+	bool GameStructure::UnloadGameSubsystems()
 	{
 		try 
 		{
-			resource_admin.unload();		
+			_resourceManager.Unload();		
 			TTF_Quit();
 			IMG_Quit();
 			SDL_Quit();
@@ -98,81 +216,19 @@ namespace gamelib
 		}
 	}
 
-
-	GameStructure::GameStructure(EventManager& eventAdmin, ResourceManager& resource_admin,
-		               SettingsManager& config, game_world_data& world,
-		               SceneManager& scene_admin, SDLGraphicsManager& graphics_admin,
-		               AudioManager& audio_admin, std::function<void()> get_input_func,
-					   Logger& Logger)
-			: eventAdmin(eventAdmin), resource_admin(resource_admin),
-			settings(config),
-			world(world),
-			scene_admin(scene_admin),
-			graphics_admin(graphics_admin), 
-			audio_admin(audio_admin), 
-			get_input_func(std::move(get_input_func)),
-			gameLogger(Logger) { }
-
-	GameStructure::~GameStructure()
+	/// <summary>
+	/// Update & Draw until the game ends
+	/// </summary>
+	/// <returns></returns>
+	bool GameStructure::DoGameLoop()
 	{
-		unload();
-	}
-
-	
-
-	/**
-	 Initializes resource manager and SDL
-	 */
-	bool GameStructure::initialize()
-	{
-		// Initialize the settings manager
-		const auto settings_admin_initialized_ok = settings.load("game/settings.xml");
+		auto tick_count_at_last_call = GetTimeNowMs();
+		const auto max_loops = _settingsManager.get_int("global", "max_loops");
+		const auto tick_time_ms = _settingsManager.get_int("global", "tick_time_ms");
 		
-		const auto be_verbose = settings.get_bool("global","verbose");
-		const auto screen_width = settings.get_int("global", "screen_width");
-		const auto screen_height = settings.get_int("global", "screen_height");
-		
-		return run_and_log("GameStructure::initialize()", be_verbose, [&]()
-		{			
-			// Initialize resource manager
-			const auto resource_admin_initialized_ok = log_if_false(resource_admin.initialize(eventAdmin), "Could not initialize resource manager", settings, gameLogger);
-
-			// Initialize event manager
-			const auto eventAdmin_initialized_ok = log_if_false(eventAdmin.initialize(), "Could not initialize event manager", settings, gameLogger);
-
-			// Initialize SceneManager
-			const auto scene_admin_initialized_ok = log_if_false(scene_admin.initialize(), "Could not initialsettings->ize scene manager", settings, gameLogger);
-
-			// Initialize SDL
-			const auto sdl_initialize_ok = log_if_false(initialize_sdl(screen_width, screen_height), "Could not initialize SDL, aborting.", settings, gameLogger);
-
-			// Final check
-			if(failed(sdl_initialize_ok) || 
-			   failed(eventAdmin_initialized_ok) ||
-			   failed(resource_admin_initialized_ok) || 
-			   failed(scene_admin_initialized_ok) ||
-			   failed(settings_admin_initialized_ok)) 
-				return false;		
-
-			// Start level/scence 1
-			scene_admin.start_scene(1);
-			
-			return true;
-		}, settings, true, true);
-	}
-
-	/**
-	 * Update & Draw until the game ends
-	 */
-	bool GameStructure::game_loop()
-	{
-		auto tick_count_at_last_call = get_tick_now();
-		const auto max_loops = settings.get_int("global", "max_loops");
-		const auto tick_time_ms = settings.get_int("global", "tick_time_ms");
-		
-		while (!world.is_game_done) // main game loop
+		while (!_gameWorld.IsGameDone) // main game loop
 		{
-			const auto new_time =  get_tick_now();
+			const auto new_time =  GetTimeNowMs();
 			auto frame_ticks = 0;  // Number of ticks in the update call	
 			auto num_loops = 0;  // Number of loops ??
 			auto ticks_since = new_time - tick_count_at_last_call;
@@ -182,21 +238,21 @@ namespace gamelib
 			while (ticks_since > tick_time_ms && num_loops < max_loops)
 			{
 				// update logic
-				update();
+				Update();
 
 				tick_count_at_last_call += tick_time_ms; // tickCountAtLastCall is now been +TickTime more since the last time. update it
 				frame_ticks += tick_time_ms; num_loops++;
 				ticks_since = new_time - tick_count_at_last_call;
 			}
 
-			spare_time(frame_ticks); // handle player input, general housekeeping (Event Manager processing)
+			HandleSpareTime(frame_ticks); // handle player input, general housekeeping (Event Manager processing)
 
-			if (world.is_network_game || ticks_since <= tick_time_ms)
+			if (_gameWorld.IsNetworkGame || ticks_since <= tick_time_ms)
 			{
-				if (world.can_render)
+				if (_gameWorld.CanDraw)
 				{
 					const auto percent_outside_frame = static_cast<float>(ticks_since / tick_time_ms) * 100; // NOLINT(bugprone-integer-division)				
-					draw(percent_outside_frame);
+					Draw(percent_outside_frame);
 				}
 			}
 			else

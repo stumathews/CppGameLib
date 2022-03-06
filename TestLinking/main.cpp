@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 		
 	resource_admin->initialize(*event_admin);
 	
-	game_world_data world;
+	GameWorldData world;
 	shared_ptr<gamelib::SceneManager> scene_admin(new gamelib::SceneManager(*event_admin, settings_admin, *resource_admin, world, logger));
     scene_admin->initialize();
 	

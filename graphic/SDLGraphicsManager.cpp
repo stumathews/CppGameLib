@@ -1,7 +1,7 @@
 #include "SDLGraphicsManager.h"
 #include <memory>
 #include "SDL_image.h"
-#include "graphic_resource.h"
+#include "GraphicAsset.h"
 #include <iostream>
 #include <SDL.h>
 #include <functional>
@@ -15,20 +15,27 @@ using namespace std;
 namespace gamelib
 {
 
-	SDLGraphicsManager::SDLGraphicsManager(EventManager& event_admin, Logger& the_logger)
-		: EventSubscriber(), event_admin(event_admin), the_logger(the_logger) { }
+	SDLGraphicsManager::SDLGraphicsManager(EventManager& eventManager, Logger& the_logger)
+		: EventSubscriber(), eventManager(eventManager), logger(the_logger) 
+	{
+	
+	
+	}
 
-	vector<shared_ptr<event>> SDLGraphicsManager::handle_event(const std::shared_ptr<event> the_event) { return vector<shared_ptr<event>>();	}
+	vector<shared_ptr<Event>> SDLGraphicsManager::HandleEvent(const std::shared_ptr<Event> the_event) 
+	{ 
+		return vector<shared_ptr<Event>>();	
+	}
 	
 
-	string SDLGraphicsManager::get_subscriber_name()
+	string SDLGraphicsManager::GetSubscriberName()
 	{
 		return "SDLGraphicsManager";
 	}
 
-	std::shared_ptr<graphic_resource> SDLGraphicsManager::to_resource(const std::shared_ptr<asset>& asset)
+	std::shared_ptr<GraphicAsset> SDLGraphicsManager::to_resource(const std::shared_ptr<Asset>& asset)
 	{
-		return as_resource<graphic_resource>(asset);
+		return as_resource<GraphicAsset>(asset);
 	}
 
 	SDL_Window* get_sdl_window(const int screen_width, const int screen_height, const char* title)
@@ -54,18 +61,18 @@ namespace gamelib
 
 	bool SDLGraphicsManager::initialize(const uint width, const uint height, const char * window_title)
 	{
-		the_logger.log_message("SDLGraphicsManager::Initialize()");
+		logger.LogThis("SDLGraphicsManager::Initialize()");
 		
 		if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0)
 		{
-			the_logger.log_message(string("SDL could not initialize:") + const_cast<char*>(SDL_GetError()));
+			logger.LogThis(string("SDL could not initialize:") + const_cast<char*>(SDL_GetError()));
 			return false;
 		}
 
 		const int imgFlags = IMG_INIT_PNG;
 		if( !( IMG_Init( imgFlags ) & imgFlags ) )
 		{
-			the_logger.log_message(string("SDL_image could not initialize:") + const_cast<char*>(SDL_GetError()));
+			logger.LogThis(string("SDL_image could not initialize:") + const_cast<char*>(SDL_GetError()));
 			return false;
 		}
 
@@ -81,23 +88,23 @@ namespace gamelib
 		if(Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0 )
 	    {
 		    const string message("SDL_mixer could not initialize! SDL_mixer Error: ");
-			log_message(message + Mix_GetError(), the_logger);
+			LogMessage(message + Mix_GetError(), logger);
 	        return false;
 	    }
 
 		if(TTF_Init() == -1)
 		{
 			const string message("Could not initialize TTF");
-			log_message(message, the_logger);
-			return false;
+			LogMessage(message, logger);
+			return false;			
 		}
 
 
-		the_logger.log_message("SDLGraphicsManager ready.");
+		logger.LogThis("SDLGraphicsManager ready.");
 		return true;
 	}
 
-	std::shared_ptr<asset> SDLGraphicsManager::create_asset(tinyxml2::XMLElement * element, SettingsManager& config)
+	std::shared_ptr<Asset> SDLGraphicsManager::create_asset(tinyxml2::XMLElement * element, SettingsManager& config)
 	{		
 		auto is_animated = false;
 		auto num_key_frames = 12, key_frame_height = 64, key_frame_width = 64;
@@ -130,8 +137,8 @@ namespace gamelib
 
 
 		auto resource = is_animated
-			                        ? std::make_shared<graphic_resource>(uuid, name_c, path, type, level, num_key_frames, key_frame_height, key_frame_width,  is_animated, *this, config)
-			                        : std::make_shared<graphic_resource>(uuid, name_c, path, type, level, is_animated, *this, config);
+			                        ? std::shared_ptr<GraphicAsset>(new GraphicAsset(uuid, name_c, path, type, level, num_key_frames, key_frame_height, key_frame_width,  is_animated, *this, config, logger))
+			                        : std::shared_ptr<GraphicAsset>(new GraphicAsset(uuid, name_c, path, type, level, is_animated, *this, config, logger));
 			
 		
 		return resource;
@@ -158,16 +165,18 @@ namespace gamelib
 			const auto &current_scene = scene_admin;
 			
 			// Draw all objects in the layer
-			for (const auto& layer : current_scene.get_scene_layers())
+			for (const auto& Layer : current_scene.GetLayers())
 			{
-				if (layer->visible)
+				if (Layer.visible)
 				{
-					for (const auto& game_object : layer->game_objects)
+					for (const auto& game_object : Layer.layerObjects)
 					{
 						if(auto go = game_object.lock())
 						{
-							if(go && go->is_active)
-								go->draw(window_renderer);
+							if (go && go->isActive)
+							{
+								go->Draw(window_renderer);
+							}
 						}
 					}
 				}

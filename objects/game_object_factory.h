@@ -6,19 +6,47 @@ namespace gamelib
 {
 	class ResourceManager;
 
-	class game_object_factory
+	/// <summary>
+	/// Constructs a Game Object from the details about a game object (usually from file)
+	/// </summary>
+	class GameObjectFactory
 	{
-	public:
-		static game_object_factory& get_instance();
-		 game_object_factory(game_object_factory const&)  = delete;
-		 ~game_object_factory();
-		void operator=(game_object_factory const&)  = delete;
-		 
-		std::shared_ptr<GameObject> build_game_object(tinyxml2::XMLElement * scene_object_xml, ResourceManager& resource_admin,  SettingsManager& settings_admin, EventManager& event_admin) const;
-		std::shared_ptr<GameObject>& initialize_game_object(std::shared_ptr<GameObject>& game_object, uint x, uint y, bool is_visible, std::shared_ptr<graphic_resource>& resource, bool color_key_enabled, const uint& red, const uint& green, const uint& blue, ResourceManager& resource_admin, SettingsManager& settings_admin, EventManager& event_admin) const;
+	public:	
+		GameObjectFactory(GameObjectFactory const&) = delete;	
+		GameObjectFactory& operator=(GameObjectFactory const&)  = delete;
+		~GameObjectFactory() = default;		
+
+		static GameObjectFactory& GetInstance();
+
+		/// <summary>
+		/// Build a game object
+		/// </summary>
+		/// <param name="scene_object_xml">Raw Object XML element</param>
+		/// <returns>GameObject</returns>
+		std::shared_ptr<GameObject> BuildGameObject(tinyxml2::XMLElement* scene_object_xml, ResourceManager& resource_admin, SettingsManager& settings_admin, EventManager& eventManager) const;
+		
 	private:
-		static game_object_factory& m_Instance;
-		 game_object_factory();
+		static GameObjectFactory& instance;
+
+		// Parsing object attribute handlers
+		void OnBlueParse(gamelib::uint& blue, std::string& detail_value) const;
+		void OnGreenParse(gamelib::uint& green, std::string& detail_value) const;
+		void OnRedParse(gamelib::uint& red, std::string& detail_value) const;
+		void OnColourKeyParse(bool& color_key_enabled, std::string& detail_value) const;
+		void OnPosYParse(gamelib::uint& y, std::string& detail_value) const;
+		void OnVisibleParse(bool& visible, std::string& detail_value) const;
+		void OnPosXParse(gamelib::uint& x, std::string& detail_value) const;
+		void OnResourceIdParse(std::string& detail_value, gamelib::ResourceManager& resourceManager, std::shared_ptr<gamelib::Asset>& resource) const;
+
+		/// <summary>
+		/// Initializes the Game object
+		/// </summary>
+		std::shared_ptr<GameObject>& InitializeGameObject(std::shared_ptr<GameObject>& game_object, uint x, uint y, bool is_visible, std::shared_ptr<Asset>& resource, bool color_key_enabled, const uint& red, const uint& green, const uint& blue, ResourceManager& resource_admin, SettingsManager& settings_admin, EventManager& eventManager) const;
+		
+		// Private constructor 
+		GameObjectFactory() = default;
+
+		// Error handling
+		void ThrowCouldNotFindAssetException(std::shared_ptr<gamelib::Asset>& asset, std::string& detail_value) const;
 	};
 }
-

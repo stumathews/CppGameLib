@@ -111,19 +111,10 @@
     <ClInclude Include="graphic\Drawing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="graphic\graphic_resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="common\static_config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="objects\game_world_data.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="objects\game_world_component.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="scene\abcd_rectangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="events\IEventSubscriber.h">
@@ -166,6 +157,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="graphic\SDLGraphicsManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="objects\GameWorldData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\ABCDRectangle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="graphic\GraphicAsset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -239,19 +239,10 @@
     <ClCompile Include="graphic\Drawing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="graphic\graphic_resource.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="objects\game_world_data.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="objects\game_world_component.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="scene\abcd_rectangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="events\IEventSubscriber.cpp">
@@ -294,6 +285,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="graphic\SDLGraphicsManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\Logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\GameWorldData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\ABCDRectangle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="graphic\GraphicAsset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\layer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

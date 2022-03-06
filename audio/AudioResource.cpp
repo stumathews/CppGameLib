@@ -8,19 +8,19 @@ namespace gamelib
 {
 	//extern std::ResourceManager& resource_admin;
 	audio_resource::audio_resource(const int uid, string name, const string path, const string type, int scene, ResourceManager& resource_admin) 
-		: asset(uid, name, path, type, scene), resource_admin(resource_admin)
+		: Asset(uid, name, path, type, scene), resource_admin(resource_admin)
 	{
 		// ctor initialize members only
 	}
 
-	void audio_resource::load()
+	void audio_resource::Load()
 	{
 		if(is_fx())
-			fx = Mix_LoadWAV(resource_admin.get(name)->path.c_str());
+			fx = Mix_LoadWAV(resource_admin.GetAssetInfo(name)->path.c_str());
 		else
-			music = Mix_LoadMUS(resource_admin.get(name)->path.c_str());
+			music = Mix_LoadMUS(resource_admin.GetAssetInfo(name)->path.c_str());
 		
-		is_loaded = true;
+		isLoadedInMemory = true;
 	}
 
 	bool audio_resource::is_fx() const
@@ -29,13 +29,13 @@ namespace gamelib
 	}
 
 
-	bool audio_resource::unload()
+	bool audio_resource::Unload()
 	{
 		if(is_fx() && fx != nullptr)
 		{
 			Mix_FreeChunk(fx);
 			fx = nullptr;
-			is_loaded = false;
+			isLoadedInMemory = false;
 		}
 		else 
 		{
@@ -43,7 +43,7 @@ namespace gamelib
 			{
 				 Mix_FreeMusic( music );
 				music = nullptr;
-				is_loaded = false;
+				isLoadedInMemory = false;
 			}
 		}
 		return true;

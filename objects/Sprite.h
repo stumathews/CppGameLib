@@ -3,47 +3,71 @@
 
 namespace gamelib
 {
-	class Sprite final : public GameObject
-	{
-	private:
-		unsigned long m_TimeLastFrame;
+	/// <summary>
+	/// Sprite sheet based sprite
+	/// </summary>
+	class AnimatedSprite final : public GameObject
+	{	
 	public:
-		Sprite(uint xPos, 
-			uint yPos, 
+
+		/// <summary>
+		/// Create a Sprite
+		/// </summary>
+		AnimatedSprite(uint x, 
+			uint y, 
 			uint speed, 
 			uint totalFrames, 
 			uint framesPerRow, 
 			uint framesPerColumn, 
 			uint frameWidth, 
 			uint frame, 
-			bool is_visible, 
-			SettingsManager& settings_admin,
-			EventManager& event_admin) : 
-			m_Speed(100), m_TotalFrames(totalFrames), m_FramesPerRow(framesPerRow), m_FramesPerColumn(framesPerColumn),
-			m_CurrentFrame(0), m_FrameHeight(64), m_FrameWidth(64), m_StartFrame(0), m_TimeLastFrame(0), 
-			GameObject(xPos, yPos, is_visible, settings_admin, event_admin ) { }
-		object_type get_type() override { return object_type::sprite; }
-		uint m_TotalFrames;
-		uint m_FramesPerRow;
-		uint m_FramesPerColumn;
-		uint m_CurrentFrame;
-		uint m_StartFrame;
-		float m_Speed;
-		uint m_FrameWidth;
-		uint m_FrameHeight;
-		
+			bool isVisible, 
+			SettingsManager& settingsManager,
+			EventManager& eventManager);
 
-		void draw(SDL_Renderer* renderer) override
-		{
-			GameObject::draw(renderer);
-			update();	// why do we have to do this in the draw function?	
-		}
-			
-		void update() override;
-		void play();
-		void stop();
-		void set_frame_rect(uint FrameNumber) const;
-		virtual ~Sprite(){};
+		/// <summary>
+		/// Set Game Object Type
+		/// </summary>
+		/// <returns></returns>
+		object_type GetGameObjectType() override;
+
+		/// <summary>
+		/// Draw sprite
+		/// </summary>
+		/// <param name="renderer"></param>
+		void Draw(SDL_Renderer* renderer) override;			
+		
+		/// <summary>
+		/// Update sprite
+		/// </summary>
+		void Update() override;	
+		
+		/// <summary>
+		/// Play animation
+		/// </summary>
+		void PlayAnimation();
+
+		/// <summary>
+		/// Stop animation
+		/// </summary>
+		void StopAnimation();
+
+		/// <summary>
+		/// Set animation Frame
+		/// </summary>
+		/// <param name="FrameNumber"></param>
+		void SetAnimationFrame(uint FrameNumber) const;
+		
+	private:
+		unsigned long timeLastFrame;
+		uint totalFrames;
+		uint framesPerRow;
+		uint framesPerColumn;
+		uint currentFrame;
+		uint startFrame;
+		float speed;
+		uint frameWidth;
+		uint frameHeight;
 		bool stopped = false;
 	};
 }

@@ -13,108 +13,162 @@ using namespace std;
 
 namespace gamelib
 {
-	int GameObject::ids = 0;
-	void GameObject::change_internal_position(const std::shared_ptr<event> the_event)
+	/// <summary>
+	/// Game Object Ids - Static
+	/// </summary>
+	int GameObject::lastGameObjectId = 0;
+
+
+
+	GameObject::GameObject(bool is_visible,
+		SettingsManager& settings_admin, 
+		EventManager& eventManager) 
+			: IEventSubscriber(), settings_admin(settings_admin), eventManager(eventManager)
+	{
+		SetDefaults(is_visible, settings_admin, 0, 0);
+		GameObject::LoadSettings(settings_admin);
+	}
+
+	GameObject::GameObject(const int x, 
+		const int y, 
+		bool is_visible, 
+		SettingsManager& settings_admin, 
+		EventManager& eventManager) 
+			: supportsMoveLogic(false), settings_admin(settings_admin), eventManager(eventManager)
+	{
+		SetDefaults(is_visible, settings_admin, x, y);
+		GameObject::LoadSettings(settings_admin);
+	}
+
+	void GameObject::ChangeInternalPosition(const std::shared_ptr<Event> the_event)
 	{
 		const auto event = std::dynamic_pointer_cast<position_change_event>(the_event);
-		if(event->direction == Direction::Up && supports_move_logic)					
-			move_up();			
+		if(event->direction == Direction::Up && supportsMoveLogic)					
+			MoveUp();			
 			
-		if(event->direction == Direction::Down && supports_move_logic)
-			move_down();			
+		if(event->direction == Direction::Down && supportsMoveLogic)
+			MoveDown();			
 			
-		if(event->direction == Direction::Left && supports_move_logic)
-			move_left();			
+		if(event->direction == Direction::Left && supportsMoveLogic)
+			MoveLeft();			
 			
-		if(event->direction == Direction::Right && supports_move_logic)
-			move_right();
+		if(event->direction == Direction::Right && supportsMoveLogic)
+			MoveRight();
 	}
 
-	vector<shared_ptr<event>> GameObject::handle_event(const std::shared_ptr<event> the_event)
+	/// <summary>
+	/// Handle any Game Object events
+	/// </summary>
+	vector<shared_ptr<Event>> GameObject::HandleEvent(const std::shared_ptr<Event> the_event)
 	{
 		// We dont handle any events
-		return vector<shared_ptr<event>>();
+		return vector<shared_ptr<Event>>();
 	}
 
-	void GameObject::subscribe_to_event(event_type type, EventManager& event_admin)
+	/// <summary>
+	/// All Game object so directly Subscribe to event on underlying event manager
+	/// </summary>
+	void GameObject::SubscribeToEvent(EventType type, EventManager& eventManager)
 	{
-		event_admin.subscribe_to_event(type, this);
+		eventManager.SubscribeToEvent(type, this);
 	}
 
-	void GameObject::raise_event(const shared_ptr<event>& the_event, EventManager& event_admin)
+	/// <summary>
+	/// Raise event on underlying event manager
+	/// </summary>
+	void GameObject::RaiseEvent(const shared_ptr<Event>& the_event, EventManager& eventManager)
 	{
-		event_admin.raise_event(the_event, this);
+		eventManager.RaiseEvent(the_event, this);
 	}
 
-	shared_ptr<graphic_resource> GameObject::get_graphic() const
+	/// <summary>
+	/// Get Graphic resource
+	/// </summary>
+	/// <returns></returns>
+	shared_ptr<GraphicAsset> GameObject::GetGraphic() const
 	{
 		return graphic;
 	}
 
-	void GameObject::draw(SDL_Renderer * renderer)
+	/// <summary>
+	/// Draw Game Object
+	/// </summary>
+	/// <param name="renderer"></param>
+	void GameObject::Draw(SDL_Renderer* renderer)
 	{
-		if(!is_visible)
+		// Game Object usually does not draw itself... but decendents do.
+
+		if (!isVisible)
+		{
 			return;
+		}
 		
-		draw_resource(renderer);
+		// We can draw the graphic resource if we have one however (this requires the decendents to call ensure they call GameObject::Draw() explicitly)
+		if (HasGraphic())
+		{
+			DrawGraphic(renderer);
+		}
 	}
 
-	void GameObject::move_up()
+	/// <summary>
+	/// Move Up
+	/// </summary>
+	void GameObject::MoveUp()
 	{
-		y -= move_interval;
+		y -= moveInterval;
 	}
 
-	void GameObject::move_down()
+	/// <summary>
+	/// Move down
+	/// </summary>
+	void GameObject::MoveDown()
 	{		
-		y += move_interval;
+		y += moveInterval;
 	}
 
-	void GameObject::move_left()
+	/// <summary>
+	/// Move left
+	/// </summary>
+	void GameObject::MoveLeft()
 	{
-		x -= move_interval;
+		x -= moveInterval;
 	}
 
-	void GameObject::move_right()
+	/// <summary>
+	/// Move right
+	/// </summary>
+	void GameObject::MoveRight()
 	{
-		x += move_interval;
+		x += moveInterval;
 	}
 
-	string GameObject::get_identifier()
+	/// <summary>
+	/// Get Name
+	/// </summary>
+	/// <returns></returns>
+	string GameObject::GetName()
 	{
 		return "game_object";
 	}
 
-	/*void game_object::detect_side_collision(SDLGraphicsManager& graphics_admin, ResourceManager& resource_admin)
+	/// <summary>
+	/// Load Game Object settings
+	/// </summary>
+	/// <param name="settings_admin"></param>
+	void GameObject::LoadSettings(SettingsManager& settings_admin)
 	{
-		if (is_traveling_left)
-		{
-			if (x == 0) 
-			{
-				is_traveling_left = false;
-				Mix_PlayChannel(-1, static_pointer_cast<audio_resource>(resource_admin->get("high.wav"))->as_fx(), 0);
-			}
-		}
-		else
-		{
-			if (x == graphics_admin->get_screen_width())
-			{
-				Mix_PlayChannel(-1, static_pointer_cast<audio_resource>(resource_admin->get("low.wav"))->as_fx(), 0);
-				is_traveling_left = true;
-			}
-		}
-	}*/
-
-	void GameObject::load_settings(SettingsManager& settings_admin)
-	{
-		move_interval = settings_admin.get_int("player", "move_interval");
+		moveInterval = settings_admin.get_int("player", "move_interval");
 	}
 
-	void GameObject::init_defaults( bool is_visible, SettingsManager& settings, int x, int y)
+	/// <summary>
+	/// Set defaults
+	/// </summary>
+	void GameObject::SetDefaults( bool is_visible, SettingsManager& settings, int x, int y)
 	{
 		 this->bounds = { x, y, 0 ,0};
-		 supports_move_logic = true;
-		 this->is_visible = is_visible;
-		 is_color_key_enabled = false;
+		 supportsMoveLogic = true;
+		 this->isVisible = is_visible;
+		 isColorKeyEnabled = false;
 		 this->x = x;
 		 this->y = y;
 		 is_traveling_left = false;
@@ -122,80 +176,117 @@ namespace gamelib
 		 blue = 0xFF;
 		 green = 0x00;
 		 settings_admin = settings;
-		 id = ids++;
+		 id = lastGameObjectId++;
 	}
 
-	GameObject::GameObject(bool is_visible, SettingsManager& settings_admin, EventManager& event_admin): IEventSubscriber(), settings_admin(settings_admin), eventManager(event_admin)
-	{
-		init_defaults(is_visible, settings_admin, 0, 0);
-	}
-
-	GameObject::GameObject(const int x, const int y, bool is_visible, SettingsManager& settings_admin, EventManager& event_admin): IEventSubscriber(),
-	supports_move_logic(false), settings_admin(settings_admin), eventManager(event_admin)
-	{
-		init_defaults(is_visible, settings_admin, x, y);
-		GameObject::load_settings(settings_admin);
-	}
-
-	void GameObject::set_color_key(const Uint8 r, const Uint8 g, const Uint8 b)
+	/// <summary>
+	/// Set color key
+	/// </summary>
+	void GameObject::SetColourKey(const Uint8 r, const Uint8 g, const Uint8 b)
 	{
 		color_key.r = r;
 		color_key.g = g;
 		color_key.b = b;
 	}
 
-	void GameObject::add_component(const shared_ptr<component>& component)
+	/// <summary>
+	/// Add component to game object, eg. health, points etc
+	/// </summary>
+	void GameObject::AddComponent(const shared_ptr<component>& component)
 	{
 		components[component->get_name()] = component;
 	}
 
-	shared_ptr<component> GameObject::find_component(string name)
+	/// <summary>
+	/// Find a component
+	/// </summary>
+	/// <param name="name"></param>
+	/// <returns></returns>
+	shared_ptr<component> GameObject::FindComponent(string name)
 	{
 		return components[name];
 	}
 
-	bool GameObject::has_component(string name)
+	/// <summary>
+	/// Check if a component exists
+	/// </summary>
+	/// <param name="name"></param>
+	/// <returns></returns>
+	bool GameObject::HasComponent(string name)
 	{
 		return components.find(name) != components.end();
 	}
 
-	void GameObject::set_tag(const string tag)
+	/// <summary>
+	/// Set Tag
+	/// </summary>
+	/// <param name="tag"></param>
+	void GameObject::SetTag(const string tag)
 	{
 		this->tag = tag;
 	}
 
-	string GameObject::get_subscriber_name()
+	string GameObject::GetSubscriberName()
 	{
 		return "game_object";
 	}
 
-
-	void GameObject::draw_resource(SDL_Renderer* renderer) const
+	/// <summary>
+	/// Draw graphic resource is one exists
+	/// </summary>
+	/// <param name="renderer"></param>
+	void GameObject::DrawGraphic(SDL_Renderer* renderer) const
 	{
-		const auto resource = get_graphic();
-		if(resource != nullptr && resource->type == "graphic")
+		if (HasGraphic()) 
 		{
-			SDL_Rect draw_location = { x, y, 50,50 };
-			auto* const rect = get_graphic()->is_animated
-				                   ?  &graphic->view_port
-				                   : nullptr;
-			SDL_RenderCopy(renderer, graphic->texture, rect, &draw_location );
+			const auto graphic = GetGraphic();
+
+			if (graphic->type == "graphic")
+			{
+				// Draw graphic at the game object's current location
+				SDL_Rect drawLocation =
+				{
+					x,
+					y,
+					graphic->GetViewPort().w,
+					graphic->GetViewPort().h
+				};
+
+				auto* const viewPort = graphic->IsAnimated() ? &graphic->GetViewPort() : nullptr;
+
+				// Copy the texture (restricted by viewport) to the drawLocation on the screen
+				SDL_RenderCopy(renderer, graphic->GetTexture(), viewPort, &drawLocation);
+			}
+			else
+			{
+				// Log error here
+			}
 		}
 	}
 
-	bool GameObject::has_graphic() const
+	/// <summary>
+	/// Check if game object has graphic resource
+	/// </summary>
+	/// <returns></returns>
+	bool GameObject::HasGraphic() const
 	{
 		return graphic != nullptr;
 	}
 
-
-
-	string GameObject::get_tag() const
+	/// <summary>
+	/// Get Tag
+	/// </summary>
+	/// <returns></returns>
+	string GameObject::GetTag() const
 	{
 		return this->tag;
 	}
 
-	void GameObject::set_graphic(shared_ptr<graphic_resource> graphic)
+	/// <summary>
+	/// Set the graphic
+	/// </summary>
+	/// <param name="graphic"></param>
+	void GameObject::SetGraphic(shared_ptr<GraphicAsset> graphic)
 	{
 		this->graphic = graphic;
 	}

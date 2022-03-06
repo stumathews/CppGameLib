@@ -3,99 +3,190 @@
 #include <map>
 #include <SDL.h>
 #include "Component.h"
-#include <graphic/graphic_resource.h>
+#include <graphic/GraphicAsset.h>
 #include "events/EventManager.h"
 #include <objects/MultipleInheritableEnableSharedFromThis.h>
 
 namespace gamelib
 {
+	/// <summary>
+	/// Types of Game Objects
+	/// </summary>
 	enum class object_type
 	{
-		undefined,
-		game_world,
-		room,
-		player,
-		sprite,
-		pickup,
+		Undefined,
+		GameWorld,
+		Room,
+		Player,
+		AnimatedSprite,
+		Pickup,
 	};
 
-	class GameObject : public IEventSubscriber, public inheritable_enable_shared_from_this<IEventSubscriber>
+	class GameObject : public IEventSubscriber
 	{
 	public:
-		int id;
-		bool supports_move_logic;
-		bool is_visible;
-		bool is_color_key_enabled;
-		int x;
-		int y;
-		int move_interval;		
-		SDL_Rect bounds;
-		SettingsManager& settings_admin;
-		EventManager& eventManager;
-		bool is_active = true;
 
 		// Create new Game Object 
 		GameObject(bool is_visible, SettingsManager& settings_admin, EventManager& eventManager);
 
 		// Create new game object at specific coordinate
 		GameObject(int x, int y, bool is_visible, SettingsManager& settings_admin, EventManager& eventManager);
-		
-		// Initialize game objects defaults
-		void init_defaults(bool is_visible, SettingsManager& settings, int x, int y);
-		
-		
-		/* IEventSubscriber methods; All Game Objects responds to events */
-		void subscribe_to_event(event_type type, EventManager& event_admin);
-		void raise_event(const std::shared_ptr<event>& the_event, EventManager& event_admin);
-		std::vector<std::shared_ptr<event>> handle_event( std::shared_ptr<event> event) override;
-		std::string get_subscriber_name() override;
-		virtual int get_subscriber_id() override { return id; }
-		
-		// Get the Game Object's graphic if there is one associated with the game object
-		std::shared_ptr<graphic_resource> get_graphic() const;
+					
+		/// <summary>
+		/// Allow Game Object to subscribe to event system
+		/// </summary>
+		/// <param name="type"></param>
+		/// <param name="event_admin"></param>
+		void SubscribeToEvent(EventType type, EventManager& eventManager);
 
-		// Set the Game Object's graphic
-		void set_graphic(std::shared_ptr<graphic_resource> graphic);
-		bool has_graphic() const;
+		/// <summary>
+		/// Allow game object to raise an event
+		/// </summary>
+		/// <param name="the_event"></param>
+		/// <param name="event_admin"></param>
+		void RaiseEvent(const std::shared_ptr<Event>& the_event, EventManager& eventManager);
+
+		/// <summary>
+		/// Handle subscribed events
+		/// </summary>
+		/// <param name="event"></param>
+		/// <returns></returns>
+		std::vector<std::shared_ptr<Event>> HandleEvent( std::shared_ptr<Event> event) override;
+
+		/// <summary>
+		/// Provide name to event system
+		/// </summary>
+		/// <returns></returns>
+		std::string GetSubscriberName() override;
+
+		/// <summary>
+		/// Provide Id to event system
+		/// </summary>
+		/// <returns></returns>
+		virtual int GetSubscriberId() override { return id; }
 		
-		// Every Game Object can update itself itself diffirently
-		void virtual update() = 0;
+		/// <summary>
+		/// Get the Game Object's graphic if there is one associated with the game object
+		/// </summary>
+		/// <returns>GraphicResource</returns>
+		std::shared_ptr<GraphicAsset> GetGraphic() const;
 
-		// All game objects can be drawn uniformly
-		void virtual draw(SDL_Renderer* renderer);
-		void draw_resource(SDL_Renderer* renderer) const;
+		/// <summary>
+		/// Set the Game Object's graphic
+		/// </summary>
+		/// <param name="graphic"></param>
+		void SetGraphic(std::shared_ptr<GraphicAsset> graphic);
+		bool HasGraphic() const;
+		
+		/// <summary>
+		/// Every Game Object can update itself itself diffirently
+		/// </summary>
+		void virtual Update() = 0;
 
-		// Every game Object needs to identify what type of game object it is
-		virtual object_type get_type() = 0;
+		/// <summary>
+		/// All game objects can be drawn uniformly
+		/// </summary>
+		/// <param name="renderer"></param>
+		void virtual Draw(SDL_Renderer* renderer);
+
+		/// <summary>
+		/// Every game Object needs to identify what type of game object it is
+		/// </summary>
+		/// <returns></returns>
+		virtual object_type GetGameObjectType() = 0;
 
 		// Every Game Object can move in its own way
-		virtual void move_up();
-		virtual void move_down();
-		virtual void move_left();
-		virtual void move_right();
+		virtual void MoveUp();
+		virtual void MoveDown();
+		virtual void MoveLeft();
+		virtual void MoveRight();
 
-		// Every game object can identify itself in its own way
-		virtual std::string get_identifier();
+		/// <summary>
+		/// Every game object can identify itself in its own way
+		/// </summary>
+		/// <returns></returns>
+		virtual std::string GetName();
 
-		// Every game object can load its own settings
-		virtual void load_settings(SettingsManager& settings_admin);
+		/// <summary>
+		/// Every game object can load its own settings
+		/// </summary>
+		/// <param name="settings_admin"></param>
+		virtual void LoadSettings(SettingsManager& settings_admin);
 		
-		// Every game Object can change it own internal position
-		virtual void change_internal_position(std::shared_ptr<event> the_event);
+		/// <summary>
+		/// Every game Object can change it own internal position
+		/// </summary>
+		/// <param name="the_event"></param>
+		virtual void ChangeInternalPosition(std::shared_ptr<Event> the_event);
 		
-		void set_color_key(Uint8 r, Uint8 g, Uint8 b);
+		void SetColourKey(Uint8 r, Uint8 g, Uint8 b);
 
 		/* Inventory System: game objects can have a list of components */
 		
-		// Add component to the game object (inventory)
-		void add_component(const std::shared_ptr<component>& component);
-		std::shared_ptr<component> find_component(std::string name);
-		bool has_component(std::string name);
+		/// <summary>
+		/// Add component to the game object (inventory)
+		/// </summary>
+		/// <param name="component"></param>
+		void AddComponent(const std::shared_ptr<component>& component);
+		std::shared_ptr<component> FindComponent(std::string name);
+		bool HasComponent(std::string name);
 
-		// Arbitary tag for game object
-		std::string get_tag() const;
-		void set_tag(std::string tag);
-	private:
+		/// <summary>
+		/// Arbitary tag for game object
+		/// </summary>
+		/// <returns></returns>
+		std::string GetTag() const;
+		void SetTag(std::string tag);
+
+		/// <summary>
+		/// Each game object may support moving
+		/// </summary>
+		bool supportsMoveLogic;
+
+		/// <summary>
+		/// Each game object may be visible
+		/// </summary>
+		bool isVisible;
+
+		/// <summary>
+		/// Each object may have a colour key enabled
+		/// </summary>
+		bool isColorKeyEnabled;
+
+		/// <summary>
+		/// Each game object has a x-orordinate
+		/// </summary>
+		int x;
+
+		/// <summary>
+		/// Each game object has a y-orordinate
+		/// </summary>
+		int y;
+
+		/// <summary>
+		/// Each game object has a move internal
+		/// </summary>
+		int moveInterval;	
+
+		/// <summary>
+		/// Each game object has a bounds
+		/// </summary>
+		SDL_Rect bounds;
+		
+		/// <summary>
+		/// Each game object can be active
+		/// </summary>
+		bool isActive = true;
+
+		SettingsManager& settings_admin;
+		EventManager& eventManager;
+
+		/// <summary>
+		// Each game object has an ID
+		/// </summary>
+		int id;	
+
+	private:	
 
 		// Game Object tag
 		std::string tag;
@@ -106,16 +197,24 @@ namespace gamelib
 		SDL_Color color_key = {};
 
 		// Game Object Graphic
-		std::shared_ptr<graphic_resource> graphic; // can be shared by other actors
+		std::shared_ptr<GraphicAsset> graphic; // can be shared by other actors
 		
 		// list of components
 		std::map<std::string, std::shared_ptr<component>> components;
 		
 		// Underlying asset
-		std::shared_ptr<asset> underlying_asset;
+		std::shared_ptr<Asset> assetInfo;
 
-		// All Game Object has ids
-		static int ids;
+		// Game Object Id counter
+		static int lastGameObjectId;
+
+		// Initialize game objects defaults
+		void SetDefaults(bool isVisible, SettingsManager& settings, int x, int y);
+
+		
+		void DrawGraphic(SDL_Renderer* renderer) const;
+
+
 	};
 }
 

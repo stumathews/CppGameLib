@@ -38,7 +38,7 @@ class ResourceManagerTests : public testing::Test {
   shared_ptr<AudioManager> audio_admin;
   Logger Logger;
 
-  void test_asset_against_baseline(shared_ptr<asset> asset) const
+  void test_asset_against_baseline(shared_ptr<Asset> asset) const
   {
 	EXPECT_EQ(asset->uid, exp_uid) << "uid is incorrect";
 	EXPECT_EQ(asset->scene, exp_scene) << "Scene was incorrect";
@@ -51,11 +51,11 @@ class ResourceManagerTests : public testing::Test {
 
 TEST_F(ResourceManagerTests, Initialize)
 {
-	EXPECT_TRUE(resource_admin->initialize(*event_admin)) << "Expected resource manager initialization to succeed";
-	EXPECT_EQ(event_admin->get_subscriptions()[event_type::LevelChangedEventType].size(), 1) << "Expected to subscribe to LevelChangedEventType";
+	EXPECT_TRUE(resource_admin->Initialize(*event_admin)) << "Expected resource manager initialization to succeed";
+	EXPECT_EQ(event_admin->GetSubscriptions()[EventType::LevelChangedEventType].size(), 1) << "Expected to subscribe to LevelChangedEventType";
 	EXPECT_STREQ(
-		event_admin->get_subscriptions()[event_type::LevelChangedEventType][0]->get_subscriber_name().c_str(),
-		resource_admin->get_subscriber_name().c_str()) << "Unexpected subscriber";
+		event_admin->GetSubscriptions()[EventType::LevelChangedEventType][0]->GetSubscriberName().c_str(),
+		resource_admin->GetSubscriberName().c_str()) << "Unexpected subscriber";
 }
 
 TEST_F(ResourceManagerTests, read_resources)
@@ -69,7 +69,7 @@ TEST_F(ResourceManagerTests, get_resource_via_string)
 	resource_admin->IndexResources(resource_file_path);
 
 	// When fetching an asset using string identifier
-	const auto asset = resource_admin->get(exp_name);
+	const auto asset = resource_admin->GetAssetInfo(exp_name);
 
 	// Ensure the asset is populated correctly
 	test_asset_against_baseline(asset);
@@ -79,7 +79,7 @@ TEST_F(ResourceManagerTests, get_resource_via_int)
 	resource_admin->IndexResources(resource_file_path);
 
 	// When fetching an asset using integer uid
-	const auto asset = resource_admin->get(exp_uid);
+	const auto asset = resource_admin->GetAssetInfo(exp_uid);
 	
 	// Ensure the asset is populated correctly
 	test_asset_against_baseline(asset);
@@ -88,8 +88,8 @@ TEST_F(ResourceManagerTests, get_resource_via_int)
 
 TEST_F(ResourceManagerTests, unload)
 {
-	resource_admin->initialize(*event_admin);
+	resource_admin->Initialize(*event_admin);
 	resource_admin->IndexResources(resource_file_path);
-	resource_admin->unload();
+	resource_admin->Unload();
 	EXPECT_EQ(0, resource_admin->get_resource_unloaded_count()) << "Asset count is not 0 after unload";
 }

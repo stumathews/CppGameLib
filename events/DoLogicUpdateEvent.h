@@ -3,7 +3,7 @@
 
 namespace gamelib
 {
-	class do_logic_update_event final : public event
+	class do_logic_update_event final : public Event
 	{
 	public:
 		do_logic_update_event();

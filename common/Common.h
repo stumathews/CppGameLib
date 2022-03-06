@@ -14,44 +14,44 @@
 namespace gamelib
 {
 	template<typename R>
-	std::shared_ptr<R> as_resource(const std::shared_ptr<asset> &the_asset)
+	std::shared_ptr<R> as_resource(const std::shared_ptr<Asset> &assetInfo)
 	{
-		return std::static_pointer_cast<R>(the_asset);
+		return std::static_pointer_cast<R>(assetInfo);
 	}
 	
 	// returns true if condition succeeded, false otherwise
-	inline bool succeeded(const bool condition, const std::string message, std::shared_ptr<Logger> the_logger = std::make_shared<Logger>())
+	inline bool IsSuccess(const bool condition, const std::string message, Logger& logger)
 	{
 		const auto is = condition == true;
 		if(is == true)
-			the_logger->log_message(message);
+			logger.LogThis(message);
 		return is;
 	}
 
-	inline bool failed(bool condition,  std::string message = "", bool ignore = false, std::shared_ptr<Logger> the_logger = std::make_shared<Logger>())
+	inline bool failed(bool condition,   Logger& logger, std::string message = "", bool ignore = false)
 	{
 		const auto is = condition == false;
 		if(is == false)
-			the_logger->log_message(message);
+			logger.LogThis(message);
 		return ignore == true ? !ignore : is;
 	}
 	
-	inline void log_message(const std::string &message, Logger& the_logger, const bool be_verbose = false, bool is_fatal = false)
+	inline void LogMessage(const std::string &message, Logger& logger, const bool be_verbose = false, bool isFatal = false)
 	{
-		the_logger.log_message(message, be_verbose);
-		if(is_fatal)
+		logger.LogThis(message, be_verbose);
+		if(isFatal)
 		{
-			the_logger.log_message("Fatal error encountered.", be_verbose);
+			logger.LogThis("Fatal error encountered.", be_verbose);
 			std::string key;
 			std::cin >> key;
 		}
 	}
 
 	// Logs message and runs action
-	inline bool run_and_log(const std::string &message, bool verbose, const std::function<bool()>& action,  SettingsManager& settingsAdmin, bool print_finished = true, bool run_if = true)
+	inline bool LogThis(const std::string &message, bool verbose, const std::function<bool()>& action,  SettingsManager& settingsAdmin, bool print_finished = true, bool run_if = true)
 	{
 		Logger theLogger;
-		log_message(message, theLogger, settingsAdmin.get_bool("global","verbose"));
+		LogMessage(message, theLogger, settingsAdmin.get_bool("global","verbose"));
 		bool result;
 		if(run_if)
 		{
@@ -64,7 +64,7 @@ namespace gamelib
 
 		
 		if(print_finished)
-			log_message("Finished.", theLogger);
+			LogMessage("Finished.", theLogger);
 		return result;
 	}
 
@@ -74,11 +74,11 @@ namespace gamelib
 		return static_cast<typename std::underlying_type<ENUM>::type>(value);
 	}
 
-	inline bool log_if_false(bool condition, std::string message, SettingsManager& settings, Logger& the_logger)
+	inline bool LogOnFailure(bool condition, std::string message, SettingsManager& settings, Logger& logger)
 	{
 		if(condition == false){
 			
-			log_message(message, the_logger, settings.get_bool("global","verbose"));
+			LogMessage(message, logger, settings.get_bool("global", "verbose"));
 		}
 		return condition;
 	}

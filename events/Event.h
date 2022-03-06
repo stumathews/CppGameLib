@@ -3,7 +3,7 @@
 
 namespace gamelib
 {
-	enum class event_type
+	enum class EventType
 	{
 		PositionChangeEventType,
 		LevelChangedEventType,
@@ -19,19 +19,19 @@ namespace gamelib
 		GameObject
 	};
 
-	class event
+	class Event
 	{
 	public:
-		explicit event(event_type type, int event_id = 0);
+		explicit Event(EventType type, int event_id = 0);
 		int event_id = 0;
 		bool processed = false;
-		event_type type;
-		virtual event_type get_type();
+		EventType type;
+		virtual EventType GetGameObjectType();
 		virtual std::string to_str();
-		virtual ~event() = default;
+		virtual ~Event() = default;
 	};
 
-	std::string operator+(const std::string& str, const event_type type);
+	std::string operator+(const std::string& str, const EventType type);
 }
 
 

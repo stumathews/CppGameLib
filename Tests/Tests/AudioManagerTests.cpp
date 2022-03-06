@@ -22,7 +22,7 @@ class AudioManagerTests : public testing::Test {
 	const shared_ptr<ResourceManager> resource_admin(new ResourceManager(*settings_admin, *graphics_admin, *font_admin, *audio_admin, gameLogger));
     const shared_ptr<audio_resource> ptr(new audio_resource(0, RESOURCE_NAME, RESOURCE_PATH, RESOURCE_TYPE, RESOURCE_SCENE, *resource_admin));
   	
-  	audio_asset_ptr = dynamic_pointer_cast<asset>(ptr);
+  	audio_asset_ptr = dynamic_pointer_cast<Asset>(ptr);
   }
     
   //void TearDown() override {}
@@ -33,8 +33,8 @@ class AudioManagerTests : public testing::Test {
   }
 	
   shared_ptr<AudioManager> audio_admin;
-  asset *audio_asset = nullptr;
-  shared_ptr<asset> audio_asset_ptr;
+  Asset *audio_asset = nullptr;
+  shared_ptr<Asset> audio_asset_ptr;
   const string RESOURCE_NAME = "dymmy_audio_resource";
   const string RESOURCE_PATH = "no_real_path";
   const string RESOURCE_TYPE = "fx";
@@ -44,11 +44,11 @@ class AudioManagerTests : public testing::Test {
 
 TEST_F(AudioManagerTests, to_resource)
 {
-	// When casting a asset* to a audio_resource...
+	// When casting a Asset* to a audio_resource...
 	auto resource = audio_admin->to_resource(audio_asset_ptr);
 	
 	EXPECT_STREQ(resource->name.c_str(), RESOURCE_NAME.c_str()) << "Resource name is invalid";
-	EXPECT_EQ(resource->is_loaded, false) << "is loaded flag is invalid";
+	EXPECT_EQ(resource->isLoadedInMemory, false) << "is loaded flag is invalid";
 	EXPECT_STREQ(resource->path.c_str(), RESOURCE_PATH.c_str()) << "resource path is invalid";
 	EXPECT_EQ(resource->scene, RESOURCE_SCENE) << "Resource scene is invalid";
 }

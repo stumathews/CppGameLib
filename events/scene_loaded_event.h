@@ -2,7 +2,7 @@
 #include "Event.h"
 namespace gamelib
 {
-	class scene_loaded_event : public event
+	class scene_loaded_event : public Event
 	{
 	public:
 		scene_loaded_event(int scene_id);

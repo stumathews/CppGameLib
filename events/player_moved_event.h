@@ -5,11 +5,11 @@
 #include "objects/player_component.h"
 namespace gamelib
 {
-	class player_moved_event final : public event
+	class player_moved_event final : public Event
 	{
 	public:
 		explicit player_moved_event(std::shared_ptr<player_component> &component, Direction direction) :
-			event(event_type::PlayerMovedEventType), direction(direction), player(component)
+			Event(EventType::PlayerMovedEventType), direction(direction), player(component)
 		{
 		}
 

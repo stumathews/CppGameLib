@@ -6,14 +6,31 @@
 
 namespace gamelib
 {
-
+	/// <summary>
+	/// Objects that can subscribe and raise events but implement this interface
+	/// </summary>
 	class IEventSubscriber
 	{
 		public:
-		//virtual ~IEventSubscriber();
-		virtual std::vector<std::shared_ptr<event>> handle_event(std::shared_ptr<event> evt) = 0;
-		virtual std::string get_subscriber_name() = 0;
-		virtual int get_subscriber_id() = 0;
+
+		/// <summary>
+		/// All subscribers can recieve events
+		/// </summary>
+		/// <param name="evt">Incoming event to handle</param>
+		/// <returns>List of generated events while handling current event</returns>
+		virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt) = 0;
+
+		/// <summary>
+		/// Each subscriber must have a name
+		/// </summary>
+		/// <returns></returns>
+		virtual std::string GetSubscriberName() = 0;
+
+		/// <summary>
+		/// Each subscriber must have an ID
+		/// </summary>
+		/// <returns></returns>
+		virtual int GetSubscriberId() = 0;
 	};
 }
 

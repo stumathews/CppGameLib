@@ -7,15 +7,27 @@ namespace gamelib
 {
 	class GameObject;
 
-	class layer
+	/// <summary>
+	/// Layer of game objects
+	/// </summary>
+	class Layer
 	{
 	public:
-		bool visible = false;
-		unsigned int zorder = 0;
-		float x = 0;
-		float y = 0;
+		Layer();
+		bool visible;
+		unsigned int zorder;
+		int x;
+		int y;
+
+		/// <summary>
+		/// Name of layer
+		/// </summary>
 		std::string name;
-		std::list<std::weak_ptr<GameObject>> game_objects;
+
+		/// <summary>
+		/// Game objects in this layer
+		/// </summary>
+		std::list<std::weak_ptr<GameObject>> layerObjects;
 	};
 }
 

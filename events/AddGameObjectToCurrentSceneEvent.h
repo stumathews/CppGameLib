@@ -6,14 +6,14 @@
 
 namespace gamelib
 {
-	class add_game_object_to_current_scene_event final : public event
+	class AddGameObjectToCurrentSceneEvent final : public Event
 	{
 	public:
-		add_game_object_to_current_scene_event(std::shared_ptr<GameObject> game_object, int event_id = 0);
+		AddGameObjectToCurrentSceneEvent(std::shared_ptr<GameObject> game_object, int event_id = 0);
 
 		void set_game_object(std::shared_ptr<GameObject> game_object);
 
-		std::shared_ptr<GameObject> get_game_object() const;
+		std::shared_ptr<GameObject> GetGameObject() const;
 		std::string to_str() override;
 
 	private:

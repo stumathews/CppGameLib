@@ -3,22 +3,22 @@
 
 namespace gamelib
 {
-	event::event(event_type type, int event_id): type(type), event_id(event_id)
+	Event::Event(EventType type, int event_id): type(type), event_id(event_id)
 	{
 		// using member init only
 	}
 
-	event_type event::get_type()
+	EventType Event::GetGameObjectType()
 	{
 		return type;
 	}
 
-	std::string event::to_str()
+	std::string Event::to_str()
 	{
 		return "generic event";
 	}
 
-	std::string operator+(const std::string& str, const event_type type)
+	std::string operator+(const std::string& str, const EventType type)
 	{
 		return str + std::to_string(as_integer(type));
 	}

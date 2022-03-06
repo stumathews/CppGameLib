@@ -11,6 +11,11 @@ using namespace std;
 namespace gamelib
 {
 
+	/// <summary>
+	/// Create Event manager
+	/// </summary>
+	/// <param name="config"></param>
+	/// <param name="the_logger"></param>
 	EventManager::EventManager(SettingsManager& config, Logger& the_logger) : gameLogger(the_logger), config(config) { 	}
 
 	size_t EventManager::count_ready() const
@@ -20,7 +25,7 @@ namespace gamelib
 
 	void EventManager::reset()
 	{
-		std::queue<shared_ptr<event>> empty;
+		std::queue<shared_ptr<Event>> empty;
 		  std::swap( primary_event_queue_, empty );
 		  std::swap( secondary_event_queue_, empty );
 		//this->event_subscribers_.clear();
@@ -29,47 +34,66 @@ namespace gamelib
 
 	EventManager::~EventManager()
 	{
-		gameLogger.log_message("Event manager dying.");
+		gameLogger.LogThis("Event manager dying.");
 	}
 
-	bool EventManager::initialize()
-	{
-		
-		return run_and_log("EventManager::initialize()", config.get_bool("global", "verbose"), [&]()
+	/// <summary>
+	/// Initialize the event manager
+	/// </summary>
+	/// <returns>true on initialization, false otherwise</returns>
+	bool EventManager::Initialize()
+	{		
+		return LogThis("EventManager::initialize()", config.get_bool("global", "verbose"), [&]()
 		{
-			subscribe_to_event(gamelib::event_type::GameObject, this);
+			// Subscribe to all Game object events
+			SubscribeToEvent(gamelib::EventType::GameObject, this);
 			return true;
 		}, config, true, true);
 	}
 
-	void EventManager::raise_event(const shared_ptr<event> event, IEventSubscriber* you)  // NOLINT(performance-unnecessary-value-param)
+	/// <summary>
+	/// Adds event to event queue for future processing
+	/// </summary>
+	/// <param name="event">Event to add</param>
+	/// <param name="you">Sender</param>
+	void EventManager::RaiseEvent(const shared_ptr<Event> event, IEventSubscriber* you)  // NOLINT(performance-unnecessary-value-param)
 	{		
 		if(!you)
 		{
-			gameLogger.log_message("Invalid sender", true);
+			gameLogger.LogThis("Invalid sender", true);
 			return;
 		}
 
-		auto const log = "EventManager: " + you->get_subscriber_name()  + string(" raised to event ") + event->to_str();
+		auto const log = "EventManager: " + you->GetSubscriberName()  + string(" raised to event ") + event->to_str();
 		
-		if(event->type != event_type::DoLogicUpdateEventType)
-			gameLogger.log_message(log);
+		if(event->type != EventType::DoLogicUpdateEventType)
+			gameLogger.LogThis(log);
 
 		primary_event_queue_.push(event);		
 	}
 
-	void EventManager::subscribe_to_event(const event_type type, IEventSubscriber* you)
+	/// <summary>
+	/// Subscribe to and event
+	/// </summary>
+	/// <param name="type">Type of event to sibscribe to</param>
+	/// <param name="you">Subscriber</param>
+	void EventManager::SubscribeToEvent(const EventType type, IEventSubscriber* you)
 	{
 		if(you)
 		{
-			auto const message = "EventManager: "+you->get_subscriber_name() + string(" subscribed to event ") + type;
-			gameLogger.log_message(message);
+			auto const message = "EventManager: "+you->GetSubscriberName() + string(" subscribed to event ") + type;
+			gameLogger.LogThis(message);
 		
 			event_subscribers_[type].push_back(you);
 		}
 	}
 
-	void EventManager::dispatch_event_to_subscriber(const shared_ptr<event>& event)
+	/// <summary>
+	/// Send event to each subscriber who has subscribed to that event.
+	/// The subscriber does the work.
+	/// </summary>
+	/// <param name="event">Event to send to subscribers</param>
+	void EventManager::DispatchEventToSubscriber(const shared_ptr<Event>& event)
 	{
 		// Go through each subscriber of the event and have the subscriber handle it
 		for (const auto& pSubscriber :  event_subscribers_[event->type])
@@ -80,7 +104,7 @@ namespace gamelib
 			if(pSubscriber)
 			{
 				// allow subscriber to process the event
-				for(const auto &secondary_event : pSubscriber->handle_event(event))
+				for(const auto &secondary_event : pSubscriber->HandleEvent(event))
 				{
 					// any results from processing are put onto the secondary queue
 					secondary_event_queue_.push(secondary_event);
@@ -90,7 +114,7 @@ namespace gamelib
 		event->processed = true;
 	}
 
-	void EventManager::process_all_events()
+	void EventManager::ProcessAllEvents()
 	{
 		auto event_count = 0;
 			
@@ -103,9 +127,8 @@ namespace gamelib
 			if(event->processed) // for safety sake
 				continue;
 			
-			// get subscribers of this event type
-			
-			dispatch_event_to_subscriber(event);
+			// Ask each subscriber to deal with event			
+			DispatchEventToSubscriber(event);
 
 			if(!primary_event_queue_.empty())
 				primary_event_queue_.pop();
@@ -120,38 +143,53 @@ namespace gamelib
 		}
 	}
 
-	std::map<event_type, std::vector<IEventSubscriber*>> EventManager::get_subscriptions() const
+	/// <summary>
+	/// Get subscriptions the event maanger knows about
+	/// </summary>
+	/// <returns>map of event types to subscribers</returns>
+	std::map<EventType, std::vector<IEventSubscriber*>> EventManager::GetSubscriptions() const
 	{
 		return event_subscribers_;
 	}
-	std::vector<std::shared_ptr<event>> EventManager::handle_event(std::shared_ptr<event> evt)
+
+	/// <summary>
+	/// Handles events that the event manager subscribes to itself
+	/// </summary>
+	/// <param name="evt"></param>
+	/// <returns></returns>
+	std::vector<std::shared_ptr<Event>> EventManager::HandleEvent(std::shared_ptr<Event> evt)
 	{
-		std::vector<std::shared_ptr<event>> generated_events;
-
-		if(evt->type == gamelib::event_type::GameObject)
-		{
-			const auto game_object_event = dynamic_pointer_cast<gamelib::GameObjectEvent>(evt);
-			//remove_subscription(game_object_event->game_object->id, gamelib::event_type::PositionChangeEventType);
-		}
-
+		// Does not handle any events in the event queue itself
+		std::vector<std::shared_ptr<Event>> generated_events;
 		return generated_events;
 	}
-	std::string EventManager::get_subscriber_name()
+	std::string EventManager::GetSubscriberName()
 	{
 		return "EventManager";
 	}
 
+	/// <summary>
+	/// Determins if the subscriber matches the subscriptin id provided
+	/// </summary>
+	/// <param name="candidate">event Subscriber</param>
+	/// <param name="subscriptionId">Subscription id</param>
+	/// <returns></returns>
 	bool IsSameSubscriber(IEventSubscriber* candidate, int subscriptionId) 
 	{
 		if(candidate)
 		{
-			auto found_match = candidate == nullptr ? true : candidate->get_subscriber_id() == subscriptionId;
+			auto found_match = candidate == nullptr ? true : candidate->GetSubscriberId() == subscriptionId;
 			return found_match;
 		}
 		return false;
 	};
 
-	void EventManager::remove_subscription(const int subscription_id, gamelib::event_type type)
+	/// <summary>
+	/// Removes subscription to event
+	/// </summary>
+	/// <param name="subscription_id">subscriber id</param>
+	/// <param name="type">event type to unsubscribe from</param>
+	void EventManager::RemoveEventSubscription(const int subscription_id, gamelib::EventType type)
 	{
 		for(auto &pair : event_subscribers_ )
 		{
@@ -176,7 +214,10 @@ namespace gamelib
 		}		
 	}
 
-	// ubsubscribe to all events
+	/// <summary>
+	/// Remove subscriber
+	/// </summary>
+	/// <param name="subscription_id"></param>
 	void EventManager::Unsubscribe(const int subscription_id)
 	{
 		for(auto &pair : event_subscribers_ )

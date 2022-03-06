@@ -1,7 +1,7 @@
 #pragma once
 
 #include "objects/Component.h"
-#include <objects/game_world_data.h>
+#include <objects/GameWorldData.h>
 #include <memory>
 #include "common/constants.h"
 
@@ -9,12 +9,12 @@ namespace gamelib
 {
 class game_world_component : public component
 	{
-		game_world_data&  data;
+		GameWorldData&  data;
 	public:
-		game_world_component(game_world_data& world) : component(constants::game_world), data(world)
+		game_world_component(GameWorldData& gameWorld) : component(constants::game_world), data(gameWorld)
 		{
 		}
 
-		game_world_data& get_data() const {return data;}
+		GameWorldData& get_data() const {return data;}
 	};
 }

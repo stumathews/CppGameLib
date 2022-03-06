@@ -7,109 +7,177 @@ using namespace std;
 
 namespace gamelib
 {		
-	vector<shared_ptr<event>> Room::handle_event(const std::shared_ptr<event> event)
+	/// <summary>
+	/// Handle Room events
+	/// </summary>
+	/// <param name="event"></param>
+	/// <returns></returns>
+	vector<shared_ptr<Event>> Room::HandleEvent(const std::shared_ptr<Event> event)
 	{	
-		auto any_generated_events(GameObject::handle_event(event));
+		auto generatedEvents(GameObject::HandleEvent(event));
 
-		if(event->type == event_type::PlayerMovedEventType)
+		// Handle when the player moves
+		if(event->type == EventType::PlayerMovedEventType)
 		{			
-			const auto moved_event = std::static_pointer_cast<player_moved_event>(event);				
+			const auto moved_event = std::static_pointer_cast<player_moved_event>(event);
+
+			// Extract player info 
 			const auto player_component = moved_event->get_player_component();
+
+			// Get player
 			const auto player = player_component->the_player;
 
-			if(get_type() == object_type::player)
-				return any_generated_events;
+			// Dont handle player events
+			if(GetGameObjectType() == object_type::Player)
+			{
+				return generatedEvents;
+			}
 
-			// Determine if the player's coordinates are within room
-			is_player_in_room = (player->x >= bounds.x && player->x < bounds.x + bounds.w) && (player->y >= bounds.y && player->y < bounds.y + bounds.h);
+			// Set if the player is in this room or not
+			isPlayerWithinRoom = (player->x >= bounds.x && player->x < bounds.x + bounds.w) && 
+				                (player->y >= bounds.y && player->y < bounds.y + bounds.h);
 			
 			// Update the player's knowledge of which room its in
-			if(is_player_in_room)
-				player->within_room_index = number;
+			if(isPlayerWithinRoom)
+			{
+				player->SetRoom(number);
+			}
 
 			// Update square's knowledge of player's bounds for layer use
-			player_bounds = { player->x, player->y, player->width, player->height  };
+			playerBounds = 
+			{
+				player->x, 
+				player->y, 
+				player->GetWidth(), 
+				player->GetHeight()  
+			};
 		}
 
-		if( event->type == event_type::SettingsReloaded)
+		// If settings are reloaded, reload the room settings
+		if(event->type == EventType::SettingsReloaded)
 		{
-			load_settings(settings_admin);			
-		}
-		if(event->type == event_type::Fire)
-		{
-			
+			LoadSettings(settings_admin);			
 		}
 		
-		return any_generated_events;
+		return generatedEvents;
 	}
 
-	void Room::load_settings(SettingsManager& settings_admin)
+	/// <summary>
+	/// Reload room settings
+	/// </summary>
+	/// <param name="settings_admin"></param>
+	void Room::LoadSettings(SettingsManager& settings_admin)
 	{
-		GameObject::load_settings(settings_admin);		
+		// Load game object settings
+		GameObject::LoadSettings(settings_admin);	
+
+		// Refetch Room settings
 		fill = settings_admin.get_bool("room_fill", "enable");
 	}
 
-	void Room::draw(SDL_Renderer* renderer)
+	/// <summary>
+	/// Draw the room
+	/// </summary>
+	/// <param name="renderer"></param>
+	void Room::Draw(SDL_Renderer* renderer)
 	{
+		// Allow base class to perform any common drawing operations
+		GameObject::Draw(renderer);
+
 		// black
 		SDL_SetRenderDrawColor(renderer, 0, 0,0,0);
 		
-		const auto rect = get_abcd();
-		const auto ax = rect->get_ax();
-		const auto ay = rect->get_ay();
-		const auto bx = rect->get_bx();
-		const auto by = rect->get_by();
-		const auto cx = rect->get_cx();
-		const auto cy = rect->get_cy();
-		const auto dx = rect->get_dx();
-		const auto dy = rect->get_dy();
+		auto& rect = GetABCDRectangle();
+		const auto ax = rect.GetAx();
+		const auto ay = rect.GetAy();
+		const auto bx = rect.GetBx();
+		const auto by = rect.GetBy();
+		const auto cx = rect.GetCx();
+		const auto cy = rect.GetCy();
+		const auto dx = rect.GetDx();
+		const auto dy = rect.GetDy();
 
 		const auto have_top_wall = this->walls[0];
 		const auto have_right_wall = this->walls[1];
 		const auto have_bottom_wall = this->walls[2];
 		const auto have_left_wall = this->walls[3];
 
+		// Draw the walls as lines
 		if (have_top_wall) 
-			SDL_RenderDrawLine(renderer, ax,ay,bx,by);
+			SDL_RenderDrawLine(renderer, ax, ay, bx, by);
 		
 		if (have_right_wall) 
-			SDL_RenderDrawLine(renderer, bx,by,cx,cy);
+			SDL_RenderDrawLine(renderer, bx, by, cx, cy);
 		
 		if (have_bottom_wall) 
-			SDL_RenderDrawLine(renderer, cx,cy,dx,dy);
+			SDL_RenderDrawLine(renderer, cx, cy, dx, dy);
 		
 		if (have_left_wall) 
-			SDL_RenderDrawLine(renderer, dx,dy,ax,ay);
+			SDL_RenderDrawLine(renderer, dx, dy, ax, ay);
 		
 		if(fill)
 			DrawFilledRect(renderer, &bounds, { 255, 0 ,0 ,0});
 		
 		if(settings_admin.get_bool("global", "print_debugging_text"))
-		  RectDebugging::printInRect(renderer, get_tag(), &bounds, resource_admin); 
+		{
+		  RectDebugging::printInRect(renderer, GetTag(), &bounds, _resourceManager); 
+		}
 	}
 
-	shared_ptr<abcd_rectangle> Room::get_abcd() const
+	/// <summary>
+	/// Get room's  ABCD rectangle
+	/// </summary>
+	/// <returns>The Rooms ABCD rectangle</returns>
+	ABCDRectangle& Room::GetABCDRectangle()
 	{
 		return abcd;
 	}
 
-	Room::Room(int number, int x, int y, int rw, int rh, ResourceManager& resource_admin, SettingsManager& settings, EventManager& event_admin, bool fill)
-		: DrawingBase(x, y, true, settings, event_admin), resource_admin(resource_admin), fill(fill), player_bounds({}),
-		 top_room_index(0), right_room_index(0),  bottom_room_index(0), width(rw), height(rh)
+	Room::Room(int number, 
+		int x, 
+		int y, 
+		int width, 
+		int height, 
+		ResourceManager& resourceManager, 
+		SettingsManager& settings, 
+		EventManager& eventManager, bool fill)
+		: DrawableGameObject(x, y, true, settings, eventManager), 
+		 _resourceManager(resourceManager), fill(fill), playerBounds({}),
+		 top_room_index(0), right_room_index(0),  bottom_room_index(0), width(width), height(height), left_room_index(0)
 	{
-		this->bounds = {x, y, rw, rh};
-		this->width = rw;
-		this->height = rh;
+		// Bounds of this room
+		this->bounds =
+		{
+			x,
+			y, 
+			width,
+			height
+		};
+
+		this->width = width;
+		this->height = height;
 		this->number = number;
-		this->abcd = make_shared<abcd_rectangle>(x, y, rw, rh);
-		this->supports_move_logic = false;
+
+		// Room geometry helper
+		this->abcd = ABCDRectangle(x, y, width, height);
+
+		this->supportsMoveLogic = false;
+
+		// All walls are present by default
 		walls[0] = true;
 		walls[1] = true;
 		walls[2] = true;
 		walls[3] = true;
 	}
 
-	void Room::set_adjacent_room_index(const int top_index, const int right_index, const int bottom_index, const int left_index)
+	/// <summary>
+	/// Set Indexs of sorrounding rooms
+	/// </summary>
+	/// <param name="top_index"></param>
+	/// <param name="right_index"></param>
+	/// <param name="bottom_index"></param>
+	/// <param name="left_index"></param>
+	void Room::SetSoroundingRooms(const int top_index, const int right_index, const int bottom_index, const int left_index)
 	{
 		this->top_room_index = top_index;
 		this->right_room_index = right_index;
@@ -117,20 +185,20 @@ namespace gamelib
 		this->left_room_index = left_index;
 	}
 
-	int Room::get_adjacent_index_for_wall(int index) const
+	int Room::GetNeighbourIndex(Side side) const
 	{
-		switch (index)
+		switch (side)
 		{
-		case 0:
+		case Side::Top:
 			return top_room_index;
 			break;
-		case 1:
+		case Side::Right:
 			return right_room_index;
 			break;
-		case 2:
+		case Side::Bottom:
 			return bottom_room_index;
 			break;
-		case 3:
+			case Side::Left:
 			return left_room_index;
 			break;
 		default:
@@ -138,52 +206,86 @@ namespace gamelib
 		}
 	}
 
-	int Room::get_x() const
+	/// <summary>
+	/// corner x-coordinate
+	/// </summary>
+	/// <returns></returns>
+	int Room::GetX() const
 	{
 		return this->x;
 	}
 
-	int Room::get_y() const
+	/// <summary>
+	/// cornder y-coorinate
+	/// </summary>
+	/// <returns></returns>
+	int Room::GetY() const
 	{
 		return this->y;
 	}
 
-	int Room::get_w() const
+	/// <summary>
+	/// Get room width
+	/// </summary>
+	/// <returns></returns>
+	int Room::GetWidth() const
 	{
 		return width;
 	}
 
-	int Room::get_h() const
+	/// <summary>
+	/// Get Room height
+	/// </summary>
+	/// <returns></returns>
+	int Room::GetHeight() const
 	{
 		return height;
 	}
 
-	bool Room::is_walled(int wall)
+	bool Room::IsWalled(Side wall)
 	{
-		return walls[wall-1];
+		return walls[(int)wall];
 	}
 
-	bool Room::is_walled_0_based(int wall)
-	{
-		return walls[wall];
-	}
-
-	void Room::update()
+	// Walls dont respont to frame updates yet
+	void Room::Update()
 	{
 	}
 
-	void Room::remove_wall(int wall)
+	/// <summary>
+	/// Remove a wall
+	/// </summary>
+	/// <param name="wall">wall index</param>
+	void Room::RemoveWall(Side wall)
 	{
-		this->walls[wall - 1] = false;
+		this->walls[(int)wall-1] = false;
 	}
 
-	string Room::get_identifier()
+	/// <summary>
+	/// Remove a wall
+	/// </summary>
+	/// <param name="wall">wall index</param>
+	void Room::RemoveWallZeroBased(Side wall)
 	{
-		return "square";
+		this->walls[(int)wall] = false;
 	}
 
+	void Room::ShouldRoomFill(bool fill_me) 
+	{
+		fill = fill_me; 
+	}
+
+	object_type Room::GetGameObjectType() 
+	{
+		return object_type::Room;
+	}
+
+	/// <summary>
+	/// Get name
+	/// </summary>
+	/// <returns></returns>
+	string Room::GetName()
+	{
+		return "Room";
+	}
 }
-
-
-
-

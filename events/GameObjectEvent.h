@@ -13,17 +13,17 @@ namespace gamelib
 		RemoveSubscription
 	};
 
-	class GameObjectEvent : public event
+	class GameObjectEvent : public Event
 	{
 	public:
-		GameObjectEvent(const int event_id, GameObject *gameObject, GameObjectEventContext context ) : event(event_type::GameObject, event_id), context(context), game_object(std::move(gameObject))
+		GameObjectEvent(const int event_id, GameObject *gameObject, GameObjectEventContext context ) : Event(EventType::GameObject, event_id), context(context), gameObject(std::move(gameObject))
 		{
 		}
 
-		event_type get_type() override { return event_type::GameObject; }
+		EventType GetGameObjectType() override { return EventType::GameObject; }
 		std::string to_str() override { return "GameObjectEvent"; }
 		GameObjectEventContext context;
-		GameObject *game_object;
+		GameObject *gameObject;
 	};
 }
 

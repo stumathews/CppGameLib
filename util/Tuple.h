@@ -6,8 +6,8 @@ namespace gamelib
 	{
 	public:
 		coordinate(T x, T y);
-		T get_x() const;
-		T get_y() const;
+		T GetX() const;
+		T GetY() const;
 	private: 
 		T x, y;
 	};
@@ -18,13 +18,13 @@ namespace gamelib
 	}
 
 	template <class T>
-	T coordinate<T>::get_x() const
+	T coordinate<T>::GetX() const
 	{
 		return this->x;
 	}
 
 	template <class T>
-	T coordinate<T>::get_y() const
+	T coordinate<T>::GetY() const
 	{
 		return this->y;
 	}

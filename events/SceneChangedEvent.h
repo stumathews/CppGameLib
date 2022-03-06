@@ -3,10 +3,10 @@
 
 namespace gamelib
 {
-	class scene_changed_event final : public event
+	class SceneChangedEvent final : public Event
 	{
 	public:
-		explicit scene_changed_event(int level) : event(event_type::LevelChangedEventType)
+		explicit SceneChangedEvent(int level) : Event(EventType::LevelChangedEventType)
 		{
 			scene_id = level;
 		}

@@ -3,7 +3,7 @@
 using namespace std;
 namespace gamelib
 {
-	position_change_event::position_change_event(Direction dir): event(event_type::PositionChangeEventType)
+	position_change_event::position_change_event(Direction dir): Event(EventType::PositionChangeEventType)
 	{
 		direction = dir;
 	}

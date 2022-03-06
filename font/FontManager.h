@@ -14,7 +14,7 @@ namespace gamelib
 	{
 	public:	 		
 		// Creates an audio Resource
-		std::shared_ptr<asset> create_asset(tinyxml2::XMLElement * assetXmlElement) const;
-		static std::shared_ptr<font_resource> to_resource(const std::shared_ptr<asset>& asset);
+		std::shared_ptr<Asset> create_asset(tinyxml2::XMLElement * assetXmlElement) const;
+		static std::shared_ptr<font_resource> to_resource(const std::shared_ptr<Asset>& asset);
 	};
 }

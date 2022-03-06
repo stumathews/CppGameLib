@@ -1,7 +1,7 @@
 #ifndef SDL_GRAPHICS_MANAGER_H
 #define SDL_GRAPHICS_MANAGER_H
 #include <vector>
-#include "graphic_resource.h"
+#include "GraphicAsset.h"
 #include "tinyxml2.h"
 #include <memory>
 #include "SDL.h"
@@ -16,11 +16,11 @@ namespace gamelib
 
 	class SDLGraphicsManager final : public EventSubscriber
 	{
-		EventManager& event_admin;
-		Logger& the_logger;
+		EventManager& eventManager;
+		Logger& logger;
 	public:
 		
-		SDLGraphicsManager(EventManager& event_admin, Logger& the_logger);
+		SDLGraphicsManager(EventManager& eventManager, Logger& the_logger);
 		SDLGraphicsManager(SDLGraphicsManager const&)  = delete;		
 		SDLGraphicsManager(SDLGraphicsManager &&other) = delete;	
 		SDLGraphicsManager & operator=(SDLGraphicsManager &&other) = delete;
@@ -32,7 +32,7 @@ namespace gamelib
 		SDL_Renderer* window_renderer = nullptr; //The window renderer
 		SDL_Surface* window_surface = nullptr; 
 
-		std::shared_ptr<asset> create_asset(tinyxml2::XMLElement * asset_xml_element, SettingsManager& config);
+		std::shared_ptr<Asset> create_asset(tinyxml2::XMLElement * asset_xml_element, SettingsManager& config);
 		
 		bool initialize(const uint width = 800, uint height = 600, const char* window_title = nullptr);	
 
@@ -40,16 +40,16 @@ namespace gamelib
 		uint get_screen_width() const { return screen_width;}
 		uint get_screen_height() const { return screen_height;}
 		
-	    std::string get_subscriber_name() override;
+	    std::string GetSubscriberName() override;
 
-		static std::shared_ptr<graphic_resource> to_resource(const std::shared_ptr<asset>& asset);
+		static std::shared_ptr<GraphicAsset> to_resource(const std::shared_ptr<Asset>& asset);
 		
 	private:
 		uint screen_width = 0;
 		uint screen_height = 0;
 		void clear_draw_present(std::function<void(SDL_Renderer* renderer)> &render_routine) const;
-		
-		events handle_event(const std::shared_ptr<event> the_event) override;
+		bool beVerbose = false;
+		events HandleEvent(const std::shared_ptr<Event> the_event) override;
 		
 	};
 }

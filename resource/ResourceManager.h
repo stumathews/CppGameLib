@@ -20,31 +20,32 @@ namespace gamelib
 	    public:
 		ResourceManager(SettingsManager& config, SDLGraphicsManager& graphics_admin, FontManager& font_admin, AudioManager&, Logger& the_logger);
 			
-		std::shared_ptr<asset> get(const std::string& name);
-		std::shared_ptr<asset> get(int uuid);
+		std::shared_ptr<Asset> GetAssetInfo(const std::string& name);
+		std::shared_ptr<Asset> GetAssetInfo(int uuid);
 		int get_resource_count() const { return resource_count; }
-		std::vector<std::shared_ptr<event>> handle_event(std::shared_ptr<event> the_event) override;
-		void unload();
+		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> the_event) override;
+		void Unload();
 		
-		bool initialize(EventManager& event_admin);
-	    std::string get_subscriber_name() override;
+		bool Initialize(EventManager& eventManager);
+	    std::string GetSubscriberName() override;
 
 		// index the resoures file
 		void IndexResources(std::string resources_file_path = "game/resources.xml");
-		std::shared_ptr<gamelib::asset>& CreateAssetFromElement(const char* type, std::shared_ptr<gamelib::asset>& the_asset, tinyxml2::XMLElement* const& element);
+		std::shared_ptr<gamelib::Asset>& CreateAssetInfoFromElement(const char* type, std::shared_ptr<gamelib::Asset>& the_asset, tinyxml2::XMLElement* const& element);
 		int get_resource_unloaded_count() const { return unloaded_resources_count; }
 	    int get_resource_loaded_count() const { return loaded_resources_count; }
+				
 	private:
 		SettingsManager& config;
 		SDLGraphicsManager& graphics_admin;
 		FontManager& font_admin;
 		AudioManager& audio_admin;
-		Logger& the_logger;
-		void load_level_assets(int level);
-	    void store_asset(const std::shared_ptr<asset>& the_asset);
-		std::map<int, std::vector<std::shared_ptr<asset>>> resources_by_scene;   
-		std::map<std::string, std::shared_ptr<asset>> resource_by_name;   
-		std::map<int, std::shared_ptr<asset>> resources_by_uuid;
+		Logger& logger;
+		void LoadSceneAssets(int level);
+	    void StoreAssetInfo(const std::shared_ptr<Asset>& the_asset);
+		std::map<int, std::vector<std::shared_ptr<Asset>>> resources_by_scene;   
+		std::map<std::string, std::shared_ptr<Asset>> resource_by_name;   
+		std::map<int, std::shared_ptr<Asset>> resources_by_uuid;
 
 		int resource_count = 0;
 		int loaded_resources_count = 0;

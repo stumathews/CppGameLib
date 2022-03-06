@@ -7,7 +7,7 @@
 using namespace std;
 namespace gamelib
 {
-	std::shared_ptr<asset> AudioManager::create_asset(tinyxml2::XMLElement * element, ResourceManager& resource_admin) const
+	std::shared_ptr<Asset> AudioManager::create_asset(tinyxml2::XMLElement * element, ResourceManager& resource_admin) const
 	{
 		int uuid;
 		const char* type;
@@ -37,7 +37,7 @@ namespace gamelib
 		Mix_PlayChannel(-1, as_fx, 0);
 	}
 
-	shared_ptr<audio_resource> AudioManager::to_resource(const shared_ptr<asset>& asset)
+	shared_ptr<audio_resource> AudioManager::to_resource(const shared_ptr<Asset>& asset)
 	{	
 		return as_resource<audio_resource>(asset);
 	}

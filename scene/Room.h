@@ -1,6 +1,6 @@
 #pragma once
 #include <SDL.h>
-#include "abcd_rectangle.h"
+#include "ABCDRectangle.h"
 #include "objects/DrawingBase.h"
 #include "objects/GameObject.h"
 
@@ -8,50 +8,198 @@ namespace gamelib
 {
 	class ResourceManager;
 	
-	class Room : public DrawingBase
-	{		
-		ResourceManager& resource_admin;		
-		bool is_player_in_room = false;
-		bool fill = false;
-		SDL_Rect player_bounds = {0};
+	enum class Side
+	{
+		Top,
+		Right,
+		Bottom,
+		Left
+	};
 
-	protected:
-		int number;
-		bool walls[4]{};
-		std::shared_ptr<abcd_rectangle> abcd;
-	    [[nodiscard]] std::shared_ptr<abcd_rectangle> get_abcd() const;
-		int top_room_index, right_room_index, bottom_room_index, left_room_index = -1;
-		int width, height;
+	/// <summary>
+	/// Conceptual room object
+	/// </summary>
+	class Room : public DrawableGameObject
+	{	
 	public:		
-		Room(int number, int x, int y, int rw, int rh, ResourceManager& resource_admin,
-		       SettingsManager& settings_admin, EventManager& event_admin, bool fill = false);
-
 		
-		// Room functions
-		void set_adjacent_room_index(const int top_index, const int right_index, const int bottom_index,
+		/// <summary>
+		/// Create a room
+		/// </summary>
+		Room(int number, 
+			int x,
+			int y, 
+			int width, 
+			int height, 
+			ResourceManager& resource_admin, 
+			SettingsManager& settings_admin, 
+			EventManager& eventManager, 
+			bool fill = false);
+		
+		
+		/// <summary>
+		/// Get Sorrounding rooms
+		/// </summary>
+		void SetSoroundingRooms(const int top_index, const int right_index, const int bottom_index,
 		                             const int left_index);
 
-		[[nodiscard]] int get_adjacent_index_for_wall(int index) const;
+		int GetNeighbourIndex(Side index) const;
 
-	    int get_x() const;
-	    int get_y() const;
-	    int get_w() const;
-	    int get_h() const;
+	    /// <summary>
+	    /// Get X coord
+	    /// </summary>
+	    /// <returns></returns>
+	    int GetX() const;
 
-		// Wall functions
-	    bool is_walled(int wall);
-		bool is_walled_0_based(int wall);
-		void remove_wall(int wall);
+	    /// <summary>
+	    /// Get Y coord
+	    /// </summary>
+	    /// <returns></returns>
+	    int GetY() const;
+
+	    /// <summary>
+	    /// Get Width
+	    /// </summary>
+	    /// <returns></returns>
+	    int GetWidth() const;
+
+	    /// <summary>
+	    /// Get Heigh
+	    /// </summary>
+	    /// <returns></returns>
+	    int GetHeight() const;
+
+		/// <summary>
+		/// IsWalled (zero based)
+		/// </summary>
+		/// <param name="wall"></param>
+		/// <returns></returns>
+		bool IsWalled(Side wall);
+
+		/// <summary>
+		/// Remove wall
+		/// </summary>
+		void RemoveWall(Side wall);
+
+		/// <summary>
+		/// Remove wall
+		/// </summary>
+		void RemoveWallZeroBased(Side wall);
 		
-		
-		void set_fill(bool fill_me = false) { fill = fill_me;}
+		/// <summary>
+		/// Should fill room?
+		/// </summary>
+		void ShouldRoomFill(bool fill_me = false);
 
-		object_type get_type() override { return object_type::room; }
-		std::string get_identifier() override;
-		std::vector<std::shared_ptr<event>> handle_event(std::shared_ptr<event> event) override;
-		void load_settings(SettingsManager& settings_admin) override;		 
-		void draw(SDL_Renderer* renderer) override;
-	    void update() override;
+		/// <summary>
+		/// Provide Room type
+		/// </summary>
+		object_type GetGameObjectType() override;
+
+		/// <summary>
+		/// Name
+		/// </summary>
+		/// <returns></returns>
+		std::string GetName() override;
+		
+		/// <summary>
+		/// Handle room events
+		/// </summary>
+		/// <param name="event"></param>
+		/// <returns></returns>
+		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> event) override;
+
+		/// <summary>
+		/// Load room settings
+		/// </summary>
+		/// <param name="settings_admin"></param>
+		void LoadSettings(SettingsManager& settings_admin) override;		 
+
+		/// <summary>
+		/// Draw room
+		/// </summary>
+		/// <param name="renderer"></param>
+		void Draw(SDL_Renderer* renderer) override;
+
+	    /// <summary>
+	    /// Update room
+	    /// </summary>
+	    void Update() override;
+
+	protected:
+
+		/// <summary>
+		/// Each room as a room number
+		/// </summary>
+		int number;
+
+		/// <summary>
+		/// Each room as 4 possible walls
+		/// </summary>
+		bool walls[4];
+
+		/// <summary>
+		/// Each room's geometry is managed by a ABCD rectandle
+		/// </summary>
+		ABCDRectangle abcd;
+
+	    /// <summary>
+	    /// Get ABCD Rectangle
+	    /// </summary>
+	    /// <returns></returns>
+	    ABCDRectangle& GetABCDRectangle();
+		
+		/// <summary>
+		/// Index of the room above this one (room number)
+		/// </summary>
+		int top_room_index;
+
+		/// <summary>
+		/// Index of the room to the right of this one (room number)
+		/// </summary>
+		int right_room_index;
+
+		/// <summary>
+		/// Index of the room below this one (room number)
+		/// </summary>
+		int bottom_room_index; 
+
+		/// <summary>
+		/// Room to the left of this one (room number)
+		/// </summary>
+		int left_room_index;
+
+		/// <summary>
+		/// Width of this room
+		/// </summary>
+		int width;
+
+		/// <summary>
+		/// Height of this room
+		/// </summary>
+		int height;
+
+	private:
+
+		/// <summary>
+		/// Resource manager
+		/// </summary>
+		ResourceManager& _resourceManager;
+
+		/// <summary>
+		/// Indication if the player is within this room at the moment
+		/// </summary>
+		bool isPlayerWithinRoom = false;
+
+		/// <summary>
+		/// indication if this room should be filled
+		/// </summary>
+		bool fill = false;
+
+		/// <summary>
+		/// The bounds of the player
+		/// </summary>
+		SDL_Rect playerBounds = {0};
 	};
 }
 

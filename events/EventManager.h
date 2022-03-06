@@ -11,16 +11,16 @@
 
 namespace gamelib
 {
-	class EventManager : public EventSubscriber, public inheritable_enable_shared_from_this<IEventSubscriber>
+	class EventManager : public EventSubscriber
 	{
 		// Primary queue used for event processing
-		std::queue<std::shared_ptr<event>> primary_event_queue_;
+		std::queue<std::shared_ptr<Event>> primary_event_queue_;
 		
 		// used to hold events occurring out of processing of primary events
-		std::queue<std::shared_ptr<event>> secondary_event_queue_;
+		std::queue<std::shared_ptr<Event>> secondary_event_queue_;
 
 		// Event subscribers (aka event handlers)
-		std::map<event_type, std::vector<IEventSubscriber*>> event_subscribers_;
+		std::map<EventType, std::vector<IEventSubscriber*>> event_subscribers_;
 
 		SettingsManager& config;
 		Logger& gameLogger;
@@ -40,32 +40,32 @@ namespace gamelib
 		// Cannot assign to an event manager
 		void operator=(EventManager const&) = delete;
 
-		bool initialize();
+		bool Initialize();
 		
 		// Raise an arbitrary event
-		void raise_event(const std::shared_ptr<event> event, IEventSubscriber* you);
+		void RaiseEvent(const std::shared_ptr<Event> event, IEventSubscriber* you);
 
-		// Add yourself as an event handler (aka event subscriber) to handle an event of type event_type
-		void subscribe_to_event(event_type type, IEventSubscriber* pYou);
+		// Add yourself as an event handler (aka event subscriber) to handle an event of type EventType
+		void SubscribeToEvent(EventType type, IEventSubscriber* pYou);
 
 		// Directly send event to subscriber without going through the event queue
-		void dispatch_event_to_subscriber(const std::shared_ptr<event>& event);
+		void DispatchEventToSubscriber(const std::shared_ptr<Event>& event);
 		
 		// Goes through all the events on the primary and secondary queues and passes them to their respective event handlers
-		// Primary queue is incremented with event when an event is raised via the raise_event() function. This can be one at any time.
+		// Primary queue is incremented with event when an event is raised via the RaiseEvent() function. This can be one at any time.
 		// secondary queue is composed automatically of events that occured while processing the primary queue. 
-		void process_all_events();
+		void ProcessAllEvents();
 
-		[[nodiscard]] std::map<event_type, std::vector<IEventSubscriber*>> get_subscriptions() const;
+		[[nodiscard]] std::map<EventType, std::vector<IEventSubscriber*>> GetSubscriptions() const;
 
 
 		// Inherited via IEventSubscriber
 		
-		virtual std::vector<std::shared_ptr<event>> handle_event(std::shared_ptr<event> evt) override;
+		virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt) override;
 
-		virtual std::string get_subscriber_name() override;
+		virtual std::string GetSubscriberName() override;
 
-		void remove_subscription(const int subscription_id, gamelib::event_type type);
+		void RemoveEventSubscription(const int subscription_id, gamelib::EventType type);
 		void Unsubscribe(const int subscription_id);
 
 	};

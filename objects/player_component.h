@@ -8,9 +8,9 @@ namespace gamelib
 	class player_component : public component
 	{
 	public:
-		player_component(std::string component_name, std::shared_ptr<Player> player);
+		player_component(std::string component_name, Player* player);
 
-		std::shared_ptr<Player> the_player;
+		Player* the_player;
 		
 		int room;
 	};

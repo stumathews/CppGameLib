@@ -15,7 +15,7 @@ class FontManagerTests : public testing::Test {
   { 
 	font_admin = shared_ptr<FontManager>(new FontManager());
   	const shared_ptr<font_resource> ptr(new font_resource(0, resource_name, resource_path, resource_type, resource_scene));  	
-  	font_asset_ptr = dynamic_pointer_cast<asset>(ptr);
+  	font_asset_ptr = dynamic_pointer_cast<Asset>(ptr);
   }
     
   //void TearDown() override {}
@@ -27,18 +27,18 @@ class FontManagerTests : public testing::Test {
   const string resource_type = "font";
   const int resource_scene = 0;
 	
-  asset *audio_asset = nullptr;
-  shared_ptr<asset> font_asset_ptr;	
+  Asset *audio_asset = nullptr;
+  shared_ptr<Asset> font_asset_ptr;	
 };
 
 TEST_F(FontManagerTests, to_resource)
 {
-	// When casting a asset* to a font_resource...
+	// When casting a Asset* to a font_resource...
 	auto resource = font_admin->to_resource(font_asset_ptr);
 
 	// Ensure that...
 	EXPECT_STREQ(resource->name.c_str(), resource_name.c_str()) << "Resource name is invalid";
-	EXPECT_EQ(resource->is_loaded, false) << "is loaded flag is invalid";
+	EXPECT_EQ(resource->isLoadedInMemory, false) << "is loaded flag is invalid";
 	EXPECT_STREQ(resource->path.c_str(), resource_path.c_str()) << "resource path is invalid";
 	EXPECT_EQ(resource->scene, resource_scene) << "Resource scene is invalid";
 }

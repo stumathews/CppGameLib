@@ -187,9 +187,9 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="GameStructure.h" />
     <ClInclude Include="objects\game_world_component.h" />
-    <ClInclude Include="objects\game_world_data.h" />
+    <ClInclude Include="objects\GameWorldData.h" />
     <ClInclude Include="graphic\Drawing.h" />
-    <ClInclude Include="graphic\graphic_resource.h" />
+    <ClInclude Include="graphic\GraphicAsset.h" />
     <ClInclude Include="graphic\SDLGraphicsManager.h" />
     <ClInclude Include="objects\Component.h" />
     <ClInclude Include="objects\GameObject.h" />
@@ -200,7 +200,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource\ResourceManager.h" />
     <ClInclude Include="scene\Layer.h" />
-    <ClInclude Include="scene\abcd_rectangle.h" />
+    <ClInclude Include="scene\ABCDRectangle.h" />
     <ClInclude Include="scene\SceneItem.h" />
     <ClInclude Include="scene\SceneManager.h" />
     <ClInclude Include="scene\Room.h" />
@@ -214,6 +214,7 @@
     <ClCompile Include="asset\asset.cpp" />
     <ClCompile Include="audio\AudioManager.cpp" />
     <ClCompile Include="audio\AudioResource.cpp" />
+    <ClCompile Include="common\Logger.cpp" />
     <ClCompile Include="cppgamelib.cpp" />
     <ClCompile Include="events\EventSubscriber.cpp" />
     <ClCompile Include="events\GameObjectEvent.cpp" />
@@ -233,9 +234,9 @@
     <ClCompile Include="font\FontManager.cpp" />
     <ClCompile Include="font\font_resource.cpp" />
     <ClCompile Include="objects\game_world_component.cpp" />
-    <ClCompile Include="objects\game_world_data.cpp" />
+    <ClCompile Include="objects\GameWorldData.cpp" />
     <ClCompile Include="graphic\Drawing.cpp" />
-    <ClCompile Include="graphic\graphic_resource.cpp" />
+    <ClCompile Include="graphic\GraphicAsset.cpp" />
     <ClCompile Include="graphic\SDLGraphicsManager.cpp" />
     <ClCompile Include="objects\Component.cpp" />
     <ClCompile Include="objects\GameObject.cpp" />
@@ -245,7 +246,8 @@
     <ClCompile Include="objects\Sprite.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="resource\ResourceManager.cpp" />
-    <ClCompile Include="scene\abcd_rectangle.cpp" />
+    <ClCompile Include="scene\ABCDRectangle.cpp" />
+    <ClCompile Include="scene\layer.cpp" />
     <ClCompile Include="scene\SceneItem.cpp" />
     <ClCompile Include="scene\SceneManager.cpp" />
     <ClCompile Include="scene\Room.cpp" />

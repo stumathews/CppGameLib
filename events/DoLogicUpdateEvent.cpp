@@ -4,7 +4,7 @@ using namespace std;
 namespace gamelib
 {
 
-	do_logic_update_event::do_logic_update_event(): event(event_type::DoLogicUpdateEventType)
+	do_logic_update_event::do_logic_update_event(): Event(EventType::DoLogicUpdateEventType)
 	{
 		// base class init only
 	}

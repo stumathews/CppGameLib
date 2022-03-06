@@ -21,7 +21,7 @@ class SDLGraphicsManagerTests : public testing::Test {
 	graphics_admin = shared_ptr<SDLGraphicsManager>(new SDLGraphicsManager(*event_admin, Logger));
   	audio_admin = shared_ptr<AudioManager>(new AudioManager());
 	resource_admin = shared_ptr<ResourceManager>(new ResourceManager(*config, *graphics_admin, *font_admin, *audio_admin, Logger));
-	world = shared_ptr<game_world_data>(new game_world_data());
+	world = shared_ptr<GameWorldData>(new GameWorldData());
   	scene_admin = shared_ptr<SceneManager>(new SceneManager(*event_admin, *config, *resource_admin, *world, Logger, ""/* root folder is scene folder */));
   }
     
@@ -34,7 +34,7 @@ class SDLGraphicsManagerTests : public testing::Test {
   shared_ptr<SDLGraphicsManager> graphics_admin;
   shared_ptr<AudioManager> audio_admin;
   shared_ptr<SceneManager> scene_admin;
-  shared_ptr<game_world_data> world;
+  shared_ptr<GameWorldData> world;
   Logger Logger;
 	
 };

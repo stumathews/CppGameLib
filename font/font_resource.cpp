@@ -4,7 +4,7 @@ using namespace std;
 
 namespace gamelib
 {
-	font_resource::font_resource(const int uid, string name, string path, string type, int scene) : asset(uid, name, path, type, scene)
+	font_resource::font_resource(const int uid, string name, string path, string type, int scene) : Asset(uid, name, path, type, scene)
 	{
 		// ctor used for initialization only
 	}
@@ -14,12 +14,12 @@ namespace gamelib
 		return font;
 	}
 
-	void font_resource::load()
+	void font_resource::Load()
 	{
 		font =  TTF_OpenFont( path.c_str(), 28 );
 	}
 
-	bool font_resource::unload()
+	bool font_resource::Unload()
 	{
 		TTF_CloseFont(font);
 	    font = nullptr;

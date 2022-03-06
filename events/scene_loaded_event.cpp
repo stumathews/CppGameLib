@@ -3,7 +3,7 @@
 using namespace std;
 namespace gamelib
 {
-	scene_loaded_event::scene_loaded_event(int scene_id): event(event_type::scene_loaded), scene_id_(scene_id)
+	scene_loaded_event::scene_loaded_event(int scene_id): Event(EventType::scene_loaded), scene_id_(scene_id)
 	{
 	}
 

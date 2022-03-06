@@ -3,14 +3,12 @@
 
 namespace gamelib
 {
-	/**
-	 Meta data about a resource (uid, name, path, type, scene etc)
-	 */
-	class asset
+	// Meta data about a resource (uid, name, path, type, scene etc)
+	class Asset
 	{
 	public:	
 		
-		asset(int uid, std::string& name, const std::string& path, const std::string& type, int scene);
+		Asset(int uid, std::string& name, const std::string& path, const std::string& type, int scene);
 
 		const int uid;
 		const std::string name;
@@ -18,14 +16,14 @@ namespace gamelib
 		const std::string type;
 		const int scene;
 
-		bool is_loaded;
+		bool isLoadedInMemory;
 		
 		// All resources can load themselves
-		virtual void load() = 0;
+		virtual void Load() = 0;
 
 		// All resources can unload themselves
-		virtual bool unload() = 0;
+		virtual bool Unload() = 0;
 		
-		virtual ~asset() = default;
+		virtual ~Asset() = default;
 	};
 }

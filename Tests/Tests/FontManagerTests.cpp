@@ -1,26 +1,26 @@
 ﻿#include "pch.h"
 
 #include "common/static_config.h"
-#include "events/event_manager.h"
-#include "font/font_manager.h"
+#include "events/EventManager.h"
+#include "font/FontManager.h"
 #include "graphic/sdl_graphics_manager.h"
-#include "resource/resource_manager.h"
+#include "resource/ResourceManager.h"
 
 using namespace std;
 using namespace gamelib;
 
-class FontManager : public testing::Test {
+class FontManagerTests : public testing::Test {
  protected:
   void SetUp() override
   { 
-	font_admin = make_shared<font_manager>();
+	font_admin = shared_ptr<FontManager>(new FontManager());
   	const shared_ptr<font_resource> ptr(new font_resource(0, resource_name, resource_path, resource_type, resource_scene));  	
   	font_asset_ptr = dynamic_pointer_cast<asset>(ptr);
   }
     
   //void TearDown() override {}
    
-  shared_ptr<font_manager> font_admin;
+  shared_ptr<FontManager> font_admin;
 
   const string resource_name = "arial.ttf";
   const string resource_path = "Assets/fonts/arial.ttf";
@@ -31,7 +31,7 @@ class FontManager : public testing::Test {
   shared_ptr<asset> font_asset_ptr;	
 };
 
-TEST_F(FontManager, to_resource)
+TEST_F(FontManagerTests, to_resource)
 {
 	// When casting a asset* to a font_resource...
 	auto resource = font_admin->to_resource(font_asset_ptr);

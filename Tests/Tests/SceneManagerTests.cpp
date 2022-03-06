@@ -1,43 +1,44 @@
 ﻿#include "pch.h"
 #include "common/static_config.h"
-#include "events/event_manager.h"
-#include "font/font_manager.h"
+#include "events/EventManager.h"
+#include "font/FontManager.h"
 #include "graphic/sdl_graphics_manager.h"
 #include "objects/GameObject.h"
-#include "resource/resource_manager.h"
-#include "scene/scene_manager.h"
+#include "resource/ResourceManager.h"
+#include "scene/SceneManager.h"
 
 using namespace std;
 using namespace gamelib;
 
-class SceneManager : public testing::Test {
+class SceneManagerTests : public testing::Test {
  protected:
   void SetUp() override
   {  	
-  	config = make_shared<settings_manager>();
-	event_admin = make_shared<event_manager>(config);		
-	font_admin = make_shared<font_manager>();
-	graphics_admin = make_shared<sdl_graphics_manager>(event_admin);
-  	audio_admin = make_shared<audio_manager>();
-	resource_admin = make_shared<resource_manager>(config, graphics_admin, font_admin, audio_admin);
-	world = make_shared<game_world_data>();
-  	scene_admin = make_shared<scene_manager>(event_admin, config, resource_admin, world, ""/* root folder is scene folder */);
+  	config = shared_ptr<SettingsManager>(new SettingsManager());
+	event_admin = shared_ptr<EventManager>(new EventManager(*config, logger));		
+	font_admin = shared_ptr<FontManager>(new FontManager());
+	graphics_admin = shared_ptr<sdl_graphics_manager>(new sdl_graphics_manager(*event_admin, logger));
+  	audio_admin = shared_ptr<AudioManager>(new AudioManager());
+	resource_admin = shared_ptr<ResourceManager>(new ResourceManager(*config, *graphics_admin, *font_admin, *audio_admin, logger));
+	world = shared_ptr<game_world_data>(new game_world_data());
+  	scene_admin = shared_ptr<SceneManager>(new SceneManager(*event_admin, *config, *resource_admin, *world, logger, ""/* root folder is scene folder */));
   }
     
   //void TearDown() override {}
   
-  shared_ptr<resource_manager> resource_admin;
-  shared_ptr<settings_manager> config;
-  shared_ptr<event_manager> event_admin;	
-  shared_ptr<font_manager> font_admin;
+  shared_ptr<ResourceManager> resource_admin;
+  shared_ptr<SettingsManager> config;
+  shared_ptr<EventManager> event_admin;	
+  shared_ptr<FontManager> font_admin;
   shared_ptr<sdl_graphics_manager> graphics_admin;
-  shared_ptr<audio_manager> audio_admin;
-  shared_ptr<scene_manager> scene_admin;
+  shared_ptr<AudioManager> audio_admin;
+  shared_ptr<SceneManager> scene_admin;
   shared_ptr<game_world_data> world;
+  logger logger;
 	
 };
 
-TEST_F(SceneManager, Initialize)
+TEST_F(SceneManagerTests, Initialize)
 {
 	EXPECT_TRUE(scene_admin->initialize());
 	EXPECT_EQ(event_admin->get_subscriptions()[event_type::LevelChangedEventType].size(), 1) << "Scene manager not automatically subscribed to LevelChangedEventType event";
@@ -45,7 +46,7 @@ TEST_F(SceneManager, Initialize)
 	EXPECT_EQ(event_admin->get_subscriptions().size(), 4) << "Expected only 3 subscriptions to be made initially, included subscription by graphics manager";
 }
 
-TEST_F(SceneManager, get_scene_layers)
+TEST_F(SceneManagerTests, get_scene_layers)
 {
 	scene_admin->initialize();
 	scene_admin->start_scene(1);

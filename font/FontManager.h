@@ -10,7 +10,7 @@ namespace tinyxml2 {
 namespace gamelib
 {
 	// Managers a set of font resources
-	class font_manager
+	class FontManager
 	{
 	public:	 		
 		// Creates an audio Resource

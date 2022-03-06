@@ -6,11 +6,11 @@
 
 namespace gamelib
 {
-	class resource_manager;
+	class ResourceManager;
 	
 	class Room : public DrawingBase
 	{		
-		std::shared_ptr<resource_manager> resource_admin;		
+		ResourceManager& resource_admin;		
 		bool is_player_in_room = false;
 		bool fill = false;
 		SDL_Rect player_bounds = {0};
@@ -23,8 +23,8 @@ namespace gamelib
 		int top_room_index, right_room_index, bottom_room_index, left_room_index = -1;
 		int width, height;
 	public:		
-		Room(int number, int x, int y, int rw, int rh, std::shared_ptr<resource_manager> resource_admin,
-		       bool fill = false, std::shared_ptr<settings_manager> settings_admin = std::make_shared<settings_manager>());
+		Room(int number, int x, int y, int rw, int rh, ResourceManager& resource_admin,
+		       SettingsManager& settings_admin, EventManager& event_admin, bool fill = false);
 
 		
 		// Room functions
@@ -49,9 +49,8 @@ namespace gamelib
 		object_type get_type() override { return object_type::room; }
 		std::string get_identifier() override;
 		std::vector<std::shared_ptr<event>> handle_event(std::shared_ptr<event> event) override;
-		void load_settings(std::shared_ptr<settings_manager> settings_admin) override;		 
+		void load_settings(SettingsManager& settings_admin) override;		 
 		void draw(SDL_Renderer* renderer) override;
-	    virtual ~Room() override;
 	    void update() override;
 	};
 }

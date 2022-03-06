@@ -5,10 +5,10 @@
 
 #include "audio/AudioResource.h"
 #include "common/constants.h"
-#include "events/event_manager.h"
+#include "events/EventManager.h"
 #include "events/PositionChangeEvent.h"
 #include "graphic/sdl_graphics_manager.h"
-#include "resource/resource_manager.h"
+#include "resource/ResourceManager.h"
 using namespace std;
 
 namespace gamelib
@@ -36,17 +36,17 @@ namespace gamelib
 		return vector<shared_ptr<event>>();
 	}
 
-	void GameObject::subscribe_to_event(event_type type, shared_ptr<event_manager> event_admin)
+	void GameObject::subscribe_to_event(event_type type, EventManager& event_admin)
 	{
-		event_admin->subscribe_to_event(type, shared_from_this());
+		event_admin.subscribe_to_event(type, this);
 	}
 
-	void GameObject::raise_event(const shared_ptr<event>& the_event, shared_ptr<event_manager> event_admin)
+	void GameObject::raise_event(const shared_ptr<event>& the_event, EventManager& event_admin)
 	{
-		event_admin->raise_event(the_event, shared_from_this());
+		event_admin.raise_event(the_event, this);
 	}
 
-	shared_ptr<graphic_resource> GameObject::get_graphic_asset() const
+	shared_ptr<graphic_resource> GameObject::get_graphic() const
 	{
 		return graphic;
 	}
@@ -84,7 +84,7 @@ namespace gamelib
 		return "game_object";
 	}
 
-	/*void game_object::detect_side_collision(shared_ptr<sdl_graphics_manager> graphics_admin, shared_ptr<resource_manager> resource_admin)
+	/*void game_object::detect_side_collision(sdl_graphics_manager& graphics_admin, ResourceManager& resource_admin)
 	{
 		if (is_traveling_left)
 		{
@@ -104,12 +104,12 @@ namespace gamelib
 		}
 	}*/
 
-	void GameObject::load_settings(std::shared_ptr<settings_manager> settings_admin)
+	void GameObject::load_settings(SettingsManager& settings_admin)
 	{
-		move_interval = settings_admin->get_int("player","move_interval");
+		move_interval = settings_admin.get_int("player", "move_interval");
 	}
 
-	void GameObject::init_defaults( bool is_visible, shared_ptr<settings_manager> settings, int x, int y)
+	void GameObject::init_defaults( bool is_visible, SettingsManager& settings, int x, int y)
 	{
 		 this->bounds = { x, y, 0 ,0};
 		 supports_move_logic = true;
@@ -125,18 +125,17 @@ namespace gamelib
 		 id = ids++;
 	}
 
-	GameObject::GameObject(bool is_visible, std::shared_ptr<settings_manager> settings_admin): IEventSubscriber()
+	GameObject::GameObject(bool is_visible, SettingsManager& settings_admin, EventManager& event_admin): IEventSubscriber(), settings_admin(settings_admin), eventManager(event_admin)
 	{
 		init_defaults(is_visible, settings_admin, 0, 0);
 	}
 
-	GameObject::GameObject(const int x, const int y, bool is_visible, std::shared_ptr<settings_manager> settings_admin): IEventSubscriber(),
-	supports_move_logic(false)
+	GameObject::GameObject(const int x, const int y, bool is_visible, SettingsManager& settings_admin, EventManager& event_admin): IEventSubscriber(),
+	supports_move_logic(false), settings_admin(settings_admin), eventManager(event_admin)
 	{
 		init_defaults(is_visible, settings_admin, x, y);
 		GameObject::load_settings(settings_admin);
 	}
-
 
 	void GameObject::set_color_key(const Uint8 r, const Uint8 g, const Uint8 b)
 	{
@@ -173,18 +172,18 @@ namespace gamelib
 
 	void GameObject::draw_resource(SDL_Renderer* renderer) const
 	{
-		const auto resource = get_graphic_asset();
+		const auto resource = get_graphic();
 		if(resource != nullptr && resource->type == "graphic")
 		{
 			SDL_Rect draw_location = { x, y, 50,50 };
-			auto* const rect = get_graphic_asset()->is_animated
+			auto* const rect = get_graphic()->is_animated
 				                   ?  &graphic->view_port
 				                   : nullptr;
 			SDL_RenderCopy(renderer, graphic->texture, rect, &draw_location );
 		}
 	}
 
-	bool GameObject::is_resource_loaded() const
+	bool GameObject::has_graphic() const
 	{
 		return graphic != nullptr;
 	}
@@ -196,7 +195,7 @@ namespace gamelib
 		return this->tag;
 	}
 
-	void GameObject::set_graphic_resource(shared_ptr<graphic_resource> graphic)
+	void GameObject::set_graphic(shared_ptr<graphic_resource> graphic)
 	{
 		this->graphic = graphic;
 	}

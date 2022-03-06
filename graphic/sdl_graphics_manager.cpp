@@ -8,57 +8,18 @@
 #include <SDL_mixer.h>
 #include <SDL_ttf.h>
 #include "common/Common.h"
-#include "events/event_manager.h"
-#include "scene/scene_manager.h"
+#include "events/EventManager.h"
+#include "scene/SceneManager.h"
 
 using namespace std;
 namespace gamelib
 {
 
-	sdl_graphics_manager::sdl_graphics_manager(shared_ptr<event_manager> event_admin, std::shared_ptr<logger> the_logger)
-	: EventSubscriber(), event_admin(event_admin), the_logger(std::move(the_logger))
-	{
-	}
+	sdl_graphics_manager::sdl_graphics_manager(EventManager& event_admin, logger& the_logger)
+		: EventSubscriber(), event_admin(event_admin), the_logger(the_logger) { }
 
-	vector<shared_ptr<event>> sdl_graphics_manager::handle_event(const std::shared_ptr<event> the_event)
-	{
-		return vector<shared_ptr<event>>();
-	}
-
-
-	sdl_graphics_manager::sdl_graphics_manager(sdl_graphics_manager&& other)
-	{
-		this->window = other.window;
-		this->window_renderer = other.window_renderer;
-		this->window_surface = other.window_surface;
-		this->screen_height = other.screen_height;
-		this->screen_width = other.screen_width;
-
-		other.window = nullptr;
-		other.window_renderer = nullptr;
-		other.window_surface = nullptr;
-		other.screen_height = 0;
-		other.screen_width = 0;
-	}
-
-	sdl_graphics_manager& sdl_graphics_manager::operator=(sdl_graphics_manager&& other)
-	{
-		if(&other != this)
-		{
-			this->window = other.window;
-			this->window_renderer = other.window_renderer;
-			this->window_surface = other.window_surface;
-			this->screen_height = other.screen_height;
-			this->screen_width = other.screen_width;
-
-			other.window = nullptr;
-			other.window_renderer = nullptr;
-			other.window_surface = nullptr;
-			other.screen_height = 0;
-			other.screen_width = 0;
-		}
-		return *this;
-	}
+	vector<shared_ptr<event>> sdl_graphics_manager::handle_event(const std::shared_ptr<event> the_event) { return vector<shared_ptr<event>>();	}
+	
 
 	string sdl_graphics_manager::get_subscriber_name()
 	{
@@ -93,18 +54,18 @@ namespace gamelib
 
 	bool sdl_graphics_manager::initialize(const uint width, const uint height, const char * window_title)
 	{
-		the_logger->log_message("sdl_graphics_manager::Initialize()");
+		the_logger.log_message("sdl_graphics_manager::Initialize()");
 		
 		if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0)
 		{
-			the_logger->log_message(string("SDL could not initialize:") + const_cast<char*>(SDL_GetError()));
+			the_logger.log_message(string("SDL could not initialize:") + const_cast<char*>(SDL_GetError()));
 			return false;
 		}
 
 		const int imgFlags = IMG_INIT_PNG;
 		if( !( IMG_Init( imgFlags ) & imgFlags ) )
 		{
-			the_logger->log_message(string("SDL_image could not initialize:") + const_cast<char*>(SDL_GetError()));
+			the_logger.log_message(string("SDL_image could not initialize:") + const_cast<char*>(SDL_GetError()));
 			return false;
 		}
 
@@ -120,23 +81,23 @@ namespace gamelib
 		if(Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0 )
 	    {
 		    const string message("SDL_mixer could not initialize! SDL_mixer Error: ");
-			log_message(message + Mix_GetError());
+			log_message(message + Mix_GetError(), the_logger);
 	        return false;
 	    }
 
 		if(TTF_Init() == -1)
 		{
 			const string message("Could not initialize TTF");
-			log_message(message);
+			log_message(message, the_logger);
 			return false;
 		}
 
 
-		the_logger->log_message("sdl_graphics_manager ready.");
+		the_logger.log_message("sdl_graphics_manager ready.");
 		return true;
 	}
 
-	std::shared_ptr<asset> sdl_graphics_manager::create_asset(tinyxml2::XMLElement * element, std::shared_ptr<settings_manager> config)
+	std::shared_ptr<asset> sdl_graphics_manager::create_asset(tinyxml2::XMLElement * element, SettingsManager& config)
 	{		
 		auto is_animated = false;
 		auto num_key_frames = 12, key_frame_height = 64, key_frame_width = 64;
@@ -169,8 +130,8 @@ namespace gamelib
 
 
 		auto resource = is_animated
-			                        ? std::make_shared<graphic_resource>(uuid, name_c, path, type, level, num_key_frames, key_frame_height, key_frame_width,  is_animated, shared_from_this(), config)
-			                        : std::make_shared<graphic_resource>(uuid, name_c, path, type, level, is_animated, shared_from_this(), config);
+			                        ? std::make_shared<graphic_resource>(uuid, name_c, path, type, level, num_key_frames, key_frame_height, key_frame_width,  is_animated, *this, config)
+			                        : std::make_shared<graphic_resource>(uuid, name_c, path, type, level, is_animated, *this, config);
 			
 		
 		return resource;
@@ -189,7 +150,7 @@ namespace gamelib
 	}
 
 	// Draws all the actors in the scene
-	void sdl_graphics_manager::draw_current_scene(std::shared_ptr<scene_manager> scene_admin) const
+	void sdl_graphics_manager::DrawCurrentScene(SceneManager& scene_admin) const
 	{
 		// local-func
 		auto render_all_objects = static_cast<render_func>([&](SDL_Renderer*)
@@ -197,7 +158,7 @@ namespace gamelib
 			const auto &current_scene = scene_admin;
 			
 			// Draw all objects in the layer
-			for (const auto& layer : current_scene->get_scene_layers())
+			for (const auto& layer : current_scene.get_scene_layers())
 			{
 				if (layer->visible)
 				{

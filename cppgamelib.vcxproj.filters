@@ -27,13 +27,7 @@
     <ClInclude Include="util\RectDebugging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="util\settings_manager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="util\Tuple.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="game_structure.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tinyxml2.h">
@@ -42,13 +36,7 @@
     <ClInclude Include="scene\Layer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scene\scene_manager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="scene\SceneItem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="font\font_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="font\font_resource.h">
@@ -93,9 +81,6 @@
     <ClInclude Include="events\Event.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="events\event_manager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="events\Events.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -121,9 +106,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="objects\Sprite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource\resource_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="graphic\Drawing.h">
@@ -168,6 +150,24 @@
     <ClInclude Include="objects\MultipleInheritableEnableSharedFromThis.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GameStructure.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="util\SettingsManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="events\EventManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="font\FontManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource\ResourceManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\SceneManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -176,25 +176,13 @@
     <ClCompile Include="util\RectDebugging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="util\settings_manager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="util\Tuple.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="game_structure.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="tinyxml2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="scene\scene_manager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="scene\SceneItem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="font\font_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="font\font_resource.cpp">
@@ -219,9 +207,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="events\Event.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="events\event_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="events\player_moved_event.cpp">
@@ -249,9 +234,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="objects\Sprite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="resource\resource_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="graphic\Drawing.cpp">
@@ -294,6 +276,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="objects\MultipleInheritableEnableSharedFromThis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStructure.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="util\SettingsManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="events\EventManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="font\FontManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="resource\ResourceManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\SceneManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

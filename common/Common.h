@@ -18,7 +18,8 @@ namespace gamelib
 	{
 		return std::static_pointer_cast<R>(the_asset);
 	}
-
+	
+	// returns true if condition succeeded, false otherwise
 	inline bool succeeded(const bool condition, const std::string message, std::shared_ptr<logger> the_logger = std::make_shared<logger>())
 	{
 		const auto is = condition == true;
@@ -35,20 +36,22 @@ namespace gamelib
 		return ignore == true ? !ignore : is;
 	}
 	
-	inline void log_message(const std::string &message, const bool be_verbose = false, bool is_fatal = false, const std::shared_ptr<logger> the_logger = std::make_shared<logger>())
+	inline void log_message(const std::string &message, logger& the_logger, const bool be_verbose = false, bool is_fatal = false)
 	{
-		the_logger->log_message(message, be_verbose);
+		the_logger.log_message(message, be_verbose);
 		if(is_fatal)
 		{
-			the_logger->log_message("Fatal error encountered.", be_verbose);
+			the_logger.log_message("Fatal error encountered.", be_verbose);
 			std::string key;
 			std::cin >> key;
 		}
 	}
 
-	inline bool run_and_log(const std::string &message, bool verbose, const std::function<bool()>& action, bool print_finished = true, bool run_if = true, std::shared_ptr<settings_manager> settings_admin = std::make_shared<settings_manager>())
+	// Logs message and runs action
+	inline bool run_and_log(const std::string &message, bool verbose, const std::function<bool()>& action,  SettingsManager& settingsAdmin, bool print_finished = true, bool run_if = true)
 	{
-		log_message(message, settings_admin->get_bool("global","verbose"));
+		logger theLogger;
+		log_message(message, theLogger, settingsAdmin.get_bool("global","verbose"));
 		bool result;
 		if(run_if)
 		{
@@ -61,7 +64,7 @@ namespace gamelib
 
 		
 		if(print_finished)
-			log_message("Finished.");
+			log_message("Finished.", theLogger);
 		return result;
 	}
 
@@ -71,11 +74,11 @@ namespace gamelib
 		return static_cast<typename std::underlying_type<ENUM>::type>(value);
 	}
 
-	inline bool log_if_false(bool condition, std::string message, std::shared_ptr<settings_manager> settings = std::make_shared<settings_manager>(), std::shared_ptr<logger> the_logger = std::make_shared<logger>())
+	inline bool log_if_false(bool condition, std::string message, SettingsManager& settings, logger& the_logger)
 	{
 		if(condition == false){
 			
-			log_message(message, settings->get_bool("global","verbose"), false, the_logger);
+			log_message(message, the_logger, settings.get_bool("global","verbose"));
 		}
 		return condition;
 	}

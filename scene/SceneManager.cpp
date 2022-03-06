@@ -1,4 +1,4 @@
-#include "scene_manager.h"
+#include "SceneManager.h"
 #include <list>
 #include "tinyxml2.h"
 #include <memory>
@@ -7,7 +7,7 @@
 #include "events/GameObjectEvent.h"
 #include "common/Common.h"
 #include "events/AddGameObjectToCurrentSceneEvent.h"
-#include "events/event_manager.h"
+#include "events/EventManager.h"
 #include "events/SceneChangedEvent.h"
 #include "events/scene_loaded_event.h"
 #include "objects/game_object_factory.h"
@@ -16,38 +16,38 @@ namespace gamelib
 {
 	
 
-	bool scene_manager::initialize()
+	bool SceneManager::initialize()
 	{
-		is_initialized = run_and_log("scene_manager::initialize()", config->get_bool("global", "verbose"), [&]()
+		is_initialized = run_and_log("SceneManager::initialize()", config.get_bool("global", "verbose"), [&]()
 		{
 			// I care about when the level changes
-			event_admin->subscribe_to_event(event_type::LevelChangedEventType, shared_from_this());
+			event_admin.subscribe_to_event(event_type::LevelChangedEventType, this);
 
 			// I care about when I'm asked to add game object to current scene
-			event_admin->subscribe_to_event(event_type::AddGameObjectToCurrentScene, shared_from_this());
-			event_admin->subscribe_to_event(event_type::GenerateNewLevel, shared_from_this());
-			event_admin->subscribe_to_event(event_type::GameObject, shared_from_this());
+			event_admin.subscribe_to_event(event_type::AddGameObjectToCurrentScene, this);
+			event_admin.subscribe_to_event(event_type::GenerateNewLevel, this);
+			event_admin.subscribe_to_event(event_type::GameObject, this);
 
 			return true;
-		}, true, true, config);
+		}, config, true, true);
 		return is_initialized;
 	}
 
-	void scene_manager::start_scene(int scene_id)
+	void SceneManager::start_scene(int scene_id)
 	{
 		// Emit event to switch to scene 1 on initialization of scene manager.
-		// This triggers usually the resource_manager that loads the resources in for the scene (see resource_manager::process_events etc..)
-		event_admin->raise_event(std::make_shared<scene_changed_event>(scene_id), shared_from_this());
+		// This triggers usually the ResourceManager that loads the resources in for the scene (see ResourceManager::process_events etc..)
+		event_admin.raise_event(std::make_shared<scene_changed_event>(scene_id), this);
 	}
 
 
 
-	scene_manager::scene_manager(shared_ptr<event_manager> ea, shared_ptr<settings_manager> c, shared_ptr<resource_manager> resource_admin, std::shared_ptr<game_world_data> world, std::string scene_folder)
-	: event_admin(ea), config(c), resource_admin(resource_admin), scene_folder(scene_folder), world(world)
+	SceneManager::SceneManager(EventManager& ea, SettingsManager& c, ResourceManager& resource_admin, game_world_data& world, gamelib::logger& logger, std::string scene_folder)
+	: event_admin(ea), config(c), resource_admin(resource_admin), scene_folder(scene_folder), world(world), logger(logger)
 	{
 	}
 
-	vector<shared_ptr<event>> scene_manager::handle_event(const std::shared_ptr<event> the_event)
+	vector<shared_ptr<event>> SceneManager::handle_event(const std::shared_ptr<event> the_event)
 	{
 		switch(the_event->type)
 		{
@@ -76,7 +76,7 @@ namespace gamelib
 		return vector<shared_ptr<event>>();
 	}
 
-	void scene_manager::remove_from_layers(int game_object_id)
+	void SceneManager::remove_from_layers(int game_object_id)
 	{
 		for_each(begin(layers), end(layers), [&](shared_ptr<layer> layer)
 		{
@@ -91,14 +91,14 @@ namespace gamelib
 		});
 	}
 
-	void scene_manager::load_new_scene(const std::shared_ptr<event>& the_event, shared_ptr<resource_manager> resource_admin)
+	void SceneManager::load_new_scene(const std::shared_ptr<event>& the_event, ResourceManager& resource_admin)
 	{
 		const auto scene =  std::dynamic_pointer_cast<scene_changed_event>(the_event)->scene_id;
 
 		auto raise_scene_loaded_event = [this](int scene_id, const string& scene_name)
 		{
-			log_message("Scene "+ to_string(scene_id) +" : "+ scene_name +" loaded.");
-			event_admin->raise_event(make_unique<scene_loaded_event>(scene_id), shared_from_this());
+			log_message("Scene "+ to_string(scene_id) +" : "+ scene_name +" loaded.", logger);
+			event_admin.raise_event(make_unique<scene_loaded_event>(scene_id), this);
 		};
 
 		string scene_name;
@@ -129,19 +129,19 @@ namespace gamelib
 				raise_scene_loaded_event(scene, scene_name);
 			} catch(exception &e)
 			{
-				log_message(string("Cloud not load scene file: ") + string(e.what()));
+				log_message(string("Cloud not load scene file: ") + string(e.what()), logger);
 				throw;
 			}
 		}
 	}
 
-	void scene_manager::add_to_scene(const std::shared_ptr<GameObject>& game_object)
+	void SceneManager::add_to_scene(const std::shared_ptr<GameObject>& game_object)
 	{
 		// add to last layer of the scene
 		layers.back()->game_objects.push_back(game_object);
 	}
 
-	shared_ptr<layer> scene_manager::add_layer(const std::string& name)
+	shared_ptr<layer> SceneManager::add_layer(const std::string& name)
 	{
 		auto the_layer = find_layer(name);
 		if(!the_layer)
@@ -153,7 +153,7 @@ namespace gamelib
 		return the_layer;
 	}
 
-	shared_ptr<layer> scene_manager::find_layer(const std::string& name)
+	shared_ptr<layer> SceneManager::find_layer(const std::string& name)
 	{
 		for(const auto& layer : layers)
 			if(layer->name == name)
@@ -162,7 +162,7 @@ namespace gamelib
 		return nullptr;
 	}
 
-	void scene_manager::remove_layer(const std::string& name)
+	void SceneManager::remove_layer(const std::string& name)
 	{
 		for(const auto& layer : layers)
 			if(layer->name == name)
@@ -174,31 +174,31 @@ namespace gamelib
 		return lhs->zorder < rhs->zorder;
 	}
 
-	void scene_manager::sort_layers()
+	void SceneManager::sort_layers()
 	{
 		//std::sort(begin(layers), end(layers)); // can we use this?
 		layers.sort(compare_layer_order);
 	}
 
-	void scene_manager::update()
+	void SceneManager::update()
 	{
 		// Scene manager does not need updating
 	}
 
-	std::list<shared_ptr<layer>> scene_manager::get_scene_layers() const
+	std::list<shared_ptr<layer>> SceneManager::get_scene_layers() const
 	{
 		return layers;
 	}
 
 
-	bool scene_manager::load_scene_file(const std::string& filename, shared_ptr<resource_manager> resource_admin)
+	bool SceneManager::load_scene_file(const std::string& filename, ResourceManager& resource_admin)
 	{
 		if(current_scene_name == filename)
 		{
-			log_message(string("Scene already loaded. Skipping."));
+			log_message(string("Scene already loaded. Skipping."), logger);
 			return true;
 		}
-		log_message("Loading scene: " + string(filename));
+		log_message("Loading scene: " + string(filename), logger);
 		
 		/* A Scene is composed of a) resources at b) various positions c) visibility
 		
@@ -273,8 +273,8 @@ namespace gamelib
 										continue;
 
 									//
-									auto game_object = game_object_factory::get_instance().build_game_object(object, resource_admin, config);
-									world->game_objects.push_back(game_object);
+									auto game_object = game_object_factory::get_instance().build_game_object(object, resource_admin, config, event_admin);
+									world.game_objects.push_back(game_object);
 
 									// Keep track of the game object in this layer
 									the_layer->game_objects.push_back(game_object);																
@@ -296,9 +296,9 @@ namespace gamelib
 		return false;
 	}
 
-	string scene_manager::get_subscriber_name()
+	string SceneManager::get_subscriber_name()
 	{
-		return "scene_manager";
+		return "SceneManager";
 	}
 
 }

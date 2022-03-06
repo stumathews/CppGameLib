@@ -4,36 +4,38 @@
 #include <list>
 #include "Layer.h"
 #include "events/EventSubscriber.h"
-#include "resource/resource_manager.h"
+#include "resource/ResourceManager.h"
 #include "objects/game_world_data.h"
 #include <objects/MultipleInheritableEnableSharedFromThis.h>
+#include <common/Logger.h>
 
 using namespace std;
 
 namespace gamelib
 {
 	// Represents the current scene
-	class scene_manager final : public EventSubscriber, public inheritable_enable_shared_from_this<IEventSubscriber>
+	class SceneManager final : public EventSubscriber, public inheritable_enable_shared_from_this<IEventSubscriber>
 	{
-		shared_ptr<event_manager> event_admin;
-		shared_ptr<settings_manager> config;
-		shared_ptr<resource_manager> resource_admin;
-		shared_ptr<game_world_data> world;
+		EventManager& event_admin;
+		SettingsManager& config;
+		ResourceManager& resource_admin;
+		game_world_data& world;
+		logger& logger;
 	public:
-		scene_manager(shared_ptr<event_manager> ea, shared_ptr<settings_manager> c, shared_ptr<resource_manager> resource_admin, std::shared_ptr<game_world_data> world, std::string scene_folder = "game/");	
-		scene_manager(const scene_manager &) = default;
-		scene_manager(scene_manager &&) = default;
-	    scene_manager& operator=(scene_manager const&)  = delete;
-		scene_manager& operator=(scene_manager &&) = default;
-		virtual ~scene_manager() = default;
+		SceneManager(EventManager& ea, SettingsManager& c, ResourceManager& resource_admin, game_world_data& world, gamelib::logger& logger, std::string scene_folder = "game/");	
+		SceneManager(const SceneManager &) = delete;
+		SceneManager(SceneManager &&) = delete;
+	    SceneManager& operator=(SceneManager const&)  = delete;
+		SceneManager& operator=(SceneManager &&) = delete;
+		virtual ~SceneManager() = default;
 
 		bool initialize();	
 		void start_scene(int scene_id);
 		list<shared_ptr<layer>> get_scene_layers() const;
 	private:
 		void add_to_scene(const shared_ptr<GameObject>& game_object);	
-		void load_new_scene(const shared_ptr<event> &the_event, shared_ptr<resource_manager> resource_admin);
-		bool load_scene_file(const string &filename, shared_ptr<resource_manager> resource_admin);		
+		void load_new_scene(const shared_ptr<event> &the_event, ResourceManager& resource_admin);
+		bool load_scene_file(const string &filename, ResourceManager& resource_admin);		
 		void remove_layer(const string &name);
 		void sort_layers();
 		shared_ptr<layer> add_layer(const string &name);

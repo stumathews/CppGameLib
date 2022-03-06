@@ -6,13 +6,13 @@
 
 namespace gamelib
 {
-	class resource_manager;
+	class ResourceManager;
 
 	class audio_resource final : public asset
 	{
-		std::shared_ptr<resource_manager> resource_admin;
+		ResourceManager& resource_admin;
 	public:
-		audio_resource(int uid, std::string name, const std::string path, const std::string type, int scene, std::shared_ptr<resource_manager> resource_admin);
+		audio_resource(int uid, std::string name, const std::string path, const std::string type, int scene, ResourceManager& resource_admin);
 
 		// data
 		Mix_Chunk *fx = nullptr;	

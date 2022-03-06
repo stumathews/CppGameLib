@@ -6,9 +6,7 @@
 using namespace std;
 
 namespace gamelib
-{
-	Room::~Room() = default;
-		
+{		
 	vector<shared_ptr<event>> Room::handle_event(const std::shared_ptr<event> event)
 	{	
 		auto any_generated_events(GameObject::handle_event(event));
@@ -45,10 +43,10 @@ namespace gamelib
 		return any_generated_events;
 	}
 
-	void Room::load_settings(std::shared_ptr<settings_manager> settings_admin)
+	void Room::load_settings(SettingsManager& settings_admin)
 	{
 		GameObject::load_settings(settings_admin);		
-		fill = settings_admin->get_bool("room_fill", "enable");
+		fill = settings_admin.get_bool("room_fill", "enable");
 	}
 
 	void Room::draw(SDL_Renderer* renderer)
@@ -86,7 +84,7 @@ namespace gamelib
 		if(fill)
 			DrawFilledRect(renderer, &bounds, { 255, 0 ,0 ,0});
 		
-		if(settings_admin->get_bool("global", "print_debugging_text"))
+		if(settings_admin.get_bool("global", "print_debugging_text"))
 		  RectDebugging::printInRect(renderer, get_tag(), &bounds, resource_admin); 
 	}
 
@@ -95,8 +93,8 @@ namespace gamelib
 		return abcd;
 	}
 
-	Room::Room(int number, int x, int y, int rw, int rh, const std::shared_ptr<resource_manager> resource_admin, bool fill, const std::shared_ptr<settings_manager> settings)
-		: DrawingBase(x, y, true, settings), resource_admin(resource_admin), fill(fill), player_bounds({}),
+	Room::Room(int number, int x, int y, int rw, int rh, ResourceManager& resource_admin, SettingsManager& settings, EventManager& event_admin, bool fill)
+		: DrawingBase(x, y, true, settings, event_admin), resource_admin(resource_admin), fill(fill), player_bounds({}),
 		 top_room_index(0), right_room_index(0),  bottom_room_index(0), width(rw), height(rh)
 	{
 		this->bounds = {x, y, rw, rh};

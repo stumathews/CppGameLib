@@ -1,10 +1,10 @@
-#include "font_manager.h"
+#include "FontManager.h"
 #include "tinyxml2.h"
 #include "common/Common.h"
 
 namespace gamelib
 {
-	std::shared_ptr<asset> font_manager::create_asset(tinyxml2::XMLElement* element) const
+	std::shared_ptr<asset> FontManager::create_asset(tinyxml2::XMLElement* element) const
 	{
 		int uuid;
 		const char* type;
@@ -25,7 +25,7 @@ namespace gamelib
 		return font;
 	}
 
-	std::shared_ptr<font_resource> font_manager::to_resource(const std::shared_ptr<asset>& asset)
+	std::shared_ptr<font_resource> FontManager::to_resource(const std::shared_ptr<asset>& asset)
 	{
 		return as_resource<font_resource>(asset);
 	}

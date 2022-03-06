@@ -22,16 +22,18 @@ namespace gamelib
 	 * \param event_admin The shared event admin
 	 */
 	Player::Player(const int x, const int y, const int w, const int h,
-	               const std::shared_ptr<settings_manager> settings, std::shared_ptr<event_manager> event_admin):
-		DrawingBase(x, y, true, settings), event_admin(std::move(event_admin)), width(w), height(h)
+	               SettingsManager& settings, EventManager& event_admin, 
+		           logger& gameLogger):
+		DrawingBase(x, y, true, settings, event_admin), event_admin(event_admin), width(w), height(h), gameLogger(gameLogger)
 	{
+		be_verbose = settings_admin.get_bool("player", "verbose");
 	}
 
-	void Player::load_settings(std::shared_ptr<settings_manager> settings)
+	void Player::load_settings(SettingsManager& settings)
 	{
 		GameObject::load_settings(settings); // Call base
 		
-		draw_box = settings->get_bool("player","draw_box");
+		draw_box = settings.get_bool("player", "draw_box");
 	}
 
 	void Player::center_player_in_room(shared_ptr<Room> target_room)
@@ -89,7 +91,7 @@ namespace gamelib
 					
 			auto game_world = static_pointer_cast<game_world_component>(find_component(constants::game_world))->get_data();
 			
-			const auto last_room_index = count_if(begin(game_world->game_objects), end(game_world->game_objects),
+			const auto last_room_index = count_if(begin(game_world.game_objects), end(game_world.game_objects),
 			                                      [](weak_ptr<GameObject> g){
 					if(auto ptr = g.lock()){
 						return ptr->get_type() == object_type::room;
@@ -97,11 +99,11 @@ namespace gamelib
 				});
 			const auto first_room_index = 0;
 
-			auto current_room = dynamic_pointer_cast<Room>(game_world->game_objects[within_room_index < first_room_index ? first_room_index : within_room_index]);			
-			auto above_room = dynamic_pointer_cast<Room>(game_world->game_objects[get_room_neighbour_index(first_room_index, last_room_index, 0, current_room)]);
-			auto right_room = dynamic_pointer_cast<Room>(game_world->game_objects[get_room_neighbour_index(first_room_index, last_room_index, 1, current_room)]);
-			auto bottom_room = dynamic_pointer_cast<Room>(game_world->game_objects[get_room_neighbour_index(first_room_index, last_room_index, 2, current_room)]);
-			auto left_room = dynamic_pointer_cast<Room>(game_world->game_objects[get_room_neighbour_index(first_room_index, last_room_index, 3, current_room)]);
+			auto current_room = dynamic_pointer_cast<Room>(game_world.game_objects[within_room_index < first_room_index ? first_room_index : within_room_index]);			
+			auto above_room = dynamic_pointer_cast<Room>(game_world.game_objects[get_room_neighbour_index(first_room_index, last_room_index, 0, current_room)]);
+			auto right_room = dynamic_pointer_cast<Room>(game_world.game_objects[get_room_neighbour_index(first_room_index, last_room_index, 1, current_room)]);
+			auto bottom_room = dynamic_pointer_cast<Room>(game_world.game_objects[get_room_neighbour_index(first_room_index, last_room_index, 2, current_room)]);
+			auto left_room = dynamic_pointer_cast<Room>(game_world.game_objects[get_room_neighbour_index(first_room_index, last_room_index, 3, current_room)]);
 			
 			const auto is_moving_right = move_direction == Direction::Right;
 			const auto is_moving_down = move_direction == Direction::Down;
@@ -119,11 +121,12 @@ namespace gamelib
 											   move_direction == Direction::Up && can_move_up;
 			
 			if(!is_valid_move){
-				log_message("Invalid move", settings_admin->get_bool("player", "verbose"));
-				event_admin->raise_event(make_shared<event>(event_type::InvalidMove), GameObject::downcasted_shared_from_this<Player>());				
+				log_message("Invalid move", gameLogger, be_verbose);
+				event_admin.raise_event(make_shared<event>(event_type::InvalidMove), this);				
 				return created_events;
 			}
 			
+			// snap to room
 			if(is_moving_down) 
 				center_player_in_room(bottom_room);			
 			
@@ -154,10 +157,10 @@ namespace gamelib
 		SDL_Rect r = { x ,y, width, height};
 		
 		SDL_Color c = {
-			static_cast<Uint8>(settings_admin->get_int("player", "r")),
-			static_cast<Uint8>(settings_admin->get_int("player", "g")),
-			static_cast<Uint8>(settings_admin->get_int("player", "b")),
-			static_cast<Uint8>(settings_admin->get_int("player", "a"))			
+			static_cast<Uint8>(settings_admin.get_int("player", "r")),
+			static_cast<Uint8>(settings_admin.get_int("player", "g")),
+			static_cast<Uint8>(settings_admin.get_int("player", "b")),
+			static_cast<Uint8>(settings_admin.get_int("player", "a"))			
 		};
 		
 		DrawFilledRect(renderer, &r, c);

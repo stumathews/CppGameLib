@@ -1,13 +1,13 @@
 #include "AudioResource.h"
 #include <SDL_mixer.h>
-#include "resource/resource_manager.h"
+#include "resource/ResourceManager.h"
 
 using namespace std;
 
 namespace gamelib
 {
-	//extern std::shared_ptr<resource_manager> resource_admin;
-	audio_resource::audio_resource(const int uid, string name, const string path, const string type, int scene, shared_ptr<resource_manager> resource_admin) 
+	//extern std::ResourceManager& resource_admin;
+	audio_resource::audio_resource(const int uid, string name, const string path, const string type, int scene, ResourceManager& resource_admin) 
 		: asset(uid, name, path, type, scene), resource_admin(resource_admin)
 	{
 		// ctor initialize members only
@@ -16,9 +16,9 @@ namespace gamelib
 	void audio_resource::load()
 	{
 		if(is_fx())
-			fx = Mix_LoadWAV(resource_admin->get(name)->path.c_str());
+			fx = Mix_LoadWAV(resource_admin.get(name)->path.c_str());
 		else
-			music = Mix_LoadMUS(resource_admin->get(name)->path.c_str());
+			music = Mix_LoadMUS(resource_admin.get(name)->path.c_str());
 		
 		is_loaded = true;
 	}

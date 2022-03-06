@@ -2,7 +2,7 @@
 #include <SDL.h>
 #include "asset/asset.h"
 #include "common/aliases.h"
-#include "util/settings_manager.h"
+#include "util/SettingsManager.h"
 
 namespace gamelib
 {
@@ -11,11 +11,11 @@ namespace gamelib
 	// A stand-alone graphics resource with backing storage that can load and unload itself
 	class graphic_resource : public asset
 	{
-		std::shared_ptr<sdl_graphics_manager> graphics_admin;
-		std::shared_ptr<settings_manager> config;
+		sdl_graphics_manager& graphics_admin;
+		SettingsManager& config;
 	public:		
-		graphic_resource(const int uid, std::string name, const std::string& path, const std::string& type, const int level, const bool is_animated, std::shared_ptr<sdl_graphics_manager> graphics_admin, std::shared_ptr<settings_manager> config);
-		graphic_resource(const int uid, std::string name, const std::string& path, const std::string& type, const int level, const uint num_key_frames, uint key_frame_height, const uint key_frame_width, const bool is_animated, std::shared_ptr<sdl_graphics_manager> graphics_admin, std::shared_ptr<settings_manager> config);
+		graphic_resource(const int uid, std::string name, const std::string& path, const std::string& type, const int level, const bool is_animated, sdl_graphics_manager& graphics_admin, SettingsManager& config);
+		graphic_resource(const int uid, std::string name, const std::string& path, const std::string& type, const int level, const uint num_key_frames, uint key_frame_height, const uint key_frame_width, const bool is_animated, sdl_graphics_manager& graphics_admin, SettingsManager& config);
 		virtual ~graphic_resource();
 
 		SDL_Texture* texture = nullptr; // The binary data that will represent the resource once its loaded.

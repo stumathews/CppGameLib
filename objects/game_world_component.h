@@ -9,13 +9,12 @@ namespace gamelib
 {
 class game_world_component : public component
 	{
-		std::shared_ptr<game_world_data>  data;
+		game_world_data&  data;
 	public:
-		game_world_component(std::shared_ptr<game_world_data> world) : component(constants::game_world)
+		game_world_component(game_world_data& world) : component(constants::game_world), data(world)
 		{
-			data = world;
 		}
 
-		std::shared_ptr<game_world_data> get_data() const {return data;}
+		game_world_data& get_data() const {return data;}
 	};
 }

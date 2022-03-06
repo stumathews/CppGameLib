@@ -10,6 +10,9 @@ namespace gamelib
 		logging_func func;		
 	public:
 		logger(logging_func func = nullptr) : func(func) {}
+		logger(const logger& other) = delete;
+		logger& operator=(const logger& other) = delete;
+
 		void log_message(const std::string &message, const bool be_verbose = false) const
 		{
 			if (be_verbose) {

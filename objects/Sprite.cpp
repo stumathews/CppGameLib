@@ -22,8 +22,8 @@ namespace gamelib
 
 	void Sprite::play()
 	{
-		const auto resource = get_graphic_asset();
-		if(!is_resource_loaded())
+		const auto resource = get_graphic();
+		if(!has_graphic())
 			return;
 		//auto TmpSurface = resource->m_Surface;
 		//m_FrameWidth =  TmpSurface->w/m_FramesPerRow;
@@ -40,7 +40,7 @@ namespace gamelib
 
 	void Sprite::set_frame_rect(uint FrameNumber) const
 	{
-		if(!is_resource_loaded())
+		if(!has_graphic())
 			return;
 		/*uint RowNumber = floor(FrameNumber/m_FramesPerRow);
 		uint ColumnNumber = FrameNumber;
@@ -67,9 +67,9 @@ namespace gamelib
 		GetResource()->m_viewPort.w = m_FrameWidth;
 		GetResource()->m_viewPort.h = m_FrameHeight;*/
 
-		get_graphic_asset()->view_port.x = typicalFrame[FrameNumber].x;
-		get_graphic_asset()->view_port.y = typicalFrame[FrameNumber].y;
-		get_graphic_asset()->view_port.w = typicalFrame[FrameNumber].w;
-		get_graphic_asset()->view_port.h = typicalFrame[FrameNumber].h;
+		get_graphic()->view_port.x = typicalFrame[FrameNumber].x;
+		get_graphic()->view_port.y = typicalFrame[FrameNumber].y;
+		get_graphic()->view_port.w = typicalFrame[FrameNumber].w;
+		get_graphic()->view_port.h = typicalFrame[FrameNumber].h;
 	}
 }

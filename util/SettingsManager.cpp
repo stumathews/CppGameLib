@@ -1,4 +1,4 @@
-#include "settings_manager.h"
+#include "SettingsManager.h"
 #include "tinyxml2.h"
 using namespace std;
 
@@ -40,12 +40,12 @@ namespace gamelib
 		throw exception("Setting is not a long");
 	}
 
-	bool settings_manager::reload()
+	bool SettingsManager::reload()
 	{
 		return load(settings_file_path);
 	}
 
-	bool settings_manager::load(string filename_path)
+	bool SettingsManager::load(string filename_path)
 	{
 		this->settings_file_path = filename_path;
 		settings.clear(); // effectively this is reloading the settings from scratch each time
@@ -107,7 +107,7 @@ namespace gamelib
 							setting_type = value;
 					}
 
-					// Persist the setting into the settings_manager
+					// Persist the setting into the SettingsManager
 					add_setting(section_name, setting_name,  setting_details(setting_name, setting_element->GetText(), setting_type));
 				}
 			}
@@ -119,38 +119,38 @@ namespace gamelib
 		return true;
 	}
 
-	bool settings_manager::add_setting(std::string section, std::string key, setting_details details)
+	bool SettingsManager::add_setting(std::string section, std::string key, setting_details details)
 	{
 		settings[section][key] = details;
 		return true;
 	}
 
-	setting_details settings_manager::get(std::string section, std::string name)
+	setting_details SettingsManager::get(std::string section, std::string name)
 	{
 		return settings[section][name];
 	}
 	
-	bool settings_manager::get_bool(std::string section, std::string name)
+	bool SettingsManager::get_bool(std::string section, std::string name)
 	{
 		return settings[section][name].to_bool();
 	}
 	
-	int settings_manager::get_int(std::string section, std::string name)
+	int SettingsManager::get_int(std::string section, std::string name)
 	{
 		return settings[section][name].to_int();
 	}
 
-	string settings_manager::get_string(std::string section, std::string name)
+	string SettingsManager::get_string(std::string section, std::string name)
 	{
 		return settings[section][name].to_string();
 	}
 
-	long settings_manager::get_long(std::string section, std::string name)
+	long SettingsManager::get_long(std::string section, std::string name)
 	{
 		return settings[section][name].to_long();
 	}
 
-	int settings_manager::count() const
+	int SettingsManager::count() const
 	{
 		auto count = 0;
 		for(auto iterator = begin(settings); iterator != end(settings); ++iterator)

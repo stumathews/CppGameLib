@@ -8,7 +8,7 @@ using namespace std;
 
 namespace gamelib
 {
-	graphic_resource::graphic_resource(const int uid, std::string name, const std::string& path, const std::string& type, const int level, const bool is_animated, std::shared_ptr<sdl_graphics_manager> graphics_admin, std::shared_ptr<settings_manager> config)
+	graphic_resource::graphic_resource(const int uid, std::string name, const std::string& path, const std::string& type, const int level, const bool is_animated, sdl_graphics_manager& graphics_admin, SettingsManager& config)
 								 : asset(uid, name, path, type, level),
 	                               key_frame_height(64),
 	                               key_frame_width(64),
@@ -18,7 +18,7 @@ namespace gamelib
 	{
 		/* ctor initializes member only */
 	}
-	graphic_resource::graphic_resource(const int uid, std::string name, const std::string& path, const std::string& type, const int level, const uint num_key_frames, const uint key_frame_height, const uint key_frame_width, const bool is_animated,std::shared_ptr<sdl_graphics_manager> graphics_admin, std::shared_ptr<settings_manager> config)
+	graphic_resource::graphic_resource(const int uid, std::string name, const std::string& path, const std::string& type, const int level, const uint num_key_frames, const uint key_frame_height, const uint key_frame_width, const bool is_animated, sdl_graphics_manager& graphics_admin, SettingsManager& config)
 								 : asset(uid, name, path, type, level),
 		                           num_key_frames(num_key_frames),
 		                           key_frame_height(key_frame_height),
@@ -40,7 +40,7 @@ namespace gamelib
 		
 		if(loaded_surface)
 		{						
-			texture = SDL_CreateTextureFromSurface(graphics_admin->window_renderer, loaded_surface ); //Create texture from surface pixels
+			texture = SDL_CreateTextureFromSurface(graphics_admin.window_renderer, loaded_surface ); //Create texture from surface pixels
 			
 			SDL_FreeSurface(loaded_surface); //Get rid of old loaded surface
 			
@@ -63,10 +63,11 @@ namespace gamelib
 
 	graphic_resource::~graphic_resource()
 	{
-		run_and_log("Destroying graphics resource: " + std::string(name), config->get_bool("global", "verbose"),[&]()
+		/*run_and_log("Destroying graphics resource: " + std::string(name), config.get_bool("global", "verbose"),[&]()
 		{
 			return graphic_resource::unload();
 			
-		}, true, is_loaded, config);		
+		}, config, true, is_loaded);*/
+		graphic_resource::unload();
 	}
 }

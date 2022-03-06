@@ -8,9 +8,20 @@ namespace gamelib
 	private:
 		unsigned long m_TimeLastFrame;
 	public:
-		Sprite(uint xPos, uint yPos, uint speed, uint totalFrames, uint framesPerRow, uint framesPerColumn, uint frameWidth, uint frame, bool is_visible, std::shared_ptr<settings_manager> settings_admin) : 
+		Sprite(uint xPos, 
+			uint yPos, 
+			uint speed, 
+			uint totalFrames, 
+			uint framesPerRow, 
+			uint framesPerColumn, 
+			uint frameWidth, 
+			uint frame, 
+			bool is_visible, 
+			SettingsManager& settings_admin,
+			EventManager& event_admin) : 
 			m_Speed(100), m_TotalFrames(totalFrames), m_FramesPerRow(framesPerRow), m_FramesPerColumn(framesPerColumn),
-			m_CurrentFrame(0), m_FrameHeight(64), m_FrameWidth(64), m_StartFrame(0), m_TimeLastFrame(0), GameObject(xPos, yPos, is_visible, settings_admin ) { }
+			m_CurrentFrame(0), m_FrameHeight(64), m_FrameWidth(64), m_StartFrame(0), m_TimeLastFrame(0), 
+			GameObject(xPos, yPos, is_visible, settings_admin, event_admin ) { }
 		object_type get_type() override { return object_type::sprite; }
 		uint m_TotalFrames;
 		uint m_FramesPerRow;

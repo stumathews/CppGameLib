@@ -1,24 +1,24 @@
 ﻿#include "pch.h"
 
 #include "common/static_config.h"
-#include "events/event_manager.h"
-#include "font/font_manager.h"
+#include "events/EventManager.h"
+#include "font/FontManager.h"
 #include "graphic/sdl_graphics_manager.h"
-#include "resource/resource_manager.h"
+#include "resource/ResourceManager.h"
 
 using namespace std;
 using namespace gamelib;
 
-class ResourceManager : public testing::Test {
+class ResourceManagerTests : public testing::Test {
  protected:
   void SetUp() override
   {  	
-  	config = make_shared<settings_manager>();
-	event_admin = make_shared<event_manager>(config);		
-	font_admin = make_shared<font_manager>();
-	graphics_admin = make_shared<sdl_graphics_manager>(event_admin);
-  	audio_admin = make_shared<audio_manager>();
-	resource_admin = make_shared<resource_manager>(config, graphics_admin, font_admin, audio_admin);
+  	config = shared_ptr<SettingsManager>(new SettingsManager());
+	event_admin = shared_ptr<EventManager>(new EventManager(*config, logger));		
+	font_admin = shared_ptr<FontManager>(new FontManager());
+	graphics_admin = shared_ptr<sdl_graphics_manager>(new sdl_graphics_manager(*event_admin, logger));
+  	audio_admin = shared_ptr<AudioManager>(new AudioManager());
+	resource_admin = shared_ptr<ResourceManager>(new ResourceManager(*config, *graphics_admin, *font_admin, *audio_admin, logger));
 
   }
     
@@ -30,12 +30,13 @@ class ResourceManager : public testing::Test {
   const string exp_filename = "Assets/Music/MainTheme.wav";
   const string resource_file_path = "Resources.xml";
   
-  shared_ptr<resource_manager> resource_admin;
-  shared_ptr<settings_manager> config;
-  shared_ptr<event_manager> event_admin;	
-  shared_ptr<font_manager> font_admin;
+  shared_ptr<ResourceManager> resource_admin;
+  shared_ptr<SettingsManager> config;
+  shared_ptr<EventManager> event_admin;	
+  shared_ptr<FontManager> font_admin;
   shared_ptr<sdl_graphics_manager> graphics_admin;
-  shared_ptr<audio_manager> audio_admin;
+  shared_ptr<AudioManager> audio_admin;
+  logger logger;
 
   void test_asset_against_baseline(shared_ptr<asset> asset) const
   {
@@ -48,22 +49,24 @@ class ResourceManager : public testing::Test {
 	
 };
 
-TEST_F(ResourceManager, Initialize)
+TEST_F(ResourceManagerTests, Initialize)
 {
-	EXPECT_TRUE(resource_admin->initialize(event_admin)) << "Expected resource manager initialization to succeed";
+	EXPECT_TRUE(resource_admin->initialize(*event_admin)) << "Expected resource manager initialization to succeed";
 	EXPECT_EQ(event_admin->get_subscriptions()[event_type::LevelChangedEventType].size(), 1) << "Expected to subscribe to LevelChangedEventType";
-	EXPECT_STREQ(event_admin->get_subscriptions()[event_type::LevelChangedEventType][0].lock()->get_subscriber_name().c_str(), resource_admin->get_subscriber_name().c_str()) << "Unexpected subscriber";
+	EXPECT_STREQ(
+		event_admin->get_subscriptions()[event_type::LevelChangedEventType][0]->get_subscriber_name().c_str(),
+		resource_admin->get_subscriber_name().c_str()) << "Unexpected subscriber";
 }
 
-TEST_F(ResourceManager, read_resources)
+TEST_F(ResourceManagerTests, read_resources)
 {
-	resource_admin->read_resources(resource_file_path);
+	resource_admin->IndexResources(resource_file_path);
 	EXPECT_EQ(resource_admin->get_resource_count(), 12) << "Expected 12 assets to be loaded";
 }
 
-TEST_F(ResourceManager, get_resource_via_string)
+TEST_F(ResourceManagerTests, get_resource_via_string)
 {
-	resource_admin->read_resources(resource_file_path);
+	resource_admin->IndexResources(resource_file_path);
 
 	// When fetching an asset using string identifier
 	const auto asset = resource_admin->get(exp_name);
@@ -71,9 +74,9 @@ TEST_F(ResourceManager, get_resource_via_string)
 	// Ensure the asset is populated correctly
 	test_asset_against_baseline(asset);
 }
-TEST_F(ResourceManager, get_resource_via_int)
+TEST_F(ResourceManagerTests, get_resource_via_int)
 {
-	resource_admin->read_resources(resource_file_path);
+	resource_admin->IndexResources(resource_file_path);
 
 	// When fetching an asset using integer uid
 	const auto asset = resource_admin->get(exp_uid);
@@ -83,10 +86,10 @@ TEST_F(ResourceManager, get_resource_via_int)
 }
 
 
-TEST_F(ResourceManager, unload)
+TEST_F(ResourceManagerTests, unload)
 {
-	resource_admin->initialize(event_admin);
-	resource_admin->read_resources(resource_file_path);
+	resource_admin->initialize(*event_admin);
+	resource_admin->IndexResources(resource_file_path);
 	resource_admin->unload();
 	EXPECT_EQ(0, resource_admin->get_resource_unloaded_count()) << "Asset count is not 0 after unload";
 }

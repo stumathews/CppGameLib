@@ -18,13 +18,13 @@ namespace gamelib
 	
 	typedef std::map<std::string, setting_details>  settings;
 
-	class settings_manager
+	class SettingsManager
 	{
 		std::map<std::string, settings> settings;
 		const char* SETTINGS_SECTION = "settings";	
 		std::string settings_file_path;
 		public:
-		settings_manager(){ load(); }
+		SettingsManager(){ load(); }
 		bool reload();
 		bool load(std::string filename_path = "settings.xml");
 		bool add_setting(std::string section, std::string key, setting_details);

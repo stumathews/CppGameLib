@@ -16,7 +16,6 @@ class SDLGraphicsManagerTests : public testing::Test {
   void SetUp() override
   {  	
   	config = shared_ptr<SettingsManager>(new SettingsManager());
-
 	event_admin = shared_ptr<EventManager>(new EventManager(*config, Logger));		
 	font_admin = shared_ptr<FontManager>(new FontManager());
 	graphics_admin = shared_ptr<SDLGraphicsManager>(new SDLGraphicsManager(*event_admin, Logger));

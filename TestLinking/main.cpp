@@ -16,17 +16,24 @@ using namespace gamelib;
 
 int main(int argc, char **argv)
 {
-	const SettingsManager& settings_admin(new gamelib::SettingsManager);
-	const shared_ptr<gamelib::EventManager> event_admin(new gamelib::EventManager(settings_admin));
-		event_admin->initialize();
-	const shared_ptr<gamelib::FontManager> font_admin(new gamelib::FontManager);		
-	const shared_ptr<gamelib::AudioManager> audio_admin(new gamelib::AudioManager);
-	const shared_ptr<gamelib::SDLGraphicsManager> graphics_admin(new gamelib::SDLGraphicsManager(event_admin));
-		graphics_admin->initialize();
-	const shared_ptr<gamelib::ResourceManager> resource_admin(new gamelib::ResourceManager(settings_admin, graphics_admin, font_admin, audio_admin ));
-		resource_admin->initialize(event_admin);
-	const shared_ptr<gamelib::SceneManager> scene_admin(new gamelib::SceneManager(event_admin, settings_admin, resource_admin));
-		scene_admin->initialize();
+	SettingsManager settings_admin;
+	Logger logger;
+	shared_ptr<gamelib::EventManager> event_admin(new gamelib::EventManager(settings_admin, logger));
+	event_admin->initialize();
+	
+	shared_ptr<gamelib::FontManager> font_admin(new gamelib::FontManager);		
+	shared_ptr<gamelib::AudioManager> audio_admin(new gamelib::AudioManager);
+	shared_ptr<gamelib::SDLGraphicsManager> graphics_admin(new gamelib::SDLGraphicsManager(*event_admin, logger));
+	
+	graphics_admin->initialize();
+	
+	shared_ptr<gamelib::ResourceManager> resource_admin(new gamelib::ResourceManager(settings_admin, *graphics_admin, *font_admin, *audio_admin, logger ));
+		
+	resource_admin->initialize(*event_admin);
+	
+	game_world_data world;
+	shared_ptr<gamelib::SceneManager> scene_admin(new gamelib::SceneManager(*event_admin, settings_admin, *resource_admin, world, logger));
+    scene_admin->initialize();
 	
 	cout << "Hello World" << endl;
 	int i;

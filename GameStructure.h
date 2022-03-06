@@ -21,13 +21,13 @@ namespace gamelib
 		game_world_data& world;
 		AudioManager& audio_admin;
 		std::function<void()> get_input_func;
-		logger& gameLogger;
+		Logger& gameLogger;
 	public:
 		GameStructure(EventManager& event_admin, ResourceManager& resource_admin,
 		               SettingsManager& config, game_world_data& world,
 		               SceneManager& scene_admin, sdl_graphics_manager& graphics_admin,
 		               AudioManager& audio_admin, std::function<void()> get_input_func,
-					   logger& gameLogger);
+					   Logger& gameLogger);
 		~GameStructure();
 		bool initialize_sdl(int screen_width, int screen_height);	
 		bool initialize();

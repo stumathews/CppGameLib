@@ -11,7 +11,7 @@ using namespace std;
 namespace gamelib
 {
 
-	EventManager::EventManager(SettingsManager& config, logger& the_logger) : gameLogger(the_logger), config(config) { 	}
+	EventManager::EventManager(SettingsManager& config, Logger& the_logger) : gameLogger(the_logger), config(config) { 	}
 
 	size_t EventManager::count_ready() const
 	{

@@ -104,7 +104,7 @@ namespace gamelib
 		               SettingsManager& config, game_world_data& world,
 		               SceneManager& scene_admin, sdl_graphics_manager& graphics_admin,
 		               AudioManager& audio_admin, std::function<void()> get_input_func,
-					   logger& logger)
+					   Logger& Logger)
 			: eventAdmin(eventAdmin), resource_admin(resource_admin),
 			settings(config),
 			world(world),
@@ -112,7 +112,7 @@ namespace gamelib
 			graphics_admin(graphics_admin), 
 			audio_admin(audio_admin), 
 			get_input_func(std::move(get_input_func)),
-			gameLogger(logger) { }
+			gameLogger(Logger) { }
 
 	GameStructure::~GameStructure()
 	{

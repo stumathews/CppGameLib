@@ -23,7 +23,7 @@ namespace gamelib
 	 */
 	Player::Player(const int x, const int y, const int w, const int h,
 	               SettingsManager& settings, EventManager& event_admin, 
-		           logger& gameLogger):
+		           Logger& gameLogger):
 		DrawingBase(x, y, true, settings, event_admin), event_admin(event_admin), width(w), height(h), gameLogger(gameLogger)
 	{
 		be_verbose = settings_admin.get_bool("player", "verbose");

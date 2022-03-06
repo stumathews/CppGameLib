@@ -49,7 +49,7 @@ namespace gamelib
 		}
 		else
 		{
-			//logger::log_message(std::string("Unable to load image:") + path + std::string(" Error:") + IMG_GetError());
+			//Logger::log_message(std::string("Unable to load image:") + path + std::string(" Error:") + IMG_GetError());
 		}
 	}
 

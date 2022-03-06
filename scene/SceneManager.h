@@ -20,9 +20,9 @@ namespace gamelib
 		SettingsManager& config;
 		ResourceManager& resource_admin;
 		game_world_data& world;
-		logger& logger;
+		Logger& Logger;
 	public:
-		SceneManager(EventManager& ea, SettingsManager& c, ResourceManager& resource_admin, game_world_data& world, gamelib::logger& logger, std::string scene_folder = "game/");	
+		SceneManager(EventManager& ea, SettingsManager& c, ResourceManager& resource_admin, game_world_data& world, gamelib::Logger& Logger, std::string scene_folder = "game/");	
 		SceneManager(const SceneManager &) = delete;
 		SceneManager(SceneManager &&) = delete;
 	    SceneManager& operator=(SceneManager const&)  = delete;

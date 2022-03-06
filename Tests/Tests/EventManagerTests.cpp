@@ -30,14 +30,14 @@ class EventManagerTests : public ::testing::Test {
   shared_ptr<EventManager> event_admin;
   SettingsManager settings;
   dummy_subscriber subscriber;	
-  logger logger;
+  Logger Logger;
   do_logic_update_event logic_update_event;
   const shared_ptr<do_logic_update_event> the_event = shared_ptr<do_logic_update_event>(new do_logic_update_event());
   const event_type event_type = event_type::DoLogicUpdateEventType;
 
   void SetUp() override
   {
-	 event_admin = create_event_manager(settings, logger);
+	 event_admin = create_event_manager(settings, Logger);
   	 event_admin->initialize();
   }
 
@@ -46,8 +46,8 @@ class EventManagerTests : public ::testing::Test {
   	return shared_ptr<static_config>(new static_config());
   }
 
-  static shared_ptr<EventManager> create_event_manager(SettingsManager& config, gamelib::logger& logger) {
-  	return shared_ptr<EventManager>(new EventManager(config, logger));
+  static shared_ptr<EventManager> create_event_manager(SettingsManager& config, gamelib::Logger& Logger) {
+  	return shared_ptr<EventManager>(new EventManager(config, Logger));
   }
 	
 };

@@ -15,7 +15,7 @@ using namespace std;
 namespace gamelib
 {
 
-	sdl_graphics_manager::sdl_graphics_manager(EventManager& event_admin, logger& the_logger)
+	sdl_graphics_manager::sdl_graphics_manager(EventManager& event_admin, Logger& the_logger)
 		: EventSubscriber(), event_admin(event_admin), the_logger(the_logger) { }
 
 	vector<shared_ptr<event>> sdl_graphics_manager::handle_event(const std::shared_ptr<event> the_event) { return vector<shared_ptr<event>>();	}

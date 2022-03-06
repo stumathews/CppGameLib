@@ -20,7 +20,7 @@ namespace gamelib
 	ResourceManager::ResourceManager(SettingsManager& config,   // NOLINT(modernize-pass-by-value)
 		sdl_graphics_manager& graphics_admin, 
 		FontManager& font_admin,
-		AudioManager& audio_admin, logger& the_logger)
+		AudioManager& audio_admin, Logger& the_logger)
 	: config(config), graphics_admin(graphics_admin), font_admin(font_admin), audio_admin(audio_admin), the_logger(the_logger)
 	{
 		

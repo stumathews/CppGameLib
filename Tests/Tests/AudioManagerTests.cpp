@@ -14,7 +14,7 @@ class AudioManagerTests : public testing::Test {
   void SetUp() override
   {  	
   	const shared_ptr<SettingsManager> settings_admin(new SettingsManager);
-	logger gameLogger;
+	Logger gameLogger;
 	const shared_ptr<EventManager> event_admin(new EventManager(*settings_admin, gameLogger));		
 	const shared_ptr<FontManager> font_admin(new FontManager);		
 	audio_admin = create_audio_manager();

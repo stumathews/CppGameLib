@@ -20,7 +20,7 @@ namespace gamelib
 	}
 	
 	// returns true if condition succeeded, false otherwise
-	inline bool succeeded(const bool condition, const std::string message, std::shared_ptr<logger> the_logger = std::make_shared<logger>())
+	inline bool succeeded(const bool condition, const std::string message, std::shared_ptr<Logger> the_logger = std::make_shared<Logger>())
 	{
 		const auto is = condition == true;
 		if(is == true)
@@ -28,7 +28,7 @@ namespace gamelib
 		return is;
 	}
 
-	inline bool failed(bool condition,  std::string message = "", bool ignore = false, std::shared_ptr<logger> the_logger = std::make_shared<logger>())
+	inline bool failed(bool condition,  std::string message = "", bool ignore = false, std::shared_ptr<Logger> the_logger = std::make_shared<Logger>())
 	{
 		const auto is = condition == false;
 		if(is == false)
@@ -36,7 +36,7 @@ namespace gamelib
 		return ignore == true ? !ignore : is;
 	}
 	
-	inline void log_message(const std::string &message, logger& the_logger, const bool be_verbose = false, bool is_fatal = false)
+	inline void log_message(const std::string &message, Logger& the_logger, const bool be_verbose = false, bool is_fatal = false)
 	{
 		the_logger.log_message(message, be_verbose);
 		if(is_fatal)
@@ -50,7 +50,7 @@ namespace gamelib
 	// Logs message and runs action
 	inline bool run_and_log(const std::string &message, bool verbose, const std::function<bool()>& action,  SettingsManager& settingsAdmin, bool print_finished = true, bool run_if = true)
 	{
-		logger theLogger;
+		Logger theLogger;
 		log_message(message, theLogger, settingsAdmin.get_bool("global","verbose"));
 		bool result;
 		if(run_if)
@@ -74,7 +74,7 @@ namespace gamelib
 		return static_cast<typename std::underlying_type<ENUM>::type>(value);
 	}
 
-	inline bool log_if_false(bool condition, std::string message, SettingsManager& settings, logger& the_logger)
+	inline bool log_if_false(bool condition, std::string message, SettingsManager& settings, Logger& the_logger)
 	{
 		if(condition == false){
 			

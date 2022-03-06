@@ -15,13 +15,13 @@ namespace gamelib
 	{
 		bool draw_box = false;
 		EventManager& event_admin;
-		logger& gameLogger;
+		Logger& gameLogger;
 		bool be_verbose;
 		
 	public:
 		int width, height;
 		int within_room_index = 0;
-		Player(int x, int y, int w, int h, SettingsManager& settings, EventManager& event_admin, logger& gameLogger);
+		Player(int x, int y, int w, int h, SettingsManager& settings, EventManager& event_admin, Logger& gameLogger);
 		void load_settings(SettingsManager& settings) override;
 		void center_player_in_room(std::shared_ptr<Room> target_room);
 		static int get_room_neighbour_index(int first_room_index, int last_room_index, int side, std::shared_ptr<Room> room);

@@ -5,13 +5,13 @@
 namespace gamelib
 {
 	typedef std::function<void(std::string)> logging_func;
-	class logger
+	class Logger
 	{
 		logging_func func;		
 	public:
-		logger(logging_func func = nullptr) : func(func) {}
-		logger(const logger& other) = delete;
-		logger& operator=(const logger& other) = delete;
+		Logger(logging_func func = nullptr) : func(func) {}
+		Logger(const Logger& other) = delete;
+		Logger& operator=(const Logger& other) = delete;
 
 		void log_message(const std::string &message, const bool be_verbose = false) const
 		{

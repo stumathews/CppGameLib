@@ -23,11 +23,11 @@ namespace gamelib
 		std::map<event_type, std::vector<IEventSubscriber*>> event_subscribers_;
 
 		SettingsManager& config;
-		logger& gameLogger;
+		Logger& gameLogger;
 		bool resetting = false;
 
 	public:
-		EventManager(SettingsManager& config, logger& logger);
+		EventManager(SettingsManager& config, Logger& Logger);
 		size_t count_ready() const;
 
 		// Clears subscribers, primary and secondary queues

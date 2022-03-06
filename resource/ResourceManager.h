@@ -18,7 +18,7 @@ namespace gamelib
 	class ResourceManager : public EventSubscriber
 	{		
 	    public:
-		ResourceManager(SettingsManager& config, sdl_graphics_manager& graphics_admin, FontManager& font_admin, AudioManager&, logger& the_logger);
+		ResourceManager(SettingsManager& config, sdl_graphics_manager& graphics_admin, FontManager& font_admin, AudioManager&, Logger& the_logger);
 			
 		std::shared_ptr<asset> get(const std::string& name);
 		std::shared_ptr<asset> get(int uuid);
@@ -39,7 +39,7 @@ namespace gamelib
 		sdl_graphics_manager& graphics_admin;
 		FontManager& font_admin;
 		AudioManager& audio_admin;
-		logger& the_logger;
+		Logger& the_logger;
 		void load_level_assets(int level);
 	    void store_asset(const std::shared_ptr<asset>& the_asset);
 		std::map<int, std::vector<std::shared_ptr<asset>>> resources_by_scene;   

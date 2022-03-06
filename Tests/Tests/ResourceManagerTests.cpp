@@ -14,11 +14,11 @@ class ResourceManagerTests : public testing::Test {
   void SetUp() override
   {  	
   	config = shared_ptr<SettingsManager>(new SettingsManager());
-	event_admin = shared_ptr<EventManager>(new EventManager(*config, logger));		
+	event_admin = shared_ptr<EventManager>(new EventManager(*config, Logger));		
 	font_admin = shared_ptr<FontManager>(new FontManager());
-	graphics_admin = shared_ptr<sdl_graphics_manager>(new sdl_graphics_manager(*event_admin, logger));
+	graphics_admin = shared_ptr<sdl_graphics_manager>(new sdl_graphics_manager(*event_admin, Logger));
   	audio_admin = shared_ptr<AudioManager>(new AudioManager());
-	resource_admin = shared_ptr<ResourceManager>(new ResourceManager(*config, *graphics_admin, *font_admin, *audio_admin, logger));
+	resource_admin = shared_ptr<ResourceManager>(new ResourceManager(*config, *graphics_admin, *font_admin, *audio_admin, Logger));
 
   }
     
@@ -36,7 +36,7 @@ class ResourceManagerTests : public testing::Test {
   shared_ptr<FontManager> font_admin;
   shared_ptr<sdl_graphics_manager> graphics_admin;
   shared_ptr<AudioManager> audio_admin;
-  logger logger;
+  Logger Logger;
 
   void test_asset_against_baseline(shared_ptr<asset> asset) const
   {

@@ -17,13 +17,13 @@ class SDLGraphicsManager : public testing::Test {
   {  	
   	config = shared_ptr<SettingsManager>(new SettingsManager());
 
-	event_admin = shared_ptr<EventManager>(new EventManager(*config, logger));		
+	event_admin = shared_ptr<EventManager>(new EventManager(*config, Logger));		
 	font_admin = shared_ptr<FontManager>(new FontManager());
-	graphics_admin = shared_ptr<sdl_graphics_manager>(new sdl_graphics_manager(*event_admin, logger));
+	graphics_admin = shared_ptr<sdl_graphics_manager>(new sdl_graphics_manager(*event_admin, Logger));
   	audio_admin = shared_ptr<AudioManager>(new AudioManager());
-	resource_admin = shared_ptr<ResourceManager>(new ResourceManager(*config, *graphics_admin, *font_admin, *audio_admin, logger));
+	resource_admin = shared_ptr<ResourceManager>(new ResourceManager(*config, *graphics_admin, *font_admin, *audio_admin, Logger));
 	world = shared_ptr<game_world_data>(new game_world_data());
-  	scene_admin = shared_ptr<SceneManager>(new SceneManager(*event_admin, *config, *resource_admin, *world, logger, ""/* root folder is scene folder */));
+  	scene_admin = shared_ptr<SceneManager>(new SceneManager(*event_admin, *config, *resource_admin, *world, Logger, ""/* root folder is scene folder */));
   }
     
   //void TearDown() override {}
@@ -36,7 +36,7 @@ class SDLGraphicsManager : public testing::Test {
   shared_ptr<AudioManager> audio_admin;
   shared_ptr<SceneManager> scene_admin;
   shared_ptr<game_world_data> world;
-  logger logger;
+  Logger Logger;
 	
 };
 

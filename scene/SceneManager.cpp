@@ -42,8 +42,8 @@ namespace gamelib
 
 
 
-	SceneManager::SceneManager(EventManager& ea, SettingsManager& c, ResourceManager& resource_admin, game_world_data& world, gamelib::logger& logger, std::string scene_folder)
-	: event_admin(ea), config(c), resource_admin(resource_admin), scene_folder(scene_folder), world(world), logger(logger)
+	SceneManager::SceneManager(EventManager& ea, SettingsManager& c, ResourceManager& resource_admin, game_world_data& world, gamelib::Logger& Logger, std::string scene_folder)
+	: event_admin(ea), config(c), resource_admin(resource_admin), scene_folder(scene_folder), world(world), Logger(Logger)
 	{
 	}
 
@@ -97,7 +97,7 @@ namespace gamelib
 
 		auto raise_scene_loaded_event = [this](int scene_id, const string& scene_name)
 		{
-			log_message("Scene "+ to_string(scene_id) +" : "+ scene_name +" loaded.", logger);
+			log_message("Scene "+ to_string(scene_id) +" : "+ scene_name +" loaded.", Logger);
 			event_admin.raise_event(make_unique<scene_loaded_event>(scene_id), this);
 		};
 
@@ -129,7 +129,7 @@ namespace gamelib
 				raise_scene_loaded_event(scene, scene_name);
 			} catch(exception &e)
 			{
-				log_message(string("Cloud not load scene file: ") + string(e.what()), logger);
+				log_message(string("Cloud not load scene file: ") + string(e.what()), Logger);
 				throw;
 			}
 		}
@@ -195,10 +195,10 @@ namespace gamelib
 	{
 		if(current_scene_name == filename)
 		{
-			log_message(string("Scene already loaded. Skipping."), logger);
+			log_message(string("Scene already loaded. Skipping."), Logger);
 			return true;
 		}
-		log_message("Loading scene: " + string(filename), logger);
+		log_message("Loading scene: " + string(filename), Logger);
 		
 		/* A Scene is composed of a) resources at b) various positions c) visibility
 		

@@ -17,10 +17,10 @@ namespace gamelib
 	class sdl_graphics_manager final : public EventSubscriber
 	{
 		EventManager& event_admin;
-		logger& the_logger;
+		Logger& the_logger;
 	public:
 		
-		sdl_graphics_manager(EventManager& event_admin, logger& the_logger);
+		sdl_graphics_manager(EventManager& event_admin, Logger& the_logger);
 		sdl_graphics_manager(sdl_graphics_manager const&)  = delete;		
 		sdl_graphics_manager(sdl_graphics_manager &&other) = delete;	
 		sdl_graphics_manager & operator=(sdl_graphics_manager &&other) = delete;

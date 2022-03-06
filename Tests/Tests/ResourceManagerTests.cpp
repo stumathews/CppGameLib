@@ -3,7 +3,7 @@
 #include "common/static_config.h"
 #include "events/EventManager.h"
 #include "font/FontManager.h"
-#include "graphic/sdl_graphics_manager.h"
+#include "graphic/SDLGraphicsManager.h"
 #include "resource/ResourceManager.h"
 
 using namespace std;
@@ -16,7 +16,7 @@ class ResourceManagerTests : public testing::Test {
   	config = shared_ptr<SettingsManager>(new SettingsManager());
 	event_admin = shared_ptr<EventManager>(new EventManager(*config, Logger));		
 	font_admin = shared_ptr<FontManager>(new FontManager());
-	graphics_admin = shared_ptr<sdl_graphics_manager>(new sdl_graphics_manager(*event_admin, Logger));
+	graphics_admin = shared_ptr<SDLGraphicsManager>(new SDLGraphicsManager(*event_admin, Logger));
   	audio_admin = shared_ptr<AudioManager>(new AudioManager());
 	resource_admin = shared_ptr<ResourceManager>(new ResourceManager(*config, *graphics_admin, *font_admin, *audio_admin, Logger));
 
@@ -34,7 +34,7 @@ class ResourceManagerTests : public testing::Test {
   shared_ptr<SettingsManager> config;
   shared_ptr<EventManager> event_admin;	
   shared_ptr<FontManager> font_admin;
-  shared_ptr<sdl_graphics_manager> graphics_admin;
+  shared_ptr<SDLGraphicsManager> graphics_admin;
   shared_ptr<AudioManager> audio_admin;
   Logger Logger;
 

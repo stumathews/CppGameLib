@@ -3,7 +3,7 @@
 #include "common/static_config.h"
 #include "events/EventManager.h"
 #include "font/FontManager.h"
-#include "graphic/sdl_graphics_manager.h"
+#include "graphic/SDLGraphicsManager.h"
 #include "resource/ResourceManager.h"
 
 using namespace std;

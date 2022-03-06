@@ -1,4 +1,4 @@
-#include "sdl_graphics_manager.h"
+#include "SDLGraphicsManager.h"
 #include <memory>
 #include "SDL_image.h"
 #include "graphic_resource.h"
@@ -15,18 +15,18 @@ using namespace std;
 namespace gamelib
 {
 
-	sdl_graphics_manager::sdl_graphics_manager(EventManager& event_admin, Logger& the_logger)
+	SDLGraphicsManager::SDLGraphicsManager(EventManager& event_admin, Logger& the_logger)
 		: EventSubscriber(), event_admin(event_admin), the_logger(the_logger) { }
 
-	vector<shared_ptr<event>> sdl_graphics_manager::handle_event(const std::shared_ptr<event> the_event) { return vector<shared_ptr<event>>();	}
+	vector<shared_ptr<event>> SDLGraphicsManager::handle_event(const std::shared_ptr<event> the_event) { return vector<shared_ptr<event>>();	}
 	
 
-	string sdl_graphics_manager::get_subscriber_name()
+	string SDLGraphicsManager::get_subscriber_name()
 	{
-		return "sdl_graphics_manager";
+		return "SDLGraphicsManager";
 	}
 
-	std::shared_ptr<graphic_resource> sdl_graphics_manager::to_resource(const std::shared_ptr<asset>& asset)
+	std::shared_ptr<graphic_resource> SDLGraphicsManager::to_resource(const std::shared_ptr<asset>& asset)
 	{
 		return as_resource<graphic_resource>(asset);
 	}
@@ -52,9 +52,9 @@ namespace gamelib
 	}
 
 
-	bool sdl_graphics_manager::initialize(const uint width, const uint height, const char * window_title)
+	bool SDLGraphicsManager::initialize(const uint width, const uint height, const char * window_title)
 	{
-		the_logger.log_message("sdl_graphics_manager::Initialize()");
+		the_logger.log_message("SDLGraphicsManager::Initialize()");
 		
 		if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0)
 		{
@@ -93,11 +93,11 @@ namespace gamelib
 		}
 
 
-		the_logger.log_message("sdl_graphics_manager ready.");
+		the_logger.log_message("SDLGraphicsManager ready.");
 		return true;
 	}
 
-	std::shared_ptr<asset> sdl_graphics_manager::create_asset(tinyxml2::XMLElement * element, SettingsManager& config)
+	std::shared_ptr<asset> SDLGraphicsManager::create_asset(tinyxml2::XMLElement * element, SettingsManager& config)
 	{		
 		auto is_animated = false;
 		auto num_key_frames = 12, key_frame_height = 64, key_frame_width = 64;
@@ -137,7 +137,7 @@ namespace gamelib
 		return resource;
 	}
 
-	void sdl_graphics_manager::clear_draw_present(std::function<void(SDL_Renderer* renderer)> &render_routine) const
+	void SDLGraphicsManager::clear_draw_present(std::function<void(SDL_Renderer* renderer)> &render_routine) const
 	{
 		// backup current render color
 		SDL_Color render_color = {0};
@@ -150,7 +150,7 @@ namespace gamelib
 	}
 
 	// Draws all the actors in the scene
-	void sdl_graphics_manager::DrawCurrentScene(SceneManager& scene_admin) const
+	void SDLGraphicsManager::DrawCurrentScene(SceneManager& scene_admin) const
 	{
 		// local-func
 		auto render_all_objects = static_cast<render_func>([&](SDL_Renderer*)
@@ -178,7 +178,7 @@ namespace gamelib
 	}
 
 
-	sdl_graphics_manager::~sdl_graphics_manager()
+	SDLGraphicsManager::~SDLGraphicsManager()
 	{
 		SDL_DestroyRenderer(window_renderer);
 		SDL_DestroyWindow(window);

@@ -6,16 +6,16 @@
 
 namespace gamelib
 {
-	class sdl_graphics_manager;
+	class SDLGraphicsManager;
 
 	// A stand-alone graphics resource with backing storage that can load and unload itself
 	class graphic_resource : public asset
 	{
-		sdl_graphics_manager& graphics_admin;
+		SDLGraphicsManager& graphics_admin;
 		SettingsManager& config;
 	public:		
-		graphic_resource(const int uid, std::string name, const std::string& path, const std::string& type, const int level, const bool is_animated, sdl_graphics_manager& graphics_admin, SettingsManager& config);
-		graphic_resource(const int uid, std::string name, const std::string& path, const std::string& type, const int level, const uint num_key_frames, uint key_frame_height, const uint key_frame_width, const bool is_animated, sdl_graphics_manager& graphics_admin, SettingsManager& config);
+		graphic_resource(const int uid, std::string name, const std::string& path, const std::string& type, const int level, const bool is_animated, SDLGraphicsManager& graphics_admin, SettingsManager& config);
+		graphic_resource(const int uid, std::string name, const std::string& path, const std::string& type, const int level, const uint num_key_frames, uint key_frame_height, const uint key_frame_width, const bool is_animated, SDLGraphicsManager& graphics_admin, SettingsManager& config);
 		virtual ~graphic_resource();
 
 		SDL_Texture* texture = nullptr; // The binary data that will represent the resource once its loaded.

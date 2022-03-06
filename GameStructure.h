@@ -17,7 +17,7 @@ namespace gamelib
 		ResourceManager& resource_admin;
 		SettingsManager& settings;		
 		SceneManager& scene_admin;
-		sdl_graphics_manager& graphics_admin;
+		SDLGraphicsManager& graphics_admin;
 		game_world_data& world;
 		AudioManager& audio_admin;
 		std::function<void()> get_input_func;
@@ -25,7 +25,7 @@ namespace gamelib
 	public:
 		GameStructure(EventManager& event_admin, ResourceManager& resource_admin,
 		               SettingsManager& config, game_world_data& world,
-		               SceneManager& scene_admin, sdl_graphics_manager& graphics_admin,
+		               SceneManager& scene_admin, SDLGraphicsManager& graphics_admin,
 		               AudioManager& audio_admin, std::function<void()> get_input_func,
 					   Logger& gameLogger);
 		~GameStructure();

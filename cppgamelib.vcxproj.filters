@@ -111,9 +111,6 @@
     <ClInclude Include="graphic\Drawing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="graphic\sdl_graphics_manager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="graphic\graphic_resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -166,6 +163,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="scene\SceneManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="graphic\SDLGraphicsManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -239,9 +239,6 @@
     <ClCompile Include="graphic\Drawing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="graphic\sdl_graphics_manager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="graphic\graphic_resource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -294,6 +291,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="scene\SceneManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="graphic\SDLGraphicsManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

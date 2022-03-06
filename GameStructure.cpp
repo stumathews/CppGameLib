@@ -15,7 +15,7 @@
 #include "events/EventManager.h"
 #include "events/PositionChangeEvent.h"
 #include "events/SceneChangedEvent.h"
-#include "graphic/sdl_graphics_manager.h"
+#include "graphic/SDLGraphicsManager.h"
 #include "objects/Player.h"
 #include "resource/ResourceManager.h"
 #include "scene/SceneManager.h"
@@ -102,7 +102,7 @@ namespace gamelib
 
 	GameStructure::GameStructure(EventManager& eventAdmin, ResourceManager& resource_admin,
 		               SettingsManager& config, game_world_data& world,
-		               SceneManager& scene_admin, sdl_graphics_manager& graphics_admin,
+		               SceneManager& scene_admin, SDLGraphicsManager& graphics_admin,
 		               AudioManager& audio_admin, std::function<void()> get_input_func,
 					   Logger& Logger)
 			: eventAdmin(eventAdmin), resource_admin(resource_admin),

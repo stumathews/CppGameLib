@@ -9,7 +9,7 @@
 #include "events/EventManager.h"
 #include "events/SceneChangedEvent.h"
 #include "font/FontManager.h"
-#include "graphic/sdl_graphics_manager.h"
+#include "graphic/SDLGraphicsManager.h"
 
 namespace gamelib
 {	
@@ -18,7 +18,7 @@ namespace gamelib
 
 	
 	ResourceManager::ResourceManager(SettingsManager& config,   // NOLINT(modernize-pass-by-value)
-		sdl_graphics_manager& graphics_admin, 
+		SDLGraphicsManager& graphics_admin, 
 		FontManager& font_admin,
 		AudioManager& audio_admin, Logger& the_logger)
 	: config(config), graphics_admin(graphics_admin), font_admin(font_admin), audio_admin(audio_admin), the_logger(the_logger)

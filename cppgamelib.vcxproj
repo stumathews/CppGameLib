@@ -190,7 +190,7 @@
     <ClInclude Include="objects\game_world_data.h" />
     <ClInclude Include="graphic\Drawing.h" />
     <ClInclude Include="graphic\graphic_resource.h" />
-    <ClInclude Include="graphic\sdl_graphics_manager.h" />
+    <ClInclude Include="graphic\SDLGraphicsManager.h" />
     <ClInclude Include="objects\Component.h" />
     <ClInclude Include="objects\GameObject.h" />
     <ClInclude Include="objects\game_object_factory.h" />
@@ -236,7 +236,7 @@
     <ClCompile Include="objects\game_world_data.cpp" />
     <ClCompile Include="graphic\Drawing.cpp" />
     <ClCompile Include="graphic\graphic_resource.cpp" />
-    <ClCompile Include="graphic\sdl_graphics_manager.cpp" />
+    <ClCompile Include="graphic\SDLGraphicsManager.cpp" />
     <ClCompile Include="objects\Component.cpp" />
     <ClCompile Include="objects\GameObject.cpp" />
     <ClCompile Include="objects\game_object_factory.cpp" />

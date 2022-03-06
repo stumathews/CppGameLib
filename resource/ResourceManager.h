@@ -7,7 +7,7 @@
 #include "events/EventManager.h"
 #include "events/EventSubscriber.h"
 #include "font/FontManager.h"
-#include "graphic/sdl_graphics_manager.h"
+#include "graphic/SDLGraphicsManager.h"
 #include <objects/MultipleInheritableEnableSharedFromThis.h>
 
 namespace gamelib
@@ -18,7 +18,7 @@ namespace gamelib
 	class ResourceManager : public EventSubscriber
 	{		
 	    public:
-		ResourceManager(SettingsManager& config, sdl_graphics_manager& graphics_admin, FontManager& font_admin, AudioManager&, Logger& the_logger);
+		ResourceManager(SettingsManager& config, SDLGraphicsManager& graphics_admin, FontManager& font_admin, AudioManager&, Logger& the_logger);
 			
 		std::shared_ptr<asset> get(const std::string& name);
 		std::shared_ptr<asset> get(int uuid);
@@ -36,7 +36,7 @@ namespace gamelib
 	    int get_resource_loaded_count() const { return loaded_resources_count; }
 	private:
 		SettingsManager& config;
-		sdl_graphics_manager& graphics_admin;
+		SDLGraphicsManager& graphics_admin;
 		FontManager& font_admin;
 		AudioManager& audio_admin;
 		Logger& the_logger;

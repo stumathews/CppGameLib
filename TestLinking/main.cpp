@@ -5,7 +5,7 @@
 #include "common/static_config.h"
 #include "events/EventManager.h"
 #include "font/FontManager.h"
-#include "graphic/sdl_graphics_manager.h"
+#include "graphic/SDLGraphicsManager.h"
 #include "resource/ResourceManager.h"
 #include "scene/SceneManager.h"
 
@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 		event_admin->initialize();
 	const shared_ptr<gamelib::FontManager> font_admin(new gamelib::FontManager);		
 	const shared_ptr<gamelib::AudioManager> audio_admin(new gamelib::AudioManager);
-	const shared_ptr<gamelib::sdl_graphics_manager> graphics_admin(new gamelib::sdl_graphics_manager(event_admin));
+	const shared_ptr<gamelib::SDLGraphicsManager> graphics_admin(new gamelib::SDLGraphicsManager(event_admin));
 		graphics_admin->initialize();
 	const shared_ptr<gamelib::ResourceManager> resource_admin(new gamelib::ResourceManager(settings_admin, graphics_admin, font_admin, audio_admin ));
 		resource_admin->initialize(event_admin);

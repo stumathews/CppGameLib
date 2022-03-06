@@ -18,7 +18,7 @@ class AudioManagerTests : public testing::Test {
 	const shared_ptr<EventManager> event_admin(new EventManager(*settings_admin, gameLogger));		
 	const shared_ptr<FontManager> font_admin(new FontManager);		
 	audio_admin = create_audio_manager();
-	const shared_ptr<sdl_graphics_manager> graphics_admin(new sdl_graphics_manager(*event_admin, gameLogger));		
+	const shared_ptr<SDLGraphicsManager> graphics_admin(new SDLGraphicsManager(*event_admin, gameLogger));		
 	const shared_ptr<ResourceManager> resource_admin(new ResourceManager(*settings_admin, *graphics_admin, *font_admin, *audio_admin, gameLogger));
     const shared_ptr<audio_resource> ptr(new audio_resource(0, RESOURCE_NAME, RESOURCE_PATH, RESOURCE_TYPE, RESOURCE_SCENE, *resource_admin));
   	

@@ -1,6 +1,6 @@
 #include "graphic_resource.h"
 #include <SDL_image.h>
-#include "sdl_graphics_manager.h"
+#include "SDLGraphicsManager.h"
 #include <SDL.h>
 #include "common/Common.h"
 
@@ -8,7 +8,7 @@ using namespace std;
 
 namespace gamelib
 {
-	graphic_resource::graphic_resource(const int uid, std::string name, const std::string& path, const std::string& type, const int level, const bool is_animated, sdl_graphics_manager& graphics_admin, SettingsManager& config)
+	graphic_resource::graphic_resource(const int uid, std::string name, const std::string& path, const std::string& type, const int level, const bool is_animated, SDLGraphicsManager& graphics_admin, SettingsManager& config)
 								 : asset(uid, name, path, type, level),
 	                               key_frame_height(64),
 	                               key_frame_width(64),
@@ -18,7 +18,7 @@ namespace gamelib
 	{
 		/* ctor initializes member only */
 	}
-	graphic_resource::graphic_resource(const int uid, std::string name, const std::string& path, const std::string& type, const int level, const uint num_key_frames, const uint key_frame_height, const uint key_frame_width, const bool is_animated, sdl_graphics_manager& graphics_admin, SettingsManager& config)
+	graphic_resource::graphic_resource(const int uid, std::string name, const std::string& path, const std::string& type, const int level, const uint num_key_frames, const uint key_frame_height, const uint key_frame_width, const bool is_animated, SDLGraphicsManager& graphics_admin, SettingsManager& config)
 								 : asset(uid, name, path, type, level),
 		                           num_key_frames(num_key_frames),
 		                           key_frame_height(key_frame_height),

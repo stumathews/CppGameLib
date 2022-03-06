@@ -7,7 +7,7 @@
 #include "common/constants.h"
 #include "events/EventManager.h"
 #include "events/PositionChangeEvent.h"
-#include "graphic/sdl_graphics_manager.h"
+#include "graphic/SDLGraphicsManager.h"
 #include "resource/ResourceManager.h"
 using namespace std;
 
@@ -84,7 +84,7 @@ namespace gamelib
 		return "game_object";
 	}
 
-	/*void game_object::detect_side_collision(sdl_graphics_manager& graphics_admin, ResourceManager& resource_admin)
+	/*void game_object::detect_side_collision(SDLGraphicsManager& graphics_admin, ResourceManager& resource_admin)
 	{
 		if (is_traveling_left)
 		{

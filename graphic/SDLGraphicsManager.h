@@ -14,18 +14,18 @@ namespace gamelib
 {
 	class SceneManager;
 
-	class sdl_graphics_manager final : public EventSubscriber
+	class SDLGraphicsManager final : public EventSubscriber
 	{
 		EventManager& event_admin;
 		Logger& the_logger;
 	public:
 		
-		sdl_graphics_manager(EventManager& event_admin, Logger& the_logger);
-		sdl_graphics_manager(sdl_graphics_manager const&)  = delete;		
-		sdl_graphics_manager(sdl_graphics_manager &&other) = delete;	
-		sdl_graphics_manager & operator=(sdl_graphics_manager &&other) = delete;
-		sdl_graphics_manager& operator=(sdl_graphics_manager const&)  = delete;
-		~sdl_graphics_manager();
+		SDLGraphicsManager(EventManager& event_admin, Logger& the_logger);
+		SDLGraphicsManager(SDLGraphicsManager const&)  = delete;		
+		SDLGraphicsManager(SDLGraphicsManager &&other) = delete;	
+		SDLGraphicsManager & operator=(SDLGraphicsManager &&other) = delete;
+		SDLGraphicsManager& operator=(SDLGraphicsManager const&)  = delete;
+		~SDLGraphicsManager();
 			
 		
 		SDL_Window* window = nullptr; //The window we'll be rendering to

@@ -113,4 +113,8 @@ namespace gamelib
 		viewPort.w = typicalFrame[FrameNumber].w;
 		viewPort.h = typicalFrame[FrameNumber].h;
 	}
+	std::string AnimatedSprite::GetName()
+	{
+		return "AnimatedSprite";
+	}
 }

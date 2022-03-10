@@ -39,7 +39,7 @@ namespace gamelib
 
 	shared_ptr<audio_resource> AudioManager::to_resource(const shared_ptr<Asset>& asset)
 	{	
-		return as_resource<audio_resource>(asset);
+		return AsAsset<audio_resource>(asset);
 	}
 
 }

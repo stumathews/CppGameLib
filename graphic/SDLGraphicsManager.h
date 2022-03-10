@@ -16,8 +16,7 @@ namespace gamelib
 
 	class SDLGraphicsManager final : public EventSubscriber
 	{
-		EventManager& eventManager;
-		Logger& logger;
+		
 	public:
 		
 		SDLGraphicsManager(EventManager& eventManager, Logger& the_logger);
@@ -29,25 +28,27 @@ namespace gamelib
 			
 		
 		SDL_Window* window = nullptr; //The window we'll be rendering to
-		SDL_Renderer* window_renderer = nullptr; //The window renderer
-		SDL_Surface* window_surface = nullptr; 
+		SDL_Renderer* windowRenderer = nullptr; //The window renderer
+		SDL_Surface* windowSurface = nullptr; 
 
-		std::shared_ptr<Asset> create_asset(tinyxml2::XMLElement * asset_xml_element, SettingsManager& config);
+		std::shared_ptr<Asset> CreateAsset(tinyxml2::XMLElement * asset_xml_element, SettingsManager& config);
 		
-		bool initialize(const uint width = 800, uint height = 600, const char* window_title = nullptr);	
+		bool Initialize(const uint width = 800, uint height = 600, const char* window_title = nullptr);	
 
 		void DrawCurrentScene(SceneManager& scene_admin) const;
-		uint get_screen_width() const { return screen_width;}
-		uint get_screen_height() const { return screen_height;}
+		uint get_screen_width() const { return screenWidth;}
+		uint get_screen_height() const { return screenHeight;}
 		
 	    std::string GetSubscriberName() override;
 
-		static std::shared_ptr<GraphicAsset> to_resource(const std::shared_ptr<Asset>& asset);
+		static std::shared_ptr<GraphicAsset> ToGraphicAsset(const std::shared_ptr<Asset>& asset);
 		
 	private:
-		uint screen_width = 0;
-		uint screen_height = 0;
-		void clear_draw_present(std::function<void(SDL_Renderer* renderer)> &render_routine) const;
+		EventManager& eventManager;
+		Logger& logger;
+		uint screenWidth = 0;
+		uint screenHeight = 0;
+		void ClearAndDraw(std::function<void(SDL_Renderer* renderer)> &drawObjects) const;
 		bool beVerbose = false;
 		events HandleEvent(const std::shared_ptr<Event> the_event) override;
 		

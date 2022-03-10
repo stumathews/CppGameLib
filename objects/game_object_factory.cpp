@@ -117,7 +117,11 @@ namespace gamelib
 
 		// Get generic asset info about this resource
 		auto asset = resourceManager.GetAssetInfo(resourceId);
-		if (asset != nullptr)
+		if (asset == nullptr)
+		{
+			throw exception("Resouce manager could not determine the asset");
+		}
+		else
 		{
 			GetInstance().ThrowCouldNotFindAssetException(asset, detail_value);
 
@@ -148,7 +152,7 @@ namespace gamelib
 	{
 		if (asset == nullptr)
 		{
-			throw exception("Not supported resource type");
+			throw exception("cannot initialize game object with out an associated asset");
 		}
 		
 		// Initialize asset type = Graphic

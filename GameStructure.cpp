@@ -136,8 +136,8 @@ namespace gamelib
 	/// </summary>
 	void GameStructure::UpdateWorld() const
 	{
-		// Send Update event to all subscribers who support updates
-		_eventManager.DispatchEventToSubscriber(make_shared<do_logic_update_event>());		
+		// Send Update event to all subscribers who support updates and make them process it right now
+		_eventManager.DispatchEventToSubscriber(make_shared<LogicUpdateEvent>());		
 	}
 
 	/// <summary>
@@ -191,7 +191,7 @@ namespace gamelib
 	/// <returns>true if SDL is successfully initialized, false otherwise</returns>
 	bool GameStructure::InitializeSDL(const int screenWidth, const int screenHeight)
 	{
-		return LogOnFailure(_graphicsManager.initialize(screenWidth, screenHeight), "Failed to initialize SDL graphics manager", _settingsManager, _gameLogger);
+		return LogOnFailure(_graphicsManager.Initialize(screenWidth, screenHeight), "Failed to initialize SDL graphics manager", _settingsManager, _gameLogger);
 	}
 
 
@@ -222,16 +222,16 @@ namespace gamelib
 	/// <returns></returns>
 	bool GameStructure::DoGameLoop()
 	{
-		// A 'tick' repreents one update call(). 
+		// A 'tick' reprents one update call(). 
 		// We want a fixed number of ticks within a real unit of time. A real unit of time does not change (1 second is always one second in the real world)
 		// irrespective of what the hardware you are running on. So if we can ensure we have the same number of updates in one second, the update rate
-		// will always be te same, ie we have a fixed update rate. 
+		// will always be te same, the we have a fixed update rate. 
 
 		// t0 repreesnts the time when the last update() finished.
 		// t1 when re-evaluated represents the time elapsed since t0 (last update)
 
-		// t1-t0 is the elapsed time since the last update and is called the frame time, and includes the time taken to draw.
-		// The frame time is the time it it takes to since the last update, and which includes subsequent drawing
+		// t1-t0 is the elapsed time since the last update and is called the frame-time, and includes the time taken to draw.
+		// The frame-time is the time it it takes to since the last update, and which includes subsequent drawing
 		// that a new update might be ready to be called again or if not, more drawing can be done.
 
 		// Initialize/prepare process by saying last update occured right now.
@@ -249,35 +249,36 @@ namespace gamelib
 			const auto t1 =  GetTimeNowMs(); // t1 is the time now, and at t0, the last update was called.
 			auto elapsedTimeSinceLastUpdateFinished = t1 - t0;			
 			
-			auto frameTimePerLoop = 0;  // Number of update intervals we could get in 1 game loop (hardware dependant).
+			auto frameTimePerLoop = 0;  // Sum of update intervals we could get in 1 game loop (hardware dependant).
 			auto num_loops = 0;  // Number of loops 
 			
-			// Update() needs to be called every x times a second (ie thats pre-defined and therefor fixed)
+			// Update() needs to be called every x times a second (ie thats pre-defined and therefore fixed)
 			// To achieve this means every 1000/20 milliseconds (50ms) update() must be called. 
 			// Note: 1 second is 1000 milliseconds, thus 1000/20 - 50ms
 
-			// Update() needs to happen x times a second or every 50 ms 
+			// Update() needs to happen or 'tick' x times a second or every 50 ms 
 			// We skip update() if next 50ms interval not yet reached ie elapse time since last update < 50ms (TICK_TIME)
 			// However if we are within the next 50ms interval execute update() 
 			
-			while (elapsedTimeSinceLastUpdateFinished > TICK_TIME && num_loops < maxLoops)
+			while ((t1 - t0) > TICK_TIME && num_loops < maxLoops) // (t1 - t0) is the elapsed time since the last update
 			{
 				// +TICK_TIME has just occured, since last update so do another update
 				// update logic
 				Update();
+				// At this point, we are now into a new 'frame' or loop of the game-loop
 
 				// t0 repreesnts the time when the last update() finished.
 				// Update it (t0) to +TICK_TIME since that last time it happened.
 				t0 += TICK_TIME;
 
 				// Total time so far is what it was plus TICK_TIME (as being > TICK_TIME is what got us here)
-				frameTimePerLoop += TICK_TIME; // This should add up to 1000 ms after 1000/TICK_TIME updates.
+				frameTimePerLoop += TICK_TIME; // This should add up as many ms TICK_TIME's in a hw frame/gameloop.
 				num_loops++;
 			}
 
 			HandleSpareTime(frameTimePerLoop); // handle player input, general housekeeping (Event Manager processing)
 
-			if (_gameWorld.IsNetworkGame && elapsedTimeSinceLastUpdateFinished > TICK_TIME)
+			if (_gameWorld.IsNetworkGame && (t1 - t0) > TICK_TIME)
 			{
 				t0 = t1 - TICK_TIME;
 			}
@@ -285,10 +286,11 @@ namespace gamelib
 			
 			if (_gameWorld.CanDraw)
 			{
-				const auto percentWithinTick = min(1.0f ,float(elapsedTimeSinceLastUpdateFinished/TICK_TIME)); // NOLINT(bugprone-integer-division)				
+				// How much within the new 'tick' are we?
+				const auto percentWithinTick = min(1.0f , float((t1 - t0) /TICK_TIME)); // NOLINT(bugprone-integer-division)				
 				Draw(percentWithinTick);
 			}
-			cout << frameTimePerLoop/TICK_TIME << " updates/ticks per game loop" << endl;
+			// cout << frameTimePerLoop/TICK_TIME << " updates/ticks per game loop" << endl;
 		}
 		std::cout << "Game done" << std::endl;
 		return true;

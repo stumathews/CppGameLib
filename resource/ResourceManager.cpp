@@ -142,13 +142,15 @@ namespace gamelib
 						theAsset = CreateAssetInfoFromElement(ptrAssetType, theAsset, element);						
 
 						// Store the asset reference
-						if(theAsset)
+						if(theAsset != nullptr)
 						{
 							StoreAssetInfo(theAsset);
 						}
 						else
 						{
-							logger.LogThis(string("No asset manager defined for ") + ptrAssetType);
+							auto message = string("No asset manager defined for ") + ptrAssetType;
+							logger.LogThis(message);
+							throw exception(message.c_str());
 						}
 					}
 				}
@@ -173,15 +175,26 @@ namespace gamelib
 	{
 		// Create a graphic asset
 		if (strcmp(type, "graphic") == 0)
-			assetInfo = graphics_admin.create_asset(element, config);
+		{
+			assetInfo = graphics_admin.CreateAsset(element, config);
+		}
 		
 		// Create fx/sound/audio asset
-		if(strcmp(type, "fx") == 0 || strcmp(type, "music") == 0)
+		else if (strcmp(type, "fx") == 0 || strcmp(type, "music") == 0)
+		{
 			assetInfo = audio_admin.create_asset(element, *this);
+		}
 
 		// Create font asset
-		if(strcmp(type, "font") == 0)
+		else if (strcmp(type, "font") == 0)
+		{
 			assetInfo = font_admin.create_asset(element);
+		}
+		else
+		{
+			auto message = string("Unknown resource type:") + type;
+			throw exception(message.c_str());
+		}
 
 		return assetInfo;
 	}

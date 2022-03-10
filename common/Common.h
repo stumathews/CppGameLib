@@ -14,7 +14,7 @@
 namespace gamelib
 {
 	template<typename R>
-	std::shared_ptr<R> as_resource(const std::shared_ptr<Asset> &assetInfo)
+	std::shared_ptr<R> AsAsset(const std::shared_ptr<Asset> &assetInfo)
 	{
 		return std::static_pointer_cast<R>(assetInfo);
 	}

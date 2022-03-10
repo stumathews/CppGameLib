@@ -41,5 +41,5 @@ class SDLGraphicsManagerTests : public testing::Test {
 
 TEST_F(SDLGraphicsManagerTests, Initialize)
 {
-	EXPECT_TRUE(graphics_admin->initialize());
+	EXPECT_TRUE(graphics_admin->Initialize());
 }

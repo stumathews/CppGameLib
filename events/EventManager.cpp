@@ -45,10 +45,14 @@ namespace gamelib
 	{		
 		return LogThis("EventManager::initialize()", config.get_bool("global", "verbose"), [&]()
 		{
-			// Subscribe to all Game object events
-			SubscribeToEvent(gamelib::EventType::GameObject, this);
+			
 			return true;
 		}, config, true, true);
+	}
+
+	void EventManager::ClearSubscribers()
+	{
+		this->event_subscribers_.clear();
 	}
 
 	/// <summary>
@@ -147,7 +151,7 @@ namespace gamelib
 	/// Get subscriptions the event maanger knows about
 	/// </summary>
 	/// <returns>map of event types to subscribers</returns>
-	std::map<EventType, std::vector<IEventSubscriber*>> EventManager::GetSubscriptions() const
+	std::map<EventType, std::vector<IEventSubscriber*>>& EventManager::GetSubscriptions()
 	{
 		return event_subscribers_;
 	}

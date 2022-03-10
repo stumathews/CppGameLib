@@ -27,6 +27,6 @@ namespace gamelib
 
 	std::shared_ptr<font_resource> FontManager::to_resource(const std::shared_ptr<Asset>& asset)
 	{
-		return as_resource<font_resource>(asset);
+		return AsAsset<font_resource>(asset);
 	}
 }

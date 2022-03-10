@@ -41,6 +41,8 @@ namespace gamelib
 		void operator=(EventManager const&) = delete;
 
 		bool Initialize();
+
+		void ClearSubscribers();
 		
 		// Raise an arbitrary event
 		void RaiseEvent(const std::shared_ptr<Event> event, IEventSubscriber* you);
@@ -56,7 +58,7 @@ namespace gamelib
 		// secondary queue is composed automatically of events that occured while processing the primary queue. 
 		void ProcessAllEvents();
 
-		[[nodiscard]] std::map<EventType, std::vector<IEventSubscriber*>> GetSubscriptions() const;
+		std::map<EventType, std::vector<IEventSubscriber*>>& GetSubscriptions();
 
 
 		// Inherited via IEventSubscriber

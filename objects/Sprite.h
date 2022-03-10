@@ -57,6 +57,8 @@ namespace gamelib
 		/// </summary>
 		/// <param name="FrameNumber"></param>
 		void SetAnimationFrame(uint FrameNumber) const;
+
+		std::string GetName() override;
 		
 	private:
 		unsigned long timeLastFrame;

@@ -48,6 +48,8 @@ TEST_F(SceneManagerTests, Initialize)
 
 TEST_F(SceneManagerTests, get_scene_layers)
 {
+	resource_admin->Initialize(*event_admin);
+	resource_admin->IndexResources("Resources.xml");
 	scene_admin->Initialize();
 	scene_admin->StartScene(1);
 	event_admin->ProcessAllEvents();
@@ -63,7 +65,7 @@ TEST_F(SceneManagerTests, get_scene_layers)
 	EXPECT_TRUE(layer.visible) << "Layer not visible";
 	EXPECT_EQ(layer.zorder, 0) << "Z-order is wrong";
 	EXPECT_EQ(layer.layerObjects.size(), 1) << "Expected 1 game object in the layer";	
-	EXPECT_STREQ(game_object.lock()->GetName().c_str(), "square") << "Wrong game object";
+	EXPECT_STREQ(game_object.lock()->GetName().c_str(), "AnimatedSprite") << "Wrong game object";
 		
 }
 

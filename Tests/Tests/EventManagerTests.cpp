@@ -24,15 +24,16 @@ public:
 	}
 };
 
-class EventManagerTests : public ::testing::Test {
+class EventManagerTests : public ::testing::Test 
+{
  protected:
   
   shared_ptr<EventManager> event_admin;
   SettingsManager settings;
   dummy_subscriber subscriber;	
   Logger Logger;
-  do_logic_update_event logic_update_event;
-  const shared_ptr<do_logic_update_event> the_event = shared_ptr<do_logic_update_event>(new do_logic_update_event());
+  LogicUpdateEvent logic_update_event;
+  const shared_ptr<LogicUpdateEvent> the_event = shared_ptr<LogicUpdateEvent>(new LogicUpdateEvent());
   const EventType EventType = EventType::DoLogicUpdateEventType;
 
   void SetUp() override
@@ -41,8 +42,12 @@ class EventManagerTests : public ::testing::Test {
   	 event_admin->Initialize();
   }
 
-  void TearDown() override {}
-  static shared_ptr<static_config> create_config() {	
+  void TearDown() override 
+  {
+  }
+
+  static shared_ptr<static_config> create_config() 
+  {	
   	return shared_ptr<static_config>(new static_config());
   }
 
@@ -82,7 +87,7 @@ TEST_F(EventManagerTests, SubscribeToEvent)
 	EXPECT_EQ(0, event_admin->count_ready()) << "Expected there to be no events waiting to be dispatched after processing all events";
 	EXPECT_TRUE(subscriber.handle_event_received) << "Subscriber was not notified after processing events";
 
-	auto &all_event_subscribers = event_admin->GetSubscriptions()[EventType];
+	auto& all_event_subscribers = event_admin->GetSubscriptions()[EventType];
 	
 	EXPECT_EQ(1, all_event_subscribers.size()) << "Expect 1 subscriber to exist";
 	//EXPECT_STREQ(all_event_subscribers[0].lock()->GetSubscriberName().c_str(), subscriber->GetSubscriberName().c_str()) << "Our subscriber was not the subscription w eexepcted";

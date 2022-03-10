@@ -16,59 +16,81 @@ namespace gamelib
 {
 
 	SDLGraphicsManager::SDLGraphicsManager(EventManager& eventManager, Logger& the_logger)
-		: EventSubscriber(), eventManager(eventManager), logger(the_logger) 
-	{
-	
-	
-	}
+		: EventSubscriber(), eventManager(eventManager), logger(the_logger) { }
 
+	/// <summary>
+	/// Handle any events we've subscribed to
+	/// </summary>
 	vector<shared_ptr<Event>> SDLGraphicsManager::HandleEvent(const std::shared_ptr<Event> the_event) 
 	{ 
 		return vector<shared_ptr<Event>>();	
-	}
-	
+	}	
 
+	/// <summary>
+	/// Provide name to the event system
+	/// </summary>
 	string SDLGraphicsManager::GetSubscriberName()
 	{
 		return "SDLGraphicsManager";
 	}
 
-	std::shared_ptr<GraphicAsset> SDLGraphicsManager::to_resource(const std::shared_ptr<Asset>& asset)
+	/// <summary>
+	/// Converts an Asset to a GraphicAsset
+	/// </summary>
+	/// <param name="asset"></param>
+	/// <returns></returns>
+	std::shared_ptr<GraphicAsset> SDLGraphicsManager::ToGraphicAsset(const std::shared_ptr<Asset>& asset)
 	{
-		return as_resource<GraphicAsset>(asset);
+		return AsAsset<GraphicAsset>(asset);
 	}
 
-	SDL_Window* get_sdl_window(const int screen_width, const int screen_height, const char* title)
+	/// <summary>
+	/// Creates a new SDL Window
+	/// </summary>
+	SDL_Window* CreateSDLWindow(const int screenWidth, const int screenHeight, const char* title)
 	{
-		const auto out_window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height,SDL_WINDOW_SHOWN);	
+		const auto out_window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight,SDL_WINDOW_SHOWN);	
 
-		if(out_window == nullptr)
+		if (out_window == nullptr)
+		{
 			std::cout << "Window could not be created:" << const_cast<char*>(SDL_GetError()) << std::endl;
+		}
 		
 		return out_window;
 	}
 
-	SDL_Renderer* get_sdl_window_renderer(SDL_Window* window)
+	/// <summary>
+	/// Get SDL Renderer from Window
+	/// </summary>
+	/// <param name="window"></param>
+	/// <returns></returns>
+	SDL_Renderer* GetSDLRendererFromWindow(SDL_Window* window)
 	{
-		const auto window_renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+		const auto renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 		
-		if(window_renderer == nullptr)
+		if (renderer == nullptr)
+		{			
 			std::cout << "Renderer could not be created: " << const_cast<char*>(SDL_GetError()) << std::endl;
+		}
 		
-		return window_renderer;
+		return renderer;
 	}
 
-
-	bool SDLGraphicsManager::initialize(const uint width, const uint height, const char * window_title)
+	/// <summary>
+	/// Initialize the SDL Graphics Manager
+	/// </summary>
+	bool SDLGraphicsManager::Initialize(const uint width, const uint height, const char * windowTitle)
 	{
 		logger.LogThis("SDLGraphicsManager::Initialize()");
 		
+		// Initialize SDL Video and Audio subsystems
 		if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0)
 		{
 			logger.LogThis(string("SDL could not initialize:") + const_cast<char*>(SDL_GetError()));
 			return false;
 		}
 
+		// Initialize SDL Image extension/library
 		const int imgFlags = IMG_INIT_PNG;
 		if( !( IMG_Init( imgFlags ) & imgFlags ) )
 		{
@@ -76,15 +98,17 @@ namespace gamelib
 			return false;
 		}
 
-		window = get_sdl_window(static_cast<int>(width), static_cast<int>(height), window_title);	
-		window_surface = SDL_GetWindowSurface(window);
-		window_renderer = get_sdl_window_renderer(window);
-		screen_height = height;
-		screen_width = width;
+		// Create the Window
+		window = CreateSDLWindow(static_cast<int>(width), static_cast<int>(height), windowTitle);	
+		windowSurface = SDL_GetWindowSurface(window);
+		windowRenderer = GetSDLRendererFromWindow(window);
+		screenHeight = height;
+		screenWidth = width;
 
-		// Grey background
-		SDL_SetRenderDrawColor(window_renderer, 192,192,192, 0);
+		// Set drawing colour to Grey background
+		SDL_SetRenderDrawColor(windowRenderer, 192,192,192, 0);
 
+		// Setup the Audio 
 		if(Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0 )
 	    {
 		    const string message("SDL_mixer could not initialize! SDL_mixer Error: ");
@@ -92,6 +116,7 @@ namespace gamelib
 	        return false;
 	    }
 
+		// Setup the SDL Font extension/library
 		if(TTF_Init() == -1)
 		{
 			const string message("Could not initialize TTF");
@@ -99,83 +124,117 @@ namespace gamelib
 			return false;			
 		}
 
-
 		logger.LogThis("SDLGraphicsManager ready.");
 		return true;
 	}
 
-	std::shared_ptr<Asset> SDLGraphicsManager::create_asset(tinyxml2::XMLElement * element, SettingsManager& config)
+	/// <summary>
+	/// Create an Graphic Asset from resource XML
+	/// </summary>
+	std::shared_ptr<Asset> SDLGraphicsManager::CreateAsset(tinyxml2::XMLElement * resourceElement, SettingsManager& config)
 	{		
-		auto is_animated = false;
-		auto num_key_frames = 12, key_frame_height = 64, key_frame_width = 64;
-
-		int uuid; 
-		element->QueryIntAttribute("uid", &uuid);
-		const char* type;
-		element->QueryStringAttribute("type", &type);
-		const char* path;
-		element->QueryStringAttribute("filename", &path);
-		const char* name_c;
-		element->QueryStringAttribute("name", &name_c);
-		int level;
-		element->QueryIntAttribute("scene", &level);
+		// Details that we will extract from object XML
+		auto isAnimated = false;
+		auto numKeyFrames = 12;   // TODO: Should not be hard coded
+		auto keyFrameHeight = 64; // TODO: Should not be hard coded
+		auto keyFrameWidth = 64;  // TODO: Should not be hard coded
 		
-		for(auto attribute = element->FirstAttribute(); attribute; attribute = attribute->Next())
+		// Each graphic asset has an id
+		int uuid; 		
+
+		// Type of asset
+		const char* type;	
+
+		// Were the asset is located on disk
+		const char* path;	
+
+		// friendly name
+		const char* friendlyName;		
+
+		// Which level the graphic object is for
+		int level;
+
+		// Extract object details 
+		resourceElement->QueryIntAttribute("scene", &level);
+		resourceElement->QueryIntAttribute("uid", &uuid);
+		resourceElement->QueryStringAttribute("type", &type);
+		resourceElement->QueryStringAttribute("filename", &path);
+		resourceElement->QueryStringAttribute("name", &friendlyName);
+		
+		for(auto attribute = resourceElement->FirstAttribute(); attribute; attribute = attribute->Next())
 		{
 			std::string name = attribute->Name();
 			std::string value = attribute->Value();
 
-			if(name == "isAnimated")
-				is_animated = value == "true" ? true : false;
+			if (name == "isAnimated")
+			{
+				isAnimated = value == "true" ? true : false;
+			}
+
 			if(name == "numKeyFrames")
-				num_key_frames = std::atoi(value.c_str());  // NOLINT(cert-err34-c)
+				numKeyFrames = std::atoi(value.c_str());  // NOLINT(cert-err34-c)
 			if(name == "keyFrameHeight")
-				key_frame_height = atoi(value.c_str());  // NOLINT(cert-err34-c)
+				keyFrameHeight = atoi(value.c_str());  // NOLINT(cert-err34-c)
 			if(name == "keyFrameWidth")
-				key_frame_width = atoi(value.c_str());  // NOLINT(cert-err34-c)
+				keyFrameWidth = atoi(value.c_str());  // NOLINT(cert-err34-c)
 		}
 
 
-		auto resource = is_animated
-			                        ? std::shared_ptr<GraphicAsset>(new GraphicAsset(uuid, name_c, path, type, level, num_key_frames, key_frame_height, key_frame_width,  is_animated, *this, config, logger))
-			                        : std::shared_ptr<GraphicAsset>(new GraphicAsset(uuid, name_c, path, type, level, is_animated, *this, config, logger));
+		auto resource = isAnimated
+			                        ? std::shared_ptr<GraphicAsset>(new GraphicAsset(uuid, friendlyName, path, type, level, numKeyFrames, keyFrameHeight, keyFrameWidth,  isAnimated, *this, config, logger))
+			                        : std::shared_ptr<GraphicAsset>(new GraphicAsset(uuid, friendlyName, path, type, level, isAnimated, *this, config, logger));
 			
 		
 		return resource;
 	}
 
-	void SDLGraphicsManager::clear_draw_present(std::function<void(SDL_Renderer* renderer)> &render_routine) const
+	/// <summary>
+	/// Clear the output and draw objects on it
+	/// </summary>
+	void SDLGraphicsManager::ClearAndDraw(std::function<void(SDL_Renderer* renderer)> &drawObjectsFn) const
 	{
-		// backup current render color
-		SDL_Color render_color = {0};
-		SDL_GetRenderDrawColor(window_renderer, &render_color.r, &render_color.g, &render_color.b, &render_color.a);
+		// Backup current render color
+		SDL_Color oldColour = {0};
+		SDL_GetRenderDrawColor(windowRenderer, &oldColour.r, &oldColour.g, &oldColour.b, &oldColour.a);
 		
-		SDL_RenderClear(window_renderer);
-			render_routine(window_renderer);
-		SDL_SetRenderDrawColor(window_renderer, render_color.r, render_color.g, render_color.b, render_color.a); // nb: restore whatever the render routine set as the draw color to
-		SDL_RenderPresent(window_renderer);
+		// Clear
+		SDL_RenderClear(windowRenderer);
+			// Draw everything
+			drawObjectsFn(windowRenderer);
+		
+		// Set draw colour
+		SDL_SetRenderDrawColor(windowRenderer, oldColour.r, oldColour.g, oldColour.b, oldColour.a); // nb: restore whatever the render routine set as the draw color to
+		
+		// Show what we've drawn
+		SDL_RenderPresent(windowRenderer);
 	}
-
-	// Draws all the actors in the scene
-	void SDLGraphicsManager::DrawCurrentScene(SceneManager& scene_admin) const
+	
+	/// <summary>
+	/// Draws all the actors in the scene
+	/// </summary>
+	void SDLGraphicsManager::DrawCurrentScene(SceneManager& sceneManager) const
 	{
 		// local-func
-		auto render_all_objects = static_cast<render_func>([&](SDL_Renderer*)
+		auto renderAllObjectsFn = static_cast<render_func>([&](SDL_Renderer*)
 		{
-			const auto &current_scene = scene_admin;
+			const auto &currentScene = sceneManager;
 			
 			// Draw all objects in the layer
-			for (const auto& Layer : current_scene.GetLayers())
+			for (const auto& Layer : currentScene.GetLayers())
 			{
+				// Only draw visible layers
 				if (Layer.visible)
 				{
-					for (const auto& game_object : Layer.layerObjects)
+					// Draw objects within the layer
+					for (const auto& gameObjectCandidate : Layer.layerObjects)
 					{
-						if(auto go = game_object.lock())
+						if(auto gameObject = gameObjectCandidate.lock())
 						{
-							if (go && go->isActive)
+							// If it is active
+							if (gameObject && gameObject->isActive)
 							{
-								go->Draw(window_renderer);
+								// draw yourself!
+								gameObject->Draw(windowRenderer);
 							}
 						}
 					}
@@ -183,13 +242,15 @@ namespace gamelib
 			}
 		});
 
-		clear_draw_present(render_all_objects);	
+		ClearAndDraw(renderAllObjectsFn);	
 	}
 
-
+	/// <summary>
+	/// Uninitialize the SDL Graphics manager
+	/// </summary>
 	SDLGraphicsManager::~SDLGraphicsManager()
 	{
-		SDL_DestroyRenderer(window_renderer);
+		SDL_DestroyRenderer(windowRenderer);
 		SDL_DestroyWindow(window);
 	    IMG_Quit();
 	    SDL_Quit();

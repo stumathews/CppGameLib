@@ -4,13 +4,18 @@ using namespace std;
 namespace gamelib
 {
 
-	do_logic_update_event::do_logic_update_event(): Event(EventType::DoLogicUpdateEventType)
-	{
-		// base class init only
-	}
+	/// <summary>
+	/// Logic Update Event initializer
+	/// </summary>
+	LogicUpdateEvent::LogicUpdateEvent() 
+		: Event(EventType::DoLogicUpdateEventType) {}
 
-	string do_logic_update_event::to_str()
+	/// <summary>
+	/// Provide a string representation of event
+	/// </summary>
+	/// <returns></returns>
+	string LogicUpdateEvent::to_str()
 	{
-		return "do_logic_update_event";
+		return "LogicUpdateEvent";
 	}
 }

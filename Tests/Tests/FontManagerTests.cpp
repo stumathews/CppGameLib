@@ -9,8 +9,10 @@
 using namespace std;
 using namespace gamelib;
 
-class FontManagerTests : public testing::Test {
+class FontManagerTests : public testing::Test 
+{
  protected:
+
   void SetUp() override
   { 
 	font_admin = shared_ptr<FontManager>(new FontManager());
@@ -18,7 +20,7 @@ class FontManagerTests : public testing::Test {
   	font_asset_ptr = dynamic_pointer_cast<Asset>(ptr);
   }
     
-  //void TearDown() override {}
+  void TearDown() override {}
    
   shared_ptr<FontManager> font_admin;
 

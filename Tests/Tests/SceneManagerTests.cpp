@@ -10,8 +10,10 @@
 using namespace std;
 using namespace gamelib;
 
-class SceneManagerTests : public testing::Test {
+class SceneManagerTests : public testing::Test 
+{
  protected:
+
   void SetUp() override
   {  	
   	config = shared_ptr<SettingsManager>(new SettingsManager());
@@ -24,7 +26,7 @@ class SceneManagerTests : public testing::Test {
   	scene_admin = shared_ptr<SceneManager>(new SceneManager(*event_admin, *config, *resource_admin, *world, Logger, ""/* root folder is scene folder */));
   }
     
-  //void TearDown() override {}
+  void TearDown() override {}
   
   shared_ptr<ResourceManager> resource_admin;
   shared_ptr<SettingsManager> config;

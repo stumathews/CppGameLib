@@ -9,7 +9,8 @@ using namespace gamelib;
 
 //int GameObject::ids = 0;
 
-class AudioManagerTests : public testing::Test {
+class AudioManagerTests : public testing::Test 
+{
  protected:
   void SetUp() override
   {  	

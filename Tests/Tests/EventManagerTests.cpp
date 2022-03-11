@@ -51,7 +51,8 @@ class EventManagerTests : public ::testing::Test
   	return shared_ptr<static_config>(new static_config());
   }
 
-  static shared_ptr<EventManager> create_event_manager(SettingsManager& config, gamelib::Logger& Logger) {
+  static shared_ptr<EventManager> create_event_manager(SettingsManager& config, gamelib::Logger& Logger)
+  {
   	return shared_ptr<EventManager>(new EventManager(config, Logger));
   }
 	
@@ -100,4 +101,21 @@ TEST_F(EventManagerTests, DispatchEventDirectlyToSubscriber)
 	EXPECT_EQ(event_admin->count_ready(), 0) << "Direct dispatch of event to subscriber should not show up in event queues";
 	EXPECT_TRUE(subscriber.handle_event_received) << "subscriber was not directly notified";
 	EXPECT_TRUE(the_event->processed) << "The event was not marked as processed";
+}
+
+TEST_F(EventManagerTests, ClearSubscribersTest)
+{
+	event_admin->SubscribeToEvent(EventType, &subscriber);
+	event_admin->RaiseEvent(dynamic_pointer_cast<Event>(the_event), &subscriber);
+	event_admin->ProcessAllEvents();
+
+	auto& all_event_subscribers = event_admin->GetSubscriptions();
+
+	EXPECT_EQ(1, all_event_subscribers.size()) << "Expect more than 0 subscriber to exist";
+
+	//Clear subscriptions
+	event_admin->ClearSubscribers();
+
+	EXPECT_EQ(0, all_event_subscribers.size(), "Expected all the subscribers to have been removed");
+
 }

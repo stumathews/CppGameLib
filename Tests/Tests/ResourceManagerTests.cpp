@@ -9,8 +9,10 @@
 using namespace std;
 using namespace gamelib;
 
-class ResourceManagerTests : public testing::Test {
+class ResourceManagerTests : public testing::Test
+{
  protected:
+
   void SetUp() override
   {  	
   	config = shared_ptr<SettingsManager>(new SettingsManager());
@@ -22,7 +24,9 @@ class ResourceManagerTests : public testing::Test {
 
   }
     
-  //void TearDown() override {}
+  void TearDown() override {}
+
+
   const int exp_uid = 1;
   const string exp_name = "MainTheme.wav";
   const int exp_scene = 0;

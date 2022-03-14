@@ -167,6 +167,7 @@
     <ClInclude Include="common\static_config.h" />
     <ClInclude Include="common\Logger.h" />
     <ClInclude Include="common\TypeAliases.h" />
+    <ClInclude Include="Logging\ErrorLogManager.h" />
     <ClInclude Include="events\EventSubscriber.h" />
     <ClInclude Include="events\GameObjectEvent.h" />
     <ClInclude Include="objects\MultipleInheritableEnableSharedFromThis.h" />
@@ -216,6 +217,7 @@
     <ClCompile Include="audio\AudioResource.cpp" />
     <ClCompile Include="common\Logger.cpp" />
     <ClCompile Include="cppgamelib.cpp" />
+    <ClCompile Include="Logging\ErrorLogManager.cpp" />
     <ClCompile Include="events\EventSubscriber.cpp" />
     <ClCompile Include="events\GameObjectEvent.cpp" />
     <ClCompile Include="GameStructure.cpp" />

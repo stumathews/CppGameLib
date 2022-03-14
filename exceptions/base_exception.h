@@ -3,12 +3,24 @@
 
 namespace gamelib
 {
-	class base_exception : public std::exception
+#ifndef THROW
+#define THROW(ErrorNum, ErrorDesc, SubsystemDesc) throw EngineException(ErrorNum, ErrorDesc, SubsystemDesc,  __FILE__, __LINE__);
+#endif
+
+	class EngineException : public std::exception
 	{
 	public:
-		base_exception(std::string message, std::string subsystem);
+		EngineException(int errorNumber, std::string message, std::string subsystem, std::string srcFileName, int lineNumber);
+		
+		virtual const char* what() const override;
+		
+	private:
+		int errorNumber;
+		std::string errorDescription;
+		std::string srcFileName;
+		int lineNumber;
+		std::string errorText;
 		std::string subsystem;
-		virtual std::string get_source_subsystem() const {return subsystem;}
 	};
 }
 

@@ -168,6 +168,9 @@
     <ClInclude Include="graphic\GraphicAsset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Logging\ErrorLogManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -300,6 +303,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="scene\layer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Logging\ErrorLogManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

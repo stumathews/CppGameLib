@@ -34,6 +34,13 @@ namespace gamelib
 		std::shared_ptr<gamelib::Asset>& CreateAssetInfoFromElement(const char* type, std::shared_ptr<gamelib::Asset>& the_asset, tinyxml2::XMLElement* const& element);
 		int get_resource_unloaded_count() const { return unloaded_resources_count; }
 	    int get_resource_loaded_count() const { return loaded_resources_count; }
+
+		enum class ErrorNumbers
+		{
+			NoAssetManagerForType,
+			FailedToLoadResourceFile,
+			UnknownResourceType
+		};
 				
 	private:
 		SettingsManager& config;

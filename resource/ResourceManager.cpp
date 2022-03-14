@@ -10,6 +10,7 @@
 #include "events/SceneChangedEvent.h"
 #include "font/FontManager.h"
 #include "graphic/SDLGraphicsManager.h"
+#include <exceptions/base_exception.h>
 
 namespace gamelib
 {	
@@ -150,7 +151,7 @@ namespace gamelib
 						{
 							auto message = string("No asset manager defined for ") + ptrAssetType;
 							logger.LogThis(message);
-							throw exception(message.c_str());
+							THROW((int)ResourceManager::ErrorNumbers::NoAssetManagerForType, message, this->GetSubscriberName());
 						}
 					}
 				}
@@ -158,7 +159,7 @@ namespace gamelib
 		}
 		else
 		{
-			throw exception("Failed to load resources file");
+			THROW((int) ResourceManager::ErrorNumbers::FailedToLoadResourceFile, "Failed to load resources file", this->GetSubscriberName());
 		}
 
 		LogMessage(to_string(resource_count) + string(" assets available in resource manager."), logger);
@@ -193,7 +194,7 @@ namespace gamelib
 		else
 		{
 			auto message = string("Unknown resource type:") + type;
-			throw exception(message.c_str());
+			THROW((int)ResourceManager::ErrorNumbers::UnknownResourceType, message, GetSubscriberName());
 		}
 
 		return assetInfo;

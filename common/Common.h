@@ -10,6 +10,7 @@
 #include "asset/asset.h"
 #include "objects/GameObject.h"
 #include "common/Logger.h"
+#include "exceptions/base_exception.h"
 
 namespace gamelib
 {

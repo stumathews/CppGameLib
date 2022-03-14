@@ -21,7 +21,7 @@ class AudioManagerTests : public testing::Test
 	audio_admin = create_audio_manager();
 	const shared_ptr<SDLGraphicsManager> graphics_admin(new SDLGraphicsManager(*event_admin, gameLogger));		
 	const shared_ptr<ResourceManager> resource_admin(new ResourceManager(*settings_admin, *graphics_admin, *font_admin, *audio_admin, gameLogger));
-    const shared_ptr<audio_resource> ptr(new audio_resource(0, RESOURCE_NAME, RESOURCE_PATH, RESOURCE_TYPE, RESOURCE_SCENE, *resource_admin));
+    const shared_ptr<AudioAsset> ptr(new AudioAsset(0, RESOURCE_NAME, RESOURCE_PATH, RESOURCE_TYPE, RESOURCE_SCENE, *resource_admin));
   	
   	audio_asset_ptr = dynamic_pointer_cast<Asset>(ptr);
   }
@@ -45,8 +45,8 @@ class AudioManagerTests : public testing::Test
 
 TEST_F(AudioManagerTests, to_resource)
 {
-	// When casting a Asset* to a audio_resource...
-	auto resource = audio_admin->to_resource(audio_asset_ptr);
+	// When casting a Asset* to a AudioAsset...
+	auto resource = audio_admin->ToAudioAsset(audio_asset_ptr);
 	
 	EXPECT_STREQ(resource->name.c_str(), RESOURCE_NAME.c_str()) << "Resource name is invalid";
 	EXPECT_EQ(resource->isLoadedInMemory, false) << "is loaded flag is invalid";

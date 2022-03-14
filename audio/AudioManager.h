@@ -1,5 +1,5 @@
 #pragma once
-#include "AudioResource.h"
+#include "AudioAsset.h"
 #include <memory>
 #include <tinyxml2.h>
 #include <SDL_mixer.h>
@@ -8,11 +8,26 @@ namespace gamelib
 {
 	class AudioManager
 	{
-	public:	
-		// Creates an audio Resource
-		std::shared_ptr<Asset> create_asset(tinyxml2::XMLElement * asset_xml_element, ResourceManager& resource_admin) const;
-		void play_music(Mix_Music* as_music);
-		static void play_sound(Mix_Chunk* as_fx);
-		static std::shared_ptr<audio_resource> to_resource(const std::shared_ptr<Asset>& asset);
+	public:			
+		/// <summary>
+		/// Creates an Audio Asset
+		/// </summary>
+		std::shared_ptr<Asset> CreateAsset(tinyxml2::XMLElement * assetXmlElement, ResourceManager& resourceManager) const;
+		
+		/// <summary>
+		/// Play specific music asset
+		/// </summary>
+		/// <param name="music"></param>
+		void PlayMusic(Mix_Music* music);
+
+		/// <summary>
+		/// Plays sound effect
+		/// </summary>
+		static void PlaySound(Mix_Chunk* soundEffect);
+
+		/// <summary>
+		/// Cast base class to Specific Audio Asset
+		/// </summary>
+		static std::shared_ptr<AudioAsset> ToAudioAsset(const std::shared_ptr<Asset>& asset);
 	};
 }

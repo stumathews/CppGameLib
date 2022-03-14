@@ -160,7 +160,7 @@
   <ItemGroup>
     <ClInclude Include="asset\asset.h" />
     <ClInclude Include="audio\AudioManager.h" />
-    <ClInclude Include="audio\AudioResource.h" />
+    <ClInclude Include="audio\AudioAsset.h" />
     <ClInclude Include="common\aliases.h" />
     <ClInclude Include="common\Common.h" />
     <ClInclude Include="common\constants.h" />
@@ -184,7 +184,7 @@
     <ClInclude Include="events\scene_loaded_event.h" />
     <ClInclude Include="exceptions\base_exception.h" />
     <ClInclude Include="font\FontManager.h" />
-    <ClInclude Include="font\font_resource.h" />
+    <ClInclude Include="font\FontAsset.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GameStructure.h" />
     <ClInclude Include="objects\game_world_component.h" />
@@ -214,7 +214,7 @@
   <ItemGroup>
     <ClCompile Include="asset\asset.cpp" />
     <ClCompile Include="audio\AudioManager.cpp" />
-    <ClCompile Include="audio\AudioResource.cpp" />
+    <ClCompile Include="audio\AudioAsset.cpp" />
     <ClCompile Include="common\Logger.cpp" />
     <ClCompile Include="cppgamelib.cpp" />
     <ClCompile Include="Logging\ErrorLogManager.cpp" />
@@ -234,7 +234,7 @@
     <ClCompile Include="events\scene_loaded_event.cpp" />
     <ClCompile Include="exceptions\base_exception.cpp" />
     <ClCompile Include="font\FontManager.cpp" />
-    <ClCompile Include="font\font_resource.cpp" />
+    <ClCompile Include="font\FontAsset.cpp" />
     <ClCompile Include="objects\game_world_component.cpp" />
     <ClCompile Include="objects\GameWorldData.cpp" />
     <ClCompile Include="graphic\Drawing.cpp" />

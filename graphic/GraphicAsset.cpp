@@ -52,7 +52,10 @@ namespace gamelib
 		                           viewPort({ 0, 0, static_cast<int>(keyFrameWidth), static_cast<int>(keyFrameHeight) }),
 								   graphicsManager(graphicsManager),
 								   settingsManager(config), 
-		logger(logger) { }
+		logger(logger) 
+	{
+		assetType = AssetType::Graphic;
+	}
 	
 	/// <summary>
 	/// Load asset into memory

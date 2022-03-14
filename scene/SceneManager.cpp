@@ -173,8 +173,7 @@ namespace gamelib
 				}
 			} catch(exception &e)
 			{
-				LogMessage(string("Cloud not load scene file: ") + string(e.what()), logger);
-				throw;
+				THROW(13, string("Cloud not load scene file: ") + string(e.what()), GetSubscriberName());
 			}
 		}
 	}
@@ -214,7 +213,7 @@ namespace gamelib
 			}
 		}
 		
-		throw exception(string("layer not found:" + name).c_str());
+		THROW(12, string("layer not found:" + name), GetSubscriberName());
 	}
 
 	/// <summary>
@@ -222,7 +221,10 @@ namespace gamelib
 	/// </summary>
 	void SceneManager::RemoveLayer(const std::string& name)
 	{
-		std::remove_if(begin(layers), end(layers), [&name](Layer& layer) { return layer.name._Equal(name); });
+		std::remove_if(begin(layers), end(layers), [&name](Layer& layer) 
+		{ 
+			return layer.name._Equal(name); 
+		});
 	}
 
 	/// <summary>

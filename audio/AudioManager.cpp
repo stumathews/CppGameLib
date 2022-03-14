@@ -2,12 +2,17 @@
 #include <memory>
 #include "tinyxml2.h"
 #include "common/Common.h"
-
+#include "asset/asset.h"
+#include "exceptions/base_exception.h"
 
 using namespace std;
+
 namespace gamelib
 {
-	std::shared_ptr<Asset> AudioManager::create_asset(tinyxml2::XMLElement * element, ResourceManager& resource_admin) const
+	/// <summary>
+	/// Create Audio Asset
+	/// </summary>
+	shared_ptr<Asset> AudioManager::CreateAsset(tinyxml2::XMLElement * element, ResourceManager& resource_admin) const
 	{
 		int uuid;
 		const char* type;
@@ -20,26 +25,45 @@ namespace gamelib
 		element->QueryStringAttribute("filename", &path);
 		element->QueryStringAttribute("name", &name);
 		element->QueryIntAttribute("scene", &scene);
+
 		// ... Read anything specific to audio in the element here...	
 		
-		auto audio = std::make_shared<audio_resource>(uuid, std::string(name), string(path), string(type), scene, resource_admin);
+		auto audio = shared_ptr<AudioAsset>(new AudioAsset(uuid, string(name), string(path), string(type), scene, resource_admin));
 
 		return audio;
 	}
 
-	void AudioManager::play_music(Mix_Music* as_music)
+	/// <summary>
+	/// Play Music
+	/// </summary>
+	/// <param name="as_music"></param>
+	void AudioManager::PlayMusic(Mix_Music* as_music)
 	{
 		Mix_PlayMusic(as_music, -1);
 	}
 
-	void AudioManager::play_sound(Mix_Chunk* as_fx)
+	/// <summary>
+	/// Play sound
+	/// </summary>
+	/// <param name="as_fx"></param>
+	void AudioManager::PlaySound(Mix_Chunk* as_fx)
 	{
 		Mix_PlayChannel(-1, as_fx, 0);
 	}
 
-	shared_ptr<audio_resource> AudioManager::to_resource(const shared_ptr<Asset>& asset)
+	/// <summary>
+	/// Cast to Audio asset
+	/// </summary>
+	/// <param name="asset"></param>
+	/// <returns></returns>
+	shared_ptr<AudioAsset> AudioManager::ToAudioAsset(const shared_ptr<Asset>& asset)
 	{	
-		return AsAsset<audio_resource>(asset);
+		if (asset->assetType != Asset::AssetType::Audio)
+		{
+			THROW(97, "Cannot cast a generic asset that is not an audio asset to an audio asset", "Audio Manager");
+		}
+
+		return AsAsset<AudioAsset>(asset);
 	}
 
 }

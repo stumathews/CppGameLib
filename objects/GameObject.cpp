@@ -1,9 +1,7 @@
 #include "GameObject.h"
 #include <memory>
 #include <SDL_mixer.h>
-
-
-#include "audio/AudioResource.h"
+#include "audio/AudioAsset.h"
 #include "common/constants.h"
 #include "events/EventManager.h"
 #include "events/PositionChangeEvent.h"
@@ -18,22 +16,14 @@ namespace gamelib
 	/// </summary>
 	int GameObject::lastGameObjectId = 0;
 
-
-
-	GameObject::GameObject(bool is_visible,
-		SettingsManager& settings_admin, 
-		EventManager& eventManager) 
+	GameObject::GameObject(bool is_visible, SettingsManager& settings_admin, EventManager& eventManager) 
 			: IEventSubscriber(), settings_admin(settings_admin), eventManager(eventManager)
 	{
 		SetDefaults(is_visible, settings_admin, 0, 0);
 		GameObject::LoadSettings(settings_admin);
 	}
 
-	GameObject::GameObject(const int x, 
-		const int y, 
-		bool is_visible, 
-		SettingsManager& settings_admin, 
-		EventManager& eventManager) 
+	GameObject::GameObject(const int x, const int y, bool is_visible, SettingsManager& settings_admin, EventManager& eventManager) 
 			: supportsMoveLogic(false), settings_admin(settings_admin), eventManager(eventManager)
 	{
 		SetDefaults(is_visible, settings_admin, x, y);
@@ -43,17 +33,25 @@ namespace gamelib
 	void GameObject::ChangeInternalPosition(const std::shared_ptr<Event> the_event)
 	{
 		const auto event = std::dynamic_pointer_cast<position_change_event>(the_event);
-		if(event->direction == Direction::Up && supportsMoveLogic)					
-			MoveUp();			
+		if (event->direction == Direction::Up && supportsMoveLogic)
+		{
+			MoveUp();
+		}
 			
-		if(event->direction == Direction::Down && supportsMoveLogic)
-			MoveDown();			
+		if (event->direction == Direction::Down && supportsMoveLogic)
+		{
+			MoveDown();
+		}
 			
-		if(event->direction == Direction::Left && supportsMoveLogic)
-			MoveLeft();			
+		if (event->direction == Direction::Left && supportsMoveLogic)
+		{
+			MoveLeft();
+		}
 			
-		if(event->direction == Direction::Right && supportsMoveLogic)
+		if (event->direction == Direction::Right && supportsMoveLogic)
+		{
 			MoveRight();
+		}
 	}
 
 	/// <summary>

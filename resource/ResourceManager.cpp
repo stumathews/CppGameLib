@@ -183,13 +183,13 @@ namespace gamelib
 		// Create fx/sound/audio asset
 		else if (strcmp(type, "fx") == 0 || strcmp(type, "music") == 0)
 		{
-			assetInfo = audio_admin.create_asset(element, *this);
+			assetInfo = audio_admin.CreateAsset(element, *this);
 		}
 
 		// Create font asset
 		else if (strcmp(type, "font") == 0)
 		{
-			assetInfo = font_admin.create_asset(element);
+			assetInfo = font_admin.CreateAsset(element);
 		}
 		else
 		{

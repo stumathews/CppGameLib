@@ -39,7 +39,7 @@
     <ClInclude Include="scene\SceneItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="font\font_resource.h">
+    <ClInclude Include="font\FontAsset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="exceptions\base_exception.h">
@@ -48,7 +48,7 @@
     <ClInclude Include="audio\AudioManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="audio\AudioResource.h">
+    <ClInclude Include="audio\AudioAsset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="common\aliases.h">
@@ -188,7 +188,7 @@
     <ClCompile Include="scene\SceneItem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="font\font_resource.cpp">
+    <ClCompile Include="font\FontAsset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="exceptions\base_exception.cpp">
@@ -197,7 +197,7 @@
     <ClCompile Include="audio\AudioManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="audio\AudioResource.cpp">
+    <ClCompile Include="audio\AudioAsset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="asset\asset.cpp">

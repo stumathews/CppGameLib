@@ -39,6 +39,7 @@
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\common\static_config.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>

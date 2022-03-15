@@ -1,6 +1,6 @@
 #include "Room.h"
 #include "util/RectDebugging.h"
-#include <events/player_moved_event.h>
+#include <events/PlayerMovedEvent.h>
 
 
 using namespace std;
@@ -19,13 +19,13 @@ namespace gamelib
 		// Handle when the player moves
 		if(event->type == EventType::PlayerMovedEventType)
 		{			
-			const auto moved_event = std::static_pointer_cast<player_moved_event>(event);
+			const auto moved_event = std::static_pointer_cast<PlayerMovedEvent>(event);
 
 			// Extract player info 
-			const auto player_component = moved_event->get_player_component();
+			const auto PlayerComponent = moved_event->get_player_component();
 
 			// Get player
-			const auto player = player_component->the_player;
+			const auto player = PlayerComponent->the_player;
 
 			// Dont handle player events
 			if(GetGameObjectType() == object_type::Player)

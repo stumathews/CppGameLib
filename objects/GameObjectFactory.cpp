@@ -1,9 +1,9 @@
-#include "game_object_factory.h"
+#include "GameObjectFactory.h"
 #include "GameObject.h"
 #include "Sprite.h"
-#include "common/static_config.h"
 #include "resource/ResourceManager.h"
 #include "scene/Room.h"
+#include "common/StaticConfig.h"
 
 using namespace tinyxml2;
 using namespace std;
@@ -172,8 +172,8 @@ namespace gamelib
 				throw exception("Invalid color values when constructing game object");
 			}
 
-			auto framesPerRow = static_config::frames_per_row; // number of frames in a row in the sprite sheet
-			auto framesPerColumn = static_config::frames_per_column; // number of frames in a column in the sprite sheet
+			auto framesPerRow = StaticConfig::frames_per_row; // number of frames in a row in the sprite sheet
+			auto framesPerColumn = StaticConfig::frames_per_column; // number of frames in a column in the sprite sheet
 			auto numKeyFrames = 0;
 			auto speed = 0;
 			auto keyFrameWidth = 0;

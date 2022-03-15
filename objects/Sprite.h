@@ -15,7 +15,7 @@ namespace gamelib
 		/// </summary>
 		AnimatedSprite(uint x, 
 			uint y, 
-			uint speed, 
+			uint frameDuration, 
 			uint totalFrames, 
 			uint framesPerRow, 
 			uint framesPerColumn, 
@@ -58,18 +58,60 @@ namespace gamelib
 		/// <param name="FrameNumber"></param>
 		void SetAnimationFrame(uint FrameNumber) const;
 
+		/// <summary>
+		/// Name of the sprite
+		/// </summary>
 		std::string GetName() override;
 		
 	private:
-		unsigned long timeLastFrame;
+		/// <summary>
+		/// Time taken lst frame was shown
+		/// </summary>
+		unsigned long timeLastFrameShown;
+
+		/// <summary>
+		/// Total frames in sprite sheet
+		/// </summary>
 		uint totalFrames;
+
+		/// <summary>
+		/// Total key frames in a row in sprite sheet
+		/// </summary>
 		uint framesPerRow;
+
+		/// <summary>
+		/// Total frames in a column in sprite sheet
+		/// </summary>
 		uint framesPerColumn;
-		uint currentFrame;
-		uint startFrame;
-		float speed;
+
+		/// <summary>
+		/// Current frame number
+		/// </summary>
+		uint currentFrameNumber;
+
+		/// <summary>
+		/// Starting frame number
+		/// </summary>
+		uint startFrameNumber;
+
+		/// <summary>
+		/// The duration of a single animation key frame
+		/// </summary>
+		float frameDurationMs;
+
+		/// <summary>
+		/// An animation Frame height
+		/// </summary>
 		uint frameWidth;
+
+		/// <summary>
+		/// An animation Frame width
+		/// </summary>
 		uint frameHeight;
+
+		/// <summary>
+		/// If the animation has stopped
+		/// </summary>
 		bool stopped = false;
 	};
 }

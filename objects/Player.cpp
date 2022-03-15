@@ -1,10 +1,10 @@
 #include "Player.h"
-#include "player_component.h"
+#include "PlayerComponent.h"
 #include <memory>
 #include "game_world_component.h"
 #include "common/Common.h"
 #include "common/constants.h"
-#include "events/player_moved_event.h"
+#include "events/PlayerMovedEvent.h"
 #include "events/PositionChangeEvent.h"
 #include <functional>
 
@@ -144,8 +144,8 @@ namespace gamelib
 				CenterPlayerInRoom(left_room);
 
 			// Player moved, tell the world about my move!
-			auto component = std::shared_ptr<player_component>(new player_component(constants::playerComponentName, this));	
-			created_events.push_back(make_shared<player_moved_event>(component, move_direction));
+			auto component = std::shared_ptr<PlayerComponent>(new PlayerComponent(constants::playerComponentName, this));	
+			created_events.push_back(make_shared<PlayerMovedEvent>(component, move_direction));
 		}
 
 		if(EventType::DoLogicUpdateEventType  == the_event->type)

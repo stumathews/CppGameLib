@@ -84,34 +84,31 @@
     <ClInclude Include="events\Events.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="events\player_moved_event.h">
+    <ClInclude Include="events\PlayerMovedEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="events\PositionChangeEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="events\scene_loaded_event.h">
+    <ClInclude Include="events\SceneLoadedEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="objects\Component.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="objects\game_object_factory.h">
+    <ClInclude Include="objects\GameObjectFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="objects\Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="objects\player_component.h">
+    <ClInclude Include="objects\PlayerComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="objects\Sprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="graphic\Drawing.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="common\static_config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="objects\game_world_component.h">
@@ -171,6 +168,9 @@
     <ClInclude Include="Logging\ErrorLogManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="common\StaticConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -191,7 +191,7 @@
     <ClCompile Include="font\FontAsset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="exceptions\base_exception.cpp">
+    <ClCompile Include="exceptions\EngineException.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="audio\AudioManager.cpp">
@@ -200,7 +200,7 @@
     <ClCompile Include="audio\AudioAsset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="asset\asset.cpp">
+    <ClCompile Include="asset\Asset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="events\AddGameObjectToCurrentSceneEvent.cpp">
@@ -212,13 +212,13 @@
     <ClCompile Include="events\Event.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="events\player_moved_event.cpp">
+    <ClCompile Include="events\PlayerMovedEvent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="events\PositionChangeEvent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="events\scene_loaded_event.cpp">
+    <ClCompile Include="events\SceneLoadedEvent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="events\SceneChangedEvent.cpp">
@@ -227,13 +227,13 @@
     <ClCompile Include="objects\Component.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="objects\game_object_factory.cpp">
+    <ClCompile Include="objects\GameObjectFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="objects\Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="objects\player_component.cpp">
+    <ClCompile Include="objects\PlayerComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="objects\Sprite.cpp">
@@ -245,7 +245,7 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="objects\game_world_component.cpp">
+    <ClCompile Include="objects\GameWorldComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="events\IEventSubscriber.cpp">
@@ -302,7 +302,7 @@
     <ClCompile Include="graphic\GraphicAsset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="scene\layer.cpp">
+    <ClCompile Include="scene\Layer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Logging\ErrorLogManager.cpp">

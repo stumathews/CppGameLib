@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 
-#include "common/static_config.h"
+#include "common/StaticConfig.h"
 #include "events/EventManager.h"
 #include "font/FontManager.h"
 #include "graphic/SDLGraphicsManager.h"

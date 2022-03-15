@@ -9,8 +9,8 @@
 #include "events/AddGameObjectToCurrentSceneEvent.h"
 #include "events/EventManager.h"
 #include "events/SceneChangedEvent.h"
-#include "events/scene_loaded_event.h"
-#include "objects/game_object_factory.h"
+#include "events/SceneLoadedEvent.h"
+#include "objects/GameObjectFactory.h"
 
 using namespace std;
 
@@ -137,7 +137,7 @@ namespace gamelib
 		auto raiseSceneLoadedEventFunction = [this](int scene_id, const string& scene_name)
 		{
 			LogMessage("Scene "+ to_string(scene_id) +" : "+ scene_name +" loaded.", logger);
-			eventManager.RaiseEvent(make_unique<scene_loaded_event>(scene_id), this);
+			eventManager.RaiseEvent(make_unique<SceneLoadedEvent>(scene_id), this);
 		};
 
 		string scene_name;

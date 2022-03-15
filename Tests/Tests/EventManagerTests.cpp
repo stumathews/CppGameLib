@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "common/static_config.h"
+#include "common/StaticConfig.h"
 #include "events/DoLogicUpdateEvent.h"
 #include "events/EventManager.h"
 #include <events/EventSubscriber.h>
@@ -46,9 +46,9 @@ class EventManagerTests : public ::testing::Test
   {
   }
 
-  static shared_ptr<static_config> create_config() 
+  static shared_ptr<StaticConfig> create_config() 
   {	
-  	return shared_ptr<static_config>(new static_config());
+  	return shared_ptr<StaticConfig>(new StaticConfig());
   }
 
   static shared_ptr<EventManager> create_event_manager(SettingsManager& config, gamelib::Logger& Logger)

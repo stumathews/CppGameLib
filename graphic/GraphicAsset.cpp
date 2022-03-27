@@ -12,36 +12,11 @@ namespace gamelib
 	/// <summary>
 	/// Create Graphic Asset
 	/// </summary>
-	GraphicAsset::GraphicAsset(const int uid, 
-		std::string name, 
-		const std::string& path, 
-		const std::string& type,
-		const int level, 
-		const bool isAnimated)
-								 : Asset(uid, name, path, type, level),
-	                               keyFrameHeight(64),
-	                               keyFrameWidth(64),
-	                               isAnimated(isAnimated){ }
-
-	/// <summary>
-	/// Create Graphic Asset
-	/// </summary>
-	GraphicAsset::GraphicAsset(const int uid, 
-		std::string name, 
-		const std::string& path, 
-		const std::string& type, 
-		const int level, 
-		const uint numKeyFrames, 
-		const uint keyFrameHeight, 
-		const uint keyFrameWidth, 
-		const bool isAnimated)
-								 : Asset(uid, name, path, type, level),
-		                           numKeyFrames(numKeyFrames),
-		                           keyFrameHeight(keyFrameHeight),
-		                           keyFrameWidth(keyFrameWidth),
-		                           isAnimated(isAnimated),
-		                           viewPort({ 0, 0, static_cast<int>(keyFrameWidth), static_cast<int>(keyFrameHeight) }) 
+	GraphicAsset::GraphicAsset(const int uid, std::string name, const std::string& path, const std::string& type, 
+		const int level, ABCDRectangle& dimensions)
+		: Asset(uid, name, path, type, level), Dimensions(dimensions)
 	{
+		viewPort = { dimensions.GetAx(), dimensions.GetAy(), dimensions.GetWidth(), dimensions.GetHeight() };
 		assetType = AssetType::Graphic;
 	}
 	
@@ -110,30 +85,10 @@ namespace gamelib
 	{
 		return viewPort;
 	}
-
-	bool GraphicAsset::IsAnimated() const
-	{
-		return isAnimated;
-	}
-
+		
 	SDL_Texture* GraphicAsset::GetTexture() const
 	{
 		return texture;
-	}
-
-	uint GraphicAsset::GetNumKeyFrames() const
-	{
-		return numKeyFrames;
-	}
-
-	uint GraphicAsset::GetKeyFrameHeight() const
-	{
-		return keyFrameHeight;
-	}
-
-	uint GraphicAsset::GetKeyFrameWidth() const
-	{
-		return keyFrameWidth;
 	}
 
 	GraphicAsset::~GraphicAsset()

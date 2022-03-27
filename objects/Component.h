@@ -3,14 +3,18 @@
 
 namespace gamelib
 {
-
-	class component
-	{	
-		std::string name;
+	/// <summary>
+	/// A component
+	/// </summary>
+	class Component
+	{			
 	public:
-		explicit component(const std::string name);		
-		std::string get_name() const;
-		void set_name(std::string name);
+		Component(const std::string name);		
+		std::string GetName() const;
+		void SetName(std::string name);
+
+	private:
+		std::string name;
 	};
 
 	

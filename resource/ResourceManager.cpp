@@ -11,6 +11,7 @@
 #include "font/FontManager.h"
 #include "graphic/SDLGraphicsManager.h"
 #include <exceptions/base_exception.h>
+#include "graphic/GraphicAssetFactory.h"
 
 namespace gamelib
 {	
@@ -131,11 +132,11 @@ namespace gamelib
 		
 		if(doc.ErrorID() == 0)
 		{		
-			XMLNode* pResourceTree = doc.FirstChildElement("Assets");
+			XMLNode* pAssetsNode = doc.FirstChildElement("Assets");
 				
-			if(pResourceTree)
+			if(pAssetsNode)
 			{
-				for(auto child = pResourceTree->FirstChild(); child; child = child->NextSibling())
+				for(auto child = pAssetsNode->FirstChild(); child; child = child->NextSibling())
 				{
 					auto* const element = child->ToElement();
 					if(element)
@@ -147,12 +148,12 @@ namespace gamelib
 						element->QueryStringAttribute("type", &ptrAssetType);			
 
 						// Create an asset for asset type						
-						theAsset = CreateAssetInfoFromElement(ptrAssetType, theAsset, element);						
+						theAsset = CreateAssetFromElement(ptrAssetType, theAsset, element);						
 
-						// Store the asset reference
+						// Store the asset reference, but dont load it
 						if(theAsset != nullptr)
 						{
-							StoreAssetInfo(theAsset);
+							StoreAsset(theAsset);
 						}
 						else
 						{
@@ -179,24 +180,24 @@ namespace gamelib
 	/// <param name="the_asset">The asset info</param>
 	/// <param name="element">the current element containing the asset data</param>
 	/// <returns></returns>
-	std::shared_ptr<gamelib::Asset>& ResourceManager::CreateAssetInfoFromElement(const char* type, std::shared_ptr<gamelib::Asset>& assetInfo, tinyxml2::XMLElement* const& element)
+	std::shared_ptr<gamelib::Asset>& ResourceManager::CreateAssetFromElement(const char* type, std::shared_ptr<gamelib::Asset>& asset, tinyxml2::XMLElement* const& element)
 	{
 		// Create a graphic asset
 		if (strcmp(type, "graphic") == 0)
 		{
-			assetInfo = SDLGraphicsManager::Get()->CreateAsset(element);
+			asset = GraphicAssetFactory::Get()->Parse(element);
 		}
 		
 		// Create fx/sound/audio asset
 		else if (strcmp(type, "fx") == 0 || strcmp(type, "music") == 0)
 		{
-			assetInfo = AudioManager::Get()->CreateAsset(element, *this);
+			asset = AudioManager::Get()->CreateAsset(element, *this);
 		}
 
 		// Create font asset
 		else if (strcmp(type, "font") == 0)
 		{
-			assetInfo = FontManager::Get()->CreateAsset(element);
+			asset = FontManager::Get()->CreateAsset(element);
 		}
 		else
 		{
@@ -204,14 +205,14 @@ namespace gamelib
 			THROW((int)ResourceManager::ErrorNumbers::UnknownResourceType, message, GetSubscriberName());
 		}
 
-		return assetInfo;
+		return asset;
 	}
 
 	/// <summary>
 	/// Indexes the asset info
 	/// </summary>
 	/// <param name="theAsset">the asset info to store</param>
-	void ResourceManager::StoreAssetInfo(const shared_ptr<Asset>& theAsset)
+	void ResourceManager::StoreAsset(const shared_ptr<Asset>& theAsset)
 	{
 		// assets are explicitly associated with a scene that it will work in
 		resources_by_scene[theAsset->scene].push_back(theAsset);

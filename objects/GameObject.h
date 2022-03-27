@@ -3,9 +3,9 @@
 #include <map>
 #include <SDL.h>
 #include "Component.h"
-#include <graphic/GraphicAsset.h>
+#include "graphic/GraphicAsset.h"
 #include "events/EventManager.h"
-#include <objects/MultipleInheritableEnableSharedFromThis.h>
+#include "Inventory.h"
 
 namespace gamelib
 {
@@ -22,12 +22,16 @@ namespace gamelib
 		Pickup,
 	};
 
+	class GraphicAsset;
+
 	class GameObject : public IEventSubscriber
 	{
 	public:
 
 		// Create new Game Object 
 		GameObject(bool is_visible);
+
+		GameObject() = default;
 
 		// Create new game object at specific coordinate
 		GameObject(int x, int y, bool is_visible);
@@ -121,16 +125,6 @@ namespace gamelib
 		
 		void SetColourKey(Uint8 r, Uint8 g, Uint8 b);
 
-		/* Inventory System: game objects can have a list of components */
-		
-		/// <summary>
-		/// Add component to the game object (inventory)
-		/// </summary>
-		/// <param name="component"></param>
-		void AddComponent(const std::shared_ptr<component>& component);
-		std::shared_ptr<component> FindComponent(std::string name);
-		bool HasComponent(std::string name);
-
 		/// <summary>
 		/// Arbitary tag for game object
 		/// </summary>
@@ -183,22 +177,23 @@ namespace gamelib
 		/// </summary>
 		int id;	
 
+		/// <summary>
+		/// Inventory of components
+		/// </summary>
+		Inventory components;
+
 	private:	
 
 		// Game Object tag
 		std::string tag;
-		bool is_traveling_left;
 
 		// Game Object colour
 		int red, blue, green;
-		SDL_Color color_key = {};
+		SDL_Color colourKey = {};
 
 		// Game Object Graphic
 		std::shared_ptr<GraphicAsset> graphic; // can be shared by other actors
-		
-		// list of components
-		std::map<std::string, std::shared_ptr<component>> components;
-		
+
 		// Underlying asset
 		std::shared_ptr<Asset> assetInfo;
 
@@ -207,7 +202,6 @@ namespace gamelib
 
 		// Initialize game objects defaults
 		void SetDefaults(bool isVisible, int x, int y);
-
 		
 		void DrawGraphic(SDL_Renderer* renderer) const;
 

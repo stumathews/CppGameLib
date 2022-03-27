@@ -4,6 +4,8 @@
 #include "resource/ResourceManager.h"
 #include "scene/Room.h"
 #include "common/StaticConfig.h"
+#include "common/aliases.h"
+#include "SpriteAsset.h"
 
 using namespace tinyxml2;
 using namespace std;
@@ -16,7 +18,7 @@ namespace gamelib
 	/// </summary>
 	/// <param name="scene_object_xml">XML element describing game object</param>
 	/// <returns></returns>
-	shared_ptr<GameObject> GameObjectFactory::BuildGameObject( 	XMLElement * scene_object_xml) const
+	shared_ptr<GameObject> GameObjectFactory::BuildGameObject(XMLElement * sceneObject) const
 	{
 		// Game Object details:
 		uint redValue = 0;
@@ -32,7 +34,7 @@ namespace gamelib
 		
 		auto emptyGameObject = shared_ptr<GameObject>(nullptr);
 
-		for(const auto* sceneObjectAttribute = scene_object_xml->FirstAttribute(); sceneObjectAttribute; sceneObjectAttribute = sceneObjectAttribute->Next()) 
+		for(const auto* sceneObjectAttribute = sceneObject->FirstAttribute(); sceneObjectAttribute; sceneObjectAttribute = sceneObjectAttribute->Next()) 
 		{
 			// Extract/Save details about the object
 
@@ -132,7 +134,7 @@ namespace gamelib
 	}
 
 	/// <summary>
-	/// Create a game object from the resource details
+	/// Create a game object from the Asset details
 	/// </summary>
 	shared_ptr<GameObject>& GameObjectFactory::InitializeGameObject(shared_ptr<GameObject>& gameObject,
 																	uint x,
@@ -148,65 +150,44 @@ namespace gamelib
 		{
 			throw exception("cannot initialize game object with out an associated asset");
 		}
+
+		if ((red < 0 || red > 255) || (blue < 0 || blue > 255) || (green < 0 || green > 255))
+		{
+			throw exception("Invalid color values when constructing game object");
+		}
 		
-		// Initialize asset type = Graphic
-		if (asset->type._Equal("graphic"))
-		{		
-			shared_ptr<GraphicAsset> graphic = dynamic_pointer_cast<GraphicAsset>(asset);
-			// If no graphic resource is associated with this game object, we'll make it a simple geometric Room object
-			bool isGraphicValid = graphic != nullptr;
+		if (asset->assetType == Asset::AssetType::Sprite)
+		{
+			auto spriteAsset = dynamic_pointer_cast<SpriteAsset>(asset);
+			auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
+			auto sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, 100, isVisible, spriteAsset->Dimensions));
+			
+			// Set the AnimatedSprite's key frames
+			sprite->KeyFrames = spriteAsset->KeyFrames;	
 
-			if (!isGraphicValid)
-			{
-				throw exception("Not supported resource type");
-			}
+			// Set the graphic asset of the Animated Sprite
+			sprite->SetGraphic(graphicAsset);
 
-			if ((red < 0 || red > 255) || (blue < 0 || blue > 255) || (green < 0 || green > 255))
-			{
-				throw exception("Invalid color values when constructing game object");
-			}
+			// Start playing the animation
+			sprite->PlayAnimation();
 
-			auto framesPerRow = StaticConfig::frames_per_row; // number of frames in a row in the sprite sheet
-			auto framesPerColumn = StaticConfig::frames_per_column; // number of frames in a column in the sprite sheet
-			auto numKeyFrames = 0;
-			auto speed = 0;
-			auto keyFrameWidth = 0;
-			auto keyFrameHeight = 0;
+			gameObject = sprite;
+		}
+		else if(asset->assetType == Asset::AssetType::Graphic)
+		{
+			auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
+			auto sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, 100, isVisible, graphicAsset->Dimensions));
+			
+			// Set underlying graphic
+			sprite->SetGraphic(graphicAsset);
 
-			// Is it an animated Sprite
-			if (graphic->IsAnimated())
-			{
-				// Sprite
-				numKeyFrames = graphic->GetNumKeyFrames();
-				auto spriteWidth = SettingsManager::Get()->get_int("global", "sprite_width"); // Should probably be reading this from the object details in the resource file/object
-				speed = spriteWidth;
-				keyFrameWidth = graphic->GetKeyFrameWidth();
-				keyFrameHeight = graphic->GetKeyFrameHeight();
-			}
-			else
-			{
-				// 2D Sprite (with no animation)
-				numKeyFrames = 1;
-				speed = 1;
-				keyFrameWidth = graphic->GetKeyFrameWidth();
-				keyFrameHeight = 1;
-			}
-
-			// An Animated Sprite can represent a moving (animated) sprite or a static (non-moving) sprite
-			gameObject = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, speed, numKeyFrames, framesPerRow, framesPerColumn, keyFrameWidth, keyFrameHeight, isVisible));
-
-			if (graphic->IsAnimated())
-			{
-				// Start the animation for the animated sprite
-				dynamic_pointer_cast<AnimatedSprite>(gameObject)->PlayAnimation();
-			}
-
-			// Set the graphic on the game object
-			gameObject->SetGraphic(graphic);
+			// Show the entire graphic
+			sprite->AdjustViewportToCurrentDimensions();
+			gameObject = sprite;
 		}
 		else
 		{
-			auto message = string("Not supported resource type:") + asset->type;
+			auto message = string("Graphic asset not supported:") + asset->type;
 			throw exception(message.c_str());
 		}
 
@@ -219,6 +200,7 @@ namespace gamelib
 		// Set the game object's visibility
 		gameObject->isVisible = isVisible;
 
+		// Tell the render what colour it should consider as transparent i.e ignore drawing
 		if (gameObject->isColorKeyEnabled)
 		{
 			gameObject->SetColourKey(red, green, blue);

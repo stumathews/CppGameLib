@@ -1,9 +1,12 @@
 #pragma once
 #include <string>
+#include <map>
 
 namespace gamelib
 {
-	// Meta data about a resource (uid, name, path, type, scene etc)
+	/// <summary>
+	/// A loadable asset
+	/// </summary>
 	class Asset
 	{
 	public:	
@@ -14,10 +17,12 @@ namespace gamelib
 		enum class AssetType
 		{
 			Graphic,
+			Sprite,
 			Audio,
 			Font,
 		};
-		
+
+				
 		/// <summary>
 		/// A generic asset
 		/// </summary>
@@ -71,5 +76,11 @@ namespace gamelib
 		/// </summary>
 		/// <returns></returns>
 		virtual bool Unload() = 0;
+
+		/// <summary>
+		/// Properties
+		/// </summary>
+		std::map<std::string, std::string> Properties;
+
 	};
 }

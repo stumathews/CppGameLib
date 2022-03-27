@@ -1,16 +1,19 @@
 #include "component.h"
 namespace gamelib
-{
-	component::component(const std::string name): name(name)
+{	
+	
+	Component::Component(const std::string name) 
+		: name(name)
 	{
 	}
 
-	std::string component::get_name() const
+	std::string Component::GetName() const
 	{
 		return name;
 	}
 
-	void component::set_name(const std::string name)
+
+	void Component::SetName(const std::string name)
 	{
 		this->name = name;
 	}

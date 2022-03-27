@@ -84,10 +84,10 @@ namespace gamelib
 		if(EventType::PositionChangeEventType == the_event->type)
 		{
 						
-			const auto position_changed_event = dynamic_pointer_cast<position_change_event>(the_event);
+			const auto position_changed_event = dynamic_pointer_cast<PositionChangeEvent>(the_event);
 			const auto move_direction = position_changed_event->direction;			
 					
-			auto game_world = static_pointer_cast<game_world_component>(FindComponent(constants::game_world))->get_data();
+			auto game_world = static_pointer_cast<game_world_component>(components.FindComponent(constants::game_world))->get_data();
 			
 			const auto last_room_index = count_if(begin(game_world.objects), end(game_world.objects),
 			                                      [](weak_ptr<GameObject> g){

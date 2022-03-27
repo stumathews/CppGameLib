@@ -10,43 +10,39 @@
 using namespace std;
 
 namespace gamelib
-{
-	/// <summary>
-	/// Game Object Ids - Static
-	/// </summary>
-	int GameObject::lastGameObjectId = 0;
-
-	GameObject::GameObject(bool is_visible) : IEventSubscriber()
+{	
+	GameObject::GameObject(bool isVisible) : IEventSubscriber()
 	{
-		SetDefaults(is_visible, 0, 0);
+		SetDefaults(isVisible, 0, 0);
 		GameObject::LoadSettings();
 	}
 
-	GameObject::GameObject(const int x, const int y, bool is_visible ) : supportsMoveLogic(false)
+	GameObject::GameObject(const int x, const int y, bool isVisible ) : supportsMoveLogic(false)
 	{
-		SetDefaults(is_visible, x, y);
+		SetDefaults(isVisible, x, y);
 		GameObject::LoadSettings();
 	}
 
-	void GameObject::ChangeInternalPosition(const std::shared_ptr<Event> the_event)
+	void GameObject::ChangeInternalPosition(const std::shared_ptr<Event> event)
 	{
-		const auto event = std::dynamic_pointer_cast<position_change_event>(the_event);
-		if (event->direction == Direction::Up && supportsMoveLogic)
+		const auto positionChangeEvent = std::dynamic_pointer_cast<PositionChangeEvent>(event);
+		
+		if (positionChangeEvent->direction == Direction::Up && supportsMoveLogic)
 		{
 			MoveUp();
 		}
 			
-		if (event->direction == Direction::Down && supportsMoveLogic)
+		if (positionChangeEvent->direction == Direction::Down && supportsMoveLogic)
 		{
 			MoveDown();
 		}
 			
-		if (event->direction == Direction::Left && supportsMoveLogic)
+		if (positionChangeEvent->direction == Direction::Left && supportsMoveLogic)
 		{
 			MoveLeft();
 		}
 			
-		if (event->direction == Direction::Right && supportsMoveLogic)
+		if (positionChangeEvent->direction == Direction::Right && supportsMoveLogic)
 		{
 			MoveRight();
 		}
@@ -159,19 +155,27 @@ namespace gamelib
 	/// <summary>
 	/// Set defaults
 	/// </summary>
-	void GameObject::SetDefaults( bool is_visible, int x, int y)
+	void GameObject::SetDefaults(bool isVisible, int x, int y)
 	{
-		 this->bounds = { x, y, 0 ,0};
-		 supportsMoveLogic = true;
-		 this->isVisible = is_visible;
-		 isColorKeyEnabled = false;
-		 this->x = x;
-		 this->y = y;
-		 is_traveling_left = false;
-		 red = 0x00;
-		 blue = 0xFF;
-		 green = 0x00;
-		 id = lastGameObjectId++;
+		this->isVisible = isVisible;
+		this->x = x;
+		this->y = y;
+
+		// In this sensible?
+		bounds = { x, y, 0 , 0 };
+
+		// Should all game Objects support move 
+		supportsMoveLogic = true;
+
+		// Should all game Objects support ColourKey
+		isColorKeyEnabled = false;
+		
+		red = 0x00;
+		blue = 0xFF;
+		green = 0x00;
+
+		// Increase the Internal Object Id
+		id = lastGameObjectId++;
 	}
 
 	/// <summary>
@@ -179,37 +183,9 @@ namespace gamelib
 	/// </summary>
 	void GameObject::SetColourKey(const Uint8 r, const Uint8 g, const Uint8 b)
 	{
-		color_key.r = r;
-		color_key.g = g;
-		color_key.b = b;
-	}
-
-	/// <summary>
-	/// Add component to game object, eg. health, points etc
-	/// </summary>
-	void GameObject::AddComponent(const shared_ptr<component>& component)
-	{
-		components[component->get_name()] = component;
-	}
-
-	/// <summary>
-	/// Find a component
-	/// </summary>
-	/// <param name="name"></param>
-	/// <returns></returns>
-	shared_ptr<component> GameObject::FindComponent(string name)
-	{
-		return components[name];
-	}
-
-	/// <summary>
-	/// Check if a component exists
-	/// </summary>
-	/// <param name="name"></param>
-	/// <returns></returns>
-	bool GameObject::HasComponent(string name)
-	{
-		return components.find(name) != components.end();
+		colourKey.r = r;
+		colourKey.g = g;
+		colourKey.b = b;
 	}
 
 	/// <summary>
@@ -241,16 +217,13 @@ namespace gamelib
 				// Draw graphic at the game object's current location
 				SDL_Rect drawLocation =
 				{
-					x,
-					y,
-					graphic->GetViewPort().w,
+					x, y,
+					graphic->GetViewPort().w, 
 					graphic->GetViewPort().h
 				};
 
-				auto* const viewPort = graphic->IsAnimated() ? &graphic->GetViewPort() : nullptr;
-
 				// Copy the texture (restricted by viewport) to the drawLocation on the screen
-				SDL_RenderCopy(renderer, graphic->GetTexture(), viewPort, &drawLocation);
+				SDL_RenderCopy(renderer, graphic->GetTexture(), &graphic->GetViewPort(), &drawLocation);
 			}
 			else
 			{
@@ -285,4 +258,10 @@ namespace gamelib
 	{
 		this->graphic = graphic;
 	}
+
+	/// <summary>
+	/// Game Object Ids - Static
+	/// </summary>
+	int GameObject::lastGameObjectId = 0;
+
 }

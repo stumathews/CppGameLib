@@ -1,7 +1,10 @@
 #pragma once
 #include "objects/GameObject.h"
+#include <SDL.h>
+
 namespace gamelib
 {
+
 	/// <summary>
 	/// Object Can Draw on itself
 	/// </summary>

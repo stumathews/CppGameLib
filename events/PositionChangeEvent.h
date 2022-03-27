@@ -5,10 +5,10 @@ namespace gamelib
 {
 	enum class Direction {Up, Down, Left, Right};
 	
-	class position_change_event : public Event
+	class PositionChangeEvent : public Event
 	{
 	public:
-		explicit position_change_event(Direction dir);
+		explicit PositionChangeEvent(Direction dir);
 		Direction direction;
 		std::string to_str() override;
 	};

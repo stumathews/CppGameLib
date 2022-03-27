@@ -40,6 +40,8 @@ namespace gamelib
 		void SetY(int y);
 		void SetHeight(int h);
 		void SetWidth(int w);
+		int GetHeight() const;
+		int GetWidth() const;
 
 		void reinitialize(int x, int y, int w, int h);
 

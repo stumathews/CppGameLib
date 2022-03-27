@@ -10,6 +10,8 @@
 #include "common/Common.h"
 #include "events/EventManager.h"
 #include "scene/SceneManager.h"
+#include "common/aliases.h"
+
 
 using namespace std;
 namespace gamelib
@@ -136,66 +138,6 @@ namespace gamelib
 
 		Logger::Get()->LogThis("SDLGraphicsManager ready.");
 		return true;
-	}
-
-	/// <summary>
-	/// Create an Graphic Asset from resource XML
-	/// </summary>
-	std::shared_ptr<Asset> SDLGraphicsManager::CreateAsset(tinyxml2::XMLElement * resourceElement)
-	{		
-		// Details that we will extract from object XML
-		auto isAnimated = false;
-		auto numKeyFrames = 12;   // TODO: Should not be hard coded
-		auto keyFrameHeight = 64; // TODO: Should not be hard coded
-		auto keyFrameWidth = 64;  // TODO: Should not be hard coded
-		
-		// Each graphic asset has an id
-		int uuid; 		
-
-		// Type of asset
-		const char* type;	
-
-		// Were the asset is located on disk
-		const char* path;	
-
-		// friendly name
-		const char* friendlyName;		
-
-		// Which level the graphic object is for
-		int level;
-
-		// Extract object details 
-		resourceElement->QueryIntAttribute("scene", &level);
-		resourceElement->QueryIntAttribute("uid", &uuid);
-		resourceElement->QueryStringAttribute("type", &type);
-		resourceElement->QueryStringAttribute("filename", &path);
-		resourceElement->QueryStringAttribute("name", &friendlyName);
-		
-		for(auto attribute = resourceElement->FirstAttribute(); attribute; attribute = attribute->Next())
-		{
-			std::string name = attribute->Name();
-			std::string value = attribute->Value();
-
-			if (name == "isAnimated")
-			{
-				isAnimated = value == "true" ? true : false;
-			}
-
-			if(name == "numKeyFrames")
-				numKeyFrames = std::atoi(value.c_str());  // NOLINT(cert-err34-c)
-			if(name == "keyFrameHeight")
-				keyFrameHeight = atoi(value.c_str());  // NOLINT(cert-err34-c)
-			if(name == "keyFrameWidth")
-				keyFrameWidth = atoi(value.c_str());  // NOLINT(cert-err34-c)
-		}
-
-
-		auto resource = isAnimated
-			                        ? std::shared_ptr<GraphicAsset>(new GraphicAsset(uuid, friendlyName, path, type, level, numKeyFrames, keyFrameHeight, keyFrameWidth,  isAnimated))
-			                        : std::shared_ptr<GraphicAsset>(new GraphicAsset(uuid, friendlyName, path, type, level, isAnimated));
-			
-		
-		return resource;
 	}
 
 	/// <summary>

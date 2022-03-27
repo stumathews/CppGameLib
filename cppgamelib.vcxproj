@@ -167,6 +167,8 @@
     <ClInclude Include="common\Logger.h" />
     <ClInclude Include="common\StaticConfig.h" />
     <ClInclude Include="common\TypeAliases.h" />
+    <ClInclude Include="graphic\GraphicAssetFactory.h" />
+    <ClInclude Include="Inventory.h" />
     <ClInclude Include="KeyFrame.h" />
     <ClInclude Include="Logging\ErrorLogManager.h" />
     <ClInclude Include="events\EventSubscriber.h" />
@@ -206,6 +208,8 @@
     <ClInclude Include="scene\SceneItem.h" />
     <ClInclude Include="scene\SceneManager.h" />
     <ClInclude Include="scene\Room.h" />
+    <ClInclude Include="SpriteAsset.h" />
+    <ClInclude Include="Tests\Tests\GraphicAssetFactory.h" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="util\COMUtils.h" />
@@ -219,6 +223,8 @@
     <ClCompile Include="audio\AudioAsset.cpp" />
     <ClCompile Include="common\Logger.cpp" />
     <ClCompile Include="cppgamelib.cpp" />
+    <ClCompile Include="graphic\GraphicAssetFactory.cpp" />
+    <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="KeyFrame.cpp" />
     <ClCompile Include="Logging\ErrorLogManager.cpp" />
     <ClCompile Include="events\EventSubscriber.cpp" />
@@ -256,6 +262,7 @@
     <ClCompile Include="scene\SceneItem.cpp" />
     <ClCompile Include="scene\SceneManager.cpp" />
     <ClCompile Include="scene\Room.cpp" />
+    <ClCompile Include="SpriteAsset.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="util\RectDebugging.cpp" />

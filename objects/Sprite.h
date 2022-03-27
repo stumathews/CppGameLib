@@ -1,5 +1,7 @@
 #pragma once
 #include "GameObject.h"
+#include "KeyFrame.h"
+#include "scene/ABCDRectangle.h"
 
 namespace gamelib
 {
@@ -15,13 +17,11 @@ namespace gamelib
 		/// </summary>
 		AnimatedSprite(uint x, 
 			uint y, 
-			uint frameDuration, 
-			uint totalFrames, 
-			uint framesPerRow, 
-			uint framesPerColumn, 
-			uint frameWidth, 
-			uint frame, 
-			bool isVisible);
+			uint frameDuration,			 
+			bool isVisible, 
+			ABCDRectangle dimensions);
+
+		AnimatedSprite() = default;
 
 		/// <summary>
 		/// Set Game Object Type
@@ -57,31 +57,38 @@ namespace gamelib
 		void SetAnimationFrame(uint FrameNumber) const;
 
 		/// <summary>
+		/// Sets viewable region in the sprite sheet dimensions (used when showing static non-sheet picture)
+		/// </summary>
+		/// <param name="dimensions"></param>
+		void AdjustViewportToCurrentDimensions();
+
+		/// <summary>
 		/// Name of the sprite
 		/// </summary>
 		std::string GetName() override;
-		
+
+		/// <summary>
+		/// Add new keyframe
+		/// </summary>
+		/// <param name="keyFrame"></param>
+		void AddKeyFrame(KeyFrame keyFrame);
+
+		/// <summary>
+		/// Dimensions of Spritesheet
+		/// </summary>
+		ABCDRectangle Dimensions;
+
+		/// <summary>
+		/// Ordered set of key frames
+		/// </summary>
+		std::vector<KeyFrame> KeyFrames;
+						
 	private:
 		/// <summary>
 		/// Time taken lst frame was shown
 		/// </summary>
 		unsigned long timeLastFrameShown;
-
-		/// <summary>
-		/// Total frames in sprite sheet
-		/// </summary>
-		uint totalFrames;
-
-		/// <summary>
-		/// Total key frames in a row in sprite sheet
-		/// </summary>
-		uint framesPerRow;
-
-		/// <summary>
-		/// Total frames in a column in sprite sheet
-		/// </summary>
-		uint framesPerColumn;
-
+				
 		/// <summary>
 		/// Current frame number
 		/// </summary>
@@ -98,18 +105,9 @@ namespace gamelib
 		float frameDurationMs;
 
 		/// <summary>
-		/// An animation Frame height
-		/// </summary>
-		uint frameWidth;
-
-		/// <summary>
-		/// An animation Frame width
-		/// </summary>
-		uint frameHeight;
-
-		/// <summary>
 		/// If the animation has stopped
 		/// </summary>
 		bool stopped = false;
+
 	};
 }

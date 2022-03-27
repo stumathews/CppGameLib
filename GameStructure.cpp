@@ -18,6 +18,7 @@
 #include "objects/Player.h"
 #include "resource/ResourceManager.h"
 #include "scene/SceneManager.h"
+#include "common/aliases.h"
 
 using namespace std;
 

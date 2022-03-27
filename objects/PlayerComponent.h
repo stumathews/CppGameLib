@@ -5,7 +5,7 @@
 
 namespace gamelib
 {
-	class PlayerComponent : public component
+	class PlayerComponent : public Component
 	{
 	public:
 		PlayerComponent(std::string component_name, Player* player);

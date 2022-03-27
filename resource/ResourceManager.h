@@ -31,7 +31,7 @@ namespace gamelib
 
 		// index the resoures file
 		void IndexResources(std::string resources_file_path = "game/resources.xml");
-		std::shared_ptr<gamelib::Asset>& CreateAssetInfoFromElement(const char* type, std::shared_ptr<gamelib::Asset>& the_asset, tinyxml2::XMLElement* const& element);
+		std::shared_ptr<gamelib::Asset>& CreateAssetFromElement(const char* type, std::shared_ptr<gamelib::Asset>& the_asset, tinyxml2::XMLElement* const& element);
 		int get_resource_unloaded_count() const { return unloaded_resources_count; }
 	    int get_resource_loaded_count() const { return loaded_resources_count; }
 
@@ -47,7 +47,7 @@ namespace gamelib
 	private:
 		ResourceManager();		
 		void LoadSceneAssets(int level);
-	    void StoreAssetInfo(const std::shared_ptr<Asset>& the_asset);
+	    void StoreAsset(const std::shared_ptr<Asset>& the_asset);
 		std::map<int, std::vector<std::shared_ptr<Asset>>> resources_by_scene;   
 		std::map<std::string, std::shared_ptr<Asset>> resource_by_name;   
 		std::map<int, std::shared_ptr<Asset>> resources_by_uuid;

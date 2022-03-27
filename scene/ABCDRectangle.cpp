@@ -68,6 +68,16 @@ namespace gamelib
 		this->w = w;
 	}
 
+	int ABCDRectangle::GetWidth() const
+	{
+		return w;
+	}
+
+	int ABCDRectangle::GetHeight() const
+	{
+		return h;
+	}
+
 	void ABCDRectangle::reinitialize(int x, int y, int w, int h)
 	{
 		SetX(x);

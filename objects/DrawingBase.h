@@ -8,12 +8,12 @@ namespace gamelib
 	class DrawableGameObject : public gamelib::GameObject
 	{
 	public:
-		DrawableGameObject(const bool is_visible, SettingsManager& settings_admin, EventManager& eventManager)
-			: GameObject(is_visible, settings_admin, eventManager)
+		DrawableGameObject(const bool is_visible)
+			: GameObject(is_visible)
 		{ }
 
-		DrawableGameObject(const int x, const int y, const bool is_visible, SettingsManager& settings_admin, EventManager& eventAdmin)
-			: GameObject(x, y, is_visible, settings_admin, eventAdmin)
+		DrawableGameObject(const int x, const int y, const bool is_visible)
+			: GameObject(x, y, is_visible)
 		{ }
 
 		/// <summary>

@@ -13,8 +13,15 @@ namespace gamelib
 	class FontManager
 	{
 	public:	 		
+		static FontManager* Get();
+		~FontManager();
 		// Creates an audio Resource
 		std::shared_ptr<Asset> CreateAsset(tinyxml2::XMLElement * assetXmlElement) const;
 		static std::shared_ptr<FontAsset> ToFontAsset(const std::shared_ptr<Asset>& asset);
+	protected:
+		static FontManager* Instance;
+	private:
+		FontManager() = default;
+
 	};
 }

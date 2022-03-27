@@ -45,6 +45,27 @@ namespace gamelib
 		return load(settings_file_path);
 	}
 
+	SettingsManager::SettingsManager() 
+	{ 
+		load(); 
+	}
+
+	SettingsManager* SettingsManager::Get()
+	{
+		if (Instance == nullptr)
+		{
+			Instance = new SettingsManager();
+		}
+		return Instance;
+	}
+
+	SettingsManager::~SettingsManager()
+	{
+		Instance = nullptr;
+	}
+
+	SettingsManager* SettingsManager::Instance = nullptr;
+
 	bool SettingsManager::load(string filename_path)
 	{
 		this->settings_file_path = filename_path;
@@ -132,7 +153,8 @@ namespace gamelib
 	
 	bool SettingsManager::get_bool(std::string section, std::string name)
 	{
-		return settings[section][name].to_bool();
+		return settings.at(section)[name].to_bool();
+		//return settings[section][name].to_bool();
 	}
 	
 	int SettingsManager::get_int(std::string section, std::string name)

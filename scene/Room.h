@@ -31,9 +31,6 @@ namespace gamelib
 			int y, 
 			int width, 
 			int height, 
-			ResourceManager& resource_admin, 
-			SettingsManager& settings_admin, 
-			EventManager& eventManager, 
 			bool fill = false);
 		
 		
@@ -113,7 +110,7 @@ namespace gamelib
 		/// Load room settings
 		/// </summary>
 		/// <param name="settings_admin"></param>
-		void LoadSettings(SettingsManager& settings_admin) override;		 
+		void LoadSettings() override;		 
 
 		/// <summary>
 		/// Draw room
@@ -180,12 +177,7 @@ namespace gamelib
 		int height;
 
 	private:
-
-		/// <summary>
-		/// Resource manager
-		/// </summary>
-		ResourceManager& _resourceManager;
-
+				
 		/// <summary>
 		/// Indication if the player is within this room at the moment
 		/// </summary>

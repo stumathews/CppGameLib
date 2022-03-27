@@ -23,7 +23,7 @@ namespace gamelib
 		/// </summary>
 		/// <param name="scene_object_xml">Raw Object XML element</param>
 		/// <returns>GameObject</returns>
-		std::shared_ptr<GameObject> BuildGameObject(tinyxml2::XMLElement* scene_object_xml, ResourceManager& resource_admin, SettingsManager& settings_admin, EventManager& eventManager) const;
+		std::shared_ptr<GameObject> BuildGameObject(tinyxml2::XMLElement* scene_object_xml) const;
 		
 	private:
 		static GameObjectFactory& instance;
@@ -36,12 +36,12 @@ namespace gamelib
 		void OnPosYParse(gamelib::uint& y, std::string& detail_value) const;
 		void OnVisibleParse(bool& visible, std::string& detail_value) const;
 		void OnPosXParse(gamelib::uint& x, std::string& detail_value) const;
-		void OnResourceIdParse(std::string& detail_value, gamelib::ResourceManager& resourceManager, std::shared_ptr<gamelib::Asset>& resource) const;
+		void OnResourceIdParse(std::string& detail_value, std::shared_ptr<gamelib::Asset>& resource) const;
 
 		/// <summary>
 		/// Initializes the Game object
 		/// </summary>
-		std::shared_ptr<GameObject>& InitializeGameObject(std::shared_ptr<GameObject>& game_object, uint x, uint y, bool is_visible, std::shared_ptr<Asset>& resource, bool color_key_enabled, const uint& red, const uint& green, const uint& blue, ResourceManager& resource_admin, SettingsManager& settings_admin, EventManager& eventManager) const;
+		std::shared_ptr<GameObject>& InitializeGameObject(std::shared_ptr<GameObject>& game_object, uint x, uint y, bool is_visible, std::shared_ptr<Asset>& resource, bool color_key_enabled, const uint& red, const uint& green, const uint& blue) const;
 		
 		// Private constructor 
 		GameObjectFactory() = default;

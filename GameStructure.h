@@ -18,20 +18,9 @@ namespace gamelib
 		/// <summary>
 		/// Create a game structure
 		/// </summary>
-		/// <param name="eventManager">Event manager</param>
-		/// <param name="resource_admin">Resource manager</param>
-		/// <param name="config">Settings manager</param>
 		/// <param name="gameWorld">gameWorld data</param>
-		/// <param name="scene_admin">Scene Manager</param>
-		/// <param name="graphics_admin">Graphics manager</param>
-		/// <param name="audio_admin">Audio manager</param>
 		/// <param name="get_input_func">Controller/Player Input function</param>
-		/// <param name="gameLogger">Logger</param>
-		GameStructure(EventManager& eventManager, ResourceManager& resourceManager, 
-		              SettingsManager& settingsManager, GameWorldData& gameWorld,
-		              SceneManager& sceneManager, SDLGraphicsManager& graphicsAdmin,
-		              AudioManager& audioManager, std::function<void()> get_input_func,
-					  Logger& gameLogger);
+		GameStructure(GameWorldData& world, SceneManager& sceneManager, std::function<void()> getControllerInputFunction);
 
 		// What we do when we unload the Gamestructure
 		~GameStructure();
@@ -102,30 +91,10 @@ namespace gamelib
 		/// </summary>
 		void HandleSpareTime(long) const;
 				
-		/// <summary>
-		/// Event Manager
-		/// </summary>
-		EventManager& _eventManager;
-
-		/// <summary>
-		/// Resource Manager
-		/// </summary>
-		ResourceManager& _resourceManager;
-
-		/// <summary>
-		/// Settings Manager
-		/// </summary>
-		SettingsManager& _settingsManager;		
-
-		/// <summary>
+				/// <summary>
 		/// Scene Manager
 		/// </summary>
 		SceneManager& _sceneManager;
-
-		/// <summary>
-		/// Graphics Manager
-		/// </summary>
-		SDLGraphicsManager& _graphicsManager;
 
 		/// <summary>
 		/// GameWorld
@@ -133,18 +102,8 @@ namespace gamelib
 		GameWorldData& _gameWorld;
 
 		/// <summary>
-		/// Audio Manager
-		/// </summary>
-		AudioManager& _audioManager;
-
-		/// <summary>
 		/// Input function (get physical player/controller input)
 		/// </summary>
 		std::function<void()> _getControllerInputFunction;
-
-		/// <summary>
-		/// Logger
-		/// </summary>
-		Logger& _gameLogger;
 	};
 }

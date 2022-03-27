@@ -21,19 +21,16 @@ namespace gamelib
 	 * \param settings The shared settings admin
 	 * \param event_admin The shared event admin
 	 */
-	Player::Player(const int x, const int y, const int w, const int h,
-	               SettingsManager& settings, EventManager& eventManager, 
-		           Logger& gameLogger):
-		DrawableGameObject(x, y, true, settings, eventManager), eventManager(eventManager), width(w), height(h), gameLogger(gameLogger)
+	Player::Player(const int x, const int y, const int w, const int h):	DrawableGameObject(x, y, true), width(w), height(h)
 	{
-		be_verbose = settings_admin.get_bool("player", "verbose");
+		be_verbose = SettingsManager::Get()->get_bool("player", "verbose");
 	}
 
-	void Player::LoadSettings(SettingsManager& settings)
+	void Player::LoadSettings()
 	{
-		GameObject::LoadSettings(settings); // Call base
+		GameObject::LoadSettings(); // Call base
 		
-		drawBox = settings.get_bool("player", "draw_box");
+		drawBox = SettingsManager::Get()->get_bool("player", "draw_box");
 	}
 
 	void Player::CenterPlayerInRoom(shared_ptr<Room> target_room)
@@ -125,8 +122,8 @@ namespace gamelib
 			// An inavalid move is when we want to move in a direction but we cant
 			if(!is_valid_move)
 			{
-				LogMessage("Invalid move", gameLogger, be_verbose);
-				eventManager.RaiseEvent(make_shared<Event>(EventType::InvalidMove), this);				
+				LogMessage("Invalid move", be_verbose);
+				EventManager::Get()->RaiseEvent(make_shared<Event>(EventType::InvalidMove), this);				
 				return created_events;
 			}
 			
@@ -163,10 +160,10 @@ namespace gamelib
 		SDL_Rect r = { x ,y, width, height};
 		
 		SDL_Color c = {
-			static_cast<Uint8>(settings_admin.get_int("player", "r")),
-			static_cast<Uint8>(settings_admin.get_int("player", "g")),
-			static_cast<Uint8>(settings_admin.get_int("player", "b")),
-			static_cast<Uint8>(settings_admin.get_int("player", "a"))			
+			static_cast<Uint8>(SettingsManager::Get()->get_int("player", "r")),
+			static_cast<Uint8>(SettingsManager::Get()->get_int("player", "g")),
+			static_cast<Uint8>(SettingsManager::Get()->get_int("player", "b")),
+			static_cast<Uint8>(SettingsManager::Get()->get_int("player", "a"))			
 		};
 		
 		DrawFilledRect(renderer, &r, c);

@@ -27,24 +27,24 @@ namespace gamelib
 	public:
 
 		// Create new Game Object 
-		GameObject(bool is_visible, SettingsManager& settings_admin, EventManager& eventManager);
+		GameObject(bool is_visible);
 
 		// Create new game object at specific coordinate
-		GameObject(int x, int y, bool is_visible, SettingsManager& settings_admin, EventManager& eventManager);
+		GameObject(int x, int y, bool is_visible);
 					
 		/// <summary>
 		/// Allow Game Object to subscribe to event system
 		/// </summary>
 		/// <param name="type"></param>
 		/// <param name="event_admin"></param>
-		void SubscribeToEvent(EventType type, EventManager& eventManager);
+		void SubscribeToEvent(EventType type);
 
 		/// <summary>
 		/// Allow game object to raise an event
 		/// </summary>
 		/// <param name="the_event"></param>
 		/// <param name="event_admin"></param>
-		void RaiseEvent(const std::shared_ptr<Event>& the_event, EventManager& eventManager);
+		void RaiseEvent(const std::shared_ptr<Event>& the_event);
 
 		/// <summary>
 		/// Handle subscribed events
@@ -111,7 +111,7 @@ namespace gamelib
 		/// Every game object can load its own settings
 		/// </summary>
 		/// <param name="settings_admin"></param>
-		virtual void LoadSettings(SettingsManager& settings_admin);
+		virtual void LoadSettings();
 		
 		/// <summary>
 		/// Every game Object can change it own internal position
@@ -178,9 +178,6 @@ namespace gamelib
 		/// </summary>
 		bool isActive = true;
 
-		SettingsManager& settings_admin;
-		EventManager& eventManager;
-
 		/// <summary>
 		// Each game object has an ID
 		/// </summary>
@@ -209,7 +206,7 @@ namespace gamelib
 		static int lastGameObjectId;
 
 		// Initialize game objects defaults
-		void SetDefaults(bool isVisible, SettingsManager& settings, int x, int y);
+		void SetDefaults(bool isVisible, int x, int y);
 
 		
 		void DrawGraphic(SDL_Renderer* renderer) const;

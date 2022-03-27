@@ -3,7 +3,8 @@
 #include "asset/asset.h"
 #include "common/aliases.h"
 #include "util/SettingsManager.h"
-
+#include <list>
+#include <KeyFrame.h>
 
 namespace gamelib
 {
@@ -25,10 +26,7 @@ namespace gamelib
 			const std::string& path, 
 			const std::string& type, 
 			const int level, 
-			const bool is_animated, 
-			SDLGraphicsManager& graphics_admin, 
-			SettingsManager& config,
-			gamelib::Logger& logger);
+			const bool is_animated);
 
 		/// <summary>
 		/// Create A Graphic Asset
@@ -41,10 +39,7 @@ namespace gamelib
 			const uint num_key_frames, 
 			uint key_frame_height, 
 			const uint key_frame_width,
-			const bool is_animated,
-			SDLGraphicsManager& graphics_admin, 
-			SettingsManager& config,
-			gamelib::Logger& logger);
+			const bool is_animated);
 
 		virtual ~GraphicAsset();		
 
@@ -83,10 +78,10 @@ namespace gamelib
 
 		uint GetKeyFrameWidth() const;
 
-	private:
-		SDLGraphicsManager& graphicsManager;
-		SettingsManager& settingsManager;
+		std::list<KeyFrame> KeyFrames;
 
+	private:
+		
 		/// <summary>
 		/// The binary data that will represent the resource once its loaded.
 		/// </summary>
@@ -96,11 +91,6 @@ namespace gamelib
 		uint keyFrameHeight = 0;
 		uint keyFrameWidth = 0;
 		bool isAnimated = false;
-
-		/// <summary>
-		/// Logger 
-		/// </summary>
-		Logger& logger;
 
 		/// <summary>
 		/// Observable area of the graphic

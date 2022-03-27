@@ -35,21 +35,11 @@ namespace gamelib
 	/// <param name="audio_admin"></param>
 	/// <param name="get_input_func"></param>
 	/// <param name="Logger"></param>
-	GameStructure::GameStructure(EventManager& eventManager, 
-						ResourceManager& resourceManager,
-		                SettingsManager& settingsManager, GameWorldData& world,
-		                SceneManager& sceneManager, SDLGraphicsManager& graphicsManager,
-		                AudioManager& audoManager, std::function<void()> getControllerInputFunction,
-					    Logger& Logger)
-			: _eventManager(eventManager), 
-			_resourceManager(resourceManager),
-			_settingsManager(settingsManager),
-			_gameWorld(world),
-			_sceneManager(sceneManager),
-			_graphicsManager(graphicsManager), 
-			_audioManager(audoManager), 
-			_getControllerInputFunction(std::move(getControllerInputFunction)),
-			_gameLogger(Logger) { }
+	GameStructure::GameStructure(GameWorldData& world, SceneManager& sceneManager, std::function<void()> getControllerInputFunction)
+			: _gameWorld(world),
+			_sceneManager(sceneManager),			
+			_getControllerInputFunction(std::move(getControllerInputFunction))
+			{ }
 
 	/// <summary>
 	/// tear down and unloda game subsystems when the game shuts down
@@ -66,38 +56,38 @@ namespace gamelib
 	bool GameStructure::InitializeGameSubSystems()
 	{
 		// Initialize the settings manager
-		const auto settings_admin_initialized_ok = _settingsManager.load("game/settings.xml");
+		const auto settings_admin_initialized_ok = SettingsManager::Get()->load("game/settings.xml");
 		
 		// Load key game subsystem settings
-		const auto be_verbose = _settingsManager.get_bool("global","verbose");
-		const auto screen_width = _settingsManager.get_int("global", "screen_width");
-		const auto screen_height = _settingsManager.get_int("global", "screen_height");
+		const auto be_verbose = SettingsManager::Get()->get_bool("global","verbose");
+		const auto screen_width = SettingsManager::Get()->get_int("global", "screen_width");
+		const auto screen_height = SettingsManager::Get()->get_int("global", "screen_height");
 		
 		// Perform the initialiation
 		return LogThis("GameStructure::initialize()", be_verbose, [&]()
 		{			
 			// Initialize resource manager
-			const auto resource_admin_initialized_ok = LogOnFailure(_resourceManager.Initialize(_eventManager), "Could not initialize resource manager", _settingsManager, _gameLogger);
+			const auto resource_admin_initialized_ok = LogOnFailure(ResourceManager::Get()->Initialize(), "Could not initialize resource manager");
 
 			// Initialize event manager
-			const auto eventAdmin_initialized_ok = LogOnFailure(_eventManager.Initialize(), "Could not initialize event manager", _settingsManager, _gameLogger);
+			const auto eventAdmin_initialized_ok = LogOnFailure(EventManager::Get()->Initialize(), "Could not initialize event manager");
 
 			// Initialize SceneManager
-			const auto scene_admin_initialized_ok = LogOnFailure(_sceneManager.Initialize(), "Could not initialsettings->ize scene manager", _settingsManager, _gameLogger);
+			const auto scene_admin_initialized_ok = LogOnFailure(_sceneManager.Initialize(), "Could not initialsettings->ize scene manager");
 
 			// Initialize SDL
-			const auto sdl_initialize_ok = LogOnFailure(InitializeSDL(screen_width, screen_height), "Could not initialize SDL, aborting.", _settingsManager, _gameLogger);
+			const auto sdl_initialize_ok = LogOnFailure(InitializeSDL(screen_width, screen_height), "Could not initialize SDL, aborting.");
 
 			// Final check to see if all subsystems are initialised ok
-			if(failed(sdl_initialize_ok, _gameLogger) || 
-			   failed(eventAdmin_initialized_ok, _gameLogger) ||
-			   failed(resource_admin_initialized_ok, _gameLogger) || 
-			   failed(scene_admin_initialized_ok, _gameLogger) ||
-			   failed(settings_admin_initialized_ok, _gameLogger)) 
+			if(failed(sdl_initialize_ok) || 
+			   failed(eventAdmin_initialized_ok) ||
+			   failed(resource_admin_initialized_ok) || 
+			   failed(scene_admin_initialized_ok) ||
+			   failed(settings_admin_initialized_ok)) 
 				return false;	
 						
 			return true;
-		}, _settingsManager, true, true);
+		}, true, true);
 	}
 
 	
@@ -137,7 +127,7 @@ namespace gamelib
 	void GameStructure::UpdateWorld() const
 	{
 		// Send Update event to all subscribers who support updates and make them process it right now
-		_eventManager.DispatchEventToSubscriber(make_shared<LogicUpdateEvent>());		
+		EventManager::Get()->DispatchEventToSubscriber(make_shared<LogicUpdateEvent>());		
 	}
 
 	/// <summary>
@@ -170,7 +160,7 @@ namespace gamelib
 		ReadKeyboard();
 
 		// Contacts all event subscribers for all events that are currently waiting to be processed in the event queue
-		_eventManager.ProcessAllEvents(); 
+		EventManager::Get()->ProcessAllEvents(); 
 	}
 
 	/// <summary>
@@ -180,7 +170,7 @@ namespace gamelib
 	void GameStructure::Draw(float percent_within_tick) 
 	{
 		// Draws the current scene
-		_graphicsManager.DrawCurrentScene(_sceneManager); 
+		SDLGraphicsManager::Get()->DrawCurrentScene(_sceneManager); 
 	}
 
 	/// <summary>
@@ -191,7 +181,7 @@ namespace gamelib
 	/// <returns>true if SDL is successfully initialized, false otherwise</returns>
 	bool GameStructure::InitializeSDL(const int screenWidth, const int screenHeight)
 	{
-		return LogOnFailure(_graphicsManager.Initialize(screenWidth, screenHeight), "Failed to initialize SDL graphics manager", _settingsManager, _gameLogger);
+		return LogOnFailure(SDLGraphicsManager::Get()->Initialize(screenWidth, screenHeight), "Failed to initialize SDL graphics manager");
 	}
 
 
@@ -203,7 +193,7 @@ namespace gamelib
 	{
 		try 
 		{
-			_resourceManager.Unload();		
+			ResourceManager::Get()->Unload();		
 			TTF_Quit();
 			IMG_Quit();
 			SDL_Quit();
@@ -237,12 +227,12 @@ namespace gamelib
 		// Initialize/prepare process by saying last update occured right now.
 		auto t0 = GetTimeNowMs();
 
-		const auto maxLoops = _settingsManager.get_int("global", "max_loops");
+		const auto maxLoops = SettingsManager::Get()->get_int("global", "max_loops");
 
 		// Get required time(ms) in per update() call. 
 		// This is a pre-calculated ms value that will represents a desired fixed number times that update must be called in 1 second,
 		// as multiples of this value will equal 1 second.
-		const auto TICK_TIME = _settingsManager.get_int("global", "tick_time_ms"); 
+		const auto TICK_TIME = SettingsManager::Get()->get_int("global", "tick_time_ms"); 
 		
 		while (!_gameWorld.IsGameDone) // main game loop (exact speed of loops is hardware dependaant)
 		{

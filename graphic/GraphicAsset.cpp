@@ -17,17 +17,11 @@ namespace gamelib
 		const std::string& path, 
 		const std::string& type,
 		const int level, 
-		const bool isAnimated, 
-		SDLGraphicsManager& graphicsManager, 
-		SettingsManager& config,
-		Logger& logger)
+		const bool isAnimated)
 								 : Asset(uid, name, path, type, level),
 	                               keyFrameHeight(64),
 	                               keyFrameWidth(64),
-	                               isAnimated(isAnimated),
-								   graphicsManager(graphicsManager),
-								   settingsManager(config),
-								   logger(logger){ }
+	                               isAnimated(isAnimated){ }
 
 	/// <summary>
 	/// Create Graphic Asset
@@ -40,19 +34,13 @@ namespace gamelib
 		const uint numKeyFrames, 
 		const uint keyFrameHeight, 
 		const uint keyFrameWidth, 
-		const bool isAnimated, 
-		SDLGraphicsManager& graphicsManager, 
-		SettingsManager& config,
-		Logger& logger)
+		const bool isAnimated)
 								 : Asset(uid, name, path, type, level),
 		                           numKeyFrames(numKeyFrames),
 		                           keyFrameHeight(keyFrameHeight),
 		                           keyFrameWidth(keyFrameWidth),
 		                           isAnimated(isAnimated),
-		                           viewPort({ 0, 0, static_cast<int>(keyFrameWidth), static_cast<int>(keyFrameHeight) }),
-								   graphicsManager(graphicsManager),
-								   settingsManager(config), 
-		logger(logger) 
+		                           viewPort({ 0, 0, static_cast<int>(keyFrameWidth), static_cast<int>(keyFrameHeight) }) 
 	{
 		assetType = AssetType::Graphic;
 	}
@@ -70,7 +58,7 @@ namespace gamelib
 		if(loadedSurface)
 		{						
 			// Create texture from surface pixels
-			texture = SDL_CreateTextureFromSurface(graphicsManager.windowRenderer, loadedSurface );
+			texture = SDL_CreateTextureFromSurface(SDLGraphicsManager::Get()->windowRenderer, loadedSurface );
 			
 			// Get rid of old loaded surface (we have the texture pixels)
 			SDL_FreeSurface(loadedSurface);
@@ -83,7 +71,7 @@ namespace gamelib
 		}
 		else
 		{
-			logger.LogThis(std::string("Unable to load image:") + path + std::string(" Error:") + IMG_GetError());
+			Logger::Get()->LogThis(std::string("Unable to load image:") + path + std::string(" Error:") + IMG_GetError());
 		}
 	}
 
@@ -107,7 +95,7 @@ namespace gamelib
 		} 
 		catch (...)
 		{
-			logger.LogThis(string("Unable to Unload asset: " + this->name) + string(", path:" + this->path));
+			Logger::Get()->LogThis(string("Unable to Unload asset: " + this->name) + string(", path:" + this->path));
 			isSuccess = false;
 		}
 
@@ -152,7 +140,7 @@ namespace gamelib
 	{
 		// Unload the asset if if not longer be used/referenced anywhere/more
 		
-		logger.LogThis(string("Unloading asset: " + this->path));
+		Logger::Get()->LogThis(string("Unloading asset: " + this->path));
 
 		Unload();
 	}

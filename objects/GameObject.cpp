@@ -16,18 +16,16 @@ namespace gamelib
 	/// </summary>
 	int GameObject::lastGameObjectId = 0;
 
-	GameObject::GameObject(bool is_visible, SettingsManager& settings_admin, EventManager& eventManager) 
-			: IEventSubscriber(), settings_admin(settings_admin), eventManager(eventManager)
+	GameObject::GameObject(bool is_visible) : IEventSubscriber()
 	{
-		SetDefaults(is_visible, settings_admin, 0, 0);
-		GameObject::LoadSettings(settings_admin);
+		SetDefaults(is_visible, 0, 0);
+		GameObject::LoadSettings();
 	}
 
-	GameObject::GameObject(const int x, const int y, bool is_visible, SettingsManager& settings_admin, EventManager& eventManager) 
-			: supportsMoveLogic(false), settings_admin(settings_admin), eventManager(eventManager)
+	GameObject::GameObject(const int x, const int y, bool is_visible ) : supportsMoveLogic(false)
 	{
-		SetDefaults(is_visible, settings_admin, x, y);
-		GameObject::LoadSettings(settings_admin);
+		SetDefaults(is_visible, x, y);
+		GameObject::LoadSettings();
 	}
 
 	void GameObject::ChangeInternalPosition(const std::shared_ptr<Event> the_event)
@@ -66,17 +64,17 @@ namespace gamelib
 	/// <summary>
 	/// All Game object so directly Subscribe to event on underlying event manager
 	/// </summary>
-	void GameObject::SubscribeToEvent(EventType type, EventManager& eventManager)
+	void GameObject::SubscribeToEvent(EventType type)
 	{
-		eventManager.SubscribeToEvent(type, this);
+		EventManager::Get()->SubscribeToEvent(type, this);
 	}
 
 	/// <summary>
 	/// Raise event on underlying event manager
 	/// </summary>
-	void GameObject::RaiseEvent(const shared_ptr<Event>& the_event, EventManager& eventManager)
+	void GameObject::RaiseEvent(const shared_ptr<Event>& the_event)
 	{
-		eventManager.RaiseEvent(the_event, this);
+		EventManager::Get()->RaiseEvent(the_event, this);
 	}
 
 	/// <summary>
@@ -153,15 +151,15 @@ namespace gamelib
 	/// Load Game Object settings
 	/// </summary>
 	/// <param name="settings_admin"></param>
-	void GameObject::LoadSettings(SettingsManager& settings_admin)
+	void GameObject::LoadSettings()
 	{
-		moveInterval = settings_admin.get_int("player", "move_interval");
+		moveInterval = SettingsManager::Get()->get_int("player", "move_interval");
 	}
 
 	/// <summary>
 	/// Set defaults
 	/// </summary>
-	void GameObject::SetDefaults( bool is_visible, SettingsManager& settings, int x, int y)
+	void GameObject::SetDefaults( bool is_visible, int x, int y)
 	{
 		 this->bounds = { x, y, 0 ,0};
 		 supportsMoveLogic = true;
@@ -173,7 +171,6 @@ namespace gamelib
 		 red = 0x00;
 		 blue = 0xFF;
 		 green = 0x00;
-		 settings_admin = settings;
 		 id = lastGameObjectId++;
 	}
 

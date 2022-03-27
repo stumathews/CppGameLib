@@ -47,6 +47,7 @@
     <ClCompile Include="FontManagerTests.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="ResourceManagerTests.cpp" />
+    <ClCompile Include="ResourceParser.cpp" />
     <ClCompile Include="SceneManagerTests.cpp" />
     <ClCompile Include="SDLGraphicsManagerTests.cpp" />
     <ClCompile Include="SettingsManagerTests.cpp" />

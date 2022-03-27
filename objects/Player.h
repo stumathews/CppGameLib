@@ -15,19 +15,17 @@ namespace gamelib
 	class Player final : public DrawableGameObject
 	{
 		bool drawBox = false;
-		EventManager& eventManager;
-		Logger& gameLogger;
 		bool be_verbose;
 		
 	public:
 		
-		Player(int x, int y, int w, int h, SettingsManager& settings, EventManager& eventManager, Logger& gameLogger);
+		Player(int x, int y, int w, int h);
 		
 		/// <summary>
 		/// Load player settings
 		/// </summary>
 		/// <param name="settings"></param>
-		void LoadSettings(SettingsManager& settings) override;
+		void LoadSettings() override;
 		
 		/// <summary>
 		/// Center player in room

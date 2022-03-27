@@ -12,7 +12,7 @@ namespace gamelib
 		/// Create Logger
 		/// </summary>
 		/// <param name="func"></param>
-		Logger(logging_func func = nullptr);
+		static Logger* Get();
 		Logger(const Logger& other) = delete;
 		Logger& operator=(const Logger& other) = delete;
 
@@ -23,8 +23,11 @@ namespace gamelib
 		/// <param name="be_verbose">Log to file</param>
 		/// <param name="log_stdout">Log to std out</param>
 		void LogThis(const std::string& message, const bool be_verbose = false, const bool log_stdout = true) const;
+	protected:
+		static Logger* Instance;
 	private:
 		logging_func func;	
 		void LogToStdOut(const std::string message) const;
+		Logger(logging_func func = nullptr);
 	};
 }

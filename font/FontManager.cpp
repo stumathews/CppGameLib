@@ -6,6 +6,22 @@ using namespace std;
 
 namespace gamelib
 {
+	FontManager* FontManager::Get()
+	{
+		if (Instance == nullptr)
+		{
+			Instance = new FontManager();
+		}
+		return Instance;
+	}
+
+	FontManager::~FontManager()
+	{
+		Instance = nullptr;
+	}
+
+	FontManager* FontManager::Instance = nullptr;
+
 	shared_ptr<Asset> FontManager::CreateAsset(tinyxml2::XMLElement* element) const
 	{
 		int uuid;

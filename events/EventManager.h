@@ -13,21 +13,9 @@ namespace gamelib
 {
 	class EventManager : public EventSubscriber
 	{
-		// Primary queue used for event processing
-		std::queue<std::shared_ptr<Event>> primary_event_queue_;
-		
-		// used to hold events occurring out of processing of primary events
-		std::queue<std::shared_ptr<Event>> secondary_event_queue_;
-
-		// Event subscribers (aka event handlers)
-		std::map<EventType, std::vector<IEventSubscriber*>> event_subscribers_;
-
-		SettingsManager& config;
-		Logger& gameLogger;
-		bool resetting = false;
 
 	public:
-		EventManager(SettingsManager& config, Logger& Logger);
+		static EventManager* Get();
 		size_t count_ready() const;
 
 		// Clears subscribers, primary and secondary queues
@@ -69,7 +57,20 @@ namespace gamelib
 
 		void RemoveEventSubscription(const int subscription_id, gamelib::EventType type);
 		void Unsubscribe(const int subscription_id);
+	protected:
+		static EventManager* Instance;
+	private:
+		EventManager();
 
+		// Primary queue used for event processing
+		std::queue<std::shared_ptr<Event>> primary_event_queue_;
+
+		// used to hold events occurring out of processing of primary events
+		std::queue<std::shared_ptr<Event>> secondary_event_queue_;
+
+		// Event subscribers (aka event handlers)
+		std::map<EventType, std::vector<IEventSubscriber*>> event_subscribers_;
+		bool resetting = false;
 	};
 }
 

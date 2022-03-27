@@ -21,9 +21,7 @@ namespace gamelib
 			uint framesPerColumn, 
 			uint frameWidth, 
 			uint frame, 
-			bool isVisible, 
-			SettingsManager& settingsManager,
-			EventManager& eventManager);
+			bool isVisible);
 
 		/// <summary>
 		/// Set Game Object Type

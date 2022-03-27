@@ -56,7 +56,7 @@ namespace gamelib
 		// If settings are reloaded, reload the room settings
 		if(event->type == EventType::SettingsReloaded)
 		{
-			LoadSettings(settings_admin);			
+			LoadSettings();			
 		}
 		
 		return generatedEvents;
@@ -66,13 +66,13 @@ namespace gamelib
 	/// Reload room settings
 	/// </summary>
 	/// <param name="settings_admin"></param>
-	void Room::LoadSettings(SettingsManager& settings_admin)
+	void Room::LoadSettings()
 	{
 		// Load game object settings
-		GameObject::LoadSettings(settings_admin);	
+		GameObject::LoadSettings();	
 
 		// Refetch Room settings
-		fill = settings_admin.get_bool("room_fill", "enable");
+		fill = SettingsManager::Get()->get_bool("room_fill", "enable");
 	}
 
 	/// <summary>
@@ -118,9 +118,9 @@ namespace gamelib
 		if(fill)
 			DrawFilledRect(renderer, &bounds, { 255, 0 ,0 ,0});
 		
-		if(settings_admin.get_bool("global", "print_debugging_text"))
+		if( SettingsManager::Get()->get_bool("global", "print_debugging_text"))
 		{
-		  RectDebugging::printInRect(renderer, GetTag(), &bounds, _resourceManager); 
+		  RectDebugging::printInRect(renderer, GetTag(), &bounds); 
 		}
 	}
 
@@ -138,11 +138,8 @@ namespace gamelib
 		int y, 
 		int width, 
 		int height, 
-		ResourceManager& resourceManager, 
-		SettingsManager& settings, 
-		EventManager& eventManager, bool fill)
-		: DrawableGameObject(x, y, true, settings, eventManager), 
-		 _resourceManager(resourceManager), fill(fill), playerBounds({}),
+		bool fill)
+		: DrawableGameObject(x, y, true), fill(fill), playerBounds({}),
 		 top_room_index(0), right_room_index(0),  bottom_room_index(0), width(width), height(height), left_room_index(0)
 	{
 		// Bounds of this room

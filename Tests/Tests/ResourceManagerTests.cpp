@@ -14,14 +14,7 @@ class ResourceManagerTests : public testing::Test
  protected:
 
   void SetUp() override
-  {  	
-  	config = shared_ptr<SettingsManager>(new SettingsManager());
-	event_admin = shared_ptr<EventManager>(new EventManager(*config, Logger));		
-	font_admin = shared_ptr<FontManager>(new FontManager());
-	graphics_admin = shared_ptr<SDLGraphicsManager>(new SDLGraphicsManager(*event_admin, Logger));
-  	audio_admin = shared_ptr<AudioManager>(new AudioManager());
-	resource_admin = shared_ptr<ResourceManager>(new ResourceManager(*config, *graphics_admin, *font_admin, *audio_admin, Logger));
-
+  { 
   }
     
   void TearDown() override {}
@@ -33,14 +26,7 @@ class ResourceManagerTests : public testing::Test
   const string exp_type = "music";
   const string exp_filename = "Assets/Music/MainTheme.wav";
   const string resource_file_path = "Resources.xml";
-  
-  shared_ptr<ResourceManager> resource_admin;
-  shared_ptr<SettingsManager> config;
-  shared_ptr<EventManager> event_admin;	
-  shared_ptr<FontManager> font_admin;
-  shared_ptr<SDLGraphicsManager> graphics_admin;
-  shared_ptr<AudioManager> audio_admin;
-  Logger Logger;
+   
 
   void test_asset_against_baseline(shared_ptr<Asset> asset) const
   {
@@ -55,35 +41,35 @@ class ResourceManagerTests : public testing::Test
 
 TEST_F(ResourceManagerTests, Initialize)
 {
-	EXPECT_TRUE(resource_admin->Initialize(*event_admin)) << "Expected resource manager initialization to succeed";
-	EXPECT_EQ(event_admin->GetSubscriptions()[EventType::LevelChangedEventType].size(), 1) << "Expected to subscribe to LevelChangedEventType";
+	EXPECT_TRUE(ResourceManager::Get()->Initialize()) << "Expected resource manager initialization to succeed";
+	EXPECT_EQ(EventManager::Get()->GetSubscriptions()[EventType::LevelChangedEventType].size(), 1) << "Expected to subscribe to LevelChangedEventType";
 	EXPECT_STREQ(
-		event_admin->GetSubscriptions()[EventType::LevelChangedEventType][0]->GetSubscriberName().c_str(),
-		resource_admin->GetSubscriberName().c_str()) << "Unexpected subscriber";
+		EventManager::Get()->GetSubscriptions()[EventType::LevelChangedEventType][0]->GetSubscriberName().c_str(),
+		ResourceManager::Get()->GetSubscriberName().c_str()) << "Unexpected subscriber";
 }
 
 TEST_F(ResourceManagerTests, read_resources)
 {
-	resource_admin->IndexResources(resource_file_path);
-	EXPECT_EQ(resource_admin->get_resource_count(), 12) << "Expected 12 assets to be loaded";
+	ResourceManager::Get()->IndexResources(resource_file_path);
+	EXPECT_EQ(ResourceManager::Get()->get_resource_count(), 12) << "Expected 12 assets to be loaded";
 }
 
 TEST_F(ResourceManagerTests, get_resource_via_string)
 {
-	resource_admin->IndexResources(resource_file_path);
+	ResourceManager::Get()->IndexResources(resource_file_path);
 
 	// When fetching an asset using string identifier
-	const auto asset = resource_admin->GetAssetInfo(exp_name);
+	const auto asset = ResourceManager::Get()->GetAssetInfo(exp_name);
 
 	// Ensure the asset is populated correctly
 	test_asset_against_baseline(asset);
 }
 TEST_F(ResourceManagerTests, get_resource_via_int)
 {
-	resource_admin->IndexResources(resource_file_path);
+	ResourceManager::Get()->IndexResources(resource_file_path);
 
 	// When fetching an asset using integer uid
-	const auto asset = resource_admin->GetAssetInfo(exp_uid);
+	const auto asset = ResourceManager::Get()->GetAssetInfo(exp_uid);
 	
 	// Ensure the asset is populated correctly
 	test_asset_against_baseline(asset);
@@ -92,8 +78,8 @@ TEST_F(ResourceManagerTests, get_resource_via_int)
 
 TEST_F(ResourceManagerTests, unload)
 {
-	resource_admin->Initialize(*event_admin);
-	resource_admin->IndexResources(resource_file_path);
-	resource_admin->Unload();
-	EXPECT_EQ(0, resource_admin->get_resource_unloaded_count()) << "Asset count is not 0 after unload";
+	ResourceManager::Get()->Initialize();
+	ResourceManager::Get()->IndexResources(resource_file_path);
+	ResourceManager::Get()->Unload();
+	EXPECT_EQ(0, ResourceManager::Get()->get_resource_unloaded_count()) << "Asset count is not 0 after unload";
 }

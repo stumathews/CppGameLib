@@ -15,8 +15,18 @@ using namespace std;
 namespace gamelib
 {
 
-	SDLGraphicsManager::SDLGraphicsManager(EventManager& eventManager, Logger& the_logger)
-		: EventSubscriber(), eventManager(eventManager), logger(the_logger) { }
+	SDLGraphicsManager* SDLGraphicsManager::Get()
+	{
+		if (Instance == nullptr)
+		{
+			Instance = new SDLGraphicsManager();
+		}
+		return Instance;
+	}
+
+	SDLGraphicsManager* SDLGraphicsManager::Instance = nullptr;
+
+	SDLGraphicsManager::SDLGraphicsManager() : EventSubscriber() { }
 
 	/// <summary>
 	/// Handle any events we've subscribed to
@@ -81,12 +91,12 @@ namespace gamelib
 	/// </summary>
 	bool SDLGraphicsManager::Initialize(const uint width, const uint height, const char * windowTitle)
 	{
-		logger.LogThis("SDLGraphicsManager::Initialize()");
+		Logger::Get()->LogThis("SDLGraphicsManager::Initialize()");
 		
 		// Initialize SDL Video and Audio subsystems
 		if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0)
 		{
-			logger.LogThis(string("SDL could not initialize:") + const_cast<char*>(SDL_GetError()));
+			Logger::Get()->LogThis(string("SDL could not initialize:") + const_cast<char*>(SDL_GetError()));
 			return false;
 		}
 
@@ -94,7 +104,7 @@ namespace gamelib
 		const int imgFlags = IMG_INIT_PNG;
 		if( !( IMG_Init( imgFlags ) & imgFlags ) )
 		{
-			logger.LogThis(string("SDL_image could not initialize:") + const_cast<char*>(SDL_GetError()));
+			Logger::Get()->LogThis(string("SDL_image could not initialize:") + const_cast<char*>(SDL_GetError()));
 			return false;
 		}
 
@@ -112,7 +122,7 @@ namespace gamelib
 		if(Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0 )
 	    {
 		    const string message("SDL_mixer could not initialize! SDL_mixer Error: ");
-			LogMessage(message + Mix_GetError(), logger);
+			LogMessage(message + Mix_GetError());
 	        return false;
 	    }
 
@@ -120,18 +130,18 @@ namespace gamelib
 		if(TTF_Init() == -1)
 		{
 			const string message("Could not initialize TTF");
-			LogMessage(message, logger);
+			LogMessage(message);
 			return false;			
 		}
 
-		logger.LogThis("SDLGraphicsManager ready.");
+		Logger::Get()->LogThis("SDLGraphicsManager ready.");
 		return true;
 	}
 
 	/// <summary>
 	/// Create an Graphic Asset from resource XML
 	/// </summary>
-	std::shared_ptr<Asset> SDLGraphicsManager::CreateAsset(tinyxml2::XMLElement * resourceElement, SettingsManager& config)
+	std::shared_ptr<Asset> SDLGraphicsManager::CreateAsset(tinyxml2::XMLElement * resourceElement)
 	{		
 		// Details that we will extract from object XML
 		auto isAnimated = false;
@@ -181,8 +191,8 @@ namespace gamelib
 
 
 		auto resource = isAnimated
-			                        ? std::shared_ptr<GraphicAsset>(new GraphicAsset(uuid, friendlyName, path, type, level, numKeyFrames, keyFrameHeight, keyFrameWidth,  isAnimated, *this, config, logger))
-			                        : std::shared_ptr<GraphicAsset>(new GraphicAsset(uuid, friendlyName, path, type, level, isAnimated, *this, config, logger));
+			                        ? std::shared_ptr<GraphicAsset>(new GraphicAsset(uuid, friendlyName, path, type, level, numKeyFrames, keyFrameHeight, keyFrameWidth,  isAnimated))
+			                        : std::shared_ptr<GraphicAsset>(new GraphicAsset(uuid, friendlyName, path, type, level, isAnimated));
 			
 		
 		return resource;
@@ -254,5 +264,6 @@ namespace gamelib
 		SDL_DestroyWindow(window);
 	    IMG_Quit();
 	    SDL_Quit();
+		Instance = nullptr;
 	}
 }

@@ -1,37 +1,52 @@
 #include "Logger.h"
 using namespace std;
 
-gamelib::Logger::Logger(logging_func func) : func(func) {}
-
-void gamelib::Logger::LogThis(const string& message, const bool be_verbose, const bool logToStdout) const
+namespace gamelib
 {
-	bool fallbackToStdOut = func == nullptr;
+	Logger::Logger(logging_func func) : func(func) {}
 
-	// Verbose logging goes to specific function, writes to file usually
-	if (be_verbose)
+	Logger* gamelib::Logger::Get()
 	{
-		if (!fallbackToStdOut)
+		if (Instance == nullptr)
 		{
-			fallbackToStdOut = true;
-
-			// use logging function
-			func(message);
+			Instance = new Logger();
 		}
-		else
+		return Instance;
+	}
+
+	Logger* gamelib::Logger::Instance = nullptr;
+
+	void Logger::LogThis(const string& message, const bool be_verbose, const bool logToStdout) const
+	{
+		bool fallbackToStdOut = func == nullptr;
+
+		// Verbose logging goes to specific function, writes to file usually
+		if (be_verbose)
 		{
-			// Fallback to std output
+			if (!fallbackToStdOut)
+			{
+				fallbackToStdOut = true;
+
+				// use logging function
+				func(message);
+			}
+			else
+			{
+				// Fallback to std output
+				LogToStdOut(message);
+			}
+		}
+
+		// Explicitly asked to write to std out
+		if (logToStdout && !fallbackToStdOut)
+		{
 			LogToStdOut(message);
 		}
 	}
 
-	// Explicitly asked to write to std out
-	if(logToStdout && !fallbackToStdOut)
+	void Logger::LogToStdOut(const string message) const
 	{
-		LogToStdOut(message);
+		cout << message << endl;
 	}
-}
 
-void gamelib::Logger::LogToStdOut(const string message) const
-{
-	cout << message << endl;
 }

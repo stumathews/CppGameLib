@@ -17,16 +17,16 @@ namespace gamelib
 	 */
 	class ResourceManager : public EventSubscriber
 	{		
-	    public:
-		ResourceManager(SettingsManager& config, SDLGraphicsManager& graphics_admin, FontManager& font_admin, AudioManager&, Logger& the_logger);
-			
+	    public:		
+		static ResourceManager* Get();
+		~ResourceManager();
 		std::shared_ptr<Asset> GetAssetInfo(const std::string& name);
 		std::shared_ptr<Asset> GetAssetInfo(int uuid);
 		int get_resource_count() const { return resource_count; }
 		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> the_event) override;
 		void Unload();
 		
-		bool Initialize(EventManager& eventManager);
+		bool Initialize();
 	    std::string GetSubscriberName() override;
 
 		// index the resoures file
@@ -41,13 +41,11 @@ namespace gamelib
 			FailedToLoadResourceFile,
 			UnknownResourceType
 		};
+	protected:
+		static ResourceManager* Instance;
 				
 	private:
-		SettingsManager& config;
-		SDLGraphicsManager& graphics_admin;
-		FontManager& font_admin;
-		AudioManager& audio_admin;
-		Logger& logger;
+		ResourceManager();		
 		void LoadSceneAssets(int level);
 	    void StoreAssetInfo(const std::shared_ptr<Asset>& the_asset);
 		std::map<int, std::vector<std::shared_ptr<Asset>>> resources_by_scene;   
@@ -57,6 +55,7 @@ namespace gamelib
 		int resource_count = 0;
 		int loaded_resources_count = 0;
 		int unloaded_resources_count = 0;
+		
 	};
 }
 

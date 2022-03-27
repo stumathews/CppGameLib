@@ -14,9 +14,18 @@ namespace gamelib
 	/// <summary>
 	/// Create Event manager
 	/// </summary>
-	/// <param name="config"></param>
-	/// <param name="the_logger"></param>
-	EventManager::EventManager(SettingsManager& config, Logger& the_logger) : gameLogger(the_logger), config(config) { 	}
+	EventManager::EventManager() { 	}
+
+	EventManager* EventManager::Get()
+	{
+		if (Instance == nullptr)
+		{
+			Instance = new EventManager();
+		}
+		return Instance;
+	}
+
+	EventManager* EventManager::Instance = nullptr;
 
 	size_t EventManager::count_ready() const
 	{
@@ -34,7 +43,8 @@ namespace gamelib
 
 	EventManager::~EventManager()
 	{
-		gameLogger.LogThis("Event manager dying.");
+		Logger::Get()->LogThis("Event manager dying.");
+		Instance = nullptr;
 	}
 
 	/// <summary>
@@ -43,11 +53,11 @@ namespace gamelib
 	/// <returns>true on initialization, false otherwise</returns>
 	bool EventManager::Initialize()
 	{		
-		return LogThis("EventManager::initialize()", config.get_bool("global", "verbose"), [&]()
+		return LogThis("EventManager::initialize()", SettingsManager::Get()->get_bool("global", "verbose"), [&]()
 		{
 			
 			return true;
-		}, config, true, true);
+		}, true, true);
 	}
 
 	void EventManager::ClearSubscribers()
@@ -64,14 +74,14 @@ namespace gamelib
 	{		
 		if(!you)
 		{
-			gameLogger.LogThis("Invalid sender", true);
+			Logger::Get()->LogThis("Invalid sender", true);
 			return;
 		}
 
 		auto const log = "EventManager: " + you->GetSubscriberName()  + string(" raised to event ") + event->to_str();
 		
 		if(event->type != EventType::DoLogicUpdateEventType)
-			gameLogger.LogThis(log);
+			Logger::Get()->LogThis(log);
 
 		primary_event_queue_.push(event);		
 	}
@@ -86,7 +96,7 @@ namespace gamelib
 		if(you)
 		{
 			auto const message = "EventManager: "+you->GetSubscriberName() + string(" subscribed to event ") + type;
-			gameLogger.LogThis(message);
+			Logger::Get()->LogThis(message);
 		
 			event_subscribers_[type].push_back(you);
 		}

@@ -17,14 +17,14 @@ class SDLGraphicsManagerTests : public testing::Test
 
   void SetUp() override
   {  	
-  	config = shared_ptr<SettingsManager>(new SettingsManager());
-	event_admin = shared_ptr<EventManager>(new EventManager(*config, Logger));		
-	font_admin = shared_ptr<FontManager>(new FontManager());
-	graphics_admin = shared_ptr<SDLGraphicsManager>(new SDLGraphicsManager(*event_admin, Logger));
-  	audio_admin = shared_ptr<AudioManager>(new AudioManager());
-	resource_admin = shared_ptr<ResourceManager>(new ResourceManager(*config, *graphics_admin, *font_admin, *audio_admin, Logger));
+  	config = shared_ptr<SettingsManager>(SettingsManager::Get());
+	event_admin = shared_ptr<EventManager>(EventManager::Get());
+	font_admin = shared_ptr<FontManager>(FontManager::Get());
+	graphics_admin = shared_ptr<SDLGraphicsManager>(SDLGraphicsManager::Get());
+  	audio_admin = shared_ptr<AudioManager>(AudioManager::Get());
+	resource_admin = shared_ptr<ResourceManager>(ResourceManager::Get());
 	world = shared_ptr<GameWorldData>(new GameWorldData());
-  	scene_admin = shared_ptr<SceneManager>(new SceneManager(*event_admin, *config, *resource_admin, *world, Logger, ""/* root folder is scene folder */));
+  	scene_admin = shared_ptr<SceneManager>(new SceneManager(*world, ""/* root folder is scene folder */));
   }
     
   void TearDown() override {}
@@ -37,7 +37,6 @@ class SDLGraphicsManagerTests : public testing::Test
   shared_ptr<AudioManager> audio_admin;
   shared_ptr<SceneManager> scene_admin;
   shared_ptr<GameWorldData> world;
-  Logger Logger;
 	
 };
 

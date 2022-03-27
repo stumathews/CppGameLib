@@ -5,7 +5,7 @@
 namespace gamelib
 {
 	AnimatedSprite::AnimatedSprite(uint xPos, uint yPos, uint frameDurationMs, uint totalFrames,  uint framesPerRow, uint framesPerColumn, uint frameWidth,
-		uint frame, bool isVisible, SettingsManager& settingsManager,  EventManager& eventManager) 
+		uint frame, bool isVisible) 
 		: frameDurationMs(100), 
 		totalFrames(totalFrames), 
 		framesPerRow(framesPerRow), 
@@ -15,7 +15,7 @@ namespace gamelib
 		frameWidth(64),
 		startFrameNumber(0), 
 		timeLastFrameShown(0),
-		GameObject(xPos, yPos, isVisible, settingsManager, eventManager) { }
+		GameObject(xPos, yPos, isVisible) { }
 
 	/// <summary>
 	/// Set game object type
@@ -94,23 +94,31 @@ namespace gamelib
 		if(!HasGraphic())
 			return;
 				
-		SDL_Rect typicalFrame[] = 
+		// 11 key frames,  where they actually appear in the picture is irrelevant
+		SDL_Rect typicalFrame[11] = 
 		{ 
-			{0,0,66,92},
-			{66,0,66,93},
-			{132,0,66,93},
-			{0,93,66,93},
-			{66,93,66,93},
-			{132,93,71,92},
-			{0,186,71,93},
-			{71,186,71,93},
-			{142,186,70,92},
-			{0,279,71,93},
-			{71,279,66,97},
+		  // x,  y, w, h
+		  // row 1, 3 frames
+			{0,  0,   66, 92},  // 66x92
+			{66, 0,   66, 93},  // 66x93
+			{132,0,   66, 93},  // 66x93
+		  // row 2, 3 frames
+			{0,  93,  66, 93},  // 66x93
+			{66, 93,  66, 93},  // 66x93
+			{132,93,  71, 92},  // 71x93
+		  // row 3, 3 frames
+			{0,  186, 71, 93},  // 71x93
+			{71, 186, 71, 93},  // 71x92
+			{142,186, 70, 92},  // 70x92
+		  // row 4, 2 frames
+			{0,  279, 71, 93},  // 71x93
+			{71, 279, 66, 97},  // 66x97
 		};
 
-		// Set the graphic's viewport
+		// Get the rectangle that defines the viewport
 		auto& viewPort = GetGraphic()->GetViewPort();
+
+		// Adjust it to refer to the position of the frame in the picture
 		viewPort.x = typicalFrame[FrameNumber].x;
 		viewPort.y = typicalFrame[FrameNumber].y;
 		viewPort.w = typicalFrame[FrameNumber].w;

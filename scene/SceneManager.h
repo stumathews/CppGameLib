@@ -21,13 +21,7 @@ namespace gamelib
 		/// <summary>
 		/// Create a new Scene Manager
 		/// </summary>
-		SceneManager(EventManager& eventmanager, 
-			SettingsManager& settingsManager, 
-			ResourceManager& resourceManager, 
-			GameWorldData& gameWorld, 
-			gamelib::Logger& Logger, 
-			std::string scene_folder = "game/");	
-
+		SceneManager(GameWorldData& gameWorld, std::string scene_folder = "game/");	
 		SceneManager(const SceneManager &) = delete;
 		SceneManager(SceneManager &&) = delete;
 	    SceneManager& operator=(SceneManager const&)  = delete;
@@ -61,13 +55,13 @@ namespace gamelib
 		/// <summary>
 		/// Load new scene
 		/// </summary>
-		void LoadNewScene(const std::shared_ptr<Event> &the_event, ResourceManager& resource_admin);
+		void LoadNewScene(const std::shared_ptr<Event> &the_event);
 
 		/// <summary>
 		/// Read scene file
 		/// </summary>
 		/// <param name="filename">filename of the scene file</param>
-		bool ReadSceneFile(const std::string &filename, ResourceManager& resource_admin);
+		bool ReadSceneFile(const std::string &filename);
 
 		void OnVisibleParse(gamelib::Layer& layer, const std::string& value);
 		void OnPosYParse(gamelib::Layer& layer, const std::string& value);
@@ -142,31 +136,11 @@ namespace gamelib
 		/// Location of the scene file
 		/// </summary>
 		std::string sceneFolder;
-
-		/// <summary>
-		/// Event Manager
-		/// </summary>
-		EventManager& eventManager;
-
-		/// <summary>
-		/// Settings Manager
-		/// </summary>
-		SettingsManager& settingsManager;
-
-		/// <summary>
-		/// Resource manager
-		/// </summary>
-		ResourceManager& resourceManager;
-		
+				
 		/// <summary>
 		/// Reference to the game world
 		/// </summary>
 		GameWorldData& gameWorld;
-
-		/// <summary>
-		/// Logger
-		/// </summary>
-		Logger& logger;
 	};
 }
 #endif

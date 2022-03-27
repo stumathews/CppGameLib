@@ -15,48 +15,36 @@ class SceneManagerTests : public testing::Test
  protected:
 
   void SetUp() override
-  {  	
-  	config = shared_ptr<SettingsManager>(new SettingsManager());
-	event_admin = shared_ptr<EventManager>(new EventManager(*config, Logger));		
-	font_admin = shared_ptr<FontManager>(new FontManager());
-	graphics_admin = shared_ptr<SDLGraphicsManager>(new SDLGraphicsManager(*event_admin, Logger));
-  	audio_admin = shared_ptr<AudioManager>(new AudioManager());
-	resource_admin = shared_ptr<ResourceManager>(new ResourceManager(*config, *graphics_admin, *font_admin, *audio_admin, Logger));
-	world = shared_ptr<GameWorldData>(new GameWorldData());
-  	scene_admin = shared_ptr<SceneManager>(new SceneManager(*event_admin, *config, *resource_admin, *world, Logger, ""/* root folder is scene folder */));
+  {
+	  EventManager::Get()->ClearSubscribers();
   }
     
   void TearDown() override {}
-  
-  shared_ptr<ResourceManager> resource_admin;
-  shared_ptr<SettingsManager> config;
-  shared_ptr<EventManager> event_admin;	
-  shared_ptr<FontManager> font_admin;
-  shared_ptr<SDLGraphicsManager> graphics_admin;
-  shared_ptr<AudioManager> audio_admin;
-  shared_ptr<SceneManager> scene_admin;
-  shared_ptr<GameWorldData> world;
-  Logger Logger;
+
 	
 };
 
 TEST_F(SceneManagerTests, Initialize)
 {
-	EXPECT_TRUE(scene_admin->Initialize());
-	EXPECT_EQ(event_admin->GetSubscriptions()[EventType::LevelChangedEventType].size(), 1) << "Scene manager not automatically subscribed to LevelChangedEventType event";
-	EXPECT_EQ(event_admin->GetSubscriptions()[EventType::AddGameObjectToCurrentScene].size(), 1) << "Scene manager not automatically subscribed to AddGameObjectToCurrentScene event";
-	EXPECT_EQ(event_admin->GetSubscriptions().size(), 4) << "Expected only 3 subscriptions to be made initially, included subscription by graphics manager";
+	GameWorldData data;
+	SceneManager sceneManager = SceneManager(data);
+	EXPECT_TRUE(sceneManager.Initialize());
+	EXPECT_EQ(EventManager::Get()->GetSubscriptions()[EventType::LevelChangedEventType].size(), 1) << "Scene manager not automatically subscribed to LevelChangedEventType event";
+	EXPECT_EQ(EventManager::Get()->GetSubscriptions()[EventType::AddGameObjectToCurrentScene].size(), 1) << "Scene manager not automatically subscribed to AddGameObjectToCurrentScene event";
+	EXPECT_EQ(EventManager::Get()->GetSubscriptions().size(), 4) << "Expected only 3 subscriptions to be made initially, included subscription by graphics manager";
 }
 
 TEST_F(SceneManagerTests, get_scene_layers)
 {
-	resource_admin->Initialize(*event_admin);
-	resource_admin->IndexResources("Resources.xml");
-	scene_admin->Initialize();
-	scene_admin->StartScene(1);
-	event_admin->ProcessAllEvents();
+	ResourceManager::Get()->Initialize();
+	ResourceManager::Get()->IndexResources("Resources.xml");
+	GameWorldData data;
+	SceneManager sceneManager = SceneManager(data, "");
+	sceneManager.Initialize();
+	sceneManager.StartScene(1);
+	EventManager::Get()->ProcessAllEvents();
 	
-	auto layers = scene_admin->GetLayers();	
+	auto layers = sceneManager.GetLayers();
 	auto layer = layers.front();
 	auto game_object = layer.layerObjects.front();
 	

@@ -20,17 +20,8 @@ namespace gamelib
 	/// Create a Scene Manager.
 	/// <remarks>A scene is a collection of objects. A scene is loaded from a file</remarks>
 	/// </summary>
-	SceneManager::SceneManager(EventManager& eventManager, 
-		SettingsManager& settingsManager, 
-		ResourceManager& resourceManager, 
-		GameWorldData& gameWorld, 
-		gamelib::Logger& logger, 
-		std::string sceneFolder)
-	: eventManager(eventManager), settingsManager(settingsManager), 
-		resourceManager(resourceManager), 
-		sceneFolder(sceneFolder), 
-		gameWorld(gameWorld), 
-		logger(logger) 	{ }
+	SceneManager::SceneManager(GameWorldData& gameWorld,std::string sceneFolder) : sceneFolder(sceneFolder), gameWorld(gameWorld)
+	{ }
 
 	/// <summary>
 	/// Initialize the scene manager
@@ -38,18 +29,18 @@ namespace gamelib
 	/// <returns>true if done successfully, false otherwise</returns>
 	bool SceneManager::Initialize()
 	{
-		isInitialized = LogThis("SceneManager::initialize()", settingsManager.get_bool("global", "verbose"), [&]()
+		isInitialized = LogThis("SceneManager::initialize()", SettingsManager::Get()->get_bool("global", "verbose"), [&]()
 		{
 			// I care about when the level changes
-			eventManager.SubscribeToEvent(EventType::LevelChangedEventType, this);
+			EventManager::Get()->SubscribeToEvent(EventType::LevelChangedEventType, this);
 
 			// I care about when I'm asked to add game object to current scene
-			eventManager.SubscribeToEvent(EventType::AddGameObjectToCurrentScene, this);
-			eventManager.SubscribeToEvent(EventType::GenerateNewLevel, this);
-			eventManager.SubscribeToEvent(EventType::GameObject, this);
+			EventManager::Get()->SubscribeToEvent(EventType::AddGameObjectToCurrentScene, this);
+			EventManager::Get()->SubscribeToEvent(EventType::GenerateNewLevel, this);
+			EventManager::Get()->SubscribeToEvent(EventType::GameObject, this);
 
 			return true;
-		}, settingsManager, true, true);
+		}, true, true);
 		return isInitialized;
 	}
 
@@ -60,7 +51,7 @@ namespace gamelib
 	void SceneManager::StartScene(int scene_id)
 	{		
 		// This triggers usually the ResourceManager that loads the resources in for the scene (see ResourceManager::process_events etc..)
-		eventManager.RaiseEvent(std::make_shared<SceneChangedEvent>(scene_id), this);
+		EventManager::Get()->RaiseEvent(std::make_shared<SceneChangedEvent>(scene_id), this);
 	}
 
 	/// <summary>
@@ -77,7 +68,7 @@ namespace gamelib
 			case EventType::LevelChangedEventType: 
 
 				// load in new scene
-				LoadNewScene(event, resourceManager);			
+				LoadNewScene(event);			
 				break;
 			case EventType::DoLogicUpdateEventType:
 				break;	
@@ -131,13 +122,13 @@ namespace gamelib
 	/// <summary>
 	/// Load new scene from scene file
 	/// </summary>
-	void SceneManager::LoadNewScene(const std::shared_ptr<Event>& event, ResourceManager& resource_admin)
+	void SceneManager::LoadNewScene(const std::shared_ptr<Event>& event)
 	{
 		// This will raise the event 
 		auto raiseSceneLoadedEventFunction = [this](int scene_id, const string& scene_name)
 		{
-			LogMessage("Scene "+ to_string(scene_id) +" : "+ scene_name +" loaded.", logger);
-			eventManager.RaiseEvent(make_unique<SceneLoadedEvent>(scene_id), this);
+			LogMessage("Scene "+ to_string(scene_id) +" : "+ scene_name +" loaded.");
+			EventManager::Get()->RaiseEvent(make_unique<SceneLoadedEvent>(scene_id), this);
 		};
 
 		string scene_name;
@@ -166,7 +157,7 @@ namespace gamelib
 		{
 			try 
 			{
-				bool success = ReadSceneFile(scene_name, resource_admin);
+				bool success = ReadSceneFile(scene_name);
 				if (success)
 				{
 					raiseSceneLoadedEventFunction(scene, scene_name);
@@ -263,15 +254,15 @@ namespace gamelib
 	/// Read scene
 	/// </summary>
 	/// <param name="filename">Scene file</param>
-	bool SceneManager::ReadSceneFile(const std::string& filename, ResourceManager& resource_admin)
+	bool SceneManager::ReadSceneFile(const std::string& filename)
 	{
 		if(currentSceneName == filename)
 		{
-			LogMessage(string("Scene already loaded. Skipping."), logger);
+			LogMessage(string("Scene already loaded. Skipping."));
 			return true;
 		}
 
-		LogMessage("Loading scene: " + string(filename), logger);
+		LogMessage("Loading scene: " + string(filename));
 		
 		/* Eg. A Scene is composed of a) resources at various positions and scene as a visibility setting
 
@@ -354,12 +345,12 @@ namespace gamelib
 
 									if(objectElement == nullptr)
 									{
-										logger.LogThis(string("Invalid or null object found in scene file"));
+										Logger::Get()->LogThis(string("Invalid or null object found in scene file"));
 										continue;
 									}
 
 									// Build game object
-									auto gameObject = GameObjectFactory::GetInstance().BuildGameObject(objectElement, resource_admin, settingsManager, eventManager);
+									auto gameObject = GameObjectFactory::GetInstance().BuildGameObject(objectElement);
 									
 									// We have a new game object guys!
 									gameWorld.objects.push_back(gameObject);

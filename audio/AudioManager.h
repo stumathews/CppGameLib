@@ -8,7 +8,11 @@ namespace gamelib
 {
 	class AudioManager
 	{
-	public:			
+	public:		
+
+		static AudioManager* Get();
+		~AudioManager();
+
 		/// <summary>
 		/// Creates an Audio Asset
 		/// </summary>
@@ -29,5 +33,10 @@ namespace gamelib
 		/// Cast base class to Specific Audio Asset
 		/// </summary>
 		static std::shared_ptr<AudioAsset> ToAudioAsset(const std::shared_ptr<Asset>& asset);
+	protected:
+		static AudioManager* Instance;
+	private:
+		AudioManager() = default;
+		
 	};
 }

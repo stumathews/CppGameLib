@@ -8,7 +8,25 @@
   <Asset uid="6" scene="1" name="p1.png" type="graphic" filename="Assets/Platformer/Base pack/Player/p1_front.png"></Asset>
   <Asset uid="7" scene="2" name="p2.png" type="graphic" filename="Assets/Platformer/Base pack/Player/p2_front.png" isAnimated="false" numKeyFrames="12"></Asset>
   <Asset uid="8" scene="2" name="p3.png" type="graphic" filename="Assets/Platformer/Base pack/Player/p3_front.png" isAnimated="false" numKeyFrames="0"></Asset>
-  <Asset uid="9" scene="3" name="p1.png" type="graphic" filename="Assets/Platformer/Base pack/Player/p1_walk/p1_walk.png" isAnimated="true" numKeyFrames="11" keyFrameHeight="97" keyFrameWidth="73"></Asset>
+  <Asset uid="9" scene="3" name="p1.png" type="graphic" 
+         filename="Assets/Platformer/Base pack/Player/p1_walk/p1_walk.png" 
+         isAnimated="true" numKeyFrames="11" keyFrameHeight="97" keyFrameWidth="73">
+    
+    	<animation>
+        <keyframe x="0" y="0" w="66" h="92"/>
+        <keyframe x="66" y="0" w="66" h="93"/>
+        <keyframe x="132" y="0" w="66" h="93"/>
+        <keyframe x="0" y="93" w="66" h="93"/>
+        <keyframe x="66" y="93" w="66" h="93"/>
+        <keyframe x="132" y="93" w="71" h="92"/>
+        <keyframe x="0" y="186" w="71" h="93"/>
+        <keyframe x="71" y="186" w="71" h="93"/>
+        <keyframe x="142" y="186" w="70" h="92"/>
+        <keyframe x="0" y="279" w="71" h="93"/>
+        <keyframe x="71" y="279" w="66" h="97"/>
+      </animation>
+    
+  </Asset>
   <Asset uid="10" scene="3" name="p2.png" type="graphic" filename="Assets/Platformer/Base pack/Player/p2_walk/p2_walk.png" isAnimated="true" numKeyFrames="11" keyFrameHeight="97" keyFrameWidth="73"></Asset>
   <Asset uid="11" scene="3" name="p3.png" type="graphic" filename="Assets/Platformer/Base pack/Player/p3_walk/p3_walk.png" isAnimated="true" numKeyFrames="11" keyFrameHeight="97" keyFrameWidth="73"></Asset>
   <Asset uid="12" scene="0" name="arial.ttf" type="font" filename="Assets/fonts/arial.ttf"></Asset>

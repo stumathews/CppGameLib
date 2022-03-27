@@ -17,9 +17,9 @@ namespace gamelib
 	class SDLGraphicsManager final : public EventSubscriber
 	{
 		
-	public:
+	public:	
+		static SDLGraphicsManager* Get();
 		
-		SDLGraphicsManager(EventManager& eventManager, Logger& the_logger);
 		SDLGraphicsManager(SDLGraphicsManager const&)  = delete;		
 		SDLGraphicsManager(SDLGraphicsManager &&other) = delete;	
 		SDLGraphicsManager & operator=(SDLGraphicsManager &&other) = delete;
@@ -31,7 +31,7 @@ namespace gamelib
 		SDL_Renderer* windowRenderer = nullptr; //The window renderer
 		SDL_Surface* windowSurface = nullptr; 
 
-		std::shared_ptr<Asset> CreateAsset(tinyxml2::XMLElement * asset_xml_element, SettingsManager& config);
+		std::shared_ptr<Asset> CreateAsset(tinyxml2::XMLElement * asset_xml_element);
 		
 		bool Initialize(const uint width = 800, uint height = 600, const char* window_title = nullptr);	
 
@@ -42,16 +42,15 @@ namespace gamelib
 	    std::string GetSubscriberName() override;
 
 		static std::shared_ptr<GraphicAsset> ToGraphicAsset(const std::shared_ptr<Asset>& asset);
-		
-	private:
-		EventManager& eventManager;
-		Logger& logger;
+	protected:		
+		static SDLGraphicsManager* Instance;
+	private:		
+		SDLGraphicsManager();
 		uint screenWidth = 0;
 		uint screenHeight = 0;
 		void ClearAndDraw(std::function<void(SDL_Renderer* renderer)> &drawObjects) const;
 		bool beVerbose = false;
-		events HandleEvent(const std::shared_ptr<Event> the_event) override;
-		
+		events HandleEvent(const std::shared_ptr<Event> the_event) override;		
 	};
 }
 #endif

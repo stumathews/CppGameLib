@@ -14,24 +14,14 @@ class AudioManagerTests : public testing::Test
  protected:
   void SetUp() override
   {  	
-  	const shared_ptr<SettingsManager> settings_admin(new SettingsManager);
-	Logger gameLogger;
-	const shared_ptr<EventManager> event_admin(new EventManager(*settings_admin, gameLogger));		
-	const shared_ptr<FontManager> font_admin(new FontManager);		
-	audio_admin = create_audio_manager();
-	const shared_ptr<SDLGraphicsManager> graphics_admin(new SDLGraphicsManager(*event_admin, gameLogger));		
-	const shared_ptr<ResourceManager> resource_admin(new ResourceManager(*settings_admin, *graphics_admin, *font_admin, *audio_admin, gameLogger));
-    const shared_ptr<AudioAsset> ptr(new AudioAsset(0, RESOURCE_NAME, RESOURCE_PATH, RESOURCE_TYPE, RESOURCE_SCENE, *resource_admin));
+  
+    const shared_ptr<AudioAsset> ptr(new AudioAsset(0, RESOURCE_NAME, RESOURCE_PATH, RESOURCE_TYPE, RESOURCE_SCENE, *ResourceManager::Get()));
   	
   	audio_asset_ptr = dynamic_pointer_cast<Asset>(ptr);
   }
     
   //void TearDown() override {}
-  static shared_ptr<gamelib::AudioManager> create_audio_manager()
-  {
-	shared_ptr<gamelib::AudioManager> audio_admin(new gamelib::AudioManager());
-  	return audio_admin;
-  }
+
 	
   shared_ptr<AudioManager> audio_admin;
   Asset *audio_asset = nullptr;

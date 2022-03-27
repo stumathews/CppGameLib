@@ -15,7 +15,6 @@ class FontManagerTests : public testing::Test
 
   void SetUp() override
   { 
-	font_admin = shared_ptr<FontManager>(new FontManager());
   	const shared_ptr<FontAsset> ptr(new FontAsset(0, resource_name, resource_path, resource_type, resource_scene));  	
   	font_asset_ptr = dynamic_pointer_cast<Asset>(ptr);
   }
@@ -36,7 +35,7 @@ class FontManagerTests : public testing::Test
 TEST_F(FontManagerTests, to_resource)
 {
 	// When casting a Asset* to a FontAsset...
-	auto resource = font_admin->ToFontAsset(font_asset_ptr);
+	auto resource = FontManager::Get()->ToFontAsset(font_asset_ptr);
 
 	// Ensure that...
 	EXPECT_STREQ(resource->name.c_str(), resource_name.c_str()) << "Resource name is invalid";

@@ -21,38 +21,37 @@ namespace gamelib
 	}
 	
 	// returns true if condition succeeded, false otherwise
-	inline bool IsSuccess(const bool condition, const std::string message, Logger& logger)
+	inline bool IsSuccess(const bool condition, const std::string message)
 	{
 		const auto is = condition == true;
 		if(is == true)
-			logger.LogThis(message);
+			Logger::Get()->LogThis(message);
 		return is;
 	}
 
-	inline bool failed(bool condition,   Logger& logger, std::string message = "", bool ignore = false)
+	inline bool failed(bool condition, std::string message = "", bool ignore = false)
 	{
 		const auto is = condition == false;
 		if(is == false)
-			logger.LogThis(message);
+			Logger::Get()->LogThis(message);
 		return ignore == true ? !ignore : is;
 	}
 	
-	inline void LogMessage(const std::string &message, Logger& logger, const bool be_verbose = false, bool isFatal = false)
+	inline void LogMessage(const std::string &message, const bool be_verbose = false, bool isFatal = false)
 	{
-		logger.LogThis(message, be_verbose);
+		Logger::Get()->LogThis(message, be_verbose);
 		if(isFatal)
 		{
-			logger.LogThis("Fatal error encountered.", be_verbose);
+			Logger::Get()->LogThis("Fatal error encountered.", be_verbose);
 			std::string key;
 			std::cin >> key;
 		}
 	}
 
 	// Logs message and runs action
-	inline bool LogThis(const std::string &message, bool verbose, const std::function<bool()>& action,  SettingsManager& settingsAdmin, bool print_finished = true, bool run_if = true)
+	inline bool LogThis(const std::string &message, bool verbose, const std::function<bool()>& action,  bool print_finished = true, bool run_if = true)
 	{
-		Logger theLogger;
-		LogMessage(message, theLogger, settingsAdmin.get_bool("global","verbose"));
+		LogMessage(message, SettingsManager::Get()->get_bool("global","verbose"));
 		bool result;
 		if(run_if)
 		{
@@ -65,7 +64,7 @@ namespace gamelib
 
 		
 		if(print_finished)
-			LogMessage("Finished.", theLogger);
+			LogMessage("Finished.");
 		return result;
 	}
 
@@ -75,11 +74,11 @@ namespace gamelib
 		return static_cast<typename std::underlying_type<ENUM>::type>(value);
 	}
 
-	inline bool LogOnFailure(bool condition, std::string message, SettingsManager& settings, Logger& logger)
+	inline bool LogOnFailure(bool condition, std::string message)
 	{
 		if(condition == false){
 			
-			LogMessage(message, logger, settings.get_bool("global", "verbose"));
+			LogMessage(message, SettingsManager::Get()->get_bool("global", "verbose"));
 		}
 		return condition;
 	}

@@ -16,10 +16,7 @@ namespace gamelib
 	/// </summary>
 	/// <param name="scene_object_xml">XML element describing game object</param>
 	/// <returns></returns>
-	shared_ptr<GameObject> GameObjectFactory::BuildGameObject( 	XMLElement * scene_object_xml, 
-																ResourceManager& resourceManager, 
-																SettingsManager& settingsManager, 
-																EventManager& eventManager) const
+	shared_ptr<GameObject> GameObjectFactory::BuildGameObject( 	XMLElement * scene_object_xml) const
 	{
 		// Game Object details:
 		uint redValue = 0;
@@ -46,7 +43,7 @@ namespace gamelib
 			{
 				// This object is associated with a resource, so use the resource manager
 
-				OnResourceIdParse(attributeValue, resourceManager, asset);
+				OnResourceIdParse(attributeValue, asset);
 				continue; // Move to the next attribute on element
 			}
 			
@@ -101,13 +98,13 @@ namespace gamelib
 		}
 			
 		// Take all the discovered details about the scene object and make a Game Object fom it
-		return InitializeGameObject(emptyGameObject, x, y, isVisible, asset, isColourKeyEnabled, redValue, greenValue, blueValue, resourceManager, settingsManager, eventManager);		
+		return InitializeGameObject(emptyGameObject, x, y, isVisible, asset, isColourKeyEnabled, redValue, greenValue, blueValue);		
 	}
 
 	/// <summary>
 	/// Parse the Resource Id attribute for scene object
 	/// </summary>
-	void GameObjectFactory::OnResourceIdParse(std::string& detail_value, gamelib::ResourceManager& resourceManager, std::shared_ptr<gamelib::Asset>& resource) const
+	void GameObjectFactory::OnResourceIdParse(std::string& detail_value, std::shared_ptr<gamelib::Asset>& resource) const
 	{
 		// Extract/Save resource Id from XML
 		const auto* const resourceIdString = detail_value.c_str();
@@ -116,7 +113,7 @@ namespace gamelib
 		int resourceId = static_cast<int>(atoi(resourceIdString));
 
 		// Get generic asset info about this resource
-		auto asset = resourceManager.GetAssetInfo(resourceId);
+		auto asset = ResourceManager::Get()->GetAssetInfo(resourceId);
 		if (asset == nullptr)
 		{
 			throw exception("Resouce manager could not determine the asset");
@@ -145,10 +142,7 @@ namespace gamelib
 																	const bool colourKeyEnabled,
 																	const uint& red,
 																	const uint& green,
-																	const uint& blue,
-																	ResourceManager& resourceManager,
-																	SettingsManager& settingsManager,
-																	EventManager& eventManager) const
+																	const uint& blue) const
 	{
 		if (asset == nullptr)
 		{
@@ -184,7 +178,7 @@ namespace gamelib
 			{
 				// Sprite
 				numKeyFrames = graphic->GetNumKeyFrames();
-				auto spriteWidth = settingsManager.get_int("global", "sprite_width"); // Should probably be reading this from the object details in the resource file/object
+				auto spriteWidth = SettingsManager::Get()->get_int("global", "sprite_width"); // Should probably be reading this from the object details in the resource file/object
 				speed = spriteWidth;
 				keyFrameWidth = graphic->GetKeyFrameWidth();
 				keyFrameHeight = graphic->GetKeyFrameHeight();
@@ -199,7 +193,7 @@ namespace gamelib
 			}
 
 			// An Animated Sprite can represent a moving (animated) sprite or a static (non-moving) sprite
-			gameObject = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, speed, numKeyFrames, framesPerRow, framesPerColumn, keyFrameWidth, keyFrameHeight, isVisible, settingsManager, eventManager));
+			gameObject = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, speed, numKeyFrames, framesPerRow, framesPerColumn, keyFrameWidth, keyFrameHeight, isVisible));
 
 			if (graphic->IsAnimated())
 			{
@@ -217,7 +211,7 @@ namespace gamelib
 		}
 
 		// Load the game objects individual settings
-		gameObject->LoadSettings(settingsManager);
+		gameObject->LoadSettings();
 
 		// Set the colour key on the game object
 		gameObject->isColorKeyEnabled = colourKeyEnabled;

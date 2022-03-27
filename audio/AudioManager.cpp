@@ -9,6 +9,23 @@ using namespace std;
 
 namespace gamelib
 {
+
+	AudioManager* AudioManager::Get()
+	{
+		if (Instance == nullptr)
+		{
+			Instance = new AudioManager();
+		}
+		return Instance;
+	}
+
+	AudioManager::~AudioManager()
+	{
+		Instance = nullptr;
+	}
+
+	AudioManager* AudioManager::Instance = nullptr;
+
 	/// <summary>
 	/// Create Audio Asset
 	/// </summary>

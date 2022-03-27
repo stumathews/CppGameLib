@@ -52,4 +52,4 @@ std::string ErrorLogManager::GetTimeString()
 	return timeString.str();
 }
 
-ErrorLogManager* ErrorLogManager::Instance = nullptr;;
+ErrorLogManager* ErrorLogManager::Instance = nullptr;

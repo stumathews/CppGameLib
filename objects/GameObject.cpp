@@ -7,47 +7,27 @@
 #include "events/PositionChangeEvent.h"
 #include "graphic/SDLGraphicsManager.h"
 #include "resource/ResourceManager.h"
-using namespace std;
+#include "GameObjectMover.h"
+
 
 namespace gamelib
 {	
-	GameObject::GameObject(bool isVisible) : IEventSubscriber()
-	{
-		SetDefaults(isVisible, 0, 0);
-		GameObject::LoadSettings();
-	}
+	using namespace std;
 
-	GameObject::GameObject(const int x, const int y, bool isVisible ) : supportsMoveLogic(false)
+	GameObject::GameObject(bool isVisible)
 	{
-		SetDefaults(isVisible, x, y);
-		GameObject::LoadSettings();
-	}
-
-	void GameObject::ChangeInternalPosition(const std::shared_ptr<Event> event)
-	{
-		const auto positionChangeEvent = std::dynamic_pointer_cast<PositionChangeEvent>(event);
 		
-		if (positionChangeEvent->direction == Direction::Up && supportsMoveLogic)
-		{
-			MoveUp();
-		}
-			
-		if (positionChangeEvent->direction == Direction::Down && supportsMoveLogic)
-		{
-			MoveDown();
-		}
-			
-		if (positionChangeEvent->direction == Direction::Left && supportsMoveLogic)
-		{
-			MoveLeft();
-		}
-			
-		if (positionChangeEvent->direction == Direction::Right && supportsMoveLogic)
-		{
-			MoveRight();
-		}
+		GameObject::LoadSettings();
+		SetDefaults(isVisible, 0, 0);
 	}
 
+	GameObject::GameObject(const int x, const int y, bool isVisible )
+	{
+		GameObject::LoadSettings();
+		SetDefaults(isVisible, x, y);		
+	}
+
+	
 	/// <summary>
 	/// Handle any Game Object events
 	/// </summary>
@@ -74,65 +54,15 @@ namespace gamelib
 	}
 
 	/// <summary>
-	/// Get Graphic resource
-	/// </summary>
-	/// <returns></returns>
-	shared_ptr<GraphicAsset> GameObject::GetGraphic() const
-	{
-		return graphic;
-	}
-
-	/// <summary>
 	/// Draw Game Object
 	/// </summary>
 	/// <param name="renderer"></param>
 	void GameObject::Draw(SDL_Renderer* renderer)
 	{
 		// Game Object usually does not draw itself... but decendents do.
-
-		if (!isVisible)
-		{
-			return;
-		}
-		
-		// We can draw the graphic resource if we have one however (this requires the decendents to call ensure they call GameObject::Draw() explicitly)
-		if (HasGraphic())
-		{
-			DrawGraphic(renderer);
-		}
 	}
 
-	/// <summary>
-	/// Move Up
-	/// </summary>
-	void GameObject::MoveUp()
-	{
-		y -= moveInterval;
-	}
-
-	/// <summary>
-	/// Move down
-	/// </summary>
-	void GameObject::MoveDown()
-	{		
-		y += moveInterval;
-	}
-
-	/// <summary>
-	/// Move left
-	/// </summary>
-	void GameObject::MoveLeft()
-	{
-		x -= moveInterval;
-	}
-
-	/// <summary>
-	/// Move right
-	/// </summary>
-	void GameObject::MoveRight()
-	{
-		x += moveInterval;
-	}
+	
 
 	/// <summary>
 	/// Get Name
@@ -149,7 +79,7 @@ namespace gamelib
 	/// <param name="settings_admin"></param>
 	void GameObject::LoadSettings()
 	{
-		moveInterval = SettingsManager::Get()->get_int("player", "move_interval");
+		
 	}
 
 	/// <summary>
@@ -163,30 +93,13 @@ namespace gamelib
 
 		// In this sensible?
 		bounds = { x, y, 0 , 0 };
-
-		// Should all game Objects support move 
-		supportsMoveLogic = true;
-
-		// Should all game Objects support ColourKey
-		isColorKeyEnabled = false;
 		
-		red = 0x00;
-		blue = 0xFF;
-		green = 0x00;
+		// mover supports move operations
+		//mover = shared_ptr<GameObjectMover>(new GameObjectMover(this, SettingsManager::Get()->get_int("player", "move_interval")));
 
 		// Increase the Internal Object Id
 		id = lastGameObjectId++;
-	}
-
-	/// <summary>
-	/// Set color key
-	/// </summary>
-	void GameObject::SetColourKey(const Uint8 r, const Uint8 g, const Uint8 b)
-	{
-		colourKey.r = r;
-		colourKey.g = g;
-		colourKey.b = b;
-	}
+	}	
 
 	/// <summary>
 	/// Set Tag
@@ -203,42 +116,13 @@ namespace gamelib
 	}
 
 	/// <summary>
-	/// Draw graphic resource is one exists
-	/// </summary>
-	/// <param name="renderer"></param>
-	void GameObject::DrawGraphic(SDL_Renderer* renderer) const
-	{
-		if (HasGraphic()) 
-		{
-			const auto graphic = GetGraphic();
-
-			if (graphic->type == "graphic")
-			{
-				// Draw graphic at the game object's current location
-				SDL_Rect drawLocation =
-				{
-					x, y,
-					graphic->GetViewPort().w, 
-					graphic->GetViewPort().h
-				};
-
-				// Copy the texture (restricted by viewport) to the drawLocation on the screen
-				SDL_RenderCopy(renderer, graphic->GetTexture(), &graphic->GetViewPort(), &drawLocation);
-			}
-			else
-			{
-				// Log error here
-			}
-		}
-	}
-
-	/// <summary>
-	/// Check if game object has graphic resource
+	/// Provide Id to event system
 	/// </summary>
 	/// <returns></returns>
-	bool GameObject::HasGraphic() const
+
+	int GameObject::GetSubscriberId() 
 	{
-		return graphic != nullptr;
+		return id; 
 	}
 
 	/// <summary>
@@ -248,15 +132,6 @@ namespace gamelib
 	string GameObject::GetTag() const
 	{
 		return this->tag;
-	}
-
-	/// <summary>
-	/// Set the graphic
-	/// </summary>
-	/// <param name="graphic"></param>
-	void GameObject::SetGraphic(shared_ptr<GraphicAsset> graphic)
-	{
-		this->graphic = graphic;
 	}
 
 	/// <summary>

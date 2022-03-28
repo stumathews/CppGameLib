@@ -6,7 +6,8 @@
 namespace gamelib
 {
 	AnimatedSprite::AnimatedSprite(uint xPos, uint yPos, uint frameDurationMs, bool isVisible, ABCDRectangle dimensions) 
-		: frameDurationMs(100), currentFrameNumber(0), startFrameNumber(0), timeLastFrameShown(0), Dimensions(dimensions), GameObject(xPos, yPos, isVisible) 
+		: frameDurationMs(100), currentFrameNumber(0), startFrameNumber(0), timeLastFrameShown(0), Dimensions(dimensions), 
+		DrawableGameObject(xPos, yPos, isVisible) 
 	{ 
 		
 	}
@@ -26,7 +27,7 @@ namespace gamelib
 	/// <param name="renderer"></param>
 	void AnimatedSprite::Draw(SDL_Renderer* renderer)
 	{
-		GameObject::Draw(renderer);
+		DrawableGameObject::Draw(renderer);
 		Update();	// why do we have to do this in the draw function?	I think its because we need to move the key frame/do timer stuff
 	}
 

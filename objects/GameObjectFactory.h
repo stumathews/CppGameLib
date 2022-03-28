@@ -2,6 +2,8 @@
 #include <memory>
 #include "tinyxml2.h"
 #include "GameObject.h"
+#include "common/aliases.h"
+#include "asset/Asset.h"
 namespace gamelib
 {
 	class ResourceManager;

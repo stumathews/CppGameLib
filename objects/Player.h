@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include "DrawingBase.h"
+#include "DrawableGameObject.h"
 #include "events/Event.h"
 #include "scene/Room.h"
 

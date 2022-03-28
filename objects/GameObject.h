@@ -3,12 +3,16 @@
 #include <map>
 #include <SDL.h>
 #include "Component.h"
-#include "graphic/GraphicAsset.h"
 #include "events/EventManager.h"
 #include "Inventory.h"
+#include <string>
 
 namespace gamelib
 {
+	class GameObjectMover;
+
+	
+
 	/// <summary>
 	/// Types of Game Objects
 	/// </summary>
@@ -21,8 +25,6 @@ namespace gamelib
 		AnimatedSprite,
 		Pickup,
 	};
-
-	class GraphicAsset;
 
 	class GameObject : public IEventSubscriber
 	{
@@ -67,21 +69,8 @@ namespace gamelib
 		/// Provide Id to event system
 		/// </summary>
 		/// <returns></returns>
-		virtual int GetSubscriberId() override { return id; }
-		
-		/// <summary>
-		/// Get the Game Object's graphic if there is one associated with the game object
-		/// </summary>
-		/// <returns>GraphicResource</returns>
-		std::shared_ptr<GraphicAsset> GetGraphic() const;
-
-		/// <summary>
-		/// Set the Game Object's graphic
-		/// </summary>
-		/// <param name="graphic"></param>
-		void SetGraphic(std::shared_ptr<GraphicAsset> graphic);
-		bool HasGraphic() const;
-		
+		virtual int GetSubscriberId() override;
+						
 		/// <summary>
 		/// Every Game Object can update itself itself diffirently
 		/// </summary>
@@ -91,20 +80,14 @@ namespace gamelib
 		/// All game objects can be drawn uniformly
 		/// </summary>
 		/// <param name="renderer"></param>
-		void virtual Draw(SDL_Renderer* renderer);
+		void virtual Draw(SDL_Renderer* renderer) = 0;
 
 		/// <summary>
 		/// Every game Object needs to identify what type of game object it is
 		/// </summary>
 		/// <returns></returns>
 		virtual object_type GetGameObjectType() = 0;
-
-		// Every Game Object can move in its own way
-		virtual void MoveUp();
-		virtual void MoveDown();
-		virtual void MoveLeft();
-		virtual void MoveRight();
-
+				
 		/// <summary>
 		/// Every game object can identify itself in its own way
 		/// </summary>
@@ -116,37 +99,25 @@ namespace gamelib
 		/// </summary>
 		/// <param name="settings_admin"></param>
 		virtual void LoadSettings();
+	
 		
-		/// <summary>
-		/// Every game Object can change it own internal position
-		/// </summary>
-		/// <param name="the_event"></param>
-		virtual void ChangeInternalPosition(std::shared_ptr<Event> the_event);
-		
-		void SetColourKey(Uint8 r, Uint8 g, Uint8 b);
-
 		/// <summary>
 		/// Arbitary tag for game object
 		/// </summary>
 		/// <returns></returns>
 		std::string GetTag() const;
-		void SetTag(std::string tag);
 
 		/// <summary>
-		/// Each game object may support moving
+		/// Set Tag
 		/// </summary>
-		bool supportsMoveLogic;
+		/// <param name="tag"></param>
+		void SetTag(std::string tag);
 
 		/// <summary>
 		/// Each game object may be visible
 		/// </summary>
 		bool isVisible;
-
-		/// <summary>
-		/// Each object may have a colour key enabled
-		/// </summary>
-		bool isColorKeyEnabled;
-
+				
 		/// <summary>
 		/// Each game object has a x-orordinate
 		/// </summary>
@@ -156,11 +127,6 @@ namespace gamelib
 		/// Each game object has a y-orordinate
 		/// </summary>
 		int y;
-
-		/// <summary>
-		/// Each game object has a move internal
-		/// </summary>
-		int moveInterval;	
 
 		/// <summary>
 		/// Each game object has a bounds
@@ -187,25 +153,13 @@ namespace gamelib
 		// Game Object tag
 		std::string tag;
 
-		// Game Object colour
-		int red, blue, green;
-		SDL_Color colourKey = {};
-
-		// Game Object Graphic
-		std::shared_ptr<GraphicAsset> graphic; // can be shared by other actors
-
-		// Underlying asset
-		std::shared_ptr<Asset> assetInfo;
-
 		// Game Object Id counter
 		static int lastGameObjectId;
 
 		// Initialize game objects defaults
 		void SetDefaults(bool isVisible, int x, int y);
-		
-		void DrawGraphic(SDL_Renderer* renderer) const;
 
-
+		//std::shared_ptr<GameObjectMover> mover = nullptr;
 	};
 }
 

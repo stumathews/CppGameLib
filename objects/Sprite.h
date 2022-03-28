@@ -2,24 +2,21 @@
 #include "GameObject.h"
 #include "KeyFrame.h"
 #include "scene/ABCDRectangle.h"
+#include "objects/DrawableGameObject.h"
 
 namespace gamelib
 {
 	/// <summary>
 	/// Sprite sheet based sprite
 	/// </summary>
-	class AnimatedSprite final : public GameObject
+	class AnimatedSprite final : public DrawableGameObject
 	{	
 	public:
 
 		/// <summary>
 		/// Create a Sprite
 		/// </summary>
-		AnimatedSprite(uint x, 
-			uint y, 
-			uint frameDuration,			 
-			bool isVisible, 
-			ABCDRectangle dimensions);
+		AnimatedSprite(uint x, uint y, uint frameDuration, bool isVisible, ABCDRectangle dimensions);
 
 		AnimatedSprite() = default;
 

@@ -1,7 +1,7 @@
 #pragma once
 #include <SDL.h>
 #include "ABCDRectangle.h"
-#include "objects/DrawingBase.h"
+#include "objects/DrawableGameObject.h"
 #include "objects/GameObject.h"
 
 namespace gamelib

@@ -167,6 +167,7 @@
     <ClInclude Include="common\Logger.h" />
     <ClInclude Include="common\StaticConfig.h" />
     <ClInclude Include="common\TypeAliases.h" />
+    <ClInclude Include="GameObjectMover.h" />
     <ClInclude Include="graphic\GraphicAssetFactory.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="KeyFrame.h" />
@@ -174,7 +175,7 @@
     <ClInclude Include="events\EventSubscriber.h" />
     <ClInclude Include="events\GameObjectEvent.h" />
     <ClInclude Include="objects\MultipleInheritableEnableSharedFromThis.h" />
-    <ClInclude Include="objects\DrawingBase.h" />
+    <ClInclude Include="objects\DrawableGameObject.h" />
     <ClInclude Include="events\AddGameObjectToCurrentSceneEvent.h" />
     <ClInclude Include="events\DoLogicUpdateEvent.h" />
     <ClInclude Include="events\Event.h" />
@@ -223,6 +224,7 @@
     <ClCompile Include="audio\AudioAsset.cpp" />
     <ClCompile Include="common\Logger.cpp" />
     <ClCompile Include="cppgamelib.cpp" />
+    <ClCompile Include="GameObjectMover.cpp" />
     <ClCompile Include="graphic\GraphicAssetFactory.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="KeyFrame.cpp" />
@@ -231,7 +233,7 @@
     <ClCompile Include="events\GameObjectEvent.cpp" />
     <ClCompile Include="GameStructure.cpp" />
     <ClCompile Include="objects\MultipleInheritableEnableSharedFromThis.cpp" />
-    <ClCompile Include="objects\DrawingBase.cpp" />
+    <ClCompile Include="objects\DrawableGameObject.cpp" />
     <ClCompile Include="events\AddGameObjectToCurrentSceneEvent.cpp" />
     <ClCompile Include="events\DoLogicUpdateEvent.cpp" />
     <ClCompile Include="events\Event.cpp" />

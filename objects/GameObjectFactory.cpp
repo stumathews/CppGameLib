@@ -162,6 +162,7 @@ namespace gamelib
 			auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
 			auto sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, 100, isVisible, spriteAsset->Dimensions));
 			
+			sprite->SetTag(spriteAsset->name);
 			// Set the AnimatedSprite's key frames
 			sprite->KeyFrames = spriteAsset->KeyFrames;	
 
@@ -170,6 +171,21 @@ namespace gamelib
 
 			// Start playing the animation
 			sprite->PlayAnimation();
+
+			// Load the game objects individual settings
+			sprite->LoadSettings();
+
+			// Set the colour key on the game object
+			sprite->isColorKeyEnabled = colourKeyEnabled;
+
+			// Set the game object's visibility
+			sprite->isVisible = isVisible;
+
+			// Tell the render what colour it should consider as transparent i.e ignore drawing
+			if (sprite->isColorKeyEnabled)
+			{
+				sprite->SetColourKey(red, green, blue);
+			}
 
 			gameObject = sprite;
 		}
@@ -183,6 +199,22 @@ namespace gamelib
 
 			// Show the entire graphic
 			sprite->AdjustViewportToCurrentDimensions();
+
+			// Load the game objects individual settings
+			sprite->LoadSettings();
+
+			// Set the colour key on the game object
+			sprite->isColorKeyEnabled = colourKeyEnabled;
+
+			// Set the game object's visibility
+			sprite->isVisible = isVisible;
+
+			// Tell the render what colour it should consider as transparent i.e ignore drawing
+			if (sprite->isColorKeyEnabled)
+			{
+				sprite->SetColourKey(red, green, blue);
+			}
+
 			gameObject = sprite;
 		}
 		else
@@ -191,20 +223,7 @@ namespace gamelib
 			throw exception(message.c_str());
 		}
 
-		// Load the game objects individual settings
-		gameObject->LoadSettings();
-
-		// Set the colour key on the game object
-		gameObject->isColorKeyEnabled = colourKeyEnabled;
-
-		// Set the game object's visibility
-		gameObject->isVisible = isVisible;
-
-		// Tell the render what colour it should consider as transparent i.e ignore drawing
-		if (gameObject->isColorKeyEnabled)
-		{
-			gameObject->SetColourKey(red, green, blue);
-		}
+		
 
 		return gameObject;
 	}

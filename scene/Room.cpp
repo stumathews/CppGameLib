@@ -158,7 +158,6 @@ namespace gamelib
 		// Room geometry helper
 		this->abcd = ABCDRectangle(x, y, width, height);
 
-		this->supportsMoveLogic = false;
 
 		// All walls are present by default
 		walls[0] = true;

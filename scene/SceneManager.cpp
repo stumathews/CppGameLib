@@ -20,17 +20,45 @@ namespace gamelib
 	/// Create a Scene Manager.
 	/// <remarks>A scene is a collection of objects. A scene is loaded from a file</remarks>
 	/// </summary>
-	SceneManager::SceneManager(GameWorldData& gameWorld,std::string sceneFolder) : sceneFolder(sceneFolder), gameWorld(gameWorld)
+	SceneManager::SceneManager()
 	{ }
+
+	SceneManager* SceneManager::Get()
+	{
+		if (Instance == nullptr)
+		{
+			Instance = new SceneManager();
+		}
+		return Instance;
+	}
+
+	SceneManager* SceneManager::Instance = nullptr;
+
+	SceneManager::~SceneManager()
+	{
+		Instance = nullptr;
+	}
+
+	GameWorldData& SceneManager::GetGameWorld()
+	{
+		return gameWorld;
+	}
+
+	void SceneManager::SetSceneFolder(std::string sceneFolder)
+	{
+		this->sceneFolder = sceneFolder;
+	}
 
 	/// <summary>
 	/// Initialize the scene manager
 	/// </summary>
 	/// <returns>true if done successfully, false otherwise</returns>
-	bool SceneManager::Initialize()
+	bool SceneManager::Initialize(std::string sceneFolder)
 	{
-		isInitialized = LogThis("SceneManager::initialize()", SettingsManager::Get()->get_bool("global", "verbose"), [&]()
+		isInitialized = LogThis("SceneManager::initialize()", SettingsManager::Get()->GetBool("global", "verbose"), [&]()
 		{
+			SetSceneFolder(sceneFolder);
+
 			// I care about when the level changes
 			EventManager::Get()->SubscribeToEvent(EventType::LevelChangedEventType, this);
 
@@ -38,6 +66,7 @@ namespace gamelib
 			EventManager::Get()->SubscribeToEvent(EventType::AddGameObjectToCurrentScene, this);
 			EventManager::Get()->SubscribeToEvent(EventType::GenerateNewLevel, this);
 			EventManager::Get()->SubscribeToEvent(EventType::GameObject, this);
+			EventManager::Get()->SubscribeToEvent(EventType::DrawCurrentScene, this);
 
 			return true;
 		}, true, true);
@@ -65,6 +94,9 @@ namespace gamelib
 		{
 			case EventType::PositionChangeEventType: 
 				break;			
+			case  EventType::DrawCurrentScene:
+				DrawScene();
+				break;
 			case EventType::LevelChangedEventType: 
 
 				// load in new scene
@@ -242,6 +274,36 @@ namespace gamelib
 		// Scene manager does not need updating
 	}
 
+	void SceneManager::DrawScene()
+	{
+		auto renderAllObjectsFn = static_cast<render_func>([&](SDL_Renderer* windowRenderer)
+		{
+			// Draw all objects in the layer
+			for (const auto& Layer : GetLayers())
+			{
+				// Only draw visible layers
+				if (Layer.visible)
+				{
+					// Draw objects within the layer
+					for (const auto& gameObjectCandidate : Layer.layerObjects)
+					{
+						if (auto gameObject = gameObjectCandidate.lock())
+						{
+							// If it is active
+							if (gameObject && gameObject->isActive)
+							{
+								// draw yourself!
+								gameObject->Draw(windowRenderer);
+							}
+						}
+					}
+				}
+			}
+		});
+
+		SDLGraphicsManager::Get()->ClearAndDraw(renderAllObjectsFn);
+	}
+
 	/// <summary>
 	/// Gte Scene layers
 	/// </summary>
@@ -353,7 +415,7 @@ namespace gamelib
 									auto gameObject = GameObjectFactory::GetInstance().BuildGameObject(objectElement);
 									
 									// We have a new game object guys!
-									gameWorld.objects.push_back(gameObject);
+									gameWorld.GetGameObjects().push_back(gameObject);
 
 									// Add game object to this layer
 									layer.layerObjects.push_back(gameObject);																

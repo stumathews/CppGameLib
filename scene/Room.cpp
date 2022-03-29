@@ -72,7 +72,7 @@ namespace gamelib
 		GameObject::LoadSettings();	
 
 		// Refetch Room settings
-		fill = SettingsManager::Get()->get_bool("room_fill", "enable");
+		fill = SettingsManager::Get()->GetBool("room_fill", "enable");
 	}
 
 	/// <summary>
@@ -118,7 +118,7 @@ namespace gamelib
 		if(fill)
 			DrawFilledRect(renderer, &bounds, { 255, 0 ,0 ,0});
 		
-		if( SettingsManager::Get()->get_bool("global", "print_debugging_text"))
+		if( SettingsManager::Get()->GetBool("global", "print_debugging_text"))
 		{
 		  RectDebugging::printInRect(renderer, GetTag(), &bounds); 
 		}

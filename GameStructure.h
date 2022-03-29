@@ -20,7 +20,7 @@ namespace gamelib
 		/// </summary>
 		/// <param name="gameWorld">gameWorld data</param>
 		/// <param name="get_input_func">Controller/Player Input function</param>
-		GameStructure(GameWorldData& world, SceneManager& sceneManager, std::function<void()> getControllerInputFunction);
+		GameStructure(std::function<void()> getControllerInputFunction);
 
 		// What we do when we unload the Gamestructure
 		~GameStructure();
@@ -90,16 +90,6 @@ namespace gamelib
 		/// Spare time (Not drawing and not updating)
 		/// </summary>
 		void HandleSpareTime(long) const;
-				
-				/// <summary>
-		/// Scene Manager
-		/// </summary>
-		SceneManager& _sceneManager;
-
-		/// <summary>
-		/// GameWorld
-		/// </summary>
-		GameWorldData& _gameWorld;
 
 		/// <summary>
 		/// Input function (get physical player/controller input)

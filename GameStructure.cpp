@@ -36,10 +36,8 @@ namespace gamelib
 	/// <param name="audio_admin"></param>
 	/// <param name="get_input_func"></param>
 	/// <param name="Logger"></param>
-	GameStructure::GameStructure(GameWorldData& world, SceneManager& sceneManager, std::function<void()> getControllerInputFunction)
-			: _gameWorld(world),
-			_sceneManager(sceneManager),			
-			_getControllerInputFunction(std::move(getControllerInputFunction))
+	GameStructure::GameStructure(std::function<void()> getControllerInputFunction)
+			: _getControllerInputFunction(std::move(getControllerInputFunction))
 			{ }
 
 	/// <summary>
@@ -57,34 +55,34 @@ namespace gamelib
 	bool GameStructure::InitializeGameSubSystems()
 	{
 		// Initialize the settings manager
-		const auto settings_admin_initialized_ok = SettingsManager::Get()->load("game/settings.xml");
+		const auto settingsInitialized = SettingsManager::Get()->Load("game/settings.xml");
 		
 		// Load key game subsystem settings
-		const auto be_verbose = SettingsManager::Get()->get_bool("global","verbose");
-		const auto screen_width = SettingsManager::Get()->get_int("global", "screen_width");
-		const auto screen_height = SettingsManager::Get()->get_int("global", "screen_height");
+		const auto beVerbose = SettingsManager::Get()->GetBool("global","verbose");
+		const auto screenWidth = SettingsManager::Get()->GetInt("global", "screen_width");
+		const auto screenHeight = SettingsManager::Get()->GetInt("global", "screen_height");
 		
 		// Perform the initialiation
-		return LogThis("GameStructure::initialize()", be_verbose, [&]()
+		return LogThis("GameStructure::initialize()", beVerbose, [&]()
 		{			
 			// Initialize resource manager
-			const auto resource_admin_initialized_ok = LogOnFailure(ResourceManager::Get()->Initialize(), "Could not initialize resource manager");
+			const auto resourceManagerInitialized = LogOnFailure(ResourceManager::Get()->Initialize(), "Could not initialize resource manager");
 
 			// Initialize event manager
-			const auto eventAdmin_initialized_ok = LogOnFailure(EventManager::Get()->Initialize(), "Could not initialize event manager");
+			const auto eventManagerInitialized = LogOnFailure(EventManager::Get()->Initialize(), "Could not initialize event manager");
 
 			// Initialize SceneManager
-			const auto scene_admin_initialized_ok = LogOnFailure(_sceneManager.Initialize(), "Could not initialsettings->ize scene manager");
+			const auto sceneManagerInitialized = LogOnFailure(SceneManager::Get()->Initialize(), "Could not initialsettings->ize scene manager");
 
 			// Initialize SDL
-			const auto sdl_initialize_ok = LogOnFailure(InitializeSDL(screen_width, screen_height), "Could not initialize SDL, aborting.");
+			const auto SdLInitialized = LogOnFailure(InitializeSDL(screenWidth, screenHeight), "Could not initialize SDL, aborting.");
 
 			// Final check to see if all subsystems are initialised ok
-			if(failed(sdl_initialize_ok) || 
-			   failed(eventAdmin_initialized_ok) ||
-			   failed(resource_admin_initialized_ok) || 
-			   failed(scene_admin_initialized_ok) ||
-			   failed(settings_admin_initialized_ok)) 
+			if(failed(SdLInitialized) || 
+			   failed(eventManagerInitialized) ||
+			   failed(resourceManagerInitialized) || 
+			   failed(sceneManagerInitialized) ||
+			   failed(settingsInitialized)) 
 				return false;	
 						
 			return true;
@@ -127,7 +125,7 @@ namespace gamelib
 	/// </summary>
 	void GameStructure::UpdateWorld() const
 	{
-		// Send Update event to all subscribers who support updates and make them process it right now
+		// Time-sensitive, skip queue. Send Update event to all subscribers who support updates and make them process it right now
 		EventManager::Get()->DispatchEventToSubscriber(make_shared<LogicUpdateEvent>());		
 	}
 
@@ -140,6 +138,16 @@ namespace gamelib
 		// make the game do something now...show game activity that the user will then respond to
 		// this generates game play
 		UpdateWorld();
+	}
+
+	/// <summary>
+	/// Draws the game
+	/// </summary>
+	/// <param name="percent_within_tick"></param>
+	void GameStructure::Draw(float percent_within_tick)
+	{		
+		// Time-sensitive, skip queue. Draws the current scene
+		EventManager::Get()->DispatchEventToSubscriber(std::shared_ptr<Event>(new Event(EventType::DrawCurrentScene)));		
 	}
 
 	/// <summary>
@@ -162,16 +170,6 @@ namespace gamelib
 
 		// Contacts all event subscribers for all events that are currently waiting to be processed in the event queue
 		EventManager::Get()->ProcessAllEvents(); 
-	}
-
-	/// <summary>
-	/// Draws the game
-	/// </summary>
-	/// <param name="percent_within_tick"></param>
-	void GameStructure::Draw(float percent_within_tick) 
-	{
-		// Draws the current scene
-		SDLGraphicsManager::Get()->DrawCurrentScene(_sceneManager); 
 	}
 
 	/// <summary>
@@ -228,14 +226,14 @@ namespace gamelib
 		// Initialize/prepare process by saying last update occured right now.
 		auto t0 = GetTimeNowMs();
 
-		const auto maxLoops = SettingsManager::Get()->get_int("global", "max_loops");
+		const auto maxLoops = SettingsManager::Get()->GetInt("global", "max_loops");
 
 		// Get required time(ms) in per update() call. 
 		// This is a pre-calculated ms value that will represents a desired fixed number times that update must be called in 1 second,
 		// as multiples of this value will equal 1 second.
-		const auto TICK_TIME = SettingsManager::Get()->get_int("global", "tick_time_ms"); 
+		const auto TICK_TIME = SettingsManager::Get()->GetInt("global", "tick_time_ms"); 
 		
-		while (!_gameWorld.IsGameDone) // main game loop (exact speed of loops is hardware dependaant)
+		while (!SceneManager::Get()->GetGameWorld().IsGameDone) // main game loop (exact speed of loops is hardware dependaant)
 		{
 			const auto t1 =  GetTimeNowMs(); // t1 is the time now, and at t0, the last update was called.
 			auto elapsedTimeSinceLastUpdateFinished = t1 - t0;			
@@ -269,13 +267,13 @@ namespace gamelib
 
 			HandleSpareTime(frameTimePerLoop); // handle player input, general housekeeping (Event Manager processing)
 
-			if (_gameWorld.IsNetworkGame && (t1 - t0) > TICK_TIME)
+			if (SceneManager::Get()->GetGameWorld().IsNetworkGame && (t1 - t0) > TICK_TIME)
 			{
 				t0 = t1 - TICK_TIME;
 			}
 
 			
-			if (_gameWorld.CanDraw)
+			if (SceneManager::Get()->GetGameWorld().CanDraw)
 			{
 				// How much within the new 'tick' are we?
 				const auto percentWithinTick = min(1.0f , float((t1 - t0) /TICK_TIME)); // NOLINT(bugprone-integer-division)				

@@ -27,11 +27,11 @@ class SceneManagerTests : public testing::Test
 TEST_F(SceneManagerTests, Initialize)
 {
 	GameWorldData data;
-	SceneManager sceneManager = SceneManager(data);
-	EXPECT_TRUE(sceneManager.Initialize());
+	
+	EXPECT_TRUE(SceneManager::Get()->Initialize());
 	EXPECT_EQ(EventManager::Get()->GetSubscriptions()[EventType::LevelChangedEventType].size(), 1) << "Scene manager not automatically subscribed to LevelChangedEventType event";
 	EXPECT_EQ(EventManager::Get()->GetSubscriptions()[EventType::AddGameObjectToCurrentScene].size(), 1) << "Scene manager not automatically subscribed to AddGameObjectToCurrentScene event";
-	EXPECT_EQ(EventManager::Get()->GetSubscriptions().size(), 4) << "Expected only 3 subscriptions to be made initially, included subscription by graphics manager";
+	EXPECT_EQ(EventManager::Get()->GetSubscriptions().size(), 5) << "Expected only 5 subscriptions to be made initially, included subscription by graphics manager";
 }
 
 TEST_F(SceneManagerTests, get_scene_layers)
@@ -39,12 +39,13 @@ TEST_F(SceneManagerTests, get_scene_layers)
 	ResourceManager::Get()->Initialize();
 	ResourceManager::Get()->IndexResources("Resources.xml");
 	GameWorldData data;
-	SceneManager sceneManager = SceneManager(data, "");
-	sceneManager.Initialize();
-	sceneManager.StartScene(1);
+	SceneManager* sceneManager = SceneManager::Get();
+	
+	sceneManager->Initialize("");
+	sceneManager->StartScene(1);
 	EventManager::Get()->ProcessAllEvents();
 	
-	auto layers = sceneManager.GetLayers();
+	auto layers = sceneManager->GetLayers();
 	auto layer = layers.front();
 	auto game_object = layer.layerObjects.front();
 	

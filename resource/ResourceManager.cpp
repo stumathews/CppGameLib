@@ -44,21 +44,25 @@ namespace gamelib
 	/// <returns>true if initialised, false otherwise</returns>
 	bool ResourceManager::Initialize()
 	{
-		return LogThis("ResourceManager::initialize()", SettingsManager::Get()->get_bool("global", "verbose"), [&]()
+		return LogThis("ResourceManager::initialize()", SettingsManager::Get()->GetBool("global", "verbose"), [&]()
 		{			
 			EventManager::Get()->SubscribeToEvent(EventType::LevelChangedEventType, this ); // we will load the resources for the level that has been loaded
 			return true;
 		}, true, true);
 	}
 
-	// Handle events resource manager subscribes to
-	vector<shared_ptr<Event>> ResourceManager::HandleEvent(const shared_ptr<Event> the_event)
+	/// <summary>
+	/// Handle events resource manager subscribes to
+	/// </summary>
+	/// <param name="event"></param>
+	/// <returns></returns>
+	vector<shared_ptr<Event>> ResourceManager::HandleEvent(const shared_ptr<Event> event)
 	{
-		if(the_event->type == EventType::LevelChangedEventType)
+		if(event->type == EventType::LevelChangedEventType)
 		{
-			LogThis("Detected level change. Loading level assets...", SettingsManager::Get()->get_bool("global", "verbose"), [&]()
+			LogThis("Detected level change. Loading level assets...", SettingsManager::Get()->GetBool("global", "verbose"), [&]()
 			{
-				LoadSceneAssets(dynamic_pointer_cast<SceneChangedEvent>(the_event)->scene_id);
+				LoadSceneAssets(dynamic_pointer_cast<SceneChangedEvent>(event)->scene_id);
 				return true;
 			}, true, true);
 		}
@@ -73,7 +77,7 @@ namespace gamelib
 	/// <param name="level">Scene/Level assets to load.</param>
 	void ResourceManager::LoadSceneAssets(const int level)
 	{	
-		for(const auto& level_resources : resources_by_scene) // we need access to all resources to swap in/out resources
+		for(const auto& level_resources : resourcesByScene) // we need access to all resources to swap in/out resources
 		{
 			for(const auto& asset : level_resources.second)
 			{
@@ -84,16 +88,16 @@ namespace gamelib
 						
 					Logger::Get()->LogThis(string("scene: " + to_string(asset->scene) ) + string(asset->name) + " asset loaded.");
 						
-					loaded_resources_count++;
-					unloaded_resources_count--;
+					countLoadedResources++;
+					countUnloadedResources--;
 				} 
 				else if(asset->isLoadedInMemory && asset->scene != level && !always_load_resource )
 				{
 					asset->Unload();
 						
 					Logger::Get()->LogThis(string("scene: " + to_string(asset->scene))  + string(asset->name) + " asset unloaded.");
-					unloaded_resources_count++;
-					loaded_resources_count--;
+					countUnloadedResources++;
+					countLoadedResources--;
 				}
 			}		
 		}
@@ -104,9 +108,9 @@ namespace gamelib
 	/// </summary>
 	void ResourceManager::Unload()
 	{
-		LogThis("Unloading all resources...", SettingsManager::Get()->get_bool("global", "verbose"), [&]()
+		LogThis("Unloading all resources...", SettingsManager::Get()->GetBool("global", "verbose"), [&]()
 		{
-			for(const auto &item : resource_by_name)
+			for(const auto &item : resourcesByName)
 			{
 				auto &asset_name = item.first;
 				auto &asset = item.second;
@@ -122,17 +126,19 @@ namespace gamelib
 	/// <summary>
 	/// Index the Resources.xml file	 
 	/// </summary>
-	void ResourceManager::IndexResources(string resources_file_path)
+	void ResourceManager::IndexResources(string resourceFilePath)
 	{	
 		Logger::Get()->LogThis("ResourceManager: reading resources.xml.");
 		
-		XMLDocument doc;
+		XMLDocument xmlDocument;
 		
-		doc.LoadFile( resources_file_path.c_str() ); // Load the list of resources
+		// Load resource file
+		xmlDocument.LoadFile(resourceFilePath.c_str()); 
 		
-		if(doc.ErrorID() == 0)
+		// Parse resource file
+		if(xmlDocument.ErrorID() == 0)
 		{		
-			XMLNode* pAssetsNode = doc.FirstChildElement("Assets");
+			auto* pAssetsNode = xmlDocument.FirstChildElement("Assets");
 				
 			if(pAssetsNode)
 			{
@@ -164,13 +170,17 @@ namespace gamelib
 					}
 				}
 			}
+			else
+			{
+				THROW(12, "No Assets found", GetSubscriberName());
+			}
 		}
 		else
 		{
 			THROW((int) ResourceManager::ErrorNumbers::FailedToLoadResourceFile, "Failed to load resources file", this->GetSubscriberName());
 		}
 
-		LogMessage(to_string(resource_count) + string(" assets available in resource manager."));
+		LogMessage(to_string(countResources) + string(" assets available in resource manager."));
 	}
 
 	/// <summary>
@@ -212,19 +222,19 @@ namespace gamelib
 	/// Indexes the asset info
 	/// </summary>
 	/// <param name="theAsset">the asset info to store</param>
-	void ResourceManager::StoreAsset(const shared_ptr<Asset>& theAsset)
+	void ResourceManager::StoreAsset(const shared_ptr<Asset>& asset)
 	{
 		// assets are explicitly associated with a scene that it will work in
-		resources_by_scene[theAsset->scene].push_back(theAsset);
+		resourcesByScene[asset->scene].push_back(asset);
 
 		// Index asset by its name
-		resource_by_name.insert(pair<string, shared_ptr<Asset>>(theAsset->name, theAsset));
+		resourcesByName.insert(pair<string, shared_ptr<Asset>>(asset->name, asset));
 
 		// Index the asset by its id
-		resources_by_uuid.insert(pair<int, shared_ptr<Asset>>(theAsset->uid, theAsset));
+		resourcesById.insert(pair<int, shared_ptr<Asset>>(asset->uid, asset));
 
-		LogMessage("Discovered " + string(theAsset->type) + string(" asset#: ") + to_string(theAsset->uid) + string(" ") + string(theAsset->name));
-		resource_count++;
+		LogMessage("Discovered " + string(asset->type) + string(" asset#: ") + to_string(asset->uid) + string(" ") + string(asset->name));
+		countResources++;
 	}
 
 	/// <summary>
@@ -243,7 +253,7 @@ namespace gamelib
 	/// <returns>Assert info</returns>
 	shared_ptr<Asset> ResourceManager::GetAssetInfo(const string& name)
 	{
-		return resource_by_name[name];		
+		return resourcesByName[name];		
 	}
 
 	/// <summary>
@@ -253,6 +263,6 @@ namespace gamelib
 	/// <returns>Asset info</returns>
 	shared_ptr<Asset> ResourceManager::GetAssetInfo(const int uuid)
 	{
-		return resources_by_uuid[uuid];
+		return resourcesById[uuid];
 	}
 }

@@ -30,25 +30,22 @@ namespace gamelib
 		SDL_Window* window = nullptr; //The window we'll be rendering to
 		SDL_Renderer* windowRenderer = nullptr; //The window renderer
 		SDL_Surface* windowSurface = nullptr; 
-
-		std::shared_ptr<Asset> CreateAsset(tinyxml2::XMLElement * asset_xml_element);
-		
 		bool Initialize(const uint width = 800, uint height = 600, const char* window_title = nullptr);	
 
-		void DrawCurrentScene(SceneManager& scene_admin) const;
 		uint get_screen_width() const { return screenWidth;}
 		uint get_screen_height() const { return screenHeight;}
 		
 	    std::string GetSubscriberName() override;
 
 		static std::shared_ptr<GraphicAsset> ToGraphicAsset(const std::shared_ptr<Asset>& asset);
+		void ClearAndDraw(std::function<void(SDL_Renderer* renderer)>& drawObjects) const;
 	protected:		
 		static SDLGraphicsManager* Instance;
 	private:		
 		SDLGraphicsManager();
 		uint screenWidth = 0;
 		uint screenHeight = 0;
-		void ClearAndDraw(std::function<void(SDL_Renderer* renderer)> &drawObjects) const;
+		
 		bool beVerbose = false;
 		events HandleEvent(const std::shared_ptr<Event> the_event) override;		
 	};

@@ -6,6 +6,7 @@
 #include "common/constants.h"
 #include "events/PlayerMovedEvent.h"
 #include "events/PositionChangeEvent.h"
+#include "scene/SceneManager.h"
 #include <functional>
 
 using namespace std;
@@ -23,14 +24,14 @@ namespace gamelib
 	 */
 	Player::Player(const int x, const int y, const int w, const int h):	DrawableGameObject(x, y, true), width(w), height(h)
 	{
-		be_verbose = SettingsManager::Get()->get_bool("player", "verbose");
+		be_verbose = SettingsManager::Get()->GetBool("player", "verbose");
 	}
 
 	void Player::LoadSettings()
 	{
 		GameObject::LoadSettings(); // Call base
 		
-		drawBox = SettingsManager::Get()->get_bool("player", "draw_box");
+		drawBox = SettingsManager::Get()->GetBool("player", "draw_box");
 	}
 
 	void Player::CenterPlayerInRoom(shared_ptr<Room> target_room)
@@ -87,9 +88,9 @@ namespace gamelib
 			const auto position_changed_event = dynamic_pointer_cast<PositionChangeEvent>(the_event);
 			const auto move_direction = position_changed_event->direction;			
 					
-			auto game_world = static_pointer_cast<game_world_component>(components.FindComponent(constants::game_world))->get_data();
+			auto gameWorld = SceneManager::Get()->GetGameWorld();
 			
-			const auto last_room_index = count_if(begin(game_world.objects), end(game_world.objects),
+			const auto last_room_index = count_if(begin(gameWorld.GetGameObjects()), end(gameWorld.GetGameObjects()),
 			                                      [](weak_ptr<GameObject> g){
 					if(auto ptr = g.lock()){
 						return ptr->GetGameObjectType() == object_type::Room;
@@ -98,11 +99,11 @@ namespace gamelib
 				});
 			const auto first_room_index = 0;
 
-			auto current_room = dynamic_pointer_cast<Room>(game_world.objects[within_room_index < first_room_index ? first_room_index : within_room_index]);			
-			auto above_room = dynamic_pointer_cast<Room>(game_world.objects[get_room_neighbour_index(first_room_index, last_room_index, 0, current_room)]);
-			auto right_room = dynamic_pointer_cast<Room>(game_world.objects[get_room_neighbour_index(first_room_index, last_room_index, 1, current_room)]);
-			auto bottom_room = dynamic_pointer_cast<Room>(game_world.objects[get_room_neighbour_index(first_room_index, last_room_index, 2, current_room)]);
-			auto left_room = dynamic_pointer_cast<Room>(game_world.objects[get_room_neighbour_index(first_room_index, last_room_index, 3, current_room)]);
+			auto current_room = dynamic_pointer_cast<Room>(gameWorld.GetGameObjects()[within_room_index < first_room_index ? first_room_index : within_room_index]);			
+			auto above_room = dynamic_pointer_cast<Room>(gameWorld.GetGameObjects()[get_room_neighbour_index(first_room_index, last_room_index, 0, current_room)]);
+			auto right_room = dynamic_pointer_cast<Room>(gameWorld.GetGameObjects()[get_room_neighbour_index(first_room_index, last_room_index, 1, current_room)]);
+			auto bottom_room = dynamic_pointer_cast<Room>(gameWorld.GetGameObjects()[get_room_neighbour_index(first_room_index, last_room_index, 2, current_room)]);
+			auto left_room = dynamic_pointer_cast<Room>(gameWorld.GetGameObjects()[get_room_neighbour_index(first_room_index, last_room_index, 3, current_room)]);
 			
 			const auto is_moving_right = move_direction == Direction::Right;
 			const auto is_moving_down = move_direction == Direction::Down;
@@ -160,10 +161,10 @@ namespace gamelib
 		SDL_Rect r = { x ,y, width, height};
 		
 		SDL_Color c = {
-			static_cast<Uint8>(SettingsManager::Get()->get_int("player", "r")),
-			static_cast<Uint8>(SettingsManager::Get()->get_int("player", "g")),
-			static_cast<Uint8>(SettingsManager::Get()->get_int("player", "b")),
-			static_cast<Uint8>(SettingsManager::Get()->get_int("player", "a"))			
+			static_cast<Uint8>(SettingsManager::Get()->GetInt("player", "r")),
+			static_cast<Uint8>(SettingsManager::Get()->GetInt("player", "g")),
+			static_cast<Uint8>(SettingsManager::Get()->GetInt("player", "b")),
+			static_cast<Uint8>(SettingsManager::Get()->GetInt("player", "a"))			
 		};
 		
 		DrawFilledRect(renderer, &r, c);

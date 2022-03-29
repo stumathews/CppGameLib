@@ -16,7 +16,8 @@ namespace gamelib
 		InvalidMove,
 		Fire,
 		FetchedPickup,
-		GameObject
+		GameObject,
+		DrawCurrentScene
 	};
 
 	class Event

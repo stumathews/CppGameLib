@@ -22,7 +22,7 @@ namespace gamelib
 		~ResourceManager();
 		std::shared_ptr<Asset> GetAssetInfo(const std::string& name);
 		std::shared_ptr<Asset> GetAssetInfo(int uuid);
-		int get_resource_count() const { return resource_count; }
+		int GetCountResources() const { return countResources; }
 		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> the_event) override;
 		void Unload();
 		
@@ -32,8 +32,8 @@ namespace gamelib
 		// index the resoures file
 		void IndexResources(std::string resources_file_path = "game/resources.xml");
 		std::shared_ptr<gamelib::Asset>& CreateAssetFromElement(const char* type, std::shared_ptr<gamelib::Asset>& the_asset, tinyxml2::XMLElement* const& element);
-		int get_resource_unloaded_count() const { return unloaded_resources_count; }
-	    int get_resource_loaded_count() const { return loaded_resources_count; }
+		int GetCountUnloadedResources() const { return countUnloadedResources; }
+	    int GetCountLoadedResources() const { return countLoadedResources; }
 
 		enum class ErrorNumbers
 		{
@@ -47,14 +47,14 @@ namespace gamelib
 	private:
 		ResourceManager();		
 		void LoadSceneAssets(int level);
-	    void StoreAsset(const std::shared_ptr<Asset>& the_asset);
-		std::map<int, std::vector<std::shared_ptr<Asset>>> resources_by_scene;   
-		std::map<std::string, std::shared_ptr<Asset>> resource_by_name;   
-		std::map<int, std::shared_ptr<Asset>> resources_by_uuid;
+	    void StoreAsset(const std::shared_ptr<Asset>& asset);
+		std::map<int, std::vector<std::shared_ptr<Asset>>> resourcesByScene;   
+		std::map<std::string, std::shared_ptr<Asset>> resourcesByName;   
+		std::map<int, std::shared_ptr<Asset>> resourcesById;
 
-		int resource_count = 0;
-		int loaded_resources_count = 0;
-		int unloaded_resources_count = 0;
+		int countResources = 0;
+		int countLoadedResources = 0;
+		int countUnloadedResources = 0;
 		
 	};
 }

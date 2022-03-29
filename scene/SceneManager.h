@@ -11,6 +11,7 @@
 
 namespace gamelib
 {
+	class GameWorldData;
 	/// <summary>
 	/// Represents and manages the current scene
 	/// </summary>
@@ -19,19 +20,24 @@ namespace gamelib
 	public:
 
 		/// <summary>
-		/// Create a new Scene Manager
+		/// Get Scene Manager
 		/// </summary>
-		SceneManager(GameWorldData& gameWorld, std::string scene_folder = "game/");	
+		static SceneManager* Get();
+		~SceneManager();
 		SceneManager(const SceneManager &) = delete;
 		SceneManager(SceneManager &&) = delete;
 	    SceneManager& operator=(SceneManager const&)  = delete;
 		SceneManager& operator=(SceneManager &&) = delete;
 
+		GameWorldData& GetGameWorld();
+
+		void SetSceneFolder(std::string sceneFolder);
+
 		/// <summary>
 		/// Initialize the scene manager
 		/// </summary>
 		/// <returns></returns>
-		bool Initialize();	
+		bool Initialize(std::string sceneFolder = "game/");
 
 		/// <summary>
 		/// Start the scene
@@ -45,7 +51,18 @@ namespace gamelib
 		/// <returns></returns>
 		std::list<gamelib::Layer> GetLayers() const;
 
+
+	protected:
+		static SceneManager* Instance;
+
 	private:
+		SceneManager();
+		
+		/// <summary>
+		/// Draws the current scene
+		/// </summary>
+		void DrawScene();
+		
 		/// <summary>
 		/// Add game object to scene
 		/// </summary>
@@ -96,7 +113,9 @@ namespace gamelib
 		/// <summary>
 		/// Update the scene manager on each frame
 		/// </summary>
-		static void Update();
+		void Update();
+
+		
 
 		/// <summary>
 		/// Handle Scene Manager events
@@ -140,7 +159,7 @@ namespace gamelib
 		/// <summary>
 		/// Reference to the game world
 		/// </summary>
-		GameWorldData& gameWorld;
+		GameWorldData gameWorld;
 	};
 }
 #endif

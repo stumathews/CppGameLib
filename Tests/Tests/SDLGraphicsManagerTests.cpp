@@ -23,8 +23,8 @@ class SDLGraphicsManagerTests : public testing::Test
 	graphics_admin = shared_ptr<SDLGraphicsManager>(SDLGraphicsManager::Get());
   	audio_admin = shared_ptr<AudioManager>(AudioManager::Get());
 	resource_admin = shared_ptr<ResourceManager>(ResourceManager::Get());
-	world = shared_ptr<GameWorldData>(new GameWorldData());
-  	scene_admin = shared_ptr<SceneManager>(new SceneManager(*world, ""/* root folder is scene folder */));
+  	scene_admin = shared_ptr<SceneManager>(SceneManager::Get());
+	scene_admin->SetSceneFolder("");
   }
     
   void TearDown() override {}

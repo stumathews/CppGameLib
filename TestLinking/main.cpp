@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 	
 	GameWorldData world;
 	shared_ptr<gamelib::SceneManager> scene_admin(new gamelib::SceneManager(*event_admin, settings_admin, *resource_admin, world, logger));
-    scene_admin->Initialize();
+    scene_admin->Initialize("game/");
 	
 	cout << "Hello World" << endl;
 	int i;

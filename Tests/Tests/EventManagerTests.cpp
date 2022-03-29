@@ -114,6 +114,6 @@ TEST_F(EventManagerTests, ClearSubscribersTest)
 	//Clear subscriptions
 	EventManager::Get()->ClearSubscribers();
 
-	EXPECT_EQ(0, all_event_subscribers.size(), "Expected all the subscribers to have been removed");
+	EXPECT_EQ(0, all_event_subscribers.size()) << "Expected all the subscribers to have been removed";
 
 }

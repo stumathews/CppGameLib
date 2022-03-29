@@ -215,6 +215,7 @@
     <ClInclude Include="Utils.h" />
     <ClInclude Include="util\COMUtils.h" />
     <ClInclude Include="util\RectDebugging.h" />
+    <ClInclude Include="util\SettingDetail.h" />
     <ClInclude Include="util\SettingsManager.h" />
     <ClInclude Include="util\Tuple.h" />
   </ItemGroup>
@@ -268,6 +269,7 @@
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="util\RectDebugging.cpp" />
+    <ClCompile Include="util\SettingDetail.cpp" />
     <ClCompile Include="util\SettingsManager.cpp" />
     <ClCompile Include="util\Tuple.cpp" />
   </ItemGroup>

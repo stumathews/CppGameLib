@@ -192,6 +192,9 @@
     <ClInclude Include="GameObjectMover.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="util\SettingDetail.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -345,6 +348,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameObjectMover.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="util\SettingDetail.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

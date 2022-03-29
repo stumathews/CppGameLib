@@ -17,6 +17,10 @@ using namespace std;
 namespace gamelib
 {
 
+	/// <summary>
+	/// Get Instance
+	/// </summary>
+	/// <returns></returns>
 	SDLGraphicsManager* SDLGraphicsManager::Get()
 	{
 		if (Instance == nullptr)
@@ -28,12 +32,13 @@ namespace gamelib
 
 	SDLGraphicsManager* SDLGraphicsManager::Instance = nullptr;
 
-	SDLGraphicsManager::SDLGraphicsManager() : EventSubscriber() { }
+	SDLGraphicsManager::SDLGraphicsManager() 
+	{ }
 
 	/// <summary>
 	/// Handle any events we've subscribed to
 	/// </summary>
-	vector<shared_ptr<Event>> SDLGraphicsManager::HandleEvent(const std::shared_ptr<Event> the_event) 
+	vector<shared_ptr<Event>> SDLGraphicsManager::HandleEvent(const std::shared_ptr<Event> event) 
 	{ 
 		return vector<shared_ptr<Event>>();	
 	}	
@@ -161,42 +166,6 @@ namespace gamelib
 		SDL_RenderPresent(windowRenderer);
 	}
 	
-	/// <summary>
-	/// Draws all the actors in the scene
-	/// </summary>
-	void SDLGraphicsManager::DrawCurrentScene(SceneManager& sceneManager) const
-	{
-		// local-func
-		auto renderAllObjectsFn = static_cast<render_func>([&](SDL_Renderer*)
-		{
-			const auto &currentScene = sceneManager;
-			
-			// Draw all objects in the layer
-			for (const auto& Layer : currentScene.GetLayers())
-			{
-				// Only draw visible layers
-				if (Layer.visible)
-				{
-					// Draw objects within the layer
-					for (const auto& gameObjectCandidate : Layer.layerObjects)
-					{
-						if(auto gameObject = gameObjectCandidate.lock())
-						{
-							// If it is active
-							if (gameObject && gameObject->isActive)
-							{
-								// draw yourself!
-								gameObject->Draw(windowRenderer);
-							}
-						}
-					}
-				}
-			}
-		});
-
-		ClearAndDraw(renderAllObjectsFn);	
-	}
-
 	/// <summary>
 	/// Uninitialize the SDL Graphics manager
 	/// </summary>

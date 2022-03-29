@@ -53,9 +53,8 @@ namespace gamelib
 	/// <returns>true on initialization, false otherwise</returns>
 	bool EventManager::Initialize()
 	{		
-		return LogThis("EventManager::initialize()", SettingsManager::Get()->get_bool("global", "verbose"), [&]()
-		{
-			
+		return LogThis("EventManager::initialize()", SettingsManager::Get()->GetBool("global", "verbose"), [&]()
+		{			
 			return true;
 		}, true, true);
 	}

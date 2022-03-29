@@ -51,7 +51,7 @@ namespace gamelib
 	// Logs message and runs action
 	inline bool LogThis(const std::string &message, bool verbose, const std::function<bool()>& action,  bool print_finished = true, bool run_if = true)
 	{
-		LogMessage(message, SettingsManager::Get()->get_bool("global","verbose"));
+		LogMessage(message, SettingsManager::Get()->GetBool("global","verbose"));
 		bool result;
 		if(run_if)
 		{
@@ -78,7 +78,7 @@ namespace gamelib
 	{
 		if(condition == false){
 			
-			LogMessage(message, SettingsManager::Get()->get_bool("global", "verbose"));
+			LogMessage(message, SettingsManager::Get()->GetBool("global", "verbose"));
 		}
 		return condition;
 	}

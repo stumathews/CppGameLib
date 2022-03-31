@@ -18,6 +18,6 @@ namespace gamelib
 		/// All events should have a string version
 		/// </summary>
 		/// <returns></returns>
-		std::string to_str() override;
+		std::string ToString() override;
 	};
 }

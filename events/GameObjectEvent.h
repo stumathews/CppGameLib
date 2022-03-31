@@ -16,12 +16,10 @@ namespace gamelib
 	class GameObjectEvent : public Event
 	{
 	public:
-		GameObjectEvent(const int event_id, GameObject *gameObject, GameObjectEventContext context ) : Event(EventType::GameObject, event_id), context(context), gameObject(std::move(gameObject))
-		{
-		}
+		GameObjectEvent(const int event_id, GameObject* gameObject, GameObjectEventContext context);
 
-		EventType GetGameObjectType() override { return EventType::GameObject; }
-		std::string to_str() override { return "GameObjectEvent"; }
+		EventType GetGameObjectType() override;
+		std::string ToString() override;
 		GameObjectEventContext context;
 		GameObject *gameObject;
 	};

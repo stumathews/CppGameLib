@@ -77,7 +77,7 @@ namespace gamelib
 			return;
 		}
 
-		auto const log = "EventManager: " + you->GetSubscriberName()  + string(" raised to event ") + event->to_str();
+		auto const log = "EventManager: " + you->GetSubscriberName()  + string(" raised to event ") + event->ToString();
 		
 		if(event->type != EventType::DoLogicUpdateEventType)
 			Logger::Get()->LogThis(log);
@@ -135,7 +135,7 @@ namespace gamelib
 		{
 			const auto& event = primary_event_queue_.front();
 
-			event->event_id = event_count++;
+			event->eventId = event_count++;
 							
 			if(event->processed) // for safety sake
 				continue;

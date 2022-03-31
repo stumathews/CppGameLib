@@ -15,7 +15,6 @@
 #include "events/PositionChangeEvent.h"
 #include "events/SceneChangedEvent.h"
 #include "graphic/SDLGraphicsManager.h"
-#include "objects/Player.h"
 #include "resource/ResourceManager.h"
 #include "scene/SceneManager.h"
 #include "common/aliases.h"
@@ -78,12 +77,10 @@ namespace gamelib
 			const auto SdLInitialized = LogOnFailure(InitializeSDL(screenWidth, screenHeight), "Could not initialize SDL, aborting.");
 
 			// Final check to see if all subsystems are initialised ok
-			if(failed(SdLInitialized) || 
-			   failed(eventManagerInitialized) ||
-			   failed(resourceManagerInitialized) || 
-			   failed(sceneManagerInitialized) ||
-			   failed(settingsInitialized)) 
-				return false;	
+			if (IsFailedOrFalse(SdLInitialized) || IsFailedOrFalse(eventManagerInitialized) || IsFailedOrFalse(resourceManagerInitialized) || IsFailedOrFalse(sceneManagerInitialized) || IsFailedOrFalse(settingsInitialized))
+			{
+				return false;
+			}
 						
 			return true;
 		}, true, true);

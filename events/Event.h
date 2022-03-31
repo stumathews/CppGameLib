@@ -24,11 +24,11 @@ namespace gamelib
 	{
 	public:
 		explicit Event(EventType type, int event_id = 0);
-		int event_id = 0;
+		int eventId = 0;
 		bool processed = false;
 		EventType type;
 		virtual EventType GetGameObjectType();
-		virtual std::string to_str();
+		virtual std::string ToString();
 		virtual ~Event() = default;
 	};
 

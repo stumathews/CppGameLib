@@ -24,6 +24,8 @@ namespace gamelib
 		bool CanDraw = true;
 
 		std::vector<std::shared_ptr<gamelib::GameObject>>& GetGameObjects();
+
+		std::shared_ptr<gamelib::GameObject> player;
 	private:
 		/// <summary>
 		/// List of game objects

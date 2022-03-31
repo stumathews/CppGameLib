@@ -38,7 +38,7 @@ namespace gamelib
 		void OnPosYParse(gamelib::uint& y, std::string& detail_value) const;
 		void OnVisibleParse(bool& visible, std::string& detail_value) const;
 		void OnPosXParse(gamelib::uint& x, std::string& detail_value) const;
-		void OnResourceIdParse(std::string& detail_value, std::shared_ptr<gamelib::Asset>& resource) const;
+		void GetAssetForResourceIdParse(std::string& detail_value, std::shared_ptr<gamelib::Asset>& resource) const;
 
 		/// <summary>
 		/// Initializes the Game object

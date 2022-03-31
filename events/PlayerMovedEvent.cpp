@@ -3,7 +3,7 @@
 using namespace std;
 namespace gamelib
 {
-	string PlayerMovedEvent::to_str()
+	string PlayerMovedEvent::ToString()
 	{
 		return "PlayerMovedEvent";
 	}

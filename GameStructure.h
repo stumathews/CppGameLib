@@ -2,7 +2,6 @@
 #include "common/Common.h"
 #include "events/EventSubscriber.h"
 #include "objects/GameWorldData.h"
-#include "objects/Player.h"
 #include "scene/SceneManager.h"
 #include <common/Logger.h>
 

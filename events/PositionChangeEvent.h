@@ -10,7 +10,7 @@ namespace gamelib
 	public:
 		explicit PositionChangeEvent(Direction dir);
 		Direction direction;
-		std::string to_str() override;
+		std::string ToString() override;
 	};
 }
 

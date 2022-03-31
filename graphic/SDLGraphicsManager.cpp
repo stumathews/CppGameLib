@@ -109,7 +109,7 @@ namespace gamelib
 
 		// Initialize SDL Image extension/library
 		const int imgFlags = IMG_INIT_PNG;
-		if( !( IMG_Init( imgFlags ) & imgFlags ) )
+		if(!(IMG_Init(imgFlags) & imgFlags ))
 		{
 			Logger::Get()->LogThis(string("SDL_image could not initialize:") + const_cast<char*>(SDL_GetError()));
 			return false;

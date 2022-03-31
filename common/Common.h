@@ -29,12 +29,14 @@ namespace gamelib
 		return is;
 	}
 
-	inline bool failed(bool condition, std::string message = "", bool ignore = false)
+	inline bool IsFailedOrFalse(bool condition, std::string message = "", bool ignore = false)
 	{
-		const auto is = condition == false;
-		if(is == false)
+		const auto isFalse = condition == false;
+		if (isFalse == true)
+		{
 			Logger::Get()->LogThis(message);
-		return ignore == true ? !ignore : is;
+		}
+		return ignore == true ? !ignore : isFalse;
 	}
 	
 	inline void LogMessage(const std::string &message, const bool be_verbose = false, bool isFatal = false)

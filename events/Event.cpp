@@ -3,7 +3,7 @@
 
 namespace gamelib
 {
-	Event::Event(EventType type, int event_id): type(type), event_id(event_id)
+	Event::Event(EventType type, int event_id): type(type), eventId(event_id)
 	{
 		// using member init only
 	}
@@ -13,7 +13,7 @@ namespace gamelib
 		return type;
 	}
 
-	std::string Event::to_str()
+	std::string Event::ToString()
 	{
 		return "generic event";
 	}

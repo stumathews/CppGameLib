@@ -7,7 +7,7 @@ namespace gamelib
 	{
 	}
 
-	string SceneLoadedEvent::to_str()
+	string SceneLoadedEvent::ToString()
 	{
 		return "SceneLoadedEvent";
 	}

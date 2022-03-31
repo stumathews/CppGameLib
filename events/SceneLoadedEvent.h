@@ -6,7 +6,7 @@ namespace gamelib
 	{
 	public:
 		SceneLoadedEvent(int scene_id);
-		std::string to_str() override;
+		std::string ToString() override;
 		int scene_id_;
 	};
 }

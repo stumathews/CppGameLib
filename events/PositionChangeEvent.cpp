@@ -8,7 +8,7 @@ namespace gamelib
 		direction = dir;
 	}
 
-	string PositionChangeEvent::to_str()
+	string PositionChangeEvent::ToString()
 	{
 		return "position_change_event";
 	}

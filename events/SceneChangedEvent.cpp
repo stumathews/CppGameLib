@@ -3,7 +3,7 @@
 using namespace std;
 namespace gamelib
 {	
-	string SceneChangedEvent::to_str()
+	string SceneChangedEvent::ToString()
 	{
 		return "scene_changed_event";
 	}

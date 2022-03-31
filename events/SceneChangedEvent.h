@@ -12,7 +12,7 @@ namespace gamelib
 		}
 		int scene_id;
 		std::string scene_file_path;
-		std::string to_str() override;
+		std::string ToString() override;
 	};
 }
 

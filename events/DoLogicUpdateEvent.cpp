@@ -14,7 +14,7 @@ namespace gamelib
 	/// Provide a string representation of event
 	/// </summary>
 	/// <returns></returns>
-	string LogicUpdateEvent::to_str()
+	string LogicUpdateEvent::ToString()
 	{
 		return "LogicUpdateEvent";
 	}

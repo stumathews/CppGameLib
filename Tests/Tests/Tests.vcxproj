@@ -48,6 +48,7 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="ResourceManagerTests.cpp" />
     <ClCompile Include="GraphicAssetFactoryTests.cpp" />
+    <ClCompile Include="SceneGraphTests.cpp" />
     <ClCompile Include="SceneManagerTests.cpp" />
     <ClCompile Include="SDLGraphicsManagerTests.cpp" />
     <ClCompile Include="SettingsManagerTests.cpp" />

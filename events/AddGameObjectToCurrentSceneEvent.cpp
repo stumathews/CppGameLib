@@ -2,22 +2,22 @@
 
 namespace gamelib
 {
-	AddGameObjectToCurrentSceneEvent::AddGameObjectToCurrentSceneEvent(const std::shared_ptr<GameObject> game_object, const int event_id): Event(EventType::AddGameObjectToCurrentScene, event_id)
+	AddGameObjectToCurrentSceneEvent::AddGameObjectToCurrentSceneEvent(const std::shared_ptr<GameObject> gameObject, const int event_id): Event(EventType::AddGameObjectToCurrentScene, event_id)
 	{
-		set_game_object(game_object);
+		SetGameObject(gameObject);
 	}
 
-	void AddGameObjectToCurrentSceneEvent::set_game_object(const std::shared_ptr<GameObject> game_object)
+	void AddGameObjectToCurrentSceneEvent::SetGameObject(const std::shared_ptr<GameObject> gameObject)
 	{
-		this->the_game_object = game_object;
+		this->gameObjects = gameObject;
 	}
 
 	std::shared_ptr<GameObject> AddGameObjectToCurrentSceneEvent::GetGameObject() const
 	{
-		return the_game_object;
+		return gameObjects;
 	}
 
-	std::string AddGameObjectToCurrentSceneEvent::to_str()
+	std::string AddGameObjectToCurrentSceneEvent::ToString()
 	{
 		return "add_game_object_to_current_scene_event";
 	}

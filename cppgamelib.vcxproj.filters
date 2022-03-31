@@ -99,12 +99,6 @@
     <ClInclude Include="objects\GameObjectFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="objects\Player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="objects\PlayerComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="objects\Sprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -115,9 +109,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="events\IEventSubscriber.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="scene\Room.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="objects\GameObject.h">
@@ -254,12 +245,6 @@
     <ClCompile Include="objects\GameObjectFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="objects\Player.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="objects\PlayerComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="objects\Sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -273,9 +258,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="events\IEventSubscriber.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="scene\Room.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="objects\GameObject.cpp">

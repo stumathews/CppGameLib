@@ -45,7 +45,7 @@ namespace gamelib
 			{
 				// This object is associated with a resource, so use the resource manager
 
-				OnResourceIdParse(attributeValue, asset);
+				GetAssetForResourceIdParse(attributeValue, /*out*/ asset);
 				continue; // Move to the next attribute on element
 			}
 			
@@ -106,7 +106,7 @@ namespace gamelib
 	/// <summary>
 	/// Parse the Resource Id attribute for scene object
 	/// </summary>
-	void GameObjectFactory::OnResourceIdParse(std::string& detail_value, std::shared_ptr<gamelib::Asset>& resource) const
+	void GameObjectFactory::GetAssetForResourceIdParse(std::string& detail_value, std::shared_ptr<gamelib::Asset>& resource) const
 	{
 		// Extract/Save resource Id from XML
 		const auto* const resourceIdString = detail_value.c_str();

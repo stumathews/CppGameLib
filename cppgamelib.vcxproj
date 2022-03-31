@@ -199,8 +199,6 @@
     <ClInclude Include="objects\Component.h" />
     <ClInclude Include="objects\GameObject.h" />
     <ClInclude Include="objects\GameObjectFactory.h" />
-    <ClInclude Include="objects\Player.h" />
-    <ClInclude Include="objects\PlayerComponent.h" />
     <ClInclude Include="objects\Sprite.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource\ResourceManager.h" />
@@ -208,7 +206,6 @@
     <ClInclude Include="scene\ABCDRectangle.h" />
     <ClInclude Include="scene\SceneItem.h" />
     <ClInclude Include="scene\SceneManager.h" />
-    <ClInclude Include="scene\Room.h" />
     <ClInclude Include="SpriteAsset.h" />
     <ClInclude Include="Tests\Tests\GraphicAssetFactory.h" />
     <ClInclude Include="tinyxml2.h" />
@@ -255,8 +252,6 @@
     <ClCompile Include="objects\Component.cpp" />
     <ClCompile Include="objects\GameObject.cpp" />
     <ClCompile Include="objects\GameObjectFactory.cpp" />
-    <ClCompile Include="objects\Player.cpp" />
-    <ClCompile Include="objects\PlayerComponent.cpp" />
     <ClCompile Include="objects\Sprite.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="resource\ResourceManager.cpp" />
@@ -264,7 +259,6 @@
     <ClCompile Include="scene\Layer.cpp" />
     <ClCompile Include="scene\SceneItem.cpp" />
     <ClCompile Include="scene\SceneManager.cpp" />
-    <ClCompile Include="scene\Room.cpp" />
     <ClCompile Include="SpriteAsset.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="Utils.cpp" />

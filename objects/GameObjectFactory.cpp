@@ -2,7 +2,6 @@
 #include "GameObject.h"
 #include "Sprite.h"
 #include "resource/ResourceManager.h"
-#include "scene/Room.h"
 #include "common/StaticConfig.h"
 #include "common/aliases.h"
 #include "SpriteAsset.h"

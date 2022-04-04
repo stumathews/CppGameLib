@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <memory>
 
 namespace gamelib
 {
@@ -30,9 +31,11 @@ namespace gamelib
 		virtual EventType GetGameObjectType();
 		virtual std::string ToString();
 		virtual ~Event() = default;
+		/*template <typename T>
+		std::shared_ptr<T> DownCast();*/
 	};
 
-	std::string operator+(const std::string& str, const EventType type);
+	std::string operator+(const std::string& str, const EventType type);	
 }
 
 

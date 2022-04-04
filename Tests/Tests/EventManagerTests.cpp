@@ -36,7 +36,7 @@ class EventManagerTests : public ::testing::Test
 
   void SetUp() override
   {
-	  EventManager::Get()->ClearSubscribers();
+	 EventManager::Get()->ClearSubscribers();
   	 EventManager::Get()->Initialize();
   }
 

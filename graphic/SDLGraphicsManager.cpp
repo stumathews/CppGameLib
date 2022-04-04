@@ -98,7 +98,7 @@ namespace gamelib
 	/// </summary>
 	bool SDLGraphicsManager::Initialize(const uint width, const uint height, const char * windowTitle)
 	{
-		Logger::Get()->LogThis("SDLGraphicsManager::Initialize()");
+		Logger::Get()->LogThis("SDLGraphicsManager::Initialize()", SettingsManager::Get()->GetBool("global", "verbose"));
 		
 		// Initialize SDL Video and Audio subsystems
 		if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0)
@@ -111,7 +111,7 @@ namespace gamelib
 		const int imgFlags = IMG_INIT_PNG;
 		if(!(IMG_Init(imgFlags) & imgFlags ))
 		{
-			Logger::Get()->LogThis(string("SDL_image could not initialize:") + const_cast<char*>(SDL_GetError()));
+			THROW(12, string("SDL_image could not initialize:") + const_cast<char*>(SDL_GetError()), "SDLGraphicsManager");
 			return false;
 		}
 

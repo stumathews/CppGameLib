@@ -13,6 +13,15 @@ namespace gamelib
 	}
 
 	/// <summary>
+	/// Number of components
+	/// </summary>
+	/// <returns></returns>
+	size_t Inventory::Count()
+	{
+		return components.size();
+	}
+
+	/// <summary>
 	/// Find a component
 	/// </summary>
 	/// <param name="name"></param>

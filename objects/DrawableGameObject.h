@@ -40,9 +40,13 @@ namespace gamelib
 
 		void Draw(SDL_Renderer* renderer) override;
 
-		// Game Object colour
-		int red, blue, green;
-		SDL_Color colourKey = {};
+		SDL_Color GetColourKey();
+
+		
+		bool HasColourKey();
+
+		bool SupportsColourKey(bool yesNo);
+	private:
 
 		// Game Object Graphic
 		std::shared_ptr<GraphicAsset> graphic; // can be shared by other actors
@@ -51,6 +55,9 @@ namespace gamelib
 		/// Each object may have a colour key enabled
 		/// </summary>
 		bool isColorKeyEnabled;
+
+		// Game Object colour
+		SDL_Color colourKey;;
 	};
 }
 

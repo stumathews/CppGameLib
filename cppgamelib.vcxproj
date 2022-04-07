@@ -172,6 +172,10 @@
     <ClInclude Include="common\Logger.h" />
     <ClInclude Include="common\StaticConfig.h" />
     <ClInclude Include="common\TypeAliases.h" />
+    <ClInclude Include="Direction.h" />
+    <ClInclude Include="ai\FSM.h" />
+    <ClInclude Include="ai\FSMState.h" />
+    <ClInclude Include="ai\FSMTransition.h" />
     <ClInclude Include="GameObjectMover.h" />
     <ClInclude Include="graphic\GraphicAssetFactory.h" />
     <ClInclude Include="Inventory.h" />
@@ -227,6 +231,7 @@
     <ClCompile Include="audio\AudioAsset.cpp" />
     <ClCompile Include="common\Logger.cpp" />
     <ClCompile Include="cppgamelib.cpp" />
+    <ClCompile Include="ai\FSM.cpp" />
     <ClCompile Include="GameObjectMover.cpp" />
     <ClCompile Include="graphic\GraphicAssetFactory.cpp" />
     <ClCompile Include="Inventory.cpp" />

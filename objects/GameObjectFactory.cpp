@@ -175,13 +175,13 @@ namespace gamelib
 			sprite->LoadSettings();
 
 			// Set the colour key on the game object
-			sprite->isColorKeyEnabled = colourKeyEnabled;
+			sprite->SupportsColourKey(colourKeyEnabled);
 
 			// Set the game object's visibility
 			sprite->isVisible = isVisible;
 
 			// Tell the render what colour it should consider as transparent i.e ignore drawing
-			if (sprite->isColorKeyEnabled)
+			if (sprite->HasColourKey())
 			{
 				sprite->SetColourKey(red, green, blue);
 			}
@@ -203,13 +203,13 @@ namespace gamelib
 			sprite->LoadSettings();
 
 			// Set the colour key on the game object
-			sprite->isColorKeyEnabled = colourKeyEnabled;
+			sprite->SupportsColourKey(colourKeyEnabled);
 
 			// Set the game object's visibility
 			sprite->isVisible = isVisible;
 
 			// Tell the render what colour it should consider as transparent i.e ignore drawing
-			if (sprite->isColorKeyEnabled)
+			if (sprite->HasColourKey())
 			{
 				sprite->SetColourKey(red, green, blue);
 			}

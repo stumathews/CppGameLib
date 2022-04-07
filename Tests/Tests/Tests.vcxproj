@@ -47,6 +47,7 @@
   <ItemGroup>
     <ClCompile Include="AudioManagerTests.cpp" />
     <ClCompile Include="FontManagerTests.cpp" />
+    <ClCompile Include="FSMTests.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="ResourceManagerTests.cpp" />
     <ClCompile Include="GraphicAssetFactoryTests.cpp" />

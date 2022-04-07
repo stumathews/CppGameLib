@@ -11,7 +11,7 @@ namespace gamelib
 		DoLogicUpdateEventType,
 		AddGameObjectToCurrentScene,
 		PlayerMovedEventType,
-		scene_loaded,
+		SceneLoaded,
 		SettingsReloaded,
 		GenerateNewLevel,
 		InvalidMove,
@@ -31,8 +31,6 @@ namespace gamelib
 		virtual EventType GetGameObjectType();
 		virtual std::string ToString();
 		virtual ~Event() = default;
-		/*template <typename T>
-		std::shared_ptr<T> DownCast();*/
 	};
 
 	std::string operator+(const std::string& str, const EventType type);	

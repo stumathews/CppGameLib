@@ -1,0 +1,43 @@
+#include "FSM.h"
+#include <exceptions/base_exception.h>
+
+namespace gamelib
+{
+	void FSM::Update()
+	{
+		if (ActiveState == nullptr)
+		{
+			ActiveState = InitialState;			
+		}
+
+		if (InitialState == nullptr)
+		{
+			THROW(12, "No valid initial state could be determined", "Finite State Machine");
+		}
+
+		// Look if we need to transition from active/current state
+		for (auto& transition : ActiveState->Transitions)
+		{
+			// Look for a condition that means we need to transition
+			if (transition.IsValid())
+			{
+				// Finish up on current state
+				ActiveState->OnExit();
+
+				// Indicate that this transition is transitioning
+				transition.OnTransition();
+
+				// Set the next active state to the transitioning state
+				ActiveState = transition.GetNextState();		
+
+				// Enter the newly transitioned to state i.e the new active state
+				ActiveState->OnEnter();
+				
+				break;
+			}
+		}
+
+		// Do some more stuff in the current/active state
+		ActiveState->OnUpdate();
+	}
+}

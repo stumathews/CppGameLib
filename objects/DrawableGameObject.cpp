@@ -5,11 +5,11 @@ using namespace std;
 
 namespace gamelib
 {
-	void DrawableGameObject::DrawFilledRect(SDL_Renderer* renderer, SDL_Rect* rect, SDL_Color colour)
+	void DrawableGameObject::DrawFilledRect(SDL_Renderer* renderer, SDL_Rect* region, SDL_Color colour)
 	{
 		SDL_SetRenderDrawColor(renderer, colour.r, colour.g, colour.b, colour.a);
-		SDL_RenderDrawRect(renderer, rect);
-		SDL_RenderFillRect(renderer, rect);
+		SDL_RenderDrawRect(renderer, region);
+		SDL_RenderFillRect(renderer, region);
 	}
 
 	/// <summary>
@@ -40,6 +40,8 @@ namespace gamelib
 		colourKey.r = r;
 		colourKey.g = g;
 		colourKey.b = b;
+
+		SupportsColourKey(true);
 	}
 
 	/// <summary>
@@ -56,12 +58,30 @@ namespace gamelib
 
 		// Should all game Objects support ColourKey
 		isColorKeyEnabled = false;
+		colourKey = {};
 
-		red = 0x00;
-		blue = 0xFF;
-		green = 0x00;
+		graphic = nullptr;
 	}
 
+	SDL_Color DrawableGameObject::GetColourKey()
+	{
+		return colourKey;
+	}
+
+	/// <summary>
+	/// Determines if the colour key is enabled for this drawable object
+	/// </summary>
+	/// <returns></returns>
+	bool DrawableGameObject::HasColourKey()
+	{
+		return isColorKeyEnabled;;
+	}
+
+	bool DrawableGameObject::SupportsColourKey(bool yesNo)
+	{
+		isColorKeyEnabled = yesNo;
+		return isColorKeyEnabled;
+	}
 
 	/// <summary>
 	/// Set the graphic

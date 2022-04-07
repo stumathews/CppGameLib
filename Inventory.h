@@ -26,6 +26,8 @@ namespace gamelib
 		/// </summary>
 		/// <param name="name">name of component</param>
 		bool HasComponent(std::string name);
+
+		size_t Count();
 	private:
 
 		// list of components

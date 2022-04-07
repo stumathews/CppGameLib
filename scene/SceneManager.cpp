@@ -113,7 +113,7 @@ namespace gamelib
 				break;
 			case EventType::PlayerMovedEventType: 
 				break;
-			case EventType::scene_loaded: 
+			case EventType::SceneLoaded: 
 				break;
 			case EventType::GameObject:
 				const auto gameObjectEvent = dynamic_pointer_cast<GameObjectEvent>(event);

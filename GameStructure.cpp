@@ -12,7 +12,7 @@
 #include "events/AddGameObjectToCurrentSceneEvent.h"
 #include "events/DoLogicUpdateEvent.h"
 #include "events/EventManager.h"
-#include "events/PositionChangeEvent.h"
+#include "events/ControllerMoveEvent.h"
 #include "events/SceneChangedEvent.h"
 #include "graphic/SDLGraphicsManager.h"
 #include "resource/ResourceManager.h"

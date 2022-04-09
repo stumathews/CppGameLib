@@ -6,7 +6,7 @@ namespace gamelib
 {
 	enum class EventType
 	{
-		PositionChangeEventType,
+		ControllerMoveEvent,
 		LevelChangedEventType,
 		DoLogicUpdateEventType,
 		AddGameObjectToCurrentScene,

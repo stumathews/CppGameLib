@@ -6,6 +6,8 @@
 
 namespace gamelib
 {
+	class SpriteAsset;
+
 	/// <summary>
 	/// Sprite sheet based sprite
 	/// </summary>
@@ -20,11 +22,13 @@ namespace gamelib
 
 		AnimatedSprite() = default;
 
+		static std::shared_ptr<AnimatedSprite> Create(int x, int y, std::shared_ptr<SpriteAsset> asset);
+
 		/// <summary>
 		/// Set Game Object Type
 		/// </summary>
 		/// <returns></returns>
-		object_type GetGameObjectType() override;
+		GameObjectType GetGameObjectType() override;
 
 		/// <summary>
 		/// Draw sprite
@@ -35,7 +39,9 @@ namespace gamelib
 		/// <summary>
 		/// Update sprite
 		/// </summary>
-		void Update() override;	
+		void Update() override;
+		void SkipUnsupportedAnimationGroupFrames();
+
 		
 		/// <summary>
 		/// Play animation
@@ -79,8 +85,13 @@ namespace gamelib
 		/// Ordered set of key frames
 		/// </summary>
 		std::vector<KeyFrame> KeyFrames;
+
+		void SetAnimationFrameGroup(std::string group);
 						
 	private:
+
+		std::string animationFrameGroup;
+
 		/// <summary>
 		/// Time taken lst frame was shown
 		/// </summary>

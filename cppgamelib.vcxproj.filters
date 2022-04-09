@@ -87,9 +87,6 @@
     <ClInclude Include="events\PlayerMovedEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="events\PositionChangeEvent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="events\SceneLoadedEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -198,6 +195,12 @@
     <ClInclude Include="ai\FSM.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="events\ControllerMoveEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="graphic\ColourKey.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -240,9 +243,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="events\PlayerMovedEvent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="events\PositionChangeEvent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="events\SceneLoadedEvent.cpp">
@@ -351,6 +351,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ai\FSMState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="events\ControllerMoveEvent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="graphic\ColourKey.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

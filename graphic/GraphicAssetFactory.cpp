@@ -1,6 +1,5 @@
 #include "GraphicAssetFactory.h"
 
-
 using namespace tinyxml2;
 using namespace std;
 
@@ -42,7 +41,7 @@ namespace gamelib
     shared_ptr<Asset> GraphicAssetFactory::Parse(tinyxml2::XMLElement* assetNode)
     {
         // We will be returning a GraphicAsset upcasted to an Asset
-        shared_ptr<Asset> asset = nullptr;
+        shared_ptr<GraphicAsset> graphicAsset = nullptr;
 
         if (assetNode)
         {
@@ -50,7 +49,7 @@ namespace gamelib
             auto assetAttributes = GetNodeAttributes(assetNode);
 
             // Extract asset attributes
-            const auto uid = stoi(assetAttributes["uid"]);
+            auto uid = stoi(assetAttributes["uid"]);
             auto name = assetAttributes["name"];
             auto fileName = assetAttributes["filename"];
             auto type = assetAttributes["type"];
@@ -59,7 +58,10 @@ namespace gamelib
             auto width = stoi(assetAttributes["width"]);
             auto height = stoi(assetAttributes["height"]);
             auto dimensions = ABCDRectangle(0, 0, width, height);
-            
+
+            graphicAsset = shared_ptr<GraphicAsset>(new GraphicAsset(uid, name, fileName, type, level, dimensions));
+            ColourKey colourKey;
+
             // Process Asset children
             for (auto pAssetChild = assetNode->FirstChild(); pAssetChild; pAssetChild = pAssetChild->NextSibling())
             {
@@ -70,24 +72,31 @@ namespace gamelib
                 if (assetChildName == "sprite")
                 {
                     // Yes, is a sprite, process it
-                    sprite = shared_ptr<SpriteAsset>(new SpriteAsset(uid, name, fileName, type, level, dimensions));
+                    sprite = shared_ptr<SpriteAsset>(new SpriteAsset(graphicAsset->uid, graphicAsset->name, graphicAsset->path, graphicAsset->type, graphicAsset->scene, dimensions));
                     
                     ParseSprite(pAssetChild, sprite);
 
                     // Upcast to Asset
-                    asset = sprite;
-                    asset->assetType = Asset::AssetType::Sprite;
-                }                
+                    graphicAsset = sprite;
+                    graphicAsset->assetType = Asset::AssetType::Sprite;
+                }
+
+                if (assetChildName == "colorkey")
+                {
+                    auto attributes = GetNodeAttributes(pAssetChild);
+                    auto red = stoi(attributes.at("red"));
+                    auto green = stoi(attributes.at("green"));
+                    auto blue = stoi(attributes.at("blue"));
+                    colourKey = ColourKey(red, green, blue);
+                }
             }
 
-            // If asset is not a specialization of Graphic Asset, its just a plain graphic Asset
-            if (asset == nullptr)
+            if (colourKey.IsSet())
             {
-                asset = shared_ptr<GraphicAsset>(new GraphicAsset(uid, name, fileName, type, level, dimensions));
-                asset->assetType = Asset::AssetType::Graphic;
+                graphicAsset->SetColourKey(colourKey.Red, colourKey.Green, colourKey.Blue);
             }
         }
-        return asset;
+        return graphicAsset;
     }
 
     void GraphicAssetFactory::ParseSpriteAnimation(tinyxml2::XMLNode* animation, shared_ptr<SpriteAsset> sprite)
@@ -101,6 +110,13 @@ namespace gamelib
 
             if (animationChildName == "keyframes")
             {
+                auto attributes = GetNodeAttributes(pAnimationChild);
+                auto duration = 0;
+                if (attributes.count("duration") > 0)
+                {
+                    duration = stoi(attributes.at("duration"));
+                }
+                sprite->FrameDurationMs = duration;
                 ParseSpriteKeyFrames(pAnimationChild, sprite);
             }
         }
@@ -140,8 +156,10 @@ namespace gamelib
         auto y = stoi(keyFrameAttributes.at("y"));
         auto w = stoi(keyFrameAttributes.at("w"));
         auto h = stoi(keyFrameAttributes.at("h"));
-
-        sprite->KeyFrames.push_back(KeyFrame(x, y, w, h));
+        auto hasGroup = keyFrameAttributes.count("group") > 0;
+        string group = hasGroup ? keyFrameAttributes["group"] : "";
+        
+        sprite->KeyFrames.push_back(KeyFrame(x, y, w, h, group));
     }
 }
 

@@ -7,7 +7,14 @@ namespace gamelib
 	class SpriteAsset : public GraphicAsset
 	{
 	public:
-		SpriteAsset(int uid, std::string& name, const std::string& path, const std::string& type, int scene, ABCDRectangle& dimensions);
+		SpriteAsset(
+			const int uid, 
+			const std::string& name, 
+			const std::string& path, 
+			const std::string& type,
+			const int scene, 
+			const ABCDRectangle& dimensions);
+		int FrameDurationMs;
 		std::vector<KeyFrame> KeyFrames;
 	};
 }

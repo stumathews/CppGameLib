@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include "Event.h"
-#include "PositionChangeEvent.h"
+#include "ControllerMoveEvent.h"
 namespace gamelib
 {
 	class PlayerMovedEvent final : public Event

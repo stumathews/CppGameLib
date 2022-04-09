@@ -7,6 +7,7 @@
 #include <KeyFrame.h>
 #include <Inventory.h>
 #include "scene/ABCDRectangle.h"
+#include "ColourKey.h"
 
 namespace gamelib
 {
@@ -20,11 +21,11 @@ namespace gamelib
 		/// Create A Graphic Asset
 		/// </summary>
 		GraphicAsset(const int uid, 
-			std::string name, 
+			const std::string name, 
 			const std::string& path, 
 			const std::string& type, 
 			const int level, 
-			ABCDRectangle& dimensions);
+			const ABCDRectangle& dimensions);
 
 		virtual ~GraphicAsset();		
 
@@ -57,8 +58,18 @@ namespace gamelib
 
 		ABCDRectangle Dimensions;
 
+		void SetColourKey(int red, int green, int blue);
+
+		ColourKey GetColourKey();
+
+		bool HasColourKey();
+
 	private:
-		
+	
+		bool hasColourKey;
+
+		ColourKey colourKey;
+
 		/// <summary>
 		/// The binary data that will represent the resource once its loaded.
 		/// </summary>

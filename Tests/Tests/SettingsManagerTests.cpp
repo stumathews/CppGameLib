@@ -21,7 +21,7 @@ protected:
 
 TEST(SettingsManagerTests, OpenFileTest)
 {
-	const auto expected_settings_count = 32;
+	const auto expected_settings_count = 33;
 	EXPECT_TRUE(SettingsManager::Get()->Load("settings.xml")); 
 
 	// Should have loaded 13 settings by default from the settings file
@@ -30,7 +30,7 @@ TEST(SettingsManagerTests, OpenFileTest)
 
 TEST(SettingsManagerTests, AddSetting)
 {
-	const auto expected_settings_count = 35;
+	const auto expected_settings_count = 36;
 	SettingsManager::Get()->Load();	
 	SettingsManager::Get()->AddSetting("global", "name", SettingDetail("name", "mazer", "string"));
 	SettingsManager::Get()->AddSetting("global", "genre", SettingDetail("name", "platformer", "string"));

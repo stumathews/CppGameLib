@@ -16,6 +16,7 @@ namespace gamelib
 		/// </summary>
 		enum class AssetType
 		{
+			Undefined,
 			Graphic,
 			Sprite,
 			Audio,
@@ -26,7 +27,7 @@ namespace gamelib
 		/// <summary>
 		/// A generic asset
 		/// </summary>
-		Asset(int uid, std::string& name, const std::string& path, const std::string& type, int scene);
+		Asset(const int uid, const std::string& name, const std::string& path, const std::string& type, const int scene);
 		Asset(const Asset& other) = delete;
 
 		virtual ~Asset() = default;

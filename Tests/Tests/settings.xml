@@ -19,6 +19,7 @@
 	<grid>
 		<setting name="rows" type="int">20</setting>
 		<setting name="cols" type="int">20</setting>
+    <setting name="nowalls" type="bool">true</setting>
 	</grid>
 	<player>
 		<setting name="player_init_pos_x" type="int">0</setting>

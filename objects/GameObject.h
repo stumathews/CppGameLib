@@ -16,7 +16,7 @@ namespace gamelib
 	/// <summary>
 	/// Types of Game Objects
 	/// </summary>
-	enum class object_type
+	enum class GameObjectType
 	{
 		Undefined,
 		GameWorld,
@@ -86,7 +86,7 @@ namespace gamelib
 		/// Every game Object needs to identify what type of game object it is
 		/// </summary>
 		/// <returns></returns>
-		virtual object_type GetGameObjectType() = 0;
+		virtual GameObjectType GetGameObjectType() = 0;
 				
 		/// <summary>
 		/// Every game object can identify itself in its own way

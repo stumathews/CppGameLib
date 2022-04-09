@@ -42,6 +42,7 @@ TEST(GraphicAssetFactoryTests, ParseSprite)
 {
     std::string testAssetXml =
         R"(<Asset uid="9" scene="3" name="p1.png" type="graphic" width="64" height="65" filename="Assets/Platformer/Base pack/Player/p1_walk/p1_walk.png">    
+            <colorkey red="255" green="255" blue="255"/>
     	    <sprite>
                 <animation>
                     <keyframes>
@@ -49,13 +50,13 @@ TEST(GraphicAssetFactoryTests, ParseSprite)
                         <keyframe x="66" y="0" w="66" h="93"/>
                         <keyframe x="132" y="0" w="66" h="93"/>
                         <keyframe x="0" y="93" w="66" h="93"/>
-                        <keyframe x="66" y="93" w="66" h="93"/>
-                        <keyframe x="132" y="93" w="71" h="92"/>
+                        <keyframe x="66" y="93" w="66" h="93" group="one" />
+                        <keyframe x="132" y="93" w="71" h="92" group="one" />
                         <keyframe x="0" y="186" w="71" h="93"/>
                         <keyframe x="71" y="186" w="71" h="93"/>
                         <keyframe x="142" y="186" w="70" h="92"/>
                         <keyframe x="0" y="279" w="71" h="93"/>
-                        <keyframe x="71" y="279" w="66" h="97"/>
+                        <keyframe x="71" y="279" w="66" h="97" group="one"/>
                     </keyframes>
               </animation> 
           </sprite>  
@@ -81,6 +82,13 @@ TEST(GraphicAssetFactoryTests, ParseSprite)
     EXPECT_EQ(sprite->path, string("Assets/Platformer/Base pack/Player/p1_walk/p1_walk.png"));
     EXPECT_EQ(sprite->assetType, gamelib::Asset::AssetType::Sprite);
     EXPECT_EQ(sprite->KeyFrames.size(), 11);
-
+    EXPECT_EQ(sprite->GetColourKey(), ColourKey(255,255,255)) << "Invalid colour key";
+    EXPECT_TRUE(sprite->KeyFrames[4].HasGroup());
+    EXPECT_EQ(sprite->KeyFrames[4].group, "one");
+    EXPECT_TRUE(sprite->KeyFrames[5].HasGroup());
+    EXPECT_EQ(sprite->KeyFrames[5].group, "one");
+    EXPECT_TRUE(sprite->KeyFrames[10].HasGroup());
+    EXPECT_EQ(sprite->KeyFrames[10].group, "one");    
+    EXPECT_FALSE(sprite->KeyFrames[0].HasGroup());
 }
 

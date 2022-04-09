@@ -92,7 +92,7 @@ namespace gamelib
 
 		switch(event->type)
 		{
-			case EventType::PositionChangeEventType: 
+			case EventType::ControllerMoveEvent: 
 				break;			
 			case  EventType::DrawCurrentScene:
 				DrawScene();
@@ -412,7 +412,7 @@ namespace gamelib
 									}
 
 									// Build game object
-									auto gameObject = GameObjectFactory::GetInstance().BuildGameObject(objectElement);
+									auto gameObject = GameObjectFactory::Get().BuildGameObject(objectElement);
 									
 									// We have a new game object guys!
 									gameWorld.GetGameObjects().push_back(gameObject);

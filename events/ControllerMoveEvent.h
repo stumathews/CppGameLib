@@ -4,10 +4,10 @@
 
 namespace gamelib
 {	
-	class PositionChangeEvent : public Event
+	class ControllerMoveEvent : public Event
 	{
 	public:
-		explicit PositionChangeEvent(Direction dir);
+		explicit ControllerMoveEvent(Direction dir);
 		Direction direction;
 		std::string ToString() override;
 	};

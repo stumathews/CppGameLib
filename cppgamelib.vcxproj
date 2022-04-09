@@ -177,6 +177,7 @@
     <ClInclude Include="ai\FSMState.h" />
     <ClInclude Include="ai\FSMTransition.h" />
     <ClInclude Include="GameObjectMover.h" />
+    <ClInclude Include="graphic\ColourKey.h" />
     <ClInclude Include="graphic\GraphicAssetFactory.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="KeyFrame.h" />
@@ -192,7 +193,7 @@
     <ClInclude Include="events\EventManager.h" />
     <ClInclude Include="events\IEventSubscriber.h" />
     <ClInclude Include="events\PlayerMovedEvent.h" />
-    <ClInclude Include="events\PositionChangeEvent.h" />
+    <ClInclude Include="events\ControllerMoveEvent.h" />
     <ClInclude Include="events\SceneChangedEvent.h" />
     <ClInclude Include="events\SceneLoadedEvent.h" />
     <ClInclude Include="exceptions\base_exception.h" />
@@ -234,6 +235,7 @@
     <ClCompile Include="cppgamelib.cpp" />
     <ClCompile Include="ai\FSM.cpp" />
     <ClCompile Include="GameObjectMover.cpp" />
+    <ClCompile Include="graphic\ColourKey.cpp" />
     <ClCompile Include="graphic\GraphicAssetFactory.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="KeyFrame.cpp" />
@@ -249,7 +251,7 @@
     <ClCompile Include="events\EventManager.cpp" />
     <ClCompile Include="events\IEventSubscriber.cpp" />
     <ClCompile Include="events\PlayerMovedEvent.cpp" />
-    <ClCompile Include="events\PositionChangeEvent.cpp" />
+    <ClCompile Include="events\ControllerMoveEvent.cpp" />
     <ClCompile Include="events\SceneChangedEvent.cpp" />
     <ClCompile Include="events\SceneLoadedEvent.cpp" />
     <ClCompile Include="exceptions\EngineException.cpp" />

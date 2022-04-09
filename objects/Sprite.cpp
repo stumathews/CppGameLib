@@ -2,23 +2,35 @@
 #include "SDL.h"
 #include "windows.h"
 #include "exceptions/base_exception.h"
+#include "resource/ResourceManager.h"
+#include <SpriteAsset.h>
+
+using namespace std;
 
 namespace gamelib
 {
 	AnimatedSprite::AnimatedSprite(uint xPos, uint yPos, uint frameDurationMs, bool isVisible, ABCDRectangle dimensions) 
-		: frameDurationMs(100), currentFrameNumber(0), startFrameNumber(0), timeLastFrameShown(0), Dimensions(dimensions), 
+		: frameDurationMs(frameDurationMs), currentFrameNumber(0), startFrameNumber(0), timeLastFrameShown(0), Dimensions(dimensions),
 		DrawableGameObject(xPos, yPos, isVisible) 
 	{ 
 		
+	}
+
+	shared_ptr<AnimatedSprite> AnimatedSprite::Create(int x, int y, std::shared_ptr<SpriteAsset> spriteAsset)
+	{
+		auto sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, spriteAsset->FrameDurationMs, true, spriteAsset->Dimensions));
+		sprite->SetGraphic(spriteAsset);
+		sprite->KeyFrames = spriteAsset->KeyFrames;
+		return sprite;
 	}
 
 	/// <summary>
 	/// Set game object type
 	/// </summary>
 	/// <returns></returns>
-	object_type AnimatedSprite::GetGameObjectType()
+	GameObjectType AnimatedSprite::GetGameObjectType()
 	{
-		return object_type::AnimatedSprite;
+		return GameObjectType::AnimatedSprite;
 	}
 
 	/// <summary>
@@ -37,22 +49,53 @@ namespace gamelib
 	void AnimatedSprite::Update()
 	{
 		const unsigned long durationSinceLastFrameMs = timeGetTime() - timeLastFrameShown;
+		const auto countKeyFrames = KeyFrames.size();
 		
 		// Switch to the next frame if we've been on the current frame too long
-		if(durationSinceLastFrameMs >= frameDurationMs) 
+		if (durationSinceLastFrameMs >= frameDurationMs)
 		{
 			// Record which frame we're on
 			currentFrameNumber++;
 
+			// Only cycle through supported animation groups
+			SkipUnsupportedAnimationGroupFrames();
+						
 			// Need to cycle back to the first frame if we're on the last in the key frames
-			if(currentFrameNumber >= KeyFrames.size()) 
+			if (currentFrameNumber >= KeyFrames.size())
 			{
 				currentFrameNumber = startFrameNumber;
 			}
 
 			SetAnimationFrame(currentFrameNumber);
 
-			timeLastFrameShown = timeGetTime();		
+			timeLastFrameShown = timeGetTime();
+		}
+	}
+
+	void AnimatedSprite::SkipUnsupportedAnimationGroupFrames()
+	{
+		if (currentFrameNumber >= KeyFrames.size())
+		{
+			currentFrameNumber = startFrameNumber;
+		}
+
+		// If we are set to use an animation group name, skip others in the keyframes
+		if (!animationFrameGroup.empty())
+		{
+			// inspect current frame
+			bool isGroupFrame = KeyFrames[currentFrameNumber].group == animationFrameGroup;
+			while (!isGroupFrame)
+			{
+				// skip if not a group same as configured group
+				currentFrameNumber++;
+				if (currentFrameNumber >= KeyFrames.size())
+				{
+					currentFrameNumber = startFrameNumber;
+				}
+				// is next frame a group frame?
+				isGroupFrame = KeyFrames[currentFrameNumber].group == animationFrameGroup;
+			}
+			int done = currentFrameNumber;
 		}
 	}
 
@@ -128,4 +171,10 @@ namespace gamelib
 	{
 		KeyFrames.push_back(keyFrame);
 	}
+
+	void AnimatedSprite::SetAnimationFrameGroup(std::string group)
+	{
+		animationFrameGroup = group;
+	}
+
 }

@@ -11,7 +11,6 @@ using namespace std;
 
 namespace gamelib
 {
-
 	/// <summary>
 	/// Build Game object from XML
 	/// </summary>
@@ -121,7 +120,7 @@ namespace gamelib
 		}
 		else
 		{
-			GetInstance().ThrowCouldNotFindAssetException(asset, detail_value);
+			Get().ThrowCouldNotFindAssetException(asset, detail_value);
 
 			if (!asset->type._Equal("graphic"))
 			{
@@ -162,6 +161,7 @@ namespace gamelib
 			auto sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, 100, isVisible, spriteAsset->Dimensions));
 			
 			sprite->SetTag(spriteAsset->name);
+
 			// Set the AnimatedSprite's key frames
 			sprite->KeyFrames = spriteAsset->KeyFrames;	
 
@@ -304,7 +304,7 @@ namespace gamelib
 	/// Singleton
 	/// </summary>
 	/// <returns>GameObjectFactory</returns>
-	GameObjectFactory& GameObjectFactory::GetInstance()
+	GameObjectFactory& GameObjectFactory::Get()
 	{
 		static GameObjectFactory instance;
 		return instance;

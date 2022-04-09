@@ -12,10 +12,11 @@ namespace gamelib
 	/// <summary>
 	/// Create Graphic Asset
 	/// </summary>
-	GraphicAsset::GraphicAsset(const int uid, std::string name, const std::string& path, const std::string& type, 
-		const int level, ABCDRectangle& dimensions)
+	GraphicAsset::GraphicAsset(const int uid, const std::string name, const std::string& path, const std::string& type, 
+		const int level, const ABCDRectangle& dimensions)
 		: Asset(uid, name, path, type, level), Dimensions(dimensions)
 	{
+		hasColourKey = false;
 		viewPort = { dimensions.GetAx(), dimensions.GetAy(), dimensions.GetWidth(), dimensions.GetHeight() };
 		assetType = AssetType::Graphic;
 	}
@@ -31,9 +32,16 @@ namespace gamelib
 		const auto loadedSurface = IMG_Load(path.c_str());
 		
 		if(loadedSurface)
-		{						
+		{				
+			if (HasColourKey())
+			{
+				SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, colourKey.Red, colourKey.Green, colourKey.Blue));
+			}
+
 			// Create texture from surface pixels
 			texture = SDL_CreateTextureFromSurface(SDLGraphicsManager::Get()->windowRenderer, loadedSurface );
+
+			
 			
 			// Get rid of old loaded surface (we have the texture pixels)
 			SDL_FreeSurface(loadedSurface);
@@ -89,6 +97,22 @@ namespace gamelib
 	SDL_Texture* GraphicAsset::GetTexture() const
 	{
 		return texture;
+	}
+
+	void GraphicAsset::SetColourKey(int red, int green, int blue)
+	{
+		colourKey = { red, green, blue };
+		hasColourKey = true;
+	}
+
+	ColourKey GraphicAsset::GetColourKey()
+	{
+		return colourKey;
+	}
+
+	bool GraphicAsset::HasColourKey()
+	{
+		return hasColourKey;
 	}
 
 	GraphicAsset::~GraphicAsset()

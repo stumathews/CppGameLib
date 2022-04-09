@@ -4,7 +4,7 @@
 #include "audio/AudioAsset.h"
 #include "common/constants.h"
 #include "events/EventManager.h"
-#include "events/PositionChangeEvent.h"
+#include "events/ControllerMoveEvent.h"
 #include "graphic/SDLGraphicsManager.h"
 #include "resource/ResourceManager.h"
 #include "GameObjectMover.h"

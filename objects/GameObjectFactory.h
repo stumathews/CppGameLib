@@ -18,7 +18,7 @@ namespace gamelib
 		GameObjectFactory& operator=(GameObjectFactory const&)  = delete;
 		~GameObjectFactory() = default;		
 
-		static GameObjectFactory& GetInstance();
+		static GameObjectFactory& Get();
 
 		/// <summary>
 		/// Build a game object

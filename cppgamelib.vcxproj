@@ -226,6 +226,7 @@
     <ClInclude Include="util\Tuple.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ai\FSMState.cpp" />
     <ClCompile Include="asset\Asset.cpp" />
     <ClCompile Include="audio\AudioManager.cpp" />
     <ClCompile Include="audio\AudioAsset.cpp" />

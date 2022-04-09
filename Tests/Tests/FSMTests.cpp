@@ -2,6 +2,7 @@
 #include "ai/FSM.h"
 #include "ai/FSMTransition.h"
 #include "ai/FSMState.h"
+#include <functional>
 
 using namespace std;
 using namespace gamelib;
@@ -10,29 +11,33 @@ using namespace gamelib;
 class StateOne : public FSMState
 {
 public:
+	StateOne(std::function<void()> onEnter = nullptr, std::function<void()> onUpdate = nullptr, std::function<void()> onExit = nullptr)
+		: FSMState(onEnter, onUpdate, onExit) {}
+
 	int updateTicks = 0;
-	StateOne()
+	void OnUpdate() override
 	{
-		OnUpdate = [&]() {updateTicks++; };
+		updateTicks++;
 	}
 };
 
 class StateTwo : public FSMState
 {
 public:
+	StateTwo(std::function<void()> onEnter = nullptr, std::function<void()> onUpdate = nullptr, std::function<void()> onExit = nullptr)
+		: FSMState(onEnter, onUpdate, onExit) {}
+
 	int updateTicks = 0;
-	StateTwo()
+	void OnUpdate() override
 	{
-		OnUpdate = [&]() { updateTicks++; };
+		updateTicks++;
 	}
 };
 
 class FSMTests: public testing::Test
 {
  protected:
-	 FSM finiteStateMachine;
-	 StateOne stateOne;
-	 StateTwo stateTwo;
+	 FSM finiteStateMachine;	
 
 	 bool transitioningToOne;
 	 bool transitioningToTwo;
@@ -42,6 +47,9 @@ class FSMTests: public testing::Test
 	 bool stateTwoExited;
 	 bool stateOneEntered;
 	 bool stateOneExited;
+	 	 
+	 StateOne stateOne;
+	 StateTwo stateTwo;
 
 	 void TransitionToOne()
 	 {
@@ -67,11 +75,12 @@ class FSMTests: public testing::Test
 		 stateOneEntered = false;
 		 stateOneExited = false;		 
 
-		 stateOne.OnEnter = [&]() { stateOneEntered = true; };
-		 stateOne.OnExit = [&]() { stateOneExited = true; };
+		 stateOne.SetOnEnter([&]() { stateOneEntered = true; });
+		 stateOne.SetOnExit([&]() { stateOneExited = true; });
+
+		 stateTwo.SetOnEnter([&]() { stateTwoEntered = true; });
+		 stateTwo.SetOnExit([&]() { stateTwoExited = true; });
 		 
-		 stateTwo.OnEnter = [&]() { stateTwoEntered = true; };
-		 stateTwo.OnExit = [&]() { stateTwoExited = true; };
 		 finiteStateMachine.States.push_back(stateOne);
 		 finiteStateMachine.States.push_back(stateTwo);
 		 finiteStateMachine.InitialState = &stateOne;
@@ -196,4 +205,50 @@ TEST_F(FSMTests, TestOnEntryExit)
 
 	EXPECT_TRUE(stateOneExited);
 	EXPECT_TRUE(stateTwoEntered);	
+}
+
+TEST_F(FSMTests, InlineStates)
+{
+	bool stateThreeEntered = false;
+	bool stateThreeExited = false;
+	int stateThreeUpdateCount = 0;
+	bool transitionToThree = false;
+	bool stateThreeWasTransitionedTo = false;
+
+	// Create an inline state
+	FSMState stateThree([&] { stateThreeEntered = true; }, [&] { stateThreeUpdateCount++; }, [&] { stateThreeExited = true;	});
+	
+	// Add it to our state machine
+	finiteStateMachine.States.push_back(stateThree);
+
+	// Define a transition to state 3
+	FSMTransition stateTwoToThreeTransition;
+	stateTwoToThreeTransition.IsValid = [&]() { return transitionToThree; };
+	stateTwoToThreeTransition.GetNextState = [&]() { return &stateThree; };
+	stateTwoToThreeTransition.OnTransition = [&]() { stateThreeWasTransitionedTo = true; };
+
+	// Make it possible to transition from state 2 -> 3
+	stateTwo.Transitions.push_back(stateTwoToThreeTransition);
+
+	// Transition to 2
+	TransitionToTwo();
+
+	finiteStateMachine.Update();
+
+	// Transition to 3
+	doTransitionToOne = false;
+	doTransitionToTwo = false;
+	transitionToThree = true;
+
+	finiteStateMachine.Update();
+
+	// Expected that state three was transitioned to
+	EXPECT_EQ(stateThreeUpdateCount, 1);	
+	EXPECT_TRUE(stateThreeEntered); // Entry
+	EXPECT_TRUE(stateThreeWasTransitionedTo); // On Transition
+
+	// We dont exit from state 3
+	EXPECT_FALSE(stateThreeExited);
+
+	
 }

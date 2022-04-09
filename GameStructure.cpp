@@ -18,6 +18,7 @@
 #include "resource/ResourceManager.h"
 #include "scene/SceneManager.h"
 #include "common/aliases.h"
+#include <string>
 
 using namespace std;
 
@@ -51,15 +52,19 @@ namespace gamelib
 	///  Initializes game subsystems resource manager and SDL	
 	/// </summary>
 	/// <returns>true if subsystems initialised, false otherwise</returns>
-	bool GameStructure::InitializeGameSubSystems()
+	bool GameStructure::InitializeGameSubSystems(int screenWidth, int screenHeight, string windowTitle)
 	{
 		// Initialize the settings manager
 		const auto settingsInitialized = SettingsManager::Get()->Load("game/settings.xml");
 		
 		// Load key game subsystem settings
 		const auto beVerbose = SettingsManager::Get()->GetBool("global","verbose");
-		const auto screenWidth = SettingsManager::Get()->GetInt("global", "screen_width");
-		const auto screenHeight = SettingsManager::Get()->GetInt("global", "screen_height");
+
+		if(screenWidth == 0)
+			screenWidth = SettingsManager::Get()->GetInt("global", "screen_width");
+
+		if(screenHeight == 0)
+			screenHeight = SettingsManager::Get()->GetInt("global", "screen_height");
 		
 		// Perform the initialiation
 		return LogThis("GameStructure::initialize()", beVerbose, [&]()
@@ -74,7 +79,7 @@ namespace gamelib
 			const auto sceneManagerInitialized = LogOnFailure(SceneManager::Get()->Initialize(), "Could not initialsettings->ize scene manager");
 
 			// Initialize SDL
-			const auto SdLInitialized = LogOnFailure(InitializeSDL(screenWidth, screenHeight), "Could not initialize SDL, aborting.");
+			const auto SdLInitialized = LogOnFailure(InitializeSDL(screenWidth, screenHeight, windowTitle), "Could not initialize SDL, aborting.");
 
 			// Final check to see if all subsystems are initialised ok
 			if (IsFailedOrFalse(SdLInitialized) || IsFailedOrFalse(eventManagerInitialized) || IsFailedOrFalse(resourceManagerInitialized) || IsFailedOrFalse(sceneManagerInitialized) || IsFailedOrFalse(settingsInitialized))
@@ -175,9 +180,9 @@ namespace gamelib
 	/// <param name="screen_width">Width of the screen</param>
 	/// <param name="screen_height">Height of the screen</param>
 	/// <returns>true if SDL is successfully initialized, false otherwise</returns>
-	bool GameStructure::InitializeSDL(const int screenWidth, const int screenHeight)
+	bool GameStructure::InitializeSDL(const int screenWidth, const int screenHeight, string windowTitle)
 	{
-		return LogOnFailure(SDLGraphicsManager::Get()->Initialize(screenWidth, screenHeight), "Failed to initialize SDL graphics manager");
+		return LogOnFailure(SDLGraphicsManager::Get()->Initialize(screenWidth, screenHeight, windowTitle.c_str()), "Failed to initialize SDL graphics manager");
 	}
 
 

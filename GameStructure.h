@@ -28,7 +28,7 @@ namespace gamelib
 		/// Initialize Game Subsystems
 		/// </summary>
 		/// <returns></returns>
-		bool InitializeGameSubSystems();
+		bool InitializeGameSubSystems(int screenWidth, int screenHeight, std::string windowTitle);
 
 		/// <summary>
 		/// releases resources incl. resource admin and other game subsystems
@@ -68,7 +68,7 @@ namespace gamelib
 		/// <summary>
 		/// Initialize SDL
 		/// </summary>
-		bool InitializeSDL(int screen_width, int screen_height);
+		bool InitializeSDL(int screen_width, int screen_height, std::string windowTitle);
 
 		/// <summary>
 		/// Update World/level etc

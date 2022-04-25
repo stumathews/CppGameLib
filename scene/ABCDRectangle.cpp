@@ -85,4 +85,11 @@ namespace gamelib
 		SetWidth(w);
 		SetHeight(h);
 	}
+
+	coordinate<int> ABCDRectangle::GetCenter()
+	{
+		int mid_x = GetAx() + GetWidth()/2;
+		int mid_y = GetAy() + GetHeight()/2;
+		return coordinate<int>(mid_x, mid_y);
+	}
 }

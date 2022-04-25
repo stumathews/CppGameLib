@@ -41,11 +41,11 @@ namespace gamelib
 		void Draw(SDL_Renderer* renderer) override;
 
 		SDL_Color GetColourKey();
-
-		
+				
 		bool HasColourKey();
 
 		bool SupportsColourKey(bool yesNo);
+
 	private:
 
 		// Game Object Graphic

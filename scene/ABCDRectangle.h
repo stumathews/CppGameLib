@@ -43,6 +43,8 @@ namespace gamelib
 		int GetHeight() const;
 		int GetWidth() const;
 
+		coordinate<int> GetCenter();
+
 		void reinitialize(int x, int y, int w, int h);
 
 	private:

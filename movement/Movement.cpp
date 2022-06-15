@@ -51,18 +51,18 @@ void Movement::Update(float deltaMs)
 	}
 }
 
-float Movement::TakePixelsToMove()
+unsigned int Movement::TakePixelsToMove()
 {	
 	SpendPixels();
 	return pixelsToMove;
 }
 
-float Movement::GetPixelsTraveled()
+unsigned int Movement::GetPixelsTraveled()
 {	
 	return pixelsTraveled;
 }
 
-float Movement::GetPixelsStillToTravel()
+unsigned int Movement::GetPixelsStillToTravel()
 {
 	return totalTargetMovePixels - pixelsTraveled;
 }

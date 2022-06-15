@@ -12,9 +12,9 @@ public:
 	~Movement();
 	bool IsComplete();
 	void Update(float deltaMs);
-	float TakePixelsToMove();
-	float GetPixelsTraveled();
-	float GetPixelsStillToTravel();
+	unsigned int TakePixelsToMove();
+	unsigned int GetPixelsTraveled();
+	unsigned int GetPixelsStillToTravel();
 	void SpendPixels();
 
 	// This is the who the movement is to/for etc
@@ -24,10 +24,10 @@ public:
 	static int id;
 private:
 	float pixelsPerMs;
-	float pixelsTraveled;
+	unsigned int pixelsTraveled;
 	float durationMs;
-	float pixelsToMove;
-	float totalTargetMovePixels;
+	unsigned int pixelsToMove;
+	unsigned int totalTargetMovePixels;
 	bool isComplete;
 	std::string movementTargetId;
 	bool debug;

@@ -8,7 +8,7 @@ namespace gamelib
 	class FSMState
 	{
 	public:
-		FSMState(std::function<void()> onEnter = nullptr, std::function<void()> onUpdate = nullptr, std::function<void()> onExit = nullptr)
+		FSMState(std::function<void()> onEnter = nullptr, std::function<void()> onUpdate = nullptr, std::function<void()> onExit = nullptr, std::string name = "<noname>")
 		{
 			if (onEnter == nullptr)
 			{
@@ -44,11 +44,13 @@ namespace gamelib
 		void SetOnEnter(std::function<void()> onEnter);
 		void SetOnExit(std::function<void()> onExit);
 		void SetOnUpdate(std::function<void()> onUpdate);
+		std::string GetName();
 	private:
 
 		std::function<void()> OnEnterFn;
 		std::function<void()> OnUpdateFn;
 		std::function<void()> OnExitFn;		
+		std::string name;
 	};
 }
 

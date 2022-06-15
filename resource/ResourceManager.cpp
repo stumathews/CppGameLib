@@ -10,7 +10,7 @@
 #include "events/SceneChangedEvent.h"
 #include "font/FontManager.h"
 #include "graphic/SDLGraphicsManager.h"
-#include <exceptions/base_exception.h>
+#include <exceptions/EngineException.h>
 #include "graphic/GraphicAssetFactory.h"
 
 namespace gamelib
@@ -126,7 +126,7 @@ namespace gamelib
 	/// <summary>
 	/// Index the Resources.xml file	 
 	/// </summary>
-	void ResourceManager::IndexResources(string resourceFilePath)
+	void ResourceManager::IndexResourceFile(string resourceFilePath)
 	{	
 		Logger::Get()->LogThis("ResourceManager: reading resources.xml.");
 		

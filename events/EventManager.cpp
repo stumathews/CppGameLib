@@ -6,14 +6,14 @@
 #include "common/Common.h"
 #include "util/RectDebugging.h"
 #include <events/GameObjectEvent.h>
+#include <util/SettingsManager.h>
+#include <sstream>
 
 using namespace std;
 namespace gamelib
 {
 
-	/// <summary>
-	/// Create Event manager
-	/// </summary>
+	
 	EventManager::EventManager() { 	}
 
 	EventManager* EventManager::Get()
@@ -35,10 +35,8 @@ namespace gamelib
 	void EventManager::reset()
 	{
 		std::queue<shared_ptr<Event>> empty;
-		  std::swap( primary_event_queue_, empty );
-		  std::swap( secondary_event_queue_, empty );
-		//this->event_subscribers_.clear();
-		  
+		std::swap( primary_event_queue_, empty );
+		std::swap( secondary_event_queue_, empty );		  
 	}
 
 	EventManager::~EventManager()
@@ -47,28 +45,14 @@ namespace gamelib
 		Instance = nullptr;
 	}
 
-	/// <summary>
-	/// Initialize the event manager
-	/// </summary>
-	/// <returns>true on initialization, false otherwise</returns>
-	bool EventManager::Initialize()
-	{		
-		return LogThis("EventManager::initialize()", SettingsManager::Get()->GetBool("global", "verbose"), [&]()
-		{			
-			return true;
-		}, true, true);
-	}
+	
+	bool EventManager::Initialize() { return true; }
 
 	void EventManager::ClearSubscribers()
 	{
 		this->event_subscribers_.clear();
 	}
-
-	/// <summary>
-	/// Adds event to event queue for future processing
-	/// </summary>
-	/// <param name="event">Event to add</param>
-	/// <param name="you">Sender</param>
+		
 	void EventManager::RaiseEvent(const shared_ptr<Event> event, IEventSubscriber* you)  // NOLINT(performance-unnecessary-value-param)
 	{		
 		if(!you)
@@ -77,25 +61,28 @@ namespace gamelib
 			return;
 		}
 
-		auto const log = "EventManager: " + you->GetSubscriberName()  + string(" raised to event ") + event->ToString();
+		if(SettingsManager::Get()->GetBool("EventManager", "logEvents"))
+		{
+			std::stringstream log;
+			log << "EventManager: " << you->GetSubscriberName()  << " raised to event " << ToString(event->type);
 		
-		if(event->type != EventType::DoLogicUpdateEventType)
-			Logger::Get()->LogThis(log);
+			if(event->type != EventType::DoLogicUpdateEventType)
+			{
+				Logger::Get()->LogThis(log.str());
+			}
+		}
 
 		primary_event_queue_.push(event);		
 	}
-
-	/// <summary>
-	/// Subscribe to and event
-	/// </summary>
-	/// <param name="type">Type of event to sibscribe to</param>
-	/// <param name="you">Subscriber</param>
+		
 	void EventManager::SubscribeToEvent(const EventType type, IEventSubscriber* you)
 	{
 		if(you)
 		{
-			auto const message = "EventManager: "+you->GetSubscriberName() + string(" subscribed to event ") + type;
-			Logger::Get()->LogThis(message);
+			std::stringstream message;
+			message << "EventManager: " << you->GetSubscriberName() << " subscribed to event " << ToString(type);
+
+			Logger::Get()->LogThis(message.str());
 		
 			event_subscribers_[type].push_back(you);
 		}
@@ -156,10 +143,6 @@ namespace gamelib
 		}
 	}
 
-	/// <summary>
-	/// Get subscriptions the event maanger knows about
-	/// </summary>
-	/// <returns>map of event types to subscribers</returns>
 	std::map<EventType, std::vector<IEventSubscriber*>>& EventManager::GetSubscriptions()
 	{
 		return event_subscribers_;
@@ -181,12 +164,6 @@ namespace gamelib
 		return "EventManager";
 	}
 
-	/// <summary>
-	/// Determins if the subscriber matches the subscriptin id provided
-	/// </summary>
-	/// <param name="candidate">event Subscriber</param>
-	/// <param name="subscriptionId">Subscription id</param>
-	/// <returns></returns>
 	bool IsSameSubscriber(IEventSubscriber* candidate, int subscriptionId) 
 	{
 		if(candidate)
@@ -196,12 +173,7 @@ namespace gamelib
 		}
 		return false;
 	};
-
-	/// <summary>
-	/// Removes subscription to event
-	/// </summary>
-	/// <param name="subscription_id">subscriber id</param>
-	/// <param name="type">event type to unsubscribe from</param>
+		
 	void EventManager::RemoveEventSubscription(const int subscription_id, gamelib::EventType type)
 	{
 		for(auto &pair : event_subscribers_ )
@@ -211,7 +183,9 @@ namespace gamelib
 
 			// We only remove subscriptions for the specific event type provided
 			if(type != pair.first)
+			{
 				continue;
+			}
 
 			// The subscriber's id must match what we have in our subscriptions
 			auto matchFn = [&](IEventSubscriber* candidate) { return IsSameSubscriber(candidate, subscription_id); };
@@ -227,10 +201,6 @@ namespace gamelib
 		}		
 	}
 
-	/// <summary>
-	/// Remove subscriber
-	/// </summary>
-	/// <param name="subscription_id"></param>
 	void EventManager::Unsubscribe(const int subscription_id)
 	{
 		for(auto &pair : event_subscribers_ )
@@ -239,10 +209,11 @@ namespace gamelib
 			auto matchFn = [&](IEventSubscriber* candidate) { return IsSameSubscriber(candidate, subscription_id); };
 
 			// Look for the subscriber in list of subscribers for this event type
-			auto find_result = std::find_if(begin(eventSubscribers), end(eventSubscribers), matchFn);
-			
+			auto find_result = std::find_if(begin(eventSubscribers), end(eventSubscribers), matchFn);			
+			auto found = find_result != std::end(eventSubscribers);
+
 			// Remove if found
-			if(find_result != std::end(eventSubscribers))
+			if(found)
 			{
 				eventSubscribers.erase(find_result);
 			}

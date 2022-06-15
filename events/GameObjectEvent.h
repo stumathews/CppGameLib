@@ -23,5 +23,16 @@ namespace gamelib
 		GameObjectEventContext context;
 		GameObject *gameObject;
 	};
+
+	inline const char* ToString(GameObjectEventContext context)
+	{
+		switch (context)
+		{
+			case GameObjectEventContext::Remove:   return "Remove";
+			case GameObjectEventContext::RemoveSubscription: return "RemoveSubscription";
+			default:      
+				return "[Unknown GameObjectEventContext]";
+		}
+	}
 }
 

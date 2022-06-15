@@ -50,7 +50,7 @@ namespace gamelib
 		/// <summary>
 		/// Update the game
 		/// </summary>
-		void Update();
+		void Update(float deltaMs);
 		
 		/// <summary>
 		/// Handle any game Structure events
@@ -73,7 +73,7 @@ namespace gamelib
 		/// <summary>
 		/// Update World/level etc
 		/// </summary>
-		void UpdateWorld() const;
+		void UpdateWorld(float deltaMs) const;
 
 		/// <summary>
 		/// Read keyboard/controller input

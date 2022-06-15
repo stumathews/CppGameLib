@@ -92,13 +92,13 @@ namespace gamelib
 		this->y = y;
 
 		// In this sensible?
-		bounds = { x, y, 0 , 0 };
+		Bounds = { x, y, 0 , 0 };
 		
 		// mover supports move operations
 		//mover = shared_ptr<GameObjectMover>(new GameObjectMover(this, SettingsManager::Get()->get_int("player", "move_interval")));
 
 		// Increase the Internal Object Id
-		id = lastGameObjectId++;
+		Id = lastGameObjectId++;
 	}	
 
 	/// <summary>
@@ -122,7 +122,7 @@ namespace gamelib
 
 	int GameObject::GetSubscriberId() 
 	{
-		return id; 
+		return Id; 
 	}
 
 	/// <summary>

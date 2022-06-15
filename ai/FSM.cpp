@@ -1,5 +1,5 @@
 #include "FSM.h"
-#include <exceptions/base_exception.h>
+#include <exceptions/EngineException.h>
 
 namespace gamelib
 {

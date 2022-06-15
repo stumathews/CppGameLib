@@ -1,7 +1,7 @@
 #include "AudioAsset.h"
 #include <SDL_mixer.h>
 #include "resource/ResourceManager.h"
-#include "exceptions/base_exception.h"
+#include "exceptions/EngineException.h"
 
 using namespace std;
 

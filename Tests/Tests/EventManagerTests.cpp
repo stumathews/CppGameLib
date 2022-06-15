@@ -30,8 +30,7 @@ class EventManagerTests : public ::testing::Test
   
   
   dummy_subscriber subscriber;	
-  LogicUpdateEvent logic_update_event;
-  const shared_ptr<LogicUpdateEvent> the_event = shared_ptr<LogicUpdateEvent>(new LogicUpdateEvent());
+  const shared_ptr<LogicUpdateEvent> the_event = shared_ptr<LogicUpdateEvent>(new LogicUpdateEvent(10.0f));
   const EventType EventType = EventType::DoLogicUpdateEventType;
 
   void SetUp() override

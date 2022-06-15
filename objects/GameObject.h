@@ -74,7 +74,7 @@ namespace gamelib
 		/// <summary>
 		/// Every Game Object can update itself itself diffirently
 		/// </summary>
-		void virtual Update() = 0;
+		void virtual Update(float deltaMs) = 0;
 
 		/// <summary>
 		/// All game objects can be drawn uniformly
@@ -131,22 +131,24 @@ namespace gamelib
 		/// <summary>
 		/// Each game object has a bounds
 		/// </summary>
-		SDL_Rect bounds;
+		SDL_Rect Bounds;
 		
 		/// <summary>
 		/// Each game object can be active
 		/// </summary>
-		bool isActive = true;
+		bool IsActive = true;
 
 		/// <summary>
 		// Each game object has an ID
 		/// </summary>
-		int id;	
+		int Id;	
 
 		/// <summary>
 		/// Inventory of components
 		/// </summary>
-		Inventory components;
+		Inventory Components;
+
+		std::map<std::string, std::string> stringProperties;
 
 	private:	
 

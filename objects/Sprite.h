@@ -18,11 +18,13 @@ namespace gamelib
 		/// <summary>
 		/// Create a Sprite
 		/// </summary>
-		AnimatedSprite(uint x, uint y, uint frameDuration, bool isVisible, ABCDRectangle dimensions);
+		AnimatedSprite(uint x, uint y, float frameDuration, bool isVisible, ABCDRectangle dimensions);
 
 		AnimatedSprite() = default;
 
 		static std::shared_ptr<AnimatedSprite> Create(int x, int y, std::shared_ptr<SpriteAsset> asset);
+
+		static void Initialize(std::shared_ptr<AnimatedSprite> animatedSprite);
 
 		/// <summary>
 		/// Set Game Object Type
@@ -39,7 +41,7 @@ namespace gamelib
 		/// <summary>
 		/// Update sprite
 		/// </summary>
-		void Update() override;
+		void Update(float deltaMs) override;
 		void SkipUnsupportedAnimationGroupFrames();
 
 		
@@ -52,6 +54,8 @@ namespace gamelib
 		/// Stop animation
 		/// </summary>
 		void StopAnimation();
+
+		void StartAnimation();
 
 		/// <summary>
 		/// Set animation Frame
@@ -86,6 +90,10 @@ namespace gamelib
 		/// </summary>
 		std::vector<KeyFrame> KeyFrames;
 
+		/// <summary>
+		/// Only cycle through specific group frames
+		/// </summary>
+		/// <param name="group"></param>
 		void SetAnimationFrameGroup(std::string group);
 						
 	private:

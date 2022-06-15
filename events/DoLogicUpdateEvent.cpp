@@ -7,8 +7,8 @@ namespace gamelib
 	/// <summary>
 	/// Logic Update Event initializer
 	/// </summary>
-	LogicUpdateEvent::LogicUpdateEvent() 
-		: Event(EventType::DoLogicUpdateEventType) {}
+	LogicUpdateEvent::LogicUpdateEvent(float deltaMs) 
+		: Event(EventType::DoLogicUpdateEventType), deltaMs(deltaMs) {}
 
 	/// <summary>
 	/// Provide a string representation of event

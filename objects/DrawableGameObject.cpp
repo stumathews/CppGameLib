@@ -54,7 +54,7 @@ namespace gamelib
 		this->y = y;
 
 		// In this sensible?
-		bounds = { x, y, 0 , 0 };
+		Bounds = { x, y, 0 , 0 };
 
 		// Should all game Objects support ColourKey
 		isColorKeyEnabled = false;

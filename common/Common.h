@@ -10,7 +10,7 @@
 #include "asset/asset.h"
 #include "objects/GameObject.h"
 #include "common/Logger.h"
-#include "exceptions/base_exception.h"
+#include "exceptions/EngineException.h"
 
 namespace gamelib
 {
@@ -20,7 +20,6 @@ namespace gamelib
 		return std::static_pointer_cast<R>(assetInfo);
 	}
 	
-	// returns true if condition succeeded, false otherwise
 	inline bool IsSuccess(const bool condition, const std::string message)
 	{
 		const auto is = condition == true;
@@ -49,8 +48,7 @@ namespace gamelib
 			std::cin >> key;
 		}
 	}
-
-	// Logs message and runs action
+		
 	inline bool LogThis(const std::string &message, bool verbose, const std::function<bool()>& action,  bool print_finished = true, bool run_if = true)
 	{
 		LogMessage(message, SettingsManager::Get()->GetBool("global","verbose"));
@@ -64,14 +62,11 @@ namespace gamelib
 			result = true; // always succeed if we've been told to not run the action
 		}
 
-		
-		if(print_finished)
-			LogMessage("Finished.");
 		return result;
 	}
 
 	template <typename ENUM>
-	auto as_integer(ENUM const value)
+	auto ToInteger(ENUM const value)
 	{
 		return static_cast<typename std::underlying_type<ENUM>::type>(value);
 	}

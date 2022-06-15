@@ -21,7 +21,7 @@ namespace gamelib
 
 	std::string operator+(const std::string& str, const EventType type)
 	{
-		return str + std::to_string(as_integer(type));
+		return str + std::to_string(ToInteger(type));
 	}
 
 	/*template <typename T>

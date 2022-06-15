@@ -181,9 +181,11 @@
     <ClInclude Include="graphic\GraphicAssetFactory.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="KeyFrame.h" />
+    <ClInclude Include="geometry\Line.h" />
     <ClInclude Include="Logging\ErrorLogManager.h" />
     <ClInclude Include="events\EventSubscriber.h" />
     <ClInclude Include="events\GameObjectEvent.h" />
+    <ClInclude Include="movement\Movement.h" />
     <ClInclude Include="objects\MultipleInheritableEnableSharedFromThis.h" />
     <ClInclude Include="objects\DrawableGameObject.h" />
     <ClInclude Include="events\AddGameObjectToCurrentSceneEvent.h" />
@@ -196,7 +198,7 @@
     <ClInclude Include="events\ControllerMoveEvent.h" />
     <ClInclude Include="events\SceneChangedEvent.h" />
     <ClInclude Include="events\SceneLoadedEvent.h" />
-    <ClInclude Include="exceptions\base_exception.h" />
+    <ClInclude Include="exceptions\EngineException.h" />
     <ClInclude Include="font\FontManager.h" />
     <ClInclude Include="font\FontAsset.h" />
     <ClInclude Include="framework.h" />
@@ -218,6 +220,7 @@
     <ClInclude Include="scene\SceneManager.h" />
     <ClInclude Include="SpriteAsset.h" />
     <ClInclude Include="Tests\Tests\GraphicAssetFactory.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="util\COMUtils.h" />
@@ -239,10 +242,12 @@
     <ClCompile Include="graphic\GraphicAssetFactory.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="KeyFrame.cpp" />
+    <ClCompile Include="geometry\Line.cpp" />
     <ClCompile Include="Logging\ErrorLogManager.cpp" />
     <ClCompile Include="events\EventSubscriber.cpp" />
     <ClCompile Include="events\GameObjectEvent.cpp" />
     <ClCompile Include="GameStructure.cpp" />
+    <ClCompile Include="movement\Movement.cpp" />
     <ClCompile Include="objects\MultipleInheritableEnableSharedFromThis.cpp" />
     <ClCompile Include="objects\DrawableGameObject.cpp" />
     <ClCompile Include="events\AddGameObjectToCurrentSceneEvent.cpp" />
@@ -273,6 +278,7 @@
     <ClCompile Include="scene\SceneItem.cpp" />
     <ClCompile Include="scene\SceneManager.cpp" />
     <ClCompile Include="SpriteAsset.cpp" />
+    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="util\RectDebugging.cpp" />

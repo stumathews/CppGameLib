@@ -1,7 +1,7 @@
 #include "Sprite.h"
 #include "SDL.h"
 #include "windows.h"
-#include "exceptions/base_exception.h"
+#include "exceptions/EngineException.h"
 #include "resource/ResourceManager.h"
 #include <SpriteAsset.h>
 
@@ -9,19 +9,33 @@ using namespace std;
 
 namespace gamelib
 {
-	AnimatedSprite::AnimatedSprite(uint xPos, uint yPos, uint frameDurationMs, bool isVisible, ABCDRectangle dimensions) 
-		: frameDurationMs(frameDurationMs), currentFrameNumber(0), startFrameNumber(0), timeLastFrameShown(0), Dimensions(dimensions),
+	AnimatedSprite::AnimatedSprite(uint xPos, uint yPos, float frameDurationMs, bool isVisible, ABCDRectangle dimensions) : 
+		frameDurationMs(frameDurationMs), 
+		currentFrameNumber(0), 
+		startFrameNumber(0), 
+		timeLastFrameShown(0), 
+		Dimensions(dimensions),
 		DrawableGameObject(xPos, yPos, isVisible) 
 	{ 
-		
+
 	}
 
 	shared_ptr<AnimatedSprite> AnimatedSprite::Create(int x, int y, std::shared_ptr<SpriteAsset> spriteAsset)
 	{
 		auto sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, spriteAsset->FrameDurationMs, true, spriteAsset->Dimensions));
+		
 		sprite->SetGraphic(spriteAsset);
 		sprite->KeyFrames = spriteAsset->KeyFrames;
+
+		Initialize(sprite);
+
 		return sprite;
+	}
+
+	void AnimatedSprite::Initialize(std::shared_ptr<AnimatedSprite> sprite)
+	{
+		// The sprite will initially be set to the first frame
+		sprite->SetAnimationFrame(0);
 	}
 
 	/// <summary>
@@ -40,13 +54,13 @@ namespace gamelib
 	void AnimatedSprite::Draw(SDL_Renderer* renderer)
 	{
 		DrawableGameObject::Draw(renderer);
-		Update();	// why do we have to do this in the draw function?	I think its because we need to move the key frame/do timer stuff
+		//Update(0.0f);	// why do we have to do this in the draw function?	I think its because we need to move the key frame/do timer stuff
 	}
 
 	/// <summary>
 	/// Update sprite
 	/// </summary>
-	void AnimatedSprite::Update()
+	void AnimatedSprite::Update(float deltaMs)
 	{
 		const unsigned long durationSinceLastFrameMs = timeGetTime() - timeLastFrameShown;
 		const auto countKeyFrames = KeyFrames.size();
@@ -104,6 +118,7 @@ namespace gamelib
 	/// </summary>
 	void AnimatedSprite::PlayAnimation()
 	{
+		stopped = false;
 		const auto resource = GetGraphic();
 		if(!HasGraphic())
 		{
@@ -124,13 +139,18 @@ namespace gamelib
 		stopped = true;
 	}
 
+	void AnimatedSprite::StartAnimation()
+	{
+		stopped = false;
+	}
+
 	/// <summary>
 	/// Set animation frame number
 	/// </summary>
 	/// <param name="FrameNumber"></param>
 	void AnimatedSprite::SetAnimationFrame(uint FrameNumber) const
 	{
-		if(!HasGraphic())
+		if(!HasGraphic() || stopped)
 			return;
 
 		// Get the rectangle that defines the viewport
@@ -155,7 +175,14 @@ namespace gamelib
 		// Get the rectangle that defines the viewport
 		auto& viewPort = GetGraphic()->GetViewPort();
 
-		viewPort = { Dimensions.GetAx(), Dimensions.GetAy(), Dimensions.GetWidth(), Dimensions.GetHeight() };
+		// And change it in-place
+		viewPort = 
+		{ 
+			Dimensions.GetAx(), 
+			Dimensions.GetAy(),
+			Dimensions.GetWidth(),
+			Dimensions.GetHeight() 
+		};
 	}
 
 	/// <summary>

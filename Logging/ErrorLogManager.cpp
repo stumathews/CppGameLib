@@ -33,6 +33,12 @@ void ErrorLogManager::LogException(gamelib::EngineException e)
 	Flush();
 }
 
+void ErrorLogManager::LogMessage(std::string message)
+{
+	Buffer << GetTimeString() << "\n" << message;
+	Flush();
+}
+
 ErrorLogManager::ErrorLogManager()
 {
 }

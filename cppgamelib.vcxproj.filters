@@ -42,7 +42,7 @@
     <ClInclude Include="font\FontAsset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="exceptions\base_exception.h">
+    <ClInclude Include="exceptions\EngineException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="audio\AudioManager.h">
@@ -201,6 +201,15 @@
     <ClInclude Include="graphic\ColourKey.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\Line.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="movement\Movement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -357,6 +366,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="graphic\ColourKey.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry\Line.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="movement\Movement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

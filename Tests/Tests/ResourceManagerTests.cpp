@@ -50,13 +50,13 @@ TEST_F(ResourceManagerTests, Initialize)
 
 TEST_F(ResourceManagerTests, read_resources)
 {
-	ResourceManager::Get()->IndexResources(resource_file_path);
+	ResourceManager::Get()->IndexResourceFile(resource_file_path);
 	EXPECT_EQ(ResourceManager::Get()->GetCountResources(), 12) << "Expected 12 assets to be loaded";
 }
 
 TEST_F(ResourceManagerTests, get_resource_via_string)
 {
-	ResourceManager::Get()->IndexResources(resource_file_path);
+	ResourceManager::Get()->IndexResourceFile(resource_file_path);
 
 	// When fetching an asset using string identifier
 	const auto asset = ResourceManager::Get()->GetAssetInfo(exp_name);
@@ -66,7 +66,7 @@ TEST_F(ResourceManagerTests, get_resource_via_string)
 }
 TEST_F(ResourceManagerTests, get_resource_via_int)
 {
-	ResourceManager::Get()->IndexResources(resource_file_path);
+	ResourceManager::Get()->IndexResourceFile(resource_file_path);
 
 	// When fetching an asset using integer uid
 	const auto asset = ResourceManager::Get()->GetAssetInfo(exp_uid);
@@ -79,7 +79,7 @@ TEST_F(ResourceManagerTests, get_resource_via_int)
 TEST_F(ResourceManagerTests, unload)
 {
 	ResourceManager::Get()->Initialize();
-	ResourceManager::Get()->IndexResources(resource_file_path);
+	ResourceManager::Get()->IndexResourceFile(resource_file_path);
 	ResourceManager::Get()->Unload();
 	EXPECT_EQ(0, ResourceManager::Get()->GetCountUnloadedResources()) << "Asset count is not 0 after unload";
 }

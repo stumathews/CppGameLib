@@ -47,7 +47,7 @@ namespace gamelib
 		uint screenHeight = 0;
 		
 		bool beVerbose = false;
-		events HandleEvent(const std::shared_ptr<Event> the_event) override;		
+		ListOfEvents HandleEvent(const std::shared_ptr<Event> the_event) override;		
 	};
 }
 #endif

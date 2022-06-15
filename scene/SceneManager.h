@@ -49,7 +49,7 @@ namespace gamelib
 		/// Get layers
 		/// </summary>
 		/// <returns></returns>
-		std::list<gamelib::Layer> GetLayers() const;
+		std::list<std::shared_ptr<gamelib::Layer>> GetLayers() const;
 
 
 	protected:
@@ -80,10 +80,10 @@ namespace gamelib
 		/// <param name="filename">filename of the scene file</param>
 		bool ReadSceneFile(const std::string &filename);
 
-		void OnVisibleParse(gamelib::Layer& layer, const std::string& value);
-		void OnPosYParse(gamelib::Layer& layer, const std::string& value);
-		void OnPosXParse(gamelib::Layer& layer, const std::string& value);
-		void OnNameParse(gamelib::Layer& layer, const std::string& value);
+		void OnVisibleParse(std::shared_ptr<gamelib::Layer> layer, const std::string& value);
+		void OnPosYParse(std::shared_ptr<gamelib::Layer> layer, const std::string& value);
+		void OnPosXParse(std::shared_ptr<gamelib::Layer>, const std::string& value);
+		void OnNameParse(std::shared_ptr<gamelib::Layer>, const std::string& value);
 
 		/// <summary>
 		/// Remove layer
@@ -101,14 +101,14 @@ namespace gamelib
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		Layer& AddLayer(const std::string &name);
+		std::shared_ptr<Layer> AddLayer(const std::string &name);
 		
 		/// <summary>
 		/// Find layer
 		/// </summary>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		Layer& FindLayer(const std::string &name);
+		std::shared_ptr<Layer> FindLayer(const std::string &name);
 
 		/// <summary>
 		/// Update the scene manager on each frame
@@ -139,7 +139,7 @@ namespace gamelib
 		/// <summary>
 		/// Layers in this scene
 		/// </summary>
-		std::list<gamelib::Layer> layers;
+		std::list<std::shared_ptr<gamelib::Layer>> layers;
 
 		/// <summary>
 		/// Current Scene name

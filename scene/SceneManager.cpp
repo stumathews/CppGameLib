@@ -121,7 +121,7 @@ namespace gamelib
 				// Inspect the GameObject Event context for details on what to do with this GameObject
 				if (gameObjectEvent->context == GameObjectEventContext::Remove)
 				{
-					RemoveGameObjectFromLayers(gameObjectEvent->gameObject->id);
+					RemoveGameObjectFromLayers(gameObjectEvent->gameObject->Id);
 				}
 				break;
 		}
@@ -137,14 +137,14 @@ namespace gamelib
 	void SceneManager::RemoveGameObjectFromLayers(int GameObjectId)
 	{
 		// Remove from each layer, the occurnace of the object denoted by gameObjectId
-		for_each(begin(layers), end(layers), [&GameObjectId](Layer layer)
+		for_each(begin(layers), end(layers), [&GameObjectId](std::shared_ptr<Layer> layer)
 		{
 			// Look for game object that match incomming id
-			auto result = std::remove_if(begin(layer.layerObjects), end(layer.layerObjects), [=](weak_ptr<GameObject> gameObject)
+			auto result = std::remove_if(begin(layer->layerObjects), end(layer->layerObjects), [=](weak_ptr<GameObject> gameObject)
 			{
 				if (auto ptr = gameObject.lock())
 				{
-					return ptr->id == GameObjectId;
+					return ptr->Id == GameObjectId;
 				}
 				return false;
 			});			
@@ -208,16 +208,16 @@ namespace gamelib
 	void SceneManager::AddGameObjectToScene(const std::shared_ptr<GameObject>& game_object)
 	{
 		// add to last layer of the scene
-		layers.back().layerObjects.push_back(game_object);
+		layers.back()->layerObjects.push_back(game_object);
 	}
 
 	/// <summary>
 	/// Add new layer to scene
 	/// </summary>
-	Layer& SceneManager::AddLayer(const std::string& name)
+	std::shared_ptr<Layer> SceneManager::AddLayer(const std::string& name)
 	{
-		auto layer = Layer();
-		layer.name = name;
+		std::shared_ptr<Layer> layer = std::shared_ptr<Layer>(new Layer());
+		layer->name = name;
 		layers.push_back(layer);
 
 		return layer;
@@ -226,11 +226,11 @@ namespace gamelib
 	/// <summary>
 	/// Find layer by name
 	/// </summary>
-	Layer& SceneManager::FindLayer(const std::string& name)
+	std::shared_ptr<Layer> SceneManager::FindLayer(const std::string& name)
 	{
 		for (auto& layer : layers)
 		{
-			if (layer.name == name)
+			if (layer->name == name)
 			{
 				return layer;
 			}
@@ -244,18 +244,18 @@ namespace gamelib
 	/// </summary>
 	void SceneManager::RemoveLayer(const std::string& name)
 	{
-		std::remove_if(begin(layers), end(layers), [&name](Layer& layer) 
+		std::remove_if(begin(layers), end(layers), [&name](std::shared_ptr<Layer> layer) 
 		{ 
-			return layer.name._Equal(name); 
+			return layer->name._Equal(name); 
 		});
 	}
 
 	/// <summary>
 	/// Compare layer order
 	/// </summary>
-	bool CompareLayerOrder(const Layer& rhs, const Layer& lhs)
+	bool CompareLayerOrder(const std::shared_ptr<Layer> rhs, const std::shared_ptr<Layer> lhs)
 	{
-		return lhs.zorder < rhs.zorder;
+		return lhs->zorder < rhs->zorder;
 	}
 
 	/// <summary>
@@ -282,15 +282,15 @@ namespace gamelib
 			for (const auto& Layer : GetLayers())
 			{
 				// Only draw visible layers
-				if (Layer.visible)
+				if (Layer->visible)
 				{
 					// Draw objects within the layer
-					for (const auto& gameObjectCandidate : Layer.layerObjects)
+					for (const auto& gameObjectCandidate : Layer->layerObjects)
 					{
 						if (auto gameObject = gameObjectCandidate.lock())
 						{
 							// If it is active
-							if (gameObject && gameObject->isActive)
+							if (gameObject && gameObject->IsActive)
 							{
 								// draw yourself!
 								gameObject->Draw(windowRenderer);
@@ -307,7 +307,7 @@ namespace gamelib
 	/// <summary>
 	/// Gte Scene layers
 	/// </summary>
-	std::list<Layer> SceneManager::GetLayers() const
+	std::list<std::shared_ptr<Layer>> SceneManager::GetLayers() const
 	{
 		return layers;
 	}
@@ -359,8 +359,8 @@ namespace gamelib
 					if(layerElement) 
 					{
 						// build up a layer object from scene file
-						auto layer = Layer();
-						layer.zorder = layers.size();					
+						std::shared_ptr<Layer> layer = std::shared_ptr<Layer>(new Layer());
+						layer->zorder = layers.size();					
 
 						// Loop through layer attributes
 						for(auto layerAttributes = layerElement->FirstAttribute(); layerAttributes; layerAttributes = layerAttributes->Next()) // // <layer name="layer0" posx="0" posy="0" visible="true"
@@ -418,7 +418,7 @@ namespace gamelib
 									gameWorld.GetGameObjects().push_back(gameObject);
 
 									// Add game object to this layer
-									layer.layerObjects.push_back(gameObject);																
+									layer->layerObjects.push_back(gameObject);																
 								}
 							}
 						}
@@ -439,24 +439,24 @@ namespace gamelib
 		return false;
 	}
 
-	void SceneManager::OnVisibleParse(Layer& layer, const std::string& value)
+	void SceneManager::OnVisibleParse(std::shared_ptr<Layer> layer, const std::string& value)
 	{
-		layer.visible = (value == "true") ? true : false;
+		layer->visible = (value == "true") ? true : false;
 	}
 
-	void SceneManager::OnPosYParse(Layer& layer, const std::string& value)
+	void SceneManager::OnPosYParse(std::shared_ptr<Layer> layer, const std::string& value)
 	{
-		layer.y = static_cast<int>(std::atoi(value.c_str()));
+		layer->y = static_cast<int>(std::atoi(value.c_str()));
 	}
 
-	void SceneManager::OnPosXParse(Layer& layer, const std::string& value)
+	void SceneManager::OnPosXParse(std::shared_ptr<Layer> layer, const std::string& value)
 	{
-		layer.x = static_cast<int>(std::atoi(value.c_str()));
+		layer->x = static_cast<int>(std::atoi(value.c_str()));
 	}
 
-	void SceneManager::OnNameParse(Layer& layer, const std::string& value)
+	void SceneManager::OnNameParse(std::shared_ptr<Layer> layer, const std::string& value)
 	{
-		layer.name = value;
+		layer->name = value;
 	}
 
 	string SceneManager::GetSubscriberName()

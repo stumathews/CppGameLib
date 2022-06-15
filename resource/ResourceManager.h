@@ -30,7 +30,7 @@ namespace gamelib
 	    std::string GetSubscriberName() override;
 
 		// index the resoures file
-		void IndexResources(std::string resources_file_path = "game/resources.xml");
+		void IndexResourceFile(std::string resources_file_path = "game/resources.xml");
 		std::shared_ptr<gamelib::Asset>& CreateAssetFromElement(const char* type, std::shared_ptr<gamelib::Asset>& the_asset, tinyxml2::XMLElement* const& element);
 		int GetCountUnloadedResources() const { return countUnloadedResources; }
 	    int GetCountLoadedResources() const { return countLoadedResources; }

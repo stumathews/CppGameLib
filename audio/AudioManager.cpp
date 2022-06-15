@@ -3,7 +3,7 @@
 #include "tinyxml2.h"
 #include "common/Common.h"
 #include "asset/asset.h"
-#include "exceptions/base_exception.h"
+#include "exceptions/EngineException.h"
 
 using namespace std;
 
@@ -54,7 +54,7 @@ namespace gamelib
 	/// Play Music
 	/// </summary>
 	/// <param name="as_music"></param>
-	void AudioManager::PlayMusic(Mix_Music* as_music)
+	void AudioManager::Play(Mix_Music* as_music)
 	{
 		Mix_PlayMusic(as_music, -1);
 	}
@@ -63,7 +63,7 @@ namespace gamelib
 	/// Play sound
 	/// </summary>
 	/// <param name="as_fx"></param>
-	void AudioManager::PlaySound(Mix_Chunk* as_fx)
+	void AudioManager::Play(Mix_Chunk* as_fx)
 	{
 		Mix_PlayChannel(-1, as_fx, 0);
 	}

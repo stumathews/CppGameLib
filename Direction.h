@@ -10,6 +10,21 @@ namespace gamelib
 		Up, 
 		Down,
 		Left, 
-		Right
+		Right,
+		None
 	};
+
+	inline const char* ToString(Direction direction)
+	{
+		switch (direction)
+		{
+			case Direction::Up:   return "Up";
+			case Direction::Down: return "Down";
+			case Direction::Left: return "Left";
+			case Direction::Right: return "Right";
+			case Direction::None: return "None";
+			default:      
+				return "[Unknown Direction]";
+		}
+	}
 }

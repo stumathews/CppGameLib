@@ -21,6 +21,29 @@ namespace gamelib
 		DrawCurrentScene
 	};
 
+	inline const char* ToString(EventType type)
+	{
+		switch (type)
+		{
+
+			case EventType::ControllerMoveEvent: return "ControllerMoveEvent";
+			case EventType::LevelChangedEventType: return "LevelChangedEventType";
+			case EventType::DoLogicUpdateEventType: return "DoLogicUpdateEventType";
+			case EventType::AddGameObjectToCurrentScene: return "AddGameObjectToCurrentScene";
+			case EventType::PlayerMovedEventType: return "PlayerMovedEventType";
+			case EventType::SceneLoaded: return "SceneLoaded";
+			case EventType::SettingsReloaded: return "SettingsReloaded";
+			case EventType::GenerateNewLevel: return "GenerateNewLevel";
+			case EventType::InvalidMove: return "InvalidMove";
+			case EventType::Fire: return "Fire";
+			case EventType::FetchedPickup: return "FetchedPickup";
+			case EventType::GameObject: return "GameObject";
+			case EventType::DrawCurrentScene: return "DrawCurrentScene";
+			default:      
+				return "[Unknown EventType]";
+		}
+	}
+
 	class Event
 	{
 	public:

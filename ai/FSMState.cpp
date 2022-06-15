@@ -1,5 +1,7 @@
 #include "FSMState.h"
 
+using namespace std;
+
 namespace gamelib
 {
 	void FSMState::OnEnter() 
@@ -39,5 +41,10 @@ namespace gamelib
 	void FSMState::SetOnUpdate(std::function<void()> onUpdate)
 	{
 		OnUpdateFn = onUpdate;
+	}
+
+	string FSMState::GetName()
+	{
+		return name;
 	}
 }

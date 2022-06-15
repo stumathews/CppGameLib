@@ -22,12 +22,12 @@ namespace gamelib
 		/// Play specific music asset
 		/// </summary>
 		/// <param name="music"></param>
-		void PlayMusic(Mix_Music* music);
+		void Play(Mix_Music* music);
 
 		/// <summary>
 		/// Plays sound effect
 		/// </summary>
-		static void PlaySound(Mix_Chunk* soundEffect);
+		static void Play(Mix_Chunk* soundEffect);
 
 		/// <summary>
 		/// Cast base class to Specific Audio Asset

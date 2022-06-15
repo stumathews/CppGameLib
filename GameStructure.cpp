@@ -125,21 +125,21 @@ namespace gamelib
 	/// <summary>
 	/// Updates, monitors what the world is doing around the player. This is usually what the player reacts to
 	/// </summary>
-	void GameStructure::UpdateWorld() const
+	void GameStructure::UpdateWorld(float deltaMs) const
 	{
 		// Time-sensitive, skip queue. Send Update event to all subscribers who support updates and make them process it right now
-		EventManager::Get()->DispatchEventToSubscriber(make_shared<LogicUpdateEvent>());		
+		EventManager::Get()->DispatchEventToSubscriber(make_shared<LogicUpdateEvent>(deltaMs));		
 	}
 
 	/// <summary>
 	/// Update logic in game.
 	/// Is run x FPS to maintain a timed series on constant updates
 	/// </summary>
-	void GameStructure::Update()
+	void GameStructure::Update(float deltaMs)
 	{					
 		// make the game do something now...show game activity that the user will then respond to
 		// this generates game play
-		UpdateWorld();
+		UpdateWorld(deltaMs);
 	}
 
 	/// <summary>
@@ -214,7 +214,8 @@ namespace gamelib
 	bool GameStructure::DoGameLoop()
 	{
 		// A 'tick' reprents one update call(). 
-		// We want a fixed number of ticks within a real unit of time. A real unit of time does not change (1 second is always one second in the real world)
+		// We want a fixed number of ticks within a real unit of time. 
+		// A real unit of time does not change (1 second is always one second in the real world)
 		// irrespective of what the hardware you are running on. So if we can ensure we have the same number of updates in one second, the update rate
 		// will always be te same, the we have a fixed update rate. 
 
@@ -238,7 +239,7 @@ namespace gamelib
 		while (!SceneManager::Get()->GetGameWorld().IsGameDone) // main game loop (exact speed of loops is hardware dependaant)
 		{
 			const auto t1 =  GetTimeNowMs(); // t1 is the time now, and at t0, the last update was called.
-			auto elapsedTimeSinceLastUpdateFinished = t1 - t0;			
+			auto delta = t1 - t0;	// elapsedTimeSinceLastUpdateFinished		
 			
 			auto frameTimePerLoop = 0;  // Sum of update intervals we could get in 1 game loop (hardware dependant).
 			auto num_loops = 0;  // Number of loops 
@@ -255,7 +256,7 @@ namespace gamelib
 			{
 				// +TICK_TIME has just occured, since last update so do another update
 				// update logic
-				Update();
+				Update(t1-t0);
 				// At this point, we are now into a new 'frame' or loop of the game-loop
 
 				// t0 repreesnts the time when the last update() finished.

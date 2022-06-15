@@ -4,9 +4,9 @@
 namespace gamelib
 {
 #ifndef THROW
-#define THROW(ErrorNum, ErrorDesc, SubsystemDesc) throw EngineException(ErrorNum, ErrorDesc, SubsystemDesc,  __FILE__, __LINE__);
-#endif
-
+	/// <summary>
+	/// A generic error that the Game Engine throws
+	/// </summary>
 	class EngineException : public std::exception
 	{
 	public:
@@ -22,5 +22,9 @@ namespace gamelib
 		std::string errorText;
 		std::string subsystem;
 	};
+
+
+#define THROW(ErrorNum, ErrorDesc, SubsystemDesc) throw gamelib::EngineException(ErrorNum, ErrorDesc, SubsystemDesc,  __FILE__, __LINE__);
+#endif
 }
 

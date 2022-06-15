@@ -14,7 +14,7 @@ namespace gamelib
 			const std::string& type,
 			const int scene, 
 			const ABCDRectangle& dimensions);
-		int FrameDurationMs;
+		float FrameDurationMs;
 		std::vector<KeyFrame> KeyFrames;
 	};
 }

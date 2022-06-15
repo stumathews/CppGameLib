@@ -111,10 +111,11 @@ namespace gamelib
             if (animationChildName == "keyframes")
             {
                 auto attributes = GetNodeAttributes(pAnimationChild);
-                auto duration = 0;
+                float duration = 0;
                 if (attributes.count("duration") > 0)
                 {
-                    duration = stoi(attributes.at("duration"));
+                    //duration = stoi(attributes.at("duration"));
+                    duration = stof(attributes.at("duration"));
                 }
                 sprite->FrameDurationMs = duration;
                 ParseSpriteKeyFrames(pAnimationChild, sprite);

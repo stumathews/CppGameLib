@@ -1,4 +1,4 @@
-#include "base_exception.h"
+#include "EngineException.h"
 #include <sstream>
 using namespace std;
 namespace gamelib

@@ -50,11 +50,13 @@ namespace gamelib
 	void DrawableGameObject::SetDefaults(bool isVisible, int x, int y)
 	{
 		this->isVisible = isVisible;
-		this->x = x;
-		this->y = y;
+		/*this->x = x;
+		this->y = y;*/
+		Position.SetX(x);
+		Position.SetY(y);
 
 		// In this sensible?
-		Bounds = { x, y, 0 , 0 };
+		Bounds = { Position.GetX(), Position.GetY(), 0 , 0 };
 
 		// Should all game Objects support ColourKey
 		isColorKeyEnabled = false;
@@ -107,7 +109,7 @@ namespace gamelib
 				// Draw graphic at the game object's current location
 				SDL_Rect drawLocation =
 				{
-					x, y,
+					Position.GetX(), Position.GetY(),
 					graphic->GetViewPort().w,
 					graphic->GetViewPort().h
 				};

@@ -16,7 +16,6 @@ namespace gamelib
 
 	GameObject::GameObject(bool isVisible)
 	{
-		
 		GameObject::LoadSettings();
 		SetDefaults(isVisible, 0, 0);
 	}
@@ -88,11 +87,13 @@ namespace gamelib
 	void GameObject::SetDefaults(bool isVisible, int x, int y)
 	{
 		this->isVisible = isVisible;
-		this->x = x;
-		this->y = y;
+		/*this->x = x;
+		this->y = y;*/
+		Position.SetX(x);
+		Position.SetY(y);
 
 		// In this sensible?
-		Bounds = { x, y, 0 , 0 };
+		Bounds = { Position.GetX(), Position.GetY(), 0 , 0 };
 		
 		// mover supports move operations
 		//mover = shared_ptr<GameObjectMover>(new GameObjectMover(this, SettingsManager::Get()->get_int("player", "move_interval")));

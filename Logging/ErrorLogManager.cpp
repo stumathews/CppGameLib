@@ -29,13 +29,13 @@ void ErrorLogManager::Close()
 
 void ErrorLogManager::LogException(gamelib::EngineException e)
 {
-	Buffer << GetTimeString() << "\n" << e.what();
+	Buffer << GetTimeString() << "\n" << e.what() << std::endl;
 	Flush();
 }
 
 void ErrorLogManager::LogMessage(std::string message)
 {
-	Buffer << GetTimeString() << "\n" << message;
+	Buffer << GetTimeString() << " " << message << std::endl;
 	Flush();
 }
 
@@ -53,7 +53,7 @@ std::string ErrorLogManager::GetTimeString()
 
 	timeString << std::setw(2) << std::setfill('0') << newTime.tm_hour << ":";
 	timeString << std::setw(2) << std::setfill('0') << newTime.tm_min << ":";
-	timeString << std::setw(2) << std::setfill('0') << newTime.tm_sec;
+	timeString << std::setw(2) << std::setfill('0') << newTime.tm_sec;;
 
 	return timeString.str();
 }

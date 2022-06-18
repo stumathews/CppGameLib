@@ -35,6 +35,8 @@ namespace gamelib
 		// Raise an arbitrary event
 		void RaiseEvent(const std::shared_ptr<Event> event, IEventSubscriber* you);
 
+		void RaiseEventWithNoLogging(const std::shared_ptr<Event> event);
+
 		// Add yourself as an event handler (aka event subscriber) to handle an event of type EventType
 		void SubscribeToEvent(EventType type, IEventSubscriber* pYou);
 

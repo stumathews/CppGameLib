@@ -1,5 +1,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
+#include <winsock2.h>
+#include <Ws2tcpip.h>
 #include <Windows.h>
 #include <iostream>
 #include <SDL_mixer.h>
@@ -19,6 +21,8 @@
 #include "scene/SceneManager.h"
 #include "common/aliases.h"
 #include <string>
+#include <net/NetworkManager.h>
+
 
 using namespace std;
 
@@ -76,10 +80,13 @@ namespace gamelib
 			const auto eventManagerInitialized = LogOnFailure(EventManager::Get()->Initialize(), "Could not initialize event manager");
 
 			// Initialize SceneManager
-			const auto sceneManagerInitialized = LogOnFailure(SceneManager::Get()->Initialize(), "Could not initialsettings->ize scene manager");
+			const auto sceneManagerInitialized = LogOnFailure(SceneManager::Get()->Initialize(), "Could not initialize scene manager");
 
 			// Initialize SDL
 			const auto SdLInitialized = LogOnFailure(InitializeSDL(screenWidth, screenHeight, windowTitle), "Could not initialize SDL, aborting.");
+
+			// Initialize Networking
+			const auto networkManagerInitialized = LogOnFailure(NetworkManager::Get()->Initialize(), "Could not initialize network manager");
 
 			// Final check to see if all subsystems are initialised ok
 			if (IsFailedOrFalse(SdLInitialized) || IsFailedOrFalse(eventManagerInitialized) || IsFailedOrFalse(resourceManagerInitialized) || IsFailedOrFalse(sceneManagerInitialized) || IsFailedOrFalse(settingsInitialized))
@@ -99,6 +106,14 @@ namespace gamelib
 	{
 		// Read from game controller
 		_getControllerInputFunction();	
+	}
+
+	void GameStructure::ReadNetwork() const
+	{
+		NetworkManager::Get()->GetNetworkEvent();
+
+		
+
 	}
 
 	/// <summary>
@@ -136,7 +151,7 @@ namespace gamelib
 	/// Is run x FPS to maintain a timed series on constant updates
 	/// </summary>
 	void GameStructure::Update(float deltaMs)
-	{					
+	{	
 		// make the game do something now...show game activity that the user will then respond to
 		// this generates game play
 		UpdateWorld(deltaMs);
@@ -169,6 +184,9 @@ namespace gamelib
 	{
 		// Read input from player
 		ReadKeyboard();
+
+		// Read input from the network
+		ReadNetwork();
 
 		// Contacts all event subscribers for all events that are currently waiting to be processed in the event queue
 		EventManager::Get()->ProcessAllEvents(); 

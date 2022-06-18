@@ -74,6 +74,12 @@ namespace gamelib
 
 		primary_event_queue_.push(event);		
 	}
+
+	void EventManager::RaiseEventWithNoLogging(const std::shared_ptr<Event> event)
+	{
+			primary_event_queue_.push(event);	
+	
+	}
 		
 	void EventManager::SubscribeToEvent(const EventType type, IEventSubscriber* you)
 	{

@@ -6,6 +6,7 @@
 #include "events/EventManager.h"
 #include "Inventory.h"
 #include <string>
+#include "util/Tuple.h"
 
 namespace gamelib
 {
@@ -57,7 +58,7 @@ namespace gamelib
 		/// </summary>
 		/// <param name="event"></param>
 		/// <returns></returns>
-		std::vector<std::shared_ptr<Event>> HandleEvent( std::shared_ptr<Event> event) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> event) override;
 
 		/// <summary>
 		/// Provide name to event system
@@ -118,7 +119,7 @@ namespace gamelib
 		/// </summary>
 		bool isVisible;
 				
-		/// <summary>
+		/*/// <summary>
 		/// Each game object has a x-orordinate
 		/// </summary>
 		int x;
@@ -126,7 +127,9 @@ namespace gamelib
 		/// <summary>
 		/// Each game object has a y-orordinate
 		/// </summary>
-		int y;
+		int y;*/
+
+		gamelib::coordinate<int> Position;
 
 		/// <summary>
 		/// Each game object has a bounds

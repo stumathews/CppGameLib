@@ -92,7 +92,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;HAVE_WINSOCK2_H;_WINSOCK_DEPRECATED_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -166,6 +166,9 @@
     <ClInclude Include="asset\asset.h" />
     <ClInclude Include="audio\AudioManager.h" />
     <ClInclude Include="audio\AudioAsset.h" />
+    <ClInclude Include="net\GameClient.h" />
+    <ClInclude Include="net\GameServer.h" />
+    <ClInclude Include="net\Connection.h" />
     <ClInclude Include="common\aliases.h" />
     <ClInclude Include="common\Common.h" />
     <ClInclude Include="common\constants.h" />
@@ -186,6 +189,9 @@
     <ClInclude Include="events\EventSubscriber.h" />
     <ClInclude Include="events\GameObjectEvent.h" />
     <ClInclude Include="movement\Movement.h" />
+    <ClInclude Include="net\Networking.h" />
+    <ClInclude Include="net\NetworkEvent.h" />
+    <ClInclude Include="net\NetworkManager.h" />
     <ClInclude Include="objects\MultipleInheritableEnableSharedFromThis.h" />
     <ClInclude Include="objects\DrawableGameObject.h" />
     <ClInclude Include="events\AddGameObjectToCurrentSceneEvent.h" />
@@ -234,6 +240,9 @@
     <ClCompile Include="asset\Asset.cpp" />
     <ClCompile Include="audio\AudioManager.cpp" />
     <ClCompile Include="audio\AudioAsset.cpp" />
+    <ClCompile Include="net\GameClient.cpp" />
+    <ClCompile Include="net\GameServer.cpp" />
+    <ClCompile Include="net\Connection.cpp" />
     <ClCompile Include="common\Logger.cpp" />
     <ClCompile Include="cppgamelib.cpp" />
     <ClCompile Include="ai\FSM.cpp" />
@@ -248,6 +257,9 @@
     <ClCompile Include="events\GameObjectEvent.cpp" />
     <ClCompile Include="GameStructure.cpp" />
     <ClCompile Include="movement\Movement.cpp" />
+    <ClCompile Include="net\NetworkEvent.cpp" />
+    <ClCompile Include="net\Networking.cpp" />
+    <ClCompile Include="net\NetworkManager.cpp" />
     <ClCompile Include="objects\MultipleInheritableEnableSharedFromThis.cpp" />
     <ClCompile Include="objects\DrawableGameObject.cpp" />
     <ClCompile Include="events\AddGameObjectToCurrentSceneEvent.cpp" />
@@ -285,6 +297,12 @@
     <ClCompile Include="util\SettingDetail.cpp" />
     <ClCompile Include="util\SettingsManager.cpp" />
     <ClCompile Include="util\Tuple.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="net\tcpclient.skel" />
+    <None Include="net\tcpserver.skel" />
+    <None Include="net\udpclient.skel" />
+    <None Include="net\udpserver.skel" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

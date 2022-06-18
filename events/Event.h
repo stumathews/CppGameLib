@@ -18,7 +18,8 @@ namespace gamelib
 		Fire,
 		FetchedPickup,
 		GameObject,
-		DrawCurrentScene
+		DrawCurrentScene,
+		NetworkPlayerJoined,
 	};
 
 	inline const char* ToString(EventType type)
@@ -39,6 +40,7 @@ namespace gamelib
 			case EventType::FetchedPickup: return "FetchedPickup";
 			case EventType::GameObject: return "GameObject";
 			case EventType::DrawCurrentScene: return "DrawCurrentScene";
+			case EventType::NetworkPlayerJoined: return "NetworkPlayerJoined";
 			default:      
 				return "[Unknown EventType]";
 		}

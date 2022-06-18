@@ -22,7 +22,7 @@ namespace gamelib
 	/// </summary>
 	void GameObjectMover::MoveUp()
 	{
-		gameObject->y -= moveInterval;
+		gameObject->Position.SetY(gameObject->Position.GetY() - moveInterval);
 	}
 
 	/// <summary>
@@ -30,7 +30,7 @@ namespace gamelib
 	/// </summary>
 	void GameObjectMover::MoveDown()
 	{
-		gameObject->y += moveInterval;
+		gameObject->Position.SetY(gameObject->Position.GetY() + moveInterval);
 	}
 
 	/// <summary>
@@ -38,7 +38,7 @@ namespace gamelib
 	/// </summary>
 	void GameObjectMover::MoveLeft()
 	{
-		gameObject->x -= moveInterval;
+		gameObject->Position.SetX(gameObject->Position.GetX() - moveInterval);
 	}
 
 	/// <summary>
@@ -46,6 +46,6 @@ namespace gamelib
 	/// </summary>
 	void GameObjectMover::MoveRight()
 	{
-		gameObject->x += moveInterval;
+		gameObject->Position.SetX(gameObject->Position.GetX() + moveInterval);
 	}
 }

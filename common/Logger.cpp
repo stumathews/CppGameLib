@@ -1,5 +1,6 @@
 #include "Logger.h"
 #include "logging/ErrorLogManager.h"
+
 using namespace std;
 
 namespace gamelib
@@ -10,7 +11,10 @@ namespace gamelib
 	{
 		if (Instance == nullptr)
 		{
-			Instance = new Logger( [=](std::string message){ });
+			Instance = new Logger( [=](std::string message)
+			{
+				ErrorLogManager::GetErrorLogManager()->LogMessage(message);	
+			});
 		}
 		return Instance;
 	}

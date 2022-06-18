@@ -80,6 +80,8 @@ namespace gamelib
 		/// </summary>
 		void ReadKeyboard() const;
 
+		void ReadNetwork() const;
+
 		/// <summary>
 		/// Gte the Time now in MS
 		/// </summary>

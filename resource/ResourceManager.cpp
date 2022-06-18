@@ -85,8 +85,8 @@ namespace gamelib
 				if((asset->scene == level || always_load_resource) && !asset->isLoadedInMemory)
 				{				
 					asset->Load();
-						
-					Logger::Get()->LogThis(string("scene: " + to_string(asset->scene) ) + string(asset->name) + " asset loaded.");
+					
+					Logger::Get()->LogThis(string("scene " + to_string(asset->scene) ) +string(": ") + string(asset->name) + " asset loaded.");
 						
 					countLoadedResources++;
 					countUnloadedResources--;

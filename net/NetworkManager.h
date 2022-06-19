@@ -4,10 +4,7 @@
 #include "NetworkEvent.h"
 #include "Connection.h"
 #include <memory>
-//#include <winsock2.h>
-//#include <ws2tcpip.h>
-//#include <iphlpapi.h>
-#include <net/Networking.h>
+//#include <net/Networking.h>
 #include <net/GameClient.h>
 #include <net/GameServer.h>
 
@@ -38,6 +35,7 @@ namespace gamelib
 		void operator=(NetworkManager const&) = delete;
 
 		NetworkEvent GetNetworkEvent();
+		void PingGameServer() const;
 
 		std::shared_ptr<GameClient> Client = nullptr;
 		std::shared_ptr<GameServer> Server = nullptr;

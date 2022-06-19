@@ -219,6 +219,8 @@
     <ClInclude Include="objects\GameObjectFactory.h" />
     <ClInclude Include="objects\Sprite.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="net\PeerInfo.h" />
+    <ClInclude Include="events\PlayerNetworkTrafficRecievedEvent.h" />
     <ClInclude Include="resource\ResourceManager.h" />
     <ClInclude Include="scene\Layer.h" />
     <ClInclude Include="scene\ABCDRectangle.h" />
@@ -284,6 +286,8 @@
     <ClCompile Include="objects\GameObjectFactory.cpp" />
     <ClCompile Include="objects\Sprite.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="net\PeerInfo.cpp" />
+    <ClCompile Include="events\PlayerNetworkTrafficRecievedEvent.cpp" />
     <ClCompile Include="resource\ResourceManager.cpp" />
     <ClCompile Include="scene\ABCDRectangle.cpp" />
     <ClCompile Include="scene\Layer.cpp" />

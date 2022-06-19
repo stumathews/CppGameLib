@@ -2,6 +2,8 @@
 #include "Networking.h"
 #include <sstream>
 #include <common/Logger.h>
+#include <sstream>
+#include <string>
 
 namespace gamelib
 {
@@ -36,6 +38,8 @@ namespace gamelib
 			printf("WSAStartup failed: %d\n", iResult);
 			return false;
 		}
+
+		return true;
 	}
 
 	Networking::~Networking()

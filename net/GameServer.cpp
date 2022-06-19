@@ -1,5 +1,8 @@
 #include "GameServer.h"
 #include <events/EventManager.h>
+#include <net/PeerInfo.h>
+#include <events/PlayerNetworkTrafficRecievedEvent.h>
+#include <net/Networking.h>
 namespace gamelib
 {
 	GameServer::GameServer(std::string address, std::string port)
@@ -17,62 +20,95 @@ namespace gamelib
 	}
 	
 	void GameServer::Listen()
-	{
-		// How long to wait for network data ta arrive
-		struct timeval noDataTimeout;
-		noDataTimeout.tv_sec = 0;
-		noDataTimeout.tv_usec = 0; /*1/4 of a second*/ /* 1000000 microseconds in a second, 1000 usecs in a milisecond*/
+	{		
+		const auto maxSockets = 5; // Number of pending connections to have in the queue at any one moment
+		int networkAvailabilityResult = -1; // -1 means is error
 
-		// Add it to the list of file descriptors to listen for readability
+		// Clear the list of sockets that we are listening for/on
 		FD_ZERO(&readfds);
+		
+		// Add it to the list of file descriptors to listen for readability
 		FD_SET(listeningSocket, &readfds);
 
-		const auto maxSockets = 5;
-
-		// Check for data on network sockets within dataAvailableSockets
-		auto result = select(maxSockets, &readfds, NULL, NULL, &noDataTimeout);
-		//auto result = select(maxSockets, &readfds, NULL, NULL, NULL);
-
-		// Evaluate if we got data or we timed out (received none)
-		if (result)
+		// Also listen for any traffic on any of the player's sockets
+		for(auto playerSocket : Players)
 		{
-			struct sockaddr_in peer;
-			int peerlen = sizeof(peer);
+			FD_SET(playerSocket, &readfds);
+		}
 
+		// How long to wait for network data the arrive {0,0} means non-blocking
+		struct timeval noDataTimeout;
+		noDataTimeout.tv_sec = 0;
+		noDataTimeout.tv_usec = 0;		
+
+		// Check monitored sockets for incoming 'readable' data
+		if (networkAvailabilityResult = select(maxSockets, &readfds, NULL, NULL, &noDataTimeout))
+		{
 			// Check to see if the activity was on one of our listening file descriptors
+			
 			// New connection on listening socket?
 			if (FD_ISSET(listeningSocket, &readfds))
 			{
 				// Yes, 
-				int peerlen;
-				struct sockaddr_in peer;
-				peerlen = sizeof(peer);
-
-				// This is blocking, but we've already got the socket so we dont mind
-				SOCKET connected_socket = accept(listeningSocket, (struct sockaddr*)&peer, &peerlen);
-
-				// Store incoming player connections
-				Players.push_back(connected_socket);
+				PeerInfo peerInfo;
+				SOCKET connectedSocket = accept(listeningSocket, (struct sockaddr*)&peerInfo.Address, &peerInfo.Length);
+				if(connectedSocket == INVALID_SOCKET)
+				{
+					// That socket was not right...
+					return;
+				}
+				// Store incoming player sockets so we can listen for incoming player data too
+				Players.push_back(connectedSocket);
 								
+				// Tell someone that a player conencted to the game server
 				EventManager::Get()->RaiseEventWithNoLogging(std::make_shared<gamelib::Event>(gamelib::EventType::NetworkPlayerJoined));
-			}
+			}			
 			else
 			{
-				// Not our socket, timed out or error
-				if(result == SOCKET_ERROR)
+				// No, Must data on another socket...
+
+				// Any of our players sending us data?
+				for(size_t i = 0; i < Players.size(); i++)
 				{
-					int errorCode = WSAGetLastError();
-					wchar_t *s = NULL;
-					FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
-								   NULL, WSAGetLastError(),
-								   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-								   (LPWSTR)&s, 0, NULL);
-					fprintf(stderr, "%S\n", s);
-					LocalFree(s);
-				}
-				if(result == 0)
-				{
-				// Timeout occured
+					// Check player's socket for data availability
+					if(FD_ISSET(Players[i], &readfds))
+					{			
+						// Yes, this player sent us data...						
+
+						// Read the data:
+
+						const int DEFAULT_BUFLEN = 512;
+						char buffer[DEFAULT_BUFLEN];
+						int bufferLength = DEFAULT_BUFLEN;
+						ZeroMemory(buffer, bufferLength);
+
+						// Read off the network, wait for all the data
+						int bytesReceived = recv(Players[i], buffer, bufferLength, 0);
+						
+						if(bytesReceived > 0)
+						{						
+							// We successfully read some data... 
+
+							// Raise event telling interested parties about this event
+							auto event = std::shared_ptr<gamelib::PlayerNetworkTrafficRecievedEvent>(new PlayerNetworkTrafficRecievedEvent(gamelib::EventType::NetworkPlayerTrafficReceived, 0));
+							event->Message = buffer;
+							event->Identifier = std::to_string(i + 1);
+							event->bytesReceived = bytesReceived;
+
+							EventManager::Get()->RaiseEventWithNoLogging(event);
+
+							// TODO: Send this to the other players also
+							for(auto socket : Players)
+							{
+								
+							}
+						}
+						else if(bytesReceived == SOCKET_ERROR && WSAGetLastError() == WSAECONNRESET)
+						{
+							// Connection closed. Remove the socket from those being monitored for incoming traffic
+							Players.erase(begin(Players)+i);
+						}
+					}
 				}
 			}
 		}

@@ -1,5 +1,6 @@
 #include "NetworkManager.h"
 #include <util/SettingsManager.h>
+#include <net/Networking.h>
 
 namespace gamelib
 {
@@ -13,7 +14,6 @@ namespace gamelib
 
 	bool NetworkManager::Initialize()
 	{
-		// Initialize WinSock2
 		Networking::Get()->Initialize();
 		
 		// We are either a game server or we are connecting to one
@@ -22,6 +22,7 @@ namespace gamelib
 		if(isGameServer)
 		{			
 			Server->Initialize();
+			// We also want to connect to ourselves as a client, so that incomming player data is sent to 'all connected' clients
 		}
 		else
 		{
@@ -49,13 +50,25 @@ namespace gamelib
 		
 		Instance = nullptr;
 	}
+	void NetworkManager::PingGameServer() const
+	{
+		if(!isGameServer)
+		{
+			Client->PingGameServer();
+		}
+	}
 
 	NetworkEvent NetworkManager::GetNetworkEvent()
 	{
 		auto networking = Networking::Get();
 		if(isGameServer)
 		{			
+			// Check for any incomming traffic
 			Server->Listen();
+		}else
+		{
+			// Check for any incomming traffic 
+			Client->Listen();
 		}
 
 

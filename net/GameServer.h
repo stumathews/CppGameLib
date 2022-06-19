@@ -1,9 +1,9 @@
 #pragma once
 #include <memory>
-#include "Networking.h"
 #include <string>
 #include <vector>
 #include <common/Logger.h>
+#include <WinSock2.h>
 
 namespace gamelib
 {

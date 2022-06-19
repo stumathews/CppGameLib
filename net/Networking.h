@@ -2,7 +2,7 @@
 
 #ifdef HAVE_WINSOCK2_H 
 
-#include <winsock2.h>
+#include <WinSock2.h>
 #include <Ws2tcpip.h>
 
 struct timezone
@@ -12,7 +12,7 @@ struct timezone
 };
 typedef unsigned int u_int32_t;
 
-#define EMSGSIZE		WSAEMSGSIZE
+//#define EMSGSIZE		WSAEMSGSIZE
 
 #define NETINIT()			do { WSADATA wsaData; WSAStartup(MAKEWORD(2,2), &wsaData); } while(0);
 #define EXIT(s)			do { WSACleanup(); exit( ( s ) ); } \
@@ -72,7 +72,7 @@ namespace gamelib
 	 * \return void 
 	 *
 	 */
-	 void netError( int status, int err, std::string error);
+	 void netError(int status, int err, std::string error);
 
 	/** \brief Read and wait for len bytes on socket
 	 *
@@ -82,7 +82,7 @@ namespace gamelib
 	 * \return int number of bytes read, or -1 on error 
 	 *
 	 */
-	 int netReadn( SOCKET s, char* buf, size_t len );
+	 int netReadn(SOCKET s, char* buf, size_t len );
 
 	/** \brief Read variable records (expects first data read to be size of remaining data)
 	 *
@@ -92,9 +92,9 @@ namespace gamelib
 	 * \return int number of bytes read, or -1 on error 
 	 *
 	 */
-	 int netReadVRec( SOCKET s, char* buf, size_t len );
-	 int netReadcrlf( SOCKET, char *, size_t );
-	 int netReadLine( SOCKET, char *, size_t );
+	 int netReadVRec(SOCKET s, char* buf, size_t len );
+	 int netReadcrlf(SOCKET, char *, size_t );
+	 int netReadLine(SOCKET, char *, size_t );
 
 	/** \brief Set up for tcp server: get tcp socket, bound to hname:sname and returns socket.
 	 *

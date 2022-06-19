@@ -20,7 +20,7 @@ namespace gamelib
 		GameObject,
 		DrawCurrentScene,
 		NetworkPlayerJoined,
-		NetworkPlayerTrafficReceived
+		NetworkTrafficReceived
 	};
 
 	inline const char* ToString(EventType type)
@@ -42,7 +42,7 @@ namespace gamelib
 			case EventType::GameObject: return "GameObject";
 			case EventType::DrawCurrentScene: return "DrawCurrentScene";
 			case EventType::NetworkPlayerJoined: return "NetworkPlayerJoined";
-			case EventType::NetworkPlayerTrafficReceived: return "NetworkPlayerTrafficReceived";
+			case EventType::NetworkTrafficReceived: return "NetworkPlayerTrafficReceived";
 			default:      
 				return "[Unknown EventType]";
 		}

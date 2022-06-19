@@ -2,6 +2,9 @@
 #include "Networking.h"
 #include <sstream>
 #include <net/PeerInfo.h>
+#include <events/NetworkTrafficRecievedEvent.h>
+#include <events/EventManager.h>
+
 namespace gamelib
 {
 	GameClient::~GameClient()
@@ -24,6 +27,11 @@ namespace gamelib
 
 		// Make a connection to the game server.
 		clientSocket = Networking::Get()->netTcpClient(gameServer->address.c_str(), gameServer->port.c_str());
+		
+		if(clientSocket)
+		{
+			this->IsDiconnectedFromGameServer = false;
+		}
 	}
 
 	void GameClient::PingGameServer()
@@ -42,6 +50,11 @@ namespace gamelib
 
 	void GameClient::Listen()
 	{
+		if(this->IsDiconnectedFromGameServer)
+		{
+			return;
+		}
+
 		const auto maxSockets = 5; // Number of pending connections to have in the queue at any one moment
 		int networkAvailabilityResult = -1; // -1 means is error
 
@@ -64,7 +77,34 @@ namespace gamelib
 			// New connection on listening socket?
 			if (FD_ISSET(clientSocket, &readfds))
 			{
-				// Yes, Read some and send the event off to the event mangager for processing
+				const int DEFAULT_BUFLEN = 512;
+				char buffer[DEFAULT_BUFLEN];
+				int bufferLength = DEFAULT_BUFLEN;
+				ZeroMemory(buffer, bufferLength);
+
+				// Read off the network, wait for all the data
+				int bytesReceived = recv(clientSocket, buffer, bufferLength, 0);
+						
+				if(bytesReceived > 0)
+				{						
+					// We successfully read some data... 
+
+					auto event = std::shared_ptr<gamelib::NetworkTrafficRecievedEvent>(new NetworkTrafficRecievedEvent(gamelib::EventType::NetworkTrafficReceived, 0));
+						event->Message = buffer;
+						event->Identifier = "Game Server";
+						event->bytesReceived = bytesReceived;
+
+						EventManager::Get()->RaiseEventWithNoLogging(event);
+
+					// Distribute to EventManager...
+
+					this->IsDiconnectedFromGameServer = false;
+				}
+				else if(bytesReceived == SOCKET_ERROR && WSAGetLastError() == WSAECONNRESET)
+				{
+					// Connection closed. Remove the socket from those being monitored for incoming traffic
+					this->IsDiconnectedFromGameServer = true;
+				}
 			}
 		}
 	}

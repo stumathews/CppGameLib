@@ -27,8 +27,8 @@ namespace gamelib
 		/// The socket the game client will use to communicate with the game server
 		/// </summary>
 		SOCKET clientSocket;
-
 		fd_set readfds;
+		bool IsDiconnectedFromGameServer;
 	};
 }
 

@@ -231,7 +231,10 @@
     <ClInclude Include="net\PeerInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="events\PlayerNetworkTrafficRecievedEvent.h">
+    <ClInclude Include="events\NetworkTrafficRecievedEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="json\json11.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -422,7 +425,10 @@
     <ClCompile Include="net\PeerInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="events\PlayerNetworkTrafficRecievedEvent.cpp">
+    <ClCompile Include="events\NetworkTrafficRecievedEvent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="json\json11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,8 +1,13 @@
 #include "GameServer.h"
 #include <events/EventManager.h>
 #include <net/PeerInfo.h>
-#include <events/PlayerNetworkTrafficRecievedEvent.h>
+#include <events/NetworkTrafficRecievedEvent.h>
 #include <net/Networking.h>
+#include <json/json11.h>
+
+using namespace json11;
+
+
 namespace gamelib
 {
 	GameServer::GameServer(std::string address, std::string port)
@@ -90,18 +95,26 @@ namespace gamelib
 							// We successfully read some data... 
 
 							// Raise event telling interested parties about this event
-							auto event = std::shared_ptr<gamelib::PlayerNetworkTrafficRecievedEvent>(new PlayerNetworkTrafficRecievedEvent(gamelib::EventType::NetworkPlayerTrafficReceived, 0));
+							auto event = std::shared_ptr<gamelib::NetworkTrafficRecievedEvent>(new NetworkTrafficRecievedEvent(gamelib::EventType::NetworkTrafficReceived, 0));
 							event->Message = buffer;
 							event->Identifier = std::to_string(i + 1);
 							event->bytesReceived = bytesReceived;
 
 							EventManager::Get()->RaiseEventWithNoLogging(event);
 
-							// TODO: Send this to the other players also
-							for(auto socket : Players)
-							{
-								
-							}
+							// Write message back to the client
+							Json my_json = Json::object {
+									{ "message", "pong" },
+									{ "isHappy", false },
+									{ "names", Json::array { "Stuart", "Jenny", "bruce" } },
+									{ "ages", Json::array { 1, 2, 3} },
+									{ "fish", Json::object { { "yo", "sushi"}}}
+							};
+
+							std::string json_str = my_json.dump();
+							
+							char pong[] = "Pong!";
+							auto sent = send(Players[i], json_str.c_str(), json_str.length(), 0);
 						}
 						else if(bytesReceived == SOCKET_ERROR && WSAGetLastError() == WSAECONNRESET)
 						{

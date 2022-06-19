@@ -4,6 +4,9 @@
 #include <net/PeerInfo.h>
 #include <events/NetworkTrafficRecievedEvent.h>
 #include <events/EventManager.h>
+#include <json/json11.h>
+
+using namespace json11;
 
 namespace gamelib
 {
@@ -20,9 +23,7 @@ namespace gamelib
 
 	void GameClient::Connect(std::shared_ptr<GameServer> gameServer)
 	{
-		std::stringstream message;
-		message << "Connecting to game server: " << gameServer->address << ":" << gameServer->port;
-
+		std::stringstream message; message << "Connecting to game server: " << gameServer->address << ":" << gameServer->port;
 		Logger::Get()->LogThis(message.str());
 
 		// Make a connection to the game server.
@@ -36,13 +37,13 @@ namespace gamelib
 
 	void GameClient::PingGameServer()
 	{
-		const char ping[] = "Ping!";
-		int sendResult = send(clientSocket, ping, (int) strlen(ping), 0);
+		const char payload[] = "Ping!";
 		
-		// If there was an error sending, shutdown our side and thats that!
+		int sendResult = Networking::Get()->netSendVRec(clientSocket, payload, strlen(payload));
+
 		if (sendResult == SOCKET_ERROR) 
 		{
-			Networking::Get()->netError(0,0, "Ping Game server connect failed");
+			Networking::Get()->netError(0,0, "Ping Game server connect failed. Shutting down client");
 			closesocket(clientSocket);
 			WSACleanup();
 		}
@@ -82,19 +83,42 @@ namespace gamelib
 				int bufferLength = DEFAULT_BUFLEN;
 				ZeroMemory(buffer, bufferLength);
 
-				// Read off the network, wait for all the data
-				int bytesReceived = recv(clientSocket, buffer, bufferLength, 0);
+				// Read the payload off the network, wait for all the data
+				int bytesReceived = Networking::Get()->netReadVRec(clientSocket, buffer, bufferLength);
 						
 				if(bytesReceived > 0)
 				{						
 					// We successfully read some data... 
+					
+					// Parse the payload to find out what kind of message it is (refer to protocol)
+					std::string error;
+					auto json = Json::parse(buffer, error);
+					/*
+					
+					Json my_json = Json::object {
+									{ "message", "pong" },
+									{ "isHappy", false },
+									{ "names", Json::array { "Stuart", "Jenny", "bruce" } },
+									{ "ages", Json::array { 1, 2, 3} },
+									{ "fish", Json::object { { "yo", "sushi"}}}
+							};
+
+					
+					*/
+					
+					auto message = json["message"].string_value();
+					auto jennyAge = json["ages"][1].int_value();
+					auto bruceAge = json["ages"][2].int_value();
+					auto ages = json["ages"].array_items();
+					auto fish = json["fish"].object_items();
 
 					auto event = std::shared_ptr<gamelib::NetworkTrafficRecievedEvent>(new NetworkTrafficRecievedEvent(gamelib::EventType::NetworkTrafficReceived, 0));
-						event->Message = buffer;
-						event->Identifier = "Game Server";
-						event->bytesReceived = bytesReceived;
+					event->Message = buffer;
+					event->Identifier = "Game Server";
+					event->bytesReceived = bytesReceived;
 
-						EventManager::Get()->RaiseEventWithNoLogging(event);
+
+					EventManager::Get()->RaiseEventWithNoLogging(event);
 
 					// Distribute to EventManager...
 
@@ -102,7 +126,7 @@ namespace gamelib
 				}
 				else if(bytesReceived == SOCKET_ERROR && WSAGetLastError() == WSAECONNRESET)
 				{
-					// Connection closed. Remove the socket from those being monitored for incoming traffic
+					// Connection closed. Server died.
 					this->IsDiconnectedFromGameServer = true;
 				}
 			}

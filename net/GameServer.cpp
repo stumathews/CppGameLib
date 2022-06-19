@@ -80,15 +80,18 @@ namespace gamelib
 					{			
 						// Yes, this player sent us data...						
 
-						// Read the data:
+						// Read the data. LIMITATION: We expect no more than 512 bytes of data per message. Changes this is variable amounts later.
+
 
 						const int DEFAULT_BUFLEN = 512;
 						char buffer[DEFAULT_BUFLEN];
 						int bufferLength = DEFAULT_BUFLEN;
 						ZeroMemory(buffer, bufferLength);
 
+						
 						// Read off the network, wait for all the data
-						int bytesReceived = recv(Players[i], buffer, bufferLength, 0);
+						//int bytesReceived = recv(Players[i], buffer, bufferLength, 0);
+						int bytesReceived = Networking::Get()->netReadVRec(Players[i], buffer, bufferLength);
 						
 						if(bytesReceived > 0)
 						{						
@@ -106,15 +109,16 @@ namespace gamelib
 							Json my_json = Json::object {
 									{ "message", "pong" },
 									{ "isHappy", false },
+									{ "eventType", (int) gamelib::EventType::NetworkTrafficReceived },
 									{ "names", Json::array { "Stuart", "Jenny", "bruce" } },
 									{ "ages", Json::array { 1, 2, 3} },
 									{ "fish", Json::object { { "yo", "sushi"}}}
 							};
 
 							std::string json_str = my_json.dump();
-							
-							char pong[] = "Pong!";
-							auto sent = send(Players[i], json_str.c_str(), json_str.length(), 0);
+
+							Networking::Get()->netSendVRec(Players[i], json_str.c_str(), json_str.length());
+
 						}
 						else if(bytesReceived == SOCKET_ERROR && WSAGetLastError() == WSAECONNRESET)
 						{

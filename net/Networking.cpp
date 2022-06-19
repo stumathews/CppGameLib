@@ -91,6 +91,20 @@ namespace gamelib
 		}
 		return len;
 	}
+
+	int Networking::netSendVRec(SOCKET fd, const char* data, int dataLength)
+	{
+		int length = htonl(dataLength);
+
+		// Send length of data
+		send(fd, (char*) &length, sizeof(u_int32_t), 0);
+
+		// Send the data
+		int sendResult = send(fd, data, (int) strlen(data), 0);
+
+		return sendResult;
+	}
+
     int Networking::netReadVRec(SOCKET fd, char* bp, size_t len)
     {
 		u_int32_t reclen;

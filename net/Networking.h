@@ -84,6 +84,8 @@ namespace gamelib
 	 */
 	 int netReadn(SOCKET s, char* buf, size_t len );
 
+	 int netSendVRec(SOCKET fd, const char* data, int dataLength);
+
 	/** \brief Read variable records (expects first data read to be size of remaining data)
 	 *
 	 * \param s SOCKET socket to read data from

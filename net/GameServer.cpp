@@ -13,7 +13,9 @@ namespace gamelib
 	GameServer::GameServer(std::string address, std::string port)
 	{
 		this->address = address;
-		this->port = port;		
+		this->port = port;	
+		this->timeout.tv_sec = 0;
+		this->timeout.tv_usec = 0;
 	}
 
 	void GameServer::Initialize()
@@ -21,115 +23,115 @@ namespace gamelib
 		Logger::Get()->LogThis("Game Server Starting.");
 
 		// Create a new server socket connection
-		listeningSocket = Networking::Get()->netTcpServer(address.c_str(), port.c_str());		
+		listeningSocket = Networking::Get()->netTcpServer(address.c_str(), port.c_str());
 	}
 	
 	void GameServer::Listen()
 	{		
 		const auto maxSockets = 5; // Number of pending connections to have in the queue at any one moment
-		int networkAvailabilityResult = -1; // -1 means is error
-
-		// Clear the list of sockets that we are listening for/on
-		FD_ZERO(&readfds);
 		
-		// Add it to the list of file descriptors to listen for readability
-		FD_SET(listeningSocket, &readfds);
+		FD_ZERO(&readfds); // Clear the list of sockets that we are listening for/on			
+		FD_SET(listeningSocket, &readfds); // Add it to the list of file descriptors to listen for readability
 
 		// Also listen for any traffic on any of the player's sockets
 		for(auto playerSocket : Players)
 		{
 			FD_SET(playerSocket, &readfds);
 		}
-
-		// How long to wait for network data the arrive {0,0} means non-blocking
-		struct timeval noDataTimeout;
-		noDataTimeout.tv_sec = 0;
-		noDataTimeout.tv_usec = 0;		
-
+		
 		// Check monitored sockets for incoming 'readable' data
-		if (networkAvailabilityResult = select(maxSockets, &readfds, NULL, NULL, &noDataTimeout))
+		auto dataIsAvailable = select(maxSockets, &readfds, NULL, NULL, &timeout) > 0; 
+		
+		if (dataIsAvailable)
+		{			
+			CheckForNewPlayers();				
+			CheckForPlayerTraffic();			
+		}
+	}
+
+	void GameServer::CheckForNewPlayers()
+	{
+		// New connection on listening socket?
+		if (FD_ISSET(listeningSocket, &readfds))
 		{
-			// Check to see if the activity was on one of our listening file descriptors
-			
-			// New connection on listening socket?
-			if (FD_ISSET(listeningSocket, &readfds))
-			{
-				// Yes, 
-				PeerInfo peerInfo;
-				SOCKET connectedSocket = accept(listeningSocket, (struct sockaddr*)&peerInfo.Address, &peerInfo.Length);
-				if(connectedSocket == INVALID_SOCKET)
-				{
-					// That socket was not right...
-					return;
-				}
-				// Store incoming player sockets so we can listen for incoming player data too
-				Players.push_back(connectedSocket);
-								
-				// Tell someone that a player conencted to the game server
+			PeerInfo peerInfo;
+			SOCKET connectedSocket = accept(listeningSocket, (struct sockaddr*)&peerInfo.Address, &peerInfo.Length);
+
+			if (connectedSocket != INVALID_SOCKET)
+			{				
+				Players.push_back(connectedSocket); // Store incoming player sockets so we can listen for incoming player data too
 				EventManager::Get()->RaiseEventWithNoLogging(std::make_shared<gamelib::Event>(gamelib::EventType::NetworkPlayerJoined));
-			}			
-			else
+			}
+		}
+	}
+
+	void GameServer::CheckForPlayerTraffic()
+	{
+		for (size_t playerId = 0; playerId < Players.size(); playerId++)
+		{
+			if (FD_ISSET(Players[playerId], &readfds))
 			{
-				// No, Must data on another socket...
+				// Yes, player data is available
+				
+				const int DEFAULT_BUFLEN = 512;
+				char buffer[DEFAULT_BUFLEN];
+				int bufferLength = DEFAULT_BUFLEN;
+				ZeroMemory(buffer, bufferLength);
 
-				// Any of our players sending us data?
-				for(size_t i = 0; i < Players.size(); i++)
+				ZeroMemory(buffer, bufferLength);
+
+				// Read all incoming data
+				int bytesReceived = Networking::Get()->netReadVRec(Players[playerId], buffer, bufferLength);
+
+				if (bytesReceived > 0)
 				{
-					// Check player's socket for data availability
-					if(FD_ISSET(Players[i], &readfds))
-					{			
-						// Yes, this player sent us data...						
+					ParsePayload(playerId);
 
-						// Read the data. LIMITATION: We expect no more than 512 bytes of data per message. Changes this is variable amounts later.
+					RaiseNetworkTrafficReceievedEvent(buffer, playerId, bytesReceived);
 
-
-						const int DEFAULT_BUFLEN = 512;
-						char buffer[DEFAULT_BUFLEN];
-						int bufferLength = DEFAULT_BUFLEN;
-						ZeroMemory(buffer, bufferLength);
-
-						
-						// Read off the network, wait for all the data
-						//int bytesReceived = recv(Players[i], buffer, bufferLength, 0);
-						int bytesReceived = Networking::Get()->netReadVRec(Players[i], buffer, bufferLength);
-						
-						if(bytesReceived > 0)
-						{						
-							// We successfully read some data... 
-
-							// Raise event telling interested parties about this event
-							auto event = std::shared_ptr<gamelib::NetworkTrafficRecievedEvent>(new NetworkTrafficRecievedEvent(gamelib::EventType::NetworkTrafficReceived, 0));
-							event->Message = buffer;
-							event->Identifier = std::to_string(i + 1);
-							event->bytesReceived = bytesReceived;
-
-							EventManager::Get()->RaiseEventWithNoLogging(event);
-
-							// Write message back to the client
-							Json my_json = Json::object {
-									{ "message", "pong" },
-									{ "isHappy", false },
-									{ "eventType", (int) gamelib::EventType::NetworkTrafficReceived },
-									{ "names", Json::array { "Stuart", "Jenny", "bruce" } },
-									{ "ages", Json::array { 1, 2, 3} },
-									{ "fish", Json::object { { "yo", "sushi"}}}
-							};
-
-							std::string json_str = my_json.dump();
-
-							Networking::Get()->netSendVRec(Players[i], json_str.c_str(), json_str.length());
-
-						}
-						else if(bytesReceived == SOCKET_ERROR && WSAGetLastError() == WSAECONNRESET)
-						{
-							// Connection closed. Remove the socket from those being monitored for incoming traffic
-							Players.erase(begin(Players)+i);
-						}
-					}
+				}
+				else if (bytesReceived == SOCKET_ERROR && WSAGetLastError() == WSAECONNRESET)
+				{
+					// Connection closed. Remove the socket from those being monitored for incoming traffic
+					Players.erase(begin(Players) + playerId);
 				}
 			}
 		}
 	}
+
+	void GameServer::ParsePayload(const size_t& playerId)
+	{
+		// TODO: Parse the message, determine what type of message it is and then serialize into an event 
+		// TODO: suitable for adding to the event queue, taking care to label who the event is from and who it is for.
+
+		// Write message back to the client
+		Json payload = Json::object{
+			{ "message", "pong" },
+			{ "isHappy", false },
+			{ "eventType", (int)gamelib::EventType::NetworkTrafficReceived },
+			{ "names", Json::array{ "Stuart", "Jenny", "bruce" } },
+			{ "ages", Json::array{ 1, 2, 3 } },
+			{ "fish", Json::object{ { "yo", "sushi" } } }
+		};
+
+		auto json_str = payload.dump();
+
+		// Send generic reseponse
+		Networking::Get()->netSendVRec(Players[playerId], json_str.c_str(), json_str.length());
+	}
+
+	void GameServer::RaiseNetworkTrafficReceievedEvent(char buffer[512], const size_t& i, int bytesReceived)
+	{
+		// Raise event telling interested parties about this event
+		auto event = std::shared_ptr<gamelib::NetworkTrafficRecievedEvent>(new NetworkTrafficRecievedEvent(gamelib::EventType::NetworkTrafficReceived, 0));
+		event->Message = buffer;
+		event->Identifier = std::to_string(i + 1);
+		event->bytesReceived = bytesReceived;
+
+		EventManager::Get()->RaiseEventWithNoLogging(event);
+	}
+
+	
 	
 
 	GameServer::~GameServer()

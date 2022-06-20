@@ -9,6 +9,7 @@ namespace gamelib
 	{
 	public:
 		~GameClient();
+		GameClient();
 		/// <summary>
 		/// Connect to the game server
 		/// </summary>
@@ -20,6 +21,9 @@ namespace gamelib
 		/// Listen for incomiing traffic from the game server
 		/// </summary>
 		void Listen();
+		void CheckForTraffic();
+		void ParsePayload(char  buffer[512]);
+		void RaiseNetworkTrafficReceivedEvent(char  buffer[512], int bytesReceived);
 	private:
 		std::shared_ptr<GameServer> gameServer;
 
@@ -29,6 +33,8 @@ namespace gamelib
 		SOCKET clientSocket;
 		fd_set readfds;
 		bool IsDiconnectedFromGameServer;
+		struct timeval noDataTimeout;
+		int readBufferLength;
 	};
 }
 

@@ -21,6 +21,22 @@ namespace gamelib
 		/// </summary>
 		void Listen();
 
+		/// <summary>
+		/// Check if there is any data waiting to be ready from any of the connected player sockets
+		/// </summary>
+		void CheckForPlayerTraffic();
+
+		/// <summary>
+		/// Write message back to the client
+		/// </summary>
+		/// <param name="i"></param>
+		void ParsePayload(const size_t& playerId);		
+
+		/// <summary>
+		/// // New connection on main server listening socket?
+		/// </summary>
+		void CheckForNewPlayers();
+
 
 		std::string address;
 		std::string port;
@@ -28,11 +44,19 @@ namespace gamelib
 
 	private:
 
+		void RaiseNetworkTrafficReceievedEvent(char  buffer[512], const size_t& i, int bytesReceived);
+
 		/// <summary>
 		/// A set of file descriptors that are checked for writability
 		/// </summary>
 		fd_set readfds;
 		SOCKET listeningSocket;
+
+		/// <summary>
+		/// // How long to wait for network data the arrive {0,0} means non-blocking
+		/// </summary>
+		struct timeval timeout;
+
 
 	};
 }

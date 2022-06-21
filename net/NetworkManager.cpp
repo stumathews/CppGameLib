@@ -27,6 +27,7 @@ namespace gamelib
 		else
 		{
 			Client = std::shared_ptr<gamelib::GameClient>(new gamelib::GameClient());
+			Client->Initialize();
 			Client->Connect(Server);
 		}
 

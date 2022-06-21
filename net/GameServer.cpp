@@ -4,6 +4,7 @@
 #include <events/NetworkTrafficRecievedEvent.h>
 #include <net/Networking.h>
 #include <json/json11.h>
+#include <events/PlayerMovedEvent.h>
 
 using namespace json11;
 
@@ -24,6 +25,12 @@ namespace gamelib
 
 		// Create a new server socket connection
 		listeningSocket = Networking::Get()->netTcpServer(address.c_str(), port.c_str());
+
+		// Read client nickname
+		this->nickname  = SettingsManager::Get()->GetString("networking", "nickname");
+
+		EventManager::Get()->SubscribeToEvent(gamelib::EventType::PlayerMovedEventType, this);
+		
 	}
 	
 	void GameServer::Listen()
@@ -34,9 +41,12 @@ namespace gamelib
 		FD_SET(listeningSocket, &readfds); // Add it to the list of file descriptors to listen for readability
 
 		// Also listen for any traffic on any of the player's sockets
-		for(auto playerSocket : Players)
+		for(auto player : Players)
 		{
-			FD_SET(playerSocket, &readfds);
+			if(player.IsConnected())
+			{
+				FD_SET(player.GetSocket(), &readfds);
+			}
 		}
 		
 		// Check monitored sockets for incoming 'readable' data
@@ -58,8 +68,17 @@ namespace gamelib
 			SOCKET connectedSocket = accept(listeningSocket, (struct sockaddr*)&peerInfo.Address, &peerInfo.Length);
 
 			if (connectedSocket != INVALID_SOCKET)
-			{				
-				Players.push_back(connectedSocket); // Store incoming player sockets so we can listen for incoming player data too
+			{	
+				// Request player details
+				Json sendPayload = Json::object 
+				{
+					{ "messageType", "requestPlayerDetails" }
+				};
+
+				auto json_str = sendPayload.dump();
+				Networking::Get()->netSendVRec(connectedSocket, json_str.c_str(), json_str.length());
+
+				Players.push_back(NetworkPlayer(connectedSocket)); // Store incoming player sockets so we can listen for incoming player data too
 				EventManager::Get()->RaiseEventWithNoLogging(std::make_shared<gamelib::Event>(gamelib::EventType::NetworkPlayerJoined));
 			}
 		}
@@ -69,7 +88,12 @@ namespace gamelib
 	{
 		for (size_t playerId = 0; playerId < Players.size(); playerId++)
 		{
-			if (FD_ISSET(Players[playerId], &readfds))
+			if(!Players[playerId].IsConnected())
+			{
+				continue;
+			}
+
+			if (FD_ISSET(Players[playerId].GetSocket(), &readfds))
 			{
 				// Yes, player data is available
 				
@@ -81,11 +105,11 @@ namespace gamelib
 				ZeroMemory(buffer, bufferLength);
 
 				// Read all incoming data
-				int bytesReceived = Networking::Get()->netReadVRec(Players[playerId], buffer, bufferLength);
+				int bytesReceived = Networking::Get()->netReadVRec(Players[playerId].GetSocket(), buffer, bufferLength);
 
 				if (bytesReceived > 0)
 				{
-					ParsePayload(playerId);
+					ParseReceivedPlayerPayload(playerId, buffer, bufferLength);
 
 					RaiseNetworkTrafficReceievedEvent(buffer, playerId, bytesReceived);
 
@@ -93,31 +117,96 @@ namespace gamelib
 				else if (bytesReceived == SOCKET_ERROR && WSAGetLastError() == WSAECONNRESET)
 				{
 					// Connection closed. Remove the socket from those being monitored for incoming traffic
-					Players.erase(begin(Players) + playerId);
+					Players[playerId].SetIsConnected(false);
+
+					// Perhaps not shutting down like if a security flaw!
+					// TODO: Consider taking out for thesis
+					auto result = shutdown(Players[playerId].GetSocket(), SD_BOTH);
+					if (result == SOCKET_ERROR) 
+					{
+						printf("shutdown failed: %d\n", WSAGetLastError());
+						closesocket(Players[playerId].GetSocket());
+						WSACleanup();
+		}
 				}
 			}
 		}
 	}
 
-	void GameServer::ParsePayload(const size_t& playerId)
+	void GameServer::ParseReceivedPlayerPayload(const size_t& playerId, char* inPayload, int payloadLength)
 	{
+		if(!Players[playerId].IsConnected())
+		{
+			return;
+		}
+
 		// TODO: Parse the message, determine what type of message it is and then serialize into an event 
 		// TODO: suitable for adding to the event queue, taking care to label who the event is from and who it is for.
 
-		// Write message back to the client
-		Json payload = Json::object{
-			{ "message", "pong" },
-			{ "isHappy", false },
-			{ "eventType", (int)gamelib::EventType::NetworkTrafficReceived },
-			{ "names", Json::array{ "Stuart", "Jenny", "bruce" } },
-			{ "ages", Json::array{ 1, 2, 3 } },
-			{ "fish", Json::object{ { "yo", "sushi" } } }
-		};
+		// Parse the payload to find out what kind of message it is (refer to protocol)
+		std::string error;
+		auto parsedJson = Json::parse(inPayload, error);
 
-		auto json_str = payload.dump();
+		auto messageType = parsedJson["messageType"].string_value();
 
-		// Send generic reseponse
-		Networking::Get()->netSendVRec(Players[playerId], json_str.c_str(), json_str.length());
+		if(messageType == "ping")
+		{		
+
+			/*
+			
+			Json payload = Json::object
+			{
+				{ "messageType", "ping" },
+				{ "isHappy", false },
+				{ "eventType", (int)gamelib::EventType::NetworkTrafficReceived },
+				{ "names", Json::array{ "Stuart", "Jenny", "bruce" } },
+				{ "ages", Json::array{ 1, 2, 3 } },
+				{ "fish", Json::object{ { "yo", "sushi" } } }
+			};
+			
+			*/
+
+			Json sendPayload = Json::object{
+				{ "messageType", "pong" },
+				{ "isHappy", true },
+				{ "eventType", (int)gamelib::EventType::NetworkTrafficReceived },
+				{ "names", Json::array{ "Stuart", "Jenny", "bruce" } },
+				{ "ages", Json::array{ 1, 2, 3 } },
+				{ "fish", Json::object{ { "yo", "sushi" } } }
+			};
+
+			auto json_str = sendPayload.dump();
+			Networking::Get()->netSendVRec(Players[playerId].GetSocket(), json_str.c_str(), json_str.length());
+		}
+		else if(messageType == "requestPlayerDetails")
+		{
+			Players[playerId].SetNickName(parsedJson["Nickname"].string_value());
+		}
+
+		// Tell everyone (including myself) that someone (Player) has told me (GameServer) they moved!
+		// Radiate copies to all players except the player
+		else
+		{
+			const auto& senderNickname = parsedJson["nickname"].string_value();
+
+			// Send this onto our EventManager but targetting the player with the specified nickname 
+			
+			// TODO: Deserialize into Event and put onto EventManager
+
+			// AND
+			// Send it to all the other players but not to the original sender
+			for(auto player : Players)
+			{
+				if(!player.IsConnected() || player.GetNickName() == senderNickname)
+				{
+					continue;
+				}
+
+				auto json_str = parsedJson.dump();
+				Networking::Get()->netSendVRec(Players[playerId].GetSocket(), json_str.c_str(), json_str.length());
+			}
+		}
+
 	}
 
 	void GameServer::RaiseNetworkTrafficReceievedEvent(char buffer[512], const size_t& i, int bytesReceived)
@@ -131,14 +220,52 @@ namespace gamelib
 		EventManager::Get()->RaiseEventWithNoLogging(event);
 	}
 
-	
-	
+	std::vector<std::shared_ptr<Event>> GameServer::HandleEvent(std::shared_ptr<Event> evt)
+	{
+		/* Schedule our events that have occured to be sent to all the connected players */
+		auto createdEvents = std::vector<std::shared_ptr<Event>>();
 
+		switch(evt->type)
+		{
+			case gamelib::EventType::PlayerMovedEventType:
+				// our player moved.
+				auto playerMovedEvent = std::dynamic_pointer_cast<PlayerMovedEvent>(evt);
+				Json payload = Json::object
+				{
+					{ "messageType", ToString(evt->type) },
+					{ "direction", ToString(playerMovedEvent->direction) },
+					{ "nickname", nickname }
+				};
+
+				auto json_str = payload.dump();
+
+				// Duplex the message to all players
+				for(auto player : Players)
+				{
+					if(!player.IsConnected())
+					{
+						continue;
+					}
+					int sendResult = Networking::Get()->netSendVRec(player.GetSocket(), json_str.c_str(), json_str.size());
+				}
+				
+			break;
+		}
+
+		return createdEvents;
+
+	}
+
+	std::string GameServer::GetSubscriberName()
+	{
+		return nickname;
+	}
+		
 	GameServer::~GameServer()
 	{
-		for(auto playerConnection : Players)
+		for(auto player : Players)
 		{			
-			closesocket(playerConnection);
+			closesocket(player.GetSocket());
 			Logger::Get()->LogThis("Closed player connection.");
 		}
 	}

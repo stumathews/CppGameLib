@@ -5,6 +5,7 @@
 #include <events/NetworkTrafficRecievedEvent.h>
 #include <events/EventManager.h>
 #include <json/json11.h>
+#include <events/PlayerMovedEvent.h>
 
 using namespace json11;
 
@@ -18,6 +19,19 @@ namespace gamelib
 		// How long to wait for network data the arrive {0,0} means non-blocking		
 		this->noDataTimeout.tv_sec = 0;
 		this->noDataTimeout.tv_usec = 0;		
+
+		this->clientSocketToGameSever = -1;
+		this->IsDiconnectedFromGameServer = true;
+		this->readfds = {0};
+	}
+
+	void GameClient::Initialize()
+	{
+		// Read client nickname
+		this->nickName  = SettingsManager::Get()->GetString("networking", "nickname");
+
+		// We subscribe to some of our down events and send them to the game server...
+		EventManager::Get()->SubscribeToEvent(gamelib::EventType::PlayerMovedEventType, this);
 	}
 
 	void GameClient::Connect(std::shared_ptr<GameServer> gameServer)
@@ -26,26 +40,13 @@ namespace gamelib
 		Logger::Get()->LogThis(message.str());
 
 		// Make a connection to the game server.
-		clientSocket = Networking::Get()->netTcpClient(gameServer->address.c_str(), gameServer->port.c_str());
-		
-		if(clientSocket)
+		clientSocketToGameSever = Networking::Get()->netTcpClient(gameServer->address.c_str(), gameServer->port.c_str());			
+						
+		if(clientSocketToGameSever)
 		{
 			this->IsDiconnectedFromGameServer = false;
 		}
-	}
-
-	void GameClient::PingGameServer()
-	{
-		const char payload[] = "Ping!";		
-		int sendResult = Networking::Get()->netSendVRec(clientSocket, payload, strlen(payload));
-
-		if (sendResult == SOCKET_ERROR) 
-		{
-			Networking::Get()->netError(0,0, "Ping Game server connect failed. Shutting down client");
-			closesocket(clientSocket);
-			WSACleanup();
-		}
-	}
+	}	
 
 	void GameClient::Listen()
 	{
@@ -60,7 +61,7 @@ namespace gamelib
 		FD_ZERO(&readfds);
 		
 		// Add it to the list of file descriptors to listen for readability
-		FD_SET(clientSocket, &readfds);
+		FD_SET(clientSocketToGameSever, &readfds);
 				
 		// Check monitored sockets for incoming 'readable' data
 		auto dataIsAvailable = select(maxSockets, &readfds, NULL, NULL, &noDataTimeout) > 0;
@@ -74,7 +75,7 @@ namespace gamelib
 	void GameClient::CheckForTraffic()
 	{
 		// New connection on listening socket?
-		if (FD_ISSET(clientSocket, &readfds))
+		if (FD_ISSET(clientSocketToGameSever, &readfds))
 		{
 			const int DEFAULT_BUFLEN = 512;
 			char readBuffer[DEFAULT_BUFLEN];
@@ -82,13 +83,13 @@ namespace gamelib
 			ZeroMemory(readBuffer, bufferLength);
 
 			// Read the payload off the network, wait for all the data
-			int bytesReceived = Networking::Get()->netReadVRec(clientSocket, readBuffer, bufferLength);
+			int bytesReceived = Networking::Get()->netReadVRec(clientSocketToGameSever, readBuffer, bufferLength);
 
 			if (bytesReceived > 0)
 			{
 				// We successfully read some data... 
 
-				ParsePayload(readBuffer);
+				ParseReceivedPayload(readBuffer);
 
 				RaiseNetworkTrafficReceivedEvent(readBuffer, bytesReceived);
 
@@ -102,29 +103,66 @@ namespace gamelib
 		}
 	}
 
-	void GameClient::ParsePayload(char  buffer[512])
+	void GameClient::ParseReceivedPayload(char buffer[512])
 	{
 		// Parse the payload to find out what kind of message it is (refer to protocol)
 		std::string error;
-		auto json = Json::parse(buffer, error);
-		/*
+		auto payload = Json::parse(buffer, error);
+		auto messageType = payload["messageType"].string_value();		
 
-		Json my_json = Json::object {
-		{ "message", "pong" },
-		{ "isHappy", false },
-		{ "names", Json::array { "Stuart", "Jenny", "bruce" } },
-		{ "ages", Json::array { 1, 2, 3} },
-		{ "fish", Json::object { { "yo", "sushi"}}}
-		};
+		if(messageType == "pong")
+		{
+			/*
+			
+			Json sendPayload = Json::object
+			{
+				{ "messageType", "pong" },
+				{ "isHappy", true },
+				{ "eventType", (int)gamelib::EventType::NetworkTrafficReceived },
+				{ "names", Json::array{ "Stuart", "Jenny", "bruce" } },
+				{ "ages", Json::array{ 1, 2, 3 } },
+				{ "fish", Json::object{ { "yo", "sushi" } } }
+			};
 
+			*/
+			auto jennyAge = payload["ages"][1].int_value();
+			auto bruceAge = payload["ages"][2].int_value();
+			const auto& ages = payload["ages"].array_items();
+			const auto& fish = payload["fish"].object_items();
+		}
 
-		*/
+		if(messageType == "requestPlayerDetails")
+		{
+			/*
+			
+			Json sendPayload = Json::object 
+			{
+				{ "messageType", "requestPlayerDetails" }
+			};
+			
+			*/
 
-		auto message = json["message"].string_value();
-		auto jennyAge = json["ages"][1].int_value();
-		auto bruceAge = json["ages"][2].int_value();
-		auto ages = json["ages"].array_items();
-		auto fish = json["fish"].object_items();
+			Json payload = Json::object
+			{
+				{ "messageType", "requestPlayerDetails" },
+				{ "Nickname", nickName}
+			};
+
+			auto json_str = payload.dump();
+
+			int sendResult = Networking::Get()->netSendVRec(clientSocketToGameSever, json_str.c_str(), json_str.size());
+		}
+
+		// The Game server is telling us Someone (Player) has moved 
+		if(messageType == ToString(gamelib::EventType::PlayerMovedEventType))
+		{
+			auto messageType = payload["messageType"].string_value();
+			const auto& direction = payload["direction"].string_value();
+			const auto& nickname = payload["nickname"].string_value();
+
+			// Send this onto our EventManager but targetting the player with the specified nickname
+			// TODO: Deserialize into Event and put onto EventManager
+		}
 	}
 
 	void GameClient::RaiseNetworkTrafficReceivedEvent(char  buffer[512], int bytesReceived)
@@ -134,17 +172,73 @@ namespace gamelib
 		event->Identifier = "Game Server";
 		event->bytesReceived = bytesReceived;
 
-
 		EventManager::Get()->RaiseEventWithNoLogging(event);
+	}
+
+	std::vector<std::shared_ptr<Event>> GameClient::HandleEvent(std::shared_ptr<Event> evt)
+	{
+		/* Schedule our events that have occured to be sent to the Game server */
+		auto createdEvents = std::vector<std::shared_ptr<Event>>();
+
+		switch(evt->type)
+		{
+			case gamelib::EventType::PlayerMovedEventType:
+				// Our player moved. Tell the game server
+				
+				auto playerMovedEvent = std::dynamic_pointer_cast<PlayerMovedEvent>(evt);
+				
+				Json payload = Json::object
+				{
+					{ "messageType", ToString(evt->type) },
+					{ "direction", ToString(playerMovedEvent->direction) },
+					{ "nickname", nickName }
+				};
+
+				auto json_str = payload.dump();
+
+				int sendResult = Networking::Get()->netSendVRec(clientSocketToGameSever, json_str.c_str(), json_str.size());
+				
+			break;
+		}
+
+		return createdEvents;
+	}
+
+	std::string GameClient::GetSubscriberName()
+	{
+		return nickName;
+	}
+
+	void GameClient::PingGameServer()
+	{
+		Json payload = Json::object{
+			{ "messageType", "ping" },
+			{ "isHappy", false },
+			{ "eventType", (int)gamelib::EventType::NetworkTrafficReceived },
+			{ "names", Json::array{ "Stuart", "Jenny", "bruce" } },
+			{ "ages", Json::array{ 1, 2, 3 } },
+			{ "fish", Json::object{ { "yo", "sushi" } } }
+		};
+
+		auto json_str = payload.dump();
+
+		int sendResult = Networking::Get()->netSendVRec(clientSocketToGameSever, json_str.c_str(), json_str.size());
+
+		if (sendResult == SOCKET_ERROR) 
+		{
+			Networking::Get()->netError(0,0, "Ping Game server connect failed. Shutting down client");
+			closesocket(clientSocketToGameSever);
+			WSACleanup();
+		}
 	}
 
 	GameClient::~GameClient()
 	{
-		auto result = shutdown(clientSocket, SD_SEND);
+		auto result = shutdown(clientSocketToGameSever, SD_SEND);
 		if (result == SOCKET_ERROR) 
 		{
 			printf("shutdown failed: %d\n", WSAGetLastError());
-			closesocket(clientSocket);
+			closesocket(clientSocketToGameSever);
 			WSACleanup();
 		}
 	}

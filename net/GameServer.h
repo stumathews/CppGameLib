@@ -4,10 +4,12 @@
 #include <vector>
 #include <common/Logger.h>
 #include <WinSock2.h>
+#include <net/NetworkPlayer.h>
+#include <events/EventSubscriber.h>
 
 namespace gamelib
 {
-	class GameServer
+	class GameServer : public gamelib::EventSubscriber
 	{
 	public:
 		GameServer(std::string address, std::string port);
@@ -30,7 +32,7 @@ namespace gamelib
 		/// Write message back to the client
 		/// </summary>
 		/// <param name="i"></param>
-		void ParsePayload(const size_t& playerId);		
+		void ParseReceivedPlayerPayload(const size_t& playerId, char* payload, int playloadLength);		
 
 		/// <summary>
 		/// // New connection on main server listening socket?
@@ -40,7 +42,7 @@ namespace gamelib
 
 		std::string address;
 		std::string port;
-		std::vector<SOCKET> Players;
+		std::vector<gamelib::NetworkPlayer> Players;
 
 	private:
 
@@ -57,6 +59,15 @@ namespace gamelib
 		/// </summary>
 		struct timeval timeout;
 
+		/// <summary>
+		/// NIck name of this machine
+		/// </summary>
+		std::string nickname;
+
+		// Inherited via EventSubscriber
+		virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt) override;
+
+		virtual std::string GetSubscriberName() override;
 
 	};
 }

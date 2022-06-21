@@ -2,14 +2,16 @@
 #include "GameServer.h"
 #include <common/Logger.h>
 #include <WinSock2.h>
+#include <events/EventSubscriber.h>
 
 namespace gamelib
 {
-	class GameClient
+	class GameClient : public gamelib::EventSubscriber
 	{
 	public:
 		~GameClient();
 		GameClient();
+		void Initialize();
 		/// <summary>
 		/// Connect to the game server
 		/// </summary>
@@ -22,7 +24,7 @@ namespace gamelib
 		/// </summary>
 		void Listen();
 		void CheckForTraffic();
-		void ParsePayload(char  buffer[512]);
+		void ParseReceivedPayload(char  buffer[512]);
 		void RaiseNetworkTrafficReceivedEvent(char  buffer[512], int bytesReceived);
 	private:
 		std::shared_ptr<GameServer> gameServer;
@@ -30,11 +32,16 @@ namespace gamelib
 		/// <summary>
 		/// The socket the game client will use to communicate with the game server
 		/// </summary>
-		SOCKET clientSocket;
+		SOCKET clientSocketToGameSever;
 		fd_set readfds;
 		bool IsDiconnectedFromGameServer;
 		struct timeval noDataTimeout;
 		int readBufferLength;
+		std::string nickName;
+
+		// Inherited via EventSubscriber
+		virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt) override;
+		virtual std::string GetSubscriberName() override;
 	};
 }
 

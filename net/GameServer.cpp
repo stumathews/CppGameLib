@@ -140,13 +140,8 @@ namespace gamelib
 			return;
 		}
 
-		// TODO: Parse the message, determine what type of message it is and then serialize into an event 
-		// TODO: suitable for adding to the event queue, taking care to label who the event is from and who it is for.
-
-		// Parse the payload to find out what kind of message it is (refer to protocol)
 		std::string error;
 		auto parsedJson = Json::parse(inPayload, error);
-
 		auto messageType = parsedJson["messageType"].string_value();
 
 		if(messageType == "ping")
@@ -166,6 +161,8 @@ namespace gamelib
 			
 			*/
 
+			// Send a pong message back
+
 			Json sendPayload = Json::object{
 				{ "messageType", "pong" },
 				{ "isHappy", true },
@@ -180,33 +177,33 @@ namespace gamelib
 		}
 		else if(messageType == "requestPlayerDetails")
 		{
+			// Record the players nickname
 			Players[playerId].SetNickName(parsedJson["Nickname"].string_value());
-		}
-
-		// Tell everyone (including myself) that someone (Player) has told me (GameServer) they moved!
-		// Radiate copies to all players except the player
+		}		
 		else
-		{
+		{	
+			// Radiate all other incoming game server traffic to other players
 			const auto& senderNickname = parsedJson["nickname"].string_value();
+			auto serializedMessage = parsedJson.dump();
+									
+			SendToConnectedPlayersExceptToSender(senderNickname, serializedMessage, playerId);
 
-			// Send this onto our EventManager but targetting the player with the specified nickname 
-			
-			// TODO: Deserialize into Event and put onto EventManager
-
-			// AND
-			// Send it to all the other players but not to the original sender
-			for(auto player : Players)
-			{
-				if(!player.IsConnected() || player.GetNickName() == senderNickname)
-				{
-					continue;
-				}
-
-				auto json_str = parsedJson.dump();
-				Networking::Get()->netSendVRec(Players[playerId].GetSocket(), json_str.c_str(), json_str.length());
-			}
+			// TODO: Send this onto our own EventManager but targetting the player with the specified nickname 
 		}
 
+	}
+
+	void GameServer::SendToConnectedPlayersExceptToSender(const std::string& senderNickname, std::string serializedMessage, const size_t& playerId)
+	{
+		for (auto player : Players)
+		{
+			if (!player.IsConnected() || player.GetNickName() == senderNickname)
+			{
+				continue;
+			}
+
+			Networking::Get()->netSendVRec(Players[playerId].GetSocket(), serializedMessage.c_str(), serializedMessage.length());
+		}
 	}
 
 	void GameServer::RaiseNetworkTrafficReceievedEvent(char buffer[512], const size_t& i, int bytesReceived)
@@ -222,13 +219,14 @@ namespace gamelib
 
 	std::vector<std::shared_ptr<Event>> GameServer::HandleEvent(std::shared_ptr<Event> evt)
 	{
-		/* Schedule our events that have occured to be sent to all the connected players */
+		/* Schedule our (GameServer) player events to be sent to all the connected players */
 		auto createdEvents = std::vector<std::shared_ptr<Event>>();
 
 		switch(evt->type)
 		{
 			case gamelib::EventType::PlayerMovedEventType:
-				// our player moved.
+
+				// Our player moved. Tell the other players.
 				auto playerMovedEvent = std::dynamic_pointer_cast<PlayerMovedEvent>(evt);
 				Json payload = Json::object
 				{
@@ -237,17 +235,11 @@ namespace gamelib
 					{ "nickname", nickname }
 				};
 
-				auto json_str = payload.dump();
+				// Serialize
+				auto serializedEvent = payload.dump();
 
-				// Duplex the message to all players
-				for(auto player : Players)
-				{
-					if(!player.IsConnected())
-					{
-						continue;
-					}
-					int sendResult = Networking::Get()->netSendVRec(player.GetSocket(), json_str.c_str(), json_str.size());
-				}
+				// Radiate duplicate serialized event to all connected players
+				SendToConnectedPlayers(serializedEvent);
 				
 			break;
 		}
@@ -256,9 +248,21 @@ namespace gamelib
 
 	}
 
+	void GameServer::SendToConnectedPlayers(std::string& serializedEvent)
+	{
+		for (auto player : Players)
+		{
+			if (!player.IsConnected())
+			{
+				continue;
+			}
+			int sendResult = Networking::Get()->netSendVRec(player.GetSocket(), serializedEvent.c_str(), serializedEvent.size());
+		}
+	}
+
 	std::string GameServer::GetSubscriberName()
 	{
-		return nickname;
+		return "Game Server";
 	}
 		
 	GameServer::~GameServer()

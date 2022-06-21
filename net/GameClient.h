@@ -24,7 +24,7 @@ namespace gamelib
 		/// </summary>
 		void Listen();
 		void CheckForTraffic();
-		void ParseReceivedPayload(char  buffer[512]);
+		void ParseReceivedServerPayload(char  buffer[512]);
 		void RaiseNetworkTrafficReceivedEvent(char  buffer[512], int bytesReceived);
 	private:
 		std::shared_ptr<GameServer> gameServer;

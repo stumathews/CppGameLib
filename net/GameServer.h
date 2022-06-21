@@ -32,7 +32,10 @@ namespace gamelib
 		/// Write message back to the client
 		/// </summary>
 		/// <param name="i"></param>
-		void ParseReceivedPlayerPayload(const size_t& playerId, char* payload, int playloadLength);		
+		void ParseReceivedPlayerPayload(const size_t& playerId, char* payload, int playloadLength);
+
+
+		void SendToConnectedPlayersExceptToSender(const std::string& senderNickname, std::string serializedMessage, const size_t& playerId);
 
 		/// <summary>
 		/// // New connection on main server listening socket?
@@ -66,6 +69,12 @@ namespace gamelib
 
 		// Inherited via EventSubscriber
 		virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt) override;
+
+		/// <summary>
+		/// Radiate duplicate serialized event to all connected players
+		/// </summary>
+		/// <param name="serializedEvent"></param>
+		void SendToConnectedPlayers(std::string& serializedEvent);
 
 		virtual std::string GetSubscriberName() override;
 

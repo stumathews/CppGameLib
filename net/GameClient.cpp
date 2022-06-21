@@ -89,7 +89,7 @@ namespace gamelib
 			{
 				// We successfully read some data... 
 
-				ParseReceivedPayload(readBuffer);
+				ParseReceivedServerPayload(readBuffer);
 
 				RaiseNetworkTrafficReceivedEvent(readBuffer, bytesReceived);
 
@@ -103,7 +103,7 @@ namespace gamelib
 		}
 	}
 
-	void GameClient::ParseReceivedPayload(char buffer[512])
+	void GameClient::ParseReceivedServerPayload(char buffer[512])
 	{
 		// Parse the payload to find out what kind of message it is (refer to protocol)
 		std::string error;
@@ -129,6 +129,8 @@ namespace gamelib
 			auto bruceAge = payload["ages"][2].int_value();
 			const auto& ages = payload["ages"].array_items();
 			const auto& fish = payload["fish"].object_items();
+
+			//Do nothing. Dont respond to pong messages...
 		}
 
 		if(messageType == "requestPlayerDetails")
@@ -141,6 +143,8 @@ namespace gamelib
 			};
 			
 			*/
+
+			// Send our Nick to the server
 
 			Json payload = Json::object
 			{
@@ -206,7 +210,7 @@ namespace gamelib
 
 	std::string GameClient::GetSubscriberName()
 	{
-		return nickName;
+		return "Game Client";
 	}
 
 	void GameClient::PingGameServer()

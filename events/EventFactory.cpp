@@ -33,21 +33,6 @@ namespace gamelib
 		Instance = nullptr;
 	}
 
-	std::string EventFactory::Serialize(std::shared_ptr<Event> event, std::string target)
-	{
-		if(event->type ==  EventType::PlayerMovedEventType)
-		{
-				auto playerMovedEvent = std::dynamic_pointer_cast<PlayerMovedEvent>(event);
-				return eventSerializationManager->SerializePlayerMovedEvent(playerMovedEvent, target);
-		}
-		else
-		{
-			THROW(0, "Cannot serialized event", "EventFactory");
-			
-		}
-	}
-
-
 	std::shared_ptr<PlayerMovedEvent> EventFactory::CreatePlayerMovedEvent(gamelib::Direction direction, std::string target)
 	{
 		return std::shared_ptr<PlayerMovedEvent>(new PlayerMovedEvent(direction));

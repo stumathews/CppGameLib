@@ -8,8 +8,14 @@
 #include <events/EventSubscriber.h>
 #include <net/MessageHeader.h>
 
+
 namespace gamelib
 {
+	class SerializationManager;
+	class EventManager;
+	class Networking;
+	class EventFactory;
+
 	class GameServer : public gamelib::EventSubscriber
 	{
 	public:
@@ -43,7 +49,7 @@ namespace gamelib
 		void SendToConnectedPlayersExceptToSender(const std::string& senderNickname, std::string serializedMessage, const size_t& playerId);
 
 		/// <summary>
-		/// // New connection on main server listening socket?
+		/// New connection on main server listening socket?
 		/// </summary>
 		void CheckForNewPlayers();
 
@@ -82,6 +88,11 @@ namespace gamelib
 		void SendEventToAllConnectedPlayers(std::string serializedEvent);
 
 		virtual std::string GetSubscriberName() override;
+
+		SerializationManager* serializationManager;
+		EventManager* eventManager;
+		Networking* networking;
+		EventFactory* eventFactory;
 
 	};
 }

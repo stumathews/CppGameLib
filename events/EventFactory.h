@@ -23,15 +23,12 @@ namespace gamelib
 		EventFactory(EventFactory const&) = delete;
 	
 		~EventFactory();
-
-		std::string Serialize(std::shared_ptr<Event> event, std::string target);
 		
 		// Cannot assign to an EventFactory
 		void operator=(EventFactory const&) = delete;
 
 		std::shared_ptr<PlayerMovedEvent> CreatePlayerMovedEvent(gamelib::Direction direction, std::string target);
 		std::shared_ptr<PlayerMovedEvent> CreatePlayerMovedEvent(std::string serializedMessage);
-		std::string SerializePlayerMovedEvent(std::shared_ptr<PlayerMovedEvent> event, std::string target);
 
 		std::shared_ptr<NetworkTrafficRecievedEvent> CreateNetworkTrafficReceivedEvent(std::string message, std::string identifier, int bytesReceived);
 	};

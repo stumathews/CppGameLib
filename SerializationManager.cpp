@@ -4,6 +4,8 @@
 #include <net/MessageHeader.h>
 #include <events/Event.h>
 #include <json/JsonEventSerializationManager.h>
+#include <events/ControllerMoveEvent.h>
+#include <events/PlayerMovedEvent.h>
 
 using namespace json11;
 
@@ -43,14 +45,14 @@ namespace gamelib
 		return header;
 	}
 
-	std::shared_ptr<Event> SerializationManager::DeserializeToEvent(MessageHeader messageHeader, std::string serializedMessage)
+	std::shared_ptr<Event> SerializationManager::Deserialize(MessageHeader messageHeader, std::string serializedMessage)
 	{
 		std::shared_ptr<Event> event = nullptr;
 
 		switch(FromString(messageHeader.MessageType))
 		{
 		case EventType::PlayerMovedEventType:
-			return eventSerialization->DeserializePlayerMovedEvent(serializedMessage);
+			return std::dynamic_pointer_cast<Event>(eventSerialization->DeserializePlayerMovedEvent(serializedMessage));
 			break;
 		}
 		
@@ -63,20 +65,35 @@ namespace gamelib
 		return eventSerialization->SerializePlayerMovedEvent(playerMovedEvent, target);
 	}
 
-	std::string SerializationManager::CreateEventMessage(std::shared_ptr<Event> evt, std::string target)
+	std::string SerializationManager::CreateControllerMoveEventMessage(std::shared_ptr<Event> evt, std::string target)
+	{
+		auto controllerMoveEvent = std::dynamic_pointer_cast<ControllerMoveEvent>(evt);
+		return eventSerialization->SerializeControllerMoveEvent(controllerMoveEvent, target);
+	}
+	
+	std::string SerializationManager::Serialize(std::shared_ptr<Event> evt, std::string target)
 	{
 		switch(evt->type)
 		{
 			case gamelib::EventType::PlayerMovedEventType:
-				// Our player moved. Tell the game server
-
-				return CreatePlayerMovedEventMessage(evt, target);;
-				
+				return CreatePlayerMovedEventMessage(evt, target);
 			break;
+			case gamelib::EventType::ControllerMoveEvent:
+				return CreateControllerMoveEventMessage(evt, target);
+				break;
+			default:
+				return CreateUnknownEventMessage(evt, target);
 		}
 
 		return std::string();
 		
+	}
+
+
+
+	std::string SerializationManager::CreateUnknownEventMessage(std::shared_ptr<Event> evt, std::string target)
+	{
+		return eventSerialization->CreateUnknownEventMessage(evt, target);
 	}
 
 	std::string SerializationManager::CreateRequestPlayerDetailsMessage()
@@ -86,15 +103,6 @@ namespace gamelib
 
 	std::string SerializationManager::CreateRequestPlayerDetailsMessageResponse(std::string target)
 	{
-		/*
-			
-		Json sendPayload = Json::object 
-		{
-			{ "messageType", "requestPlayerDetails" }
-		};
-			
-		*/
-
 		// Send our Nick to the server
 
 		Json payload = Json::object
@@ -110,6 +118,11 @@ namespace gamelib
 	std::string SerializationManager::CreatePongMessage()
 	{
 		return eventSerialization->CreatePongMessage();
+	}
+
+	std::string SerializationManager::CreatePingMessage()
+	{
+		return eventSerialization->CreatePingMessage();
 	}
 
 	bool SerializationManager::Initialize()

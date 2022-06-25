@@ -8,6 +8,7 @@ namespace gamelib
 {
 	enum class EventType
 	{
+		Unknown,
 		ControllerMoveEvent,
 		LevelChangedEventType,
 		DoLogicUpdateEventType,
@@ -45,6 +46,7 @@ namespace gamelib
 			case EventType::DrawCurrentScene: return "DrawCurrentScene";
 			case EventType::NetworkPlayerJoined: return "NetworkPlayerJoined";
 			case EventType::NetworkTrafficReceived: return "NetworkPlayerTrafficReceived";
+			case EventType::Unknown: return "Unknown";
 			default:      
 				return "[Unknown EventType]";
 		}
@@ -118,9 +120,7 @@ namespace gamelib
 		}
 		else
 		{
-			std::stringstream message;
-			message << "Unknown Event Type " << eventType;
-			THROW(0,message.str(), "Event");
+			return EventType::Unknown;
 		}
 	}
 

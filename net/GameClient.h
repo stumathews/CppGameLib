@@ -8,6 +8,8 @@
 namespace gamelib
 {
 	class EventManager;
+	class Networking;
+	class EventFactory;
 	class SerializationManager;
 	class GameClient : public gamelib::EventSubscriber
 	{
@@ -45,6 +47,8 @@ namespace gamelib
 		std::string nickName;
 		EventManager* eventManager;
 		SerializationManager* serializationManager;
+		Networking* networking;
+		EventFactory* eventFactory;
 
 		// Inherited via EventSubscriber
 		virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt) override;

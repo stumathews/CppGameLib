@@ -20,6 +20,10 @@ namespace gamelib
 		this->port = port;	
 		this->timeout.tv_sec = 0;
 		this->timeout.tv_usec = 0;
+		this->serializationManager = nullptr;
+		this->eventManager = nullptr;
+		this->networking = nullptr;
+		this->eventFactory = nullptr;
 	}
 
 	void GameServer::Initialize()
@@ -32,7 +36,15 @@ namespace gamelib
 		// Read client nickname
 		this->nickname  = SettingsManager::Get()->GetString("networking", "nickname");
 
-		EventManager::Get()->SubscribeToEvent(gamelib::EventType::PlayerMovedEventType, this);
+		this->serializationManager = SerializationManager::Get();
+		this->eventManager = EventManager::Get();
+		this->networking = Networking::Get();
+		this->eventFactory = EventFactory::Get();
+
+		// Send our events off on the network
+		eventManager->SubscribeToEvent(EventType::PlayerMovedEventType, this);
+		eventManager->SubscribeToEvent(EventType::ControllerMoveEvent, this);
+		eventManager->SubscribeToEvent(EventType::Fire, this);
 		
 	}
 	
@@ -64,7 +76,6 @@ namespace gamelib
 
 	void GameServer::CheckForNewPlayers()
 	{
-		// New connection on listening socket?
 		if (FD_ISSET(listeningSocket, &readfds))
 		{
 			PeerInfo peerInfo;
@@ -72,11 +83,12 @@ namespace gamelib
 
 			if (connectedSocket != INVALID_SOCKET)
 			{					
-				auto requestPlayerDetailsMessage = SerializationManager::Get()->CreateRequestPlayerDetailsMessage();
-				Networking::Get()->netSendVRec(connectedSocket, requestPlayerDetailsMessage.c_str(), requestPlayerDetailsMessage.length());
+				auto requestPlayerDetailsMessage = serializationManager->CreateRequestPlayerDetailsMessage();
+				networking->netSendVRec(connectedSocket, requestPlayerDetailsMessage.c_str(), requestPlayerDetailsMessage.length());
 
 				Players.push_back(NetworkPlayer(connectedSocket)); // Store incoming player sockets so we can listen for incoming player data too
-				EventManager::Get()->RaiseEventWithNoLogging(std::make_shared<gamelib::Event>(gamelib::EventType::NetworkPlayerJoined));
+				
+				eventManager->RaiseEventWithNoLogging(std::make_shared<gamelib::Event>(gamelib::EventType::NetworkPlayerJoined));
 			}
 		}
 	}
@@ -102,7 +114,7 @@ namespace gamelib
 				ZeroMemory(buffer, bufferLength);
 
 				// Read all incoming data
-				int bytesReceived = Networking::Get()->netReadVRec(Players[playerId].GetSocket(), buffer, bufferLength);
+				int bytesReceived = networking->netReadVRec(Players[playerId].GetSocket(), buffer, bufferLength);
 
 				if (bytesReceived > 0)
 				{
@@ -135,10 +147,8 @@ namespace gamelib
 			return;
 		}
 
-		auto msgHeader = SerializationManager::Get()->GetMessageHeader(inPayload);
+		auto msgHeader = serializationManager->GetMessageHeader(inPayload);
 		auto messageType = msgHeader.MessageType;
-		auto serializationManager = SerializationManager::Get();
-		auto eventManager = EventManager::Get();
 
 		if(messageType == "ping")
 		{	
@@ -154,7 +164,7 @@ namespace gamelib
 			SendToConnectedPlayersExceptToSender(msgHeader.MessageTarget, inPayload, playerId);
 
 			// Send to ourself
-			auto event = serializationManager->DeserializeToEvent(msgHeader, inPayload);
+			auto event = serializationManager->Deserialize(msgHeader, inPayload);
 			if(event)
 			{
 				eventManager->DispatchEventToSubscriber(event, msgHeader.MessageTarget);
@@ -171,22 +181,8 @@ namespace gamelib
 
 	void GameServer::ProcessPingMessage(const size_t& playerId)
 	{
-		/*
-
-		Json payload = Json::object
-		{
-		{ "messageType", "ping" },
-		{ "isHappy", false },
-		{ "eventType", (int)gamelib::EventType::NetworkTrafficReceived },
-		{ "names", Json::array{ "Stuart", "Jenny", "bruce" } },
-		{ "ages", Json::array{ 1, 2, 3 } },
-		{ "fish", Json::object{ { "yo", "sushi" } } }
-		};
-
-		*/
-
-		auto data = SerializationManager::Get()->CreatePongMessage();
-		Networking::Get()->netSendVRec(Players[playerId].GetSocket(), data.c_str(), data.length());
+		auto data = serializationManager->CreatePongMessage();
+		networking->netSendVRec(Players[playerId].GetSocket(), data.c_str(), data.length());
 	}
 
 	void GameServer::SendToConnectedPlayersExceptToSender(const std::string& senderNickname, std::string serializedMessage, const size_t& playerId)
@@ -198,27 +194,22 @@ namespace gamelib
 				continue;
 			}
 
-			Networking::Get()->netSendVRec(Players[playerId].GetSocket(), serializedMessage.c_str(), serializedMessage.length());
+			networking->netSendVRec(Players[playerId].GetSocket(), serializedMessage.c_str(), serializedMessage.length());
 		}
 	}
 
 	void GameServer::RaiseNetworkTrafficReceievedEvent(char buffer[512], const size_t& i, int bytesReceived)
 	{
-		// Raise event telling interested parties about this event
-		auto event = std::shared_ptr<gamelib::NetworkTrafficRecievedEvent>(new NetworkTrafficRecievedEvent(gamelib::EventType::NetworkTrafficReceived, 0));
-		event->Message = buffer;
-		event->Identifier = std::to_string(i + 1);
-		event->bytesReceived = bytesReceived;
+		auto event = eventFactory->CreateNetworkTrafficReceivedEvent(buffer, std::to_string(i + 1), bytesReceived);
 
-		EventManager::Get()->RaiseEventWithNoLogging(event);
+		eventManager->RaiseEventWithNoLogging(event);
 	}
 
 	std::vector<std::shared_ptr<Event>> GameServer::HandleEvent(std::shared_ptr<Event> evt)
-	{
-		SendEventToAllConnectedPlayers(EventFactory::Get()->Serialize(evt, nickname));
+	{				
+		SendEventToAllConnectedPlayers(serializationManager->Serialize(evt, nickname)); 
 
-		auto noCreatedEvents = std::vector<std::shared_ptr<Event>>();
-		return noCreatedEvents;
+		return std::vector<std::shared_ptr<Event>>();
 	}
 
 	void GameServer::SendEventToAllConnectedPlayers(std::string serializedEvent)
@@ -229,7 +220,8 @@ namespace gamelib
 			{
 				continue;
 			}
-			int sendResult = Networking::Get()->netSendVRec(player.GetSocket(), serializedEvent.c_str(), serializedEvent.size());
+
+			int sendResult = networking->netSendVRec(player.GetSocket(), serializedEvent.c_str(), serializedEvent.size());
 		}
 	}
 

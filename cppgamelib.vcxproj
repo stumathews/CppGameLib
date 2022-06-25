@@ -166,7 +166,11 @@
     <ClInclude Include="asset\asset.h" />
     <ClInclude Include="audio\AudioManager.h" />
     <ClInclude Include="audio\AudioAsset.h" />
+    <ClInclude Include="events\EventFactory.h" />
+    <ClInclude Include="events\IEventSerializationManager.h" />
+    <ClInclude Include="json\JsonEventSerializationManager.h" />
     <ClInclude Include="json\json11.h" />
+    <ClInclude Include="net\MessageHeader.h" />
     <ClInclude Include="net\NetworkPlayer.h" />
     <ClInclude Include="net\GameClient.h" />
     <ClInclude Include="net\GameServer.h" />
@@ -228,6 +232,7 @@
     <ClInclude Include="scene\ABCDRectangle.h" />
     <ClInclude Include="scene\SceneItem.h" />
     <ClInclude Include="scene\SceneManager.h" />
+    <ClInclude Include="SerializationManager.h" />
     <ClInclude Include="SpriteAsset.h" />
     <ClInclude Include="Tests\Tests\GraphicAssetFactory.h" />
     <ClInclude Include="Timer.h" />
@@ -244,7 +249,11 @@
     <ClCompile Include="asset\Asset.cpp" />
     <ClCompile Include="audio\AudioManager.cpp" />
     <ClCompile Include="audio\AudioAsset.cpp" />
+    <ClCompile Include="events\EventFactory.cpp" />
+    <ClCompile Include="events\IEventSerializationManager.cpp" />
+    <ClCompile Include="json\JsonEventSerializationManager.cpp" />
     <ClCompile Include="json\json11.cpp" />
+    <ClCompile Include="net\MessageHeader.cpp" />
     <ClCompile Include="net\NetworkPlayer.cpp" />
     <ClCompile Include="net\GameClient.cpp" />
     <ClCompile Include="net\GameServer.cpp" />
@@ -297,6 +306,7 @@
     <ClCompile Include="scene\Layer.cpp" />
     <ClCompile Include="scene\SceneItem.cpp" />
     <ClCompile Include="scene\SceneManager.cpp" />
+    <ClCompile Include="SerializationManager.cpp" />
     <ClCompile Include="SpriteAsset.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="tinyxml2.cpp" />

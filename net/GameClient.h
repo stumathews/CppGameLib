@@ -4,18 +4,19 @@
 #include <WinSock2.h>
 #include <events/EventSubscriber.h>
 
+
 namespace gamelib
 {
+	class EventManager;
+	class SerializationManager;
 	class GameClient : public gamelib::EventSubscriber
 	{
 	public:
 		~GameClient();
 		GameClient();
 		void Initialize();
-		/// <summary>
-		/// Connect to the game server
-		/// </summary>
-		/// <param name="gameServer"></param>
+		
+		// Make an initial connection to the game server. This will register a socket with the game server tat we can later use to talk to it
 		void Connect(std::shared_ptr<GameServer> gameServer);
 		void PingGameServer();
 
@@ -23,7 +24,7 @@ namespace gamelib
 		/// Listen for incomiing traffic from the game server
 		/// </summary>
 		void Listen();
-		void CheckForTraffic();
+		void CheckSocketForTraffic();
 		void ParseReceivedServerPayload(char  buffer[512]);
 		void RaiseNetworkTrafficReceivedEvent(char  buffer[512], int bytesReceived);
 	private:
@@ -35,9 +36,15 @@ namespace gamelib
 		SOCKET clientSocketToGameSever;
 		fd_set readfds;
 		bool IsDiconnectedFromGameServer;
+
+		// How long to wait for network data the arrive {0,0} means non-blocking
 		struct timeval noDataTimeout;
+
+		// What is the maximum amount of data to read off the network.
 		int readBufferLength;
 		std::string nickName;
+		EventManager* eventManager;
+		SerializationManager* serializationManager;
 
 		// Inherited via EventSubscriber
 		virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt) override;

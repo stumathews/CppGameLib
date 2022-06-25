@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 namespace gamelib 
 {
@@ -26,5 +27,30 @@ namespace gamelib
 			default:      
 				return "[Unknown Direction]";
 		}
+	}
+
+	
+	inline const Direction FromDirectionString(std::string direction)
+	{
+		if(direction == ToString(Direction::Up))
+		{
+			return Direction::Up;
+		}
+		else if (direction == ToString(Direction::Down))
+		{
+			return Direction::Down;
+		}
+		else if (direction == ToString(Direction::Left))
+		{
+			return Direction::Left;
+		}
+		else if (direction == ToString(Direction::Right))
+		{
+			return Direction::Right;
+		}
+		else
+		{
+			return Direction::None;
+		}	
 	}
 }

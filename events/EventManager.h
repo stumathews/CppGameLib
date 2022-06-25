@@ -42,6 +42,9 @@ namespace gamelib
 
 		// Directly send event to subscriber without going through the event queue
 		void DispatchEventToSubscriber(const std::shared_ptr<Event>& event);
+
+		// Directly send event to a specific targetted subscriber (subscriber name) without going through the event queue
+		void DispatchEventToSubscriber(const std::shared_ptr<Event>& event, std::string target);
 		
 		// Goes through all the events on the primary and secondary queues and passes them to their respective event handlers
 		// Primary queue is incremented with event when an event is raised via the RaiseEvent() function. This can be one at any time.

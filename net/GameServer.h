@@ -6,6 +6,7 @@
 #include <WinSock2.h>
 #include <net/NetworkPlayer.h>
 #include <events/EventSubscriber.h>
+#include <net/MessageHeader.h>
 
 namespace gamelib
 {
@@ -33,6 +34,10 @@ namespace gamelib
 		/// </summary>
 		/// <param name="i"></param>
 		void ParseReceivedPlayerPayload(const size_t& playerId, char* payload, int playloadLength);
+
+		void ProcessRequestPlayerDetailsMessage(int playerId, gamelib::MessageHeader& messageHeader);
+
+		void ProcessPingMessage(const size_t& playerId);
 
 
 		void SendToConnectedPlayersExceptToSender(const std::string& senderNickname, std::string serializedMessage, const size_t& playerId);
@@ -74,7 +79,7 @@ namespace gamelib
 		/// Radiate duplicate serialized event to all connected players
 		/// </summary>
 		/// <param name="serializedEvent"></param>
-		void SendToConnectedPlayers(std::string& serializedEvent);
+		void SendEventToAllConnectedPlayers(std::string serializedEvent);
 
 		virtual std::string GetSubscriberName() override;
 

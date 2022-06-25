@@ -8,6 +8,7 @@
 #include <events/GameObjectEvent.h>
 #include <util/SettingsManager.h>
 #include <sstream>
+#include <string>
 
 using namespace std;
 namespace gamelib
@@ -105,6 +106,28 @@ namespace gamelib
 		for (const auto& pSubscriber :  event_subscribers_[event->type])
 		{
 			if(event_subscribers_.empty()) return; // if reset()
+			
+			// Check if the subscriber pointer is valid
+			if(pSubscriber)
+			{
+				// allow subscriber to process the event
+				for(const auto &secondary_event : pSubscriber->HandleEvent(event))
+				{
+					// any results from processing are put onto the secondary queue
+					secondary_event_queue_.push(secondary_event);
+				}	
+			}
+		}
+		event->processed = true;
+	}
+
+	void EventManager::DispatchEventToSubscriber(const shared_ptr<Event>& event, std::string target)
+	{
+		// Go through each subscriber of the event and have the subscriber handle it
+		for (const auto& pSubscriber :  event_subscribers_[event->type])
+		{
+			if(event_subscribers_.empty()) return; // if reset()
+			if(pSubscriber->GetSubscriberName() != target) return;
 			
 			// Check if the subscriber pointer is valid
 			if(pSubscriber)

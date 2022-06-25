@@ -5,6 +5,9 @@
 #include <net/Networking.h>
 #include <json/json11.h>
 #include <events/PlayerMovedEvent.h>
+#include <events/EventFactory.h>
+#include <SerializationManager.h>
+#include <net/MessageHeader.h>
 
 using namespace json11;
 
@@ -68,15 +71,9 @@ namespace gamelib
 			SOCKET connectedSocket = accept(listeningSocket, (struct sockaddr*)&peerInfo.Address, &peerInfo.Length);
 
 			if (connectedSocket != INVALID_SOCKET)
-			{	
-				// Request player details
-				Json sendPayload = Json::object 
-				{
-					{ "messageType", "requestPlayerDetails" }
-				};
-
-				auto json_str = sendPayload.dump();
-				Networking::Get()->netSendVRec(connectedSocket, json_str.c_str(), json_str.length());
+			{					
+				auto requestPlayerDetailsMessage = SerializationManager::Get()->CreateRequestPlayerDetailsMessage();
+				Networking::Get()->netSendVRec(connectedSocket, requestPlayerDetailsMessage.c_str(), requestPlayerDetailsMessage.length());
 
 				Players.push_back(NetworkPlayer(connectedSocket)); // Store incoming player sockets so we can listen for incoming player data too
 				EventManager::Get()->RaiseEventWithNoLogging(std::make_shared<gamelib::Event>(gamelib::EventType::NetworkPlayerJoined));
@@ -119,8 +116,6 @@ namespace gamelib
 					// Connection closed. Remove the socket from those being monitored for incoming traffic
 					Players[playerId].SetIsConnected(false);
 
-					// Perhaps not shutting down like if a security flaw!
-					// TODO: Consider taking out for thesis
 					auto result = shutdown(Players[playerId].GetSocket(), SD_BOTH);
 					if (result == SOCKET_ERROR) 
 					{
@@ -140,57 +135,58 @@ namespace gamelib
 			return;
 		}
 
-		std::string error;
-		auto parsedJson = Json::parse(inPayload, error);
-		auto messageType = parsedJson["messageType"].string_value();
+		auto msgHeader = SerializationManager::Get()->GetMessageHeader(inPayload);
+		auto messageType = msgHeader.MessageType;
+		auto serializationManager = SerializationManager::Get();
+		auto eventManager = EventManager::Get();
 
 		if(messageType == "ping")
-		{		
-
-			/*
-			
-			Json payload = Json::object
-			{
-				{ "messageType", "ping" },
-				{ "isHappy", false },
-				{ "eventType", (int)gamelib::EventType::NetworkTrafficReceived },
-				{ "names", Json::array{ "Stuart", "Jenny", "bruce" } },
-				{ "ages", Json::array{ 1, 2, 3 } },
-				{ "fish", Json::object{ { "yo", "sushi" } } }
-			};
-			
-			*/
-
-			// Send a pong message back
-
-			Json sendPayload = Json::object{
-				{ "messageType", "pong" },
-				{ "isHappy", true },
-				{ "eventType", (int)gamelib::EventType::NetworkTrafficReceived },
-				{ "names", Json::array{ "Stuart", "Jenny", "bruce" } },
-				{ "ages", Json::array{ 1, 2, 3 } },
-				{ "fish", Json::object{ { "yo", "sushi" } } }
-			};
-
-			auto json_str = sendPayload.dump();
-			Networking::Get()->netSendVRec(Players[playerId].GetSocket(), json_str.c_str(), json_str.length());
+		{	
+			ProcessPingMessage(playerId);
 		}
 		else if(messageType == "requestPlayerDetails")
 		{
-			// Record the players nickname
-			Players[playerId].SetNickName(parsedJson["Nickname"].string_value());
+			ProcessRequestPlayerDetailsMessage((int)playerId, msgHeader);
 		}		
 		else
-		{	
-			// Radiate all other incoming game server traffic to other players
-			const auto& senderNickname = parsedJson["nickname"].string_value();
-			auto serializedMessage = parsedJson.dump();
-									
-			SendToConnectedPlayersExceptToSender(senderNickname, serializedMessage, playerId);
+		{
+			// Send to other network players
+			SendToConnectedPlayersExceptToSender(msgHeader.MessageTarget, inPayload, playerId);
 
-			// TODO: Send this onto our own EventManager but targetting the player with the specified nickname 
+			// Send to ourself
+			auto event = serializationManager->DeserializeToEvent(msgHeader, inPayload);
+			if(event)
+			{
+				eventManager->DispatchEventToSubscriber(event, msgHeader.MessageTarget);
+			}
 		}
 
+	}	
+
+	void GameServer::ProcessRequestPlayerDetailsMessage(int playerId, gamelib::MessageHeader& messageHeader)
+	{
+		// Record the players nickname
+		Players[playerId].SetNickName(messageHeader.MessageTarget);
+	}
+
+	void GameServer::ProcessPingMessage(const size_t& playerId)
+	{
+		/*
+
+		Json payload = Json::object
+		{
+		{ "messageType", "ping" },
+		{ "isHappy", false },
+		{ "eventType", (int)gamelib::EventType::NetworkTrafficReceived },
+		{ "names", Json::array{ "Stuart", "Jenny", "bruce" } },
+		{ "ages", Json::array{ 1, 2, 3 } },
+		{ "fish", Json::object{ { "yo", "sushi" } } }
+		};
+
+		*/
+
+		auto data = SerializationManager::Get()->CreatePongMessage();
+		Networking::Get()->netSendVRec(Players[playerId].GetSocket(), data.c_str(), data.length());
 	}
 
 	void GameServer::SendToConnectedPlayersExceptToSender(const std::string& senderNickname, std::string serializedMessage, const size_t& playerId)
@@ -219,36 +215,13 @@ namespace gamelib
 
 	std::vector<std::shared_ptr<Event>> GameServer::HandleEvent(std::shared_ptr<Event> evt)
 	{
-		/* Schedule our (GameServer) player events to be sent to all the connected players */
-		auto createdEvents = std::vector<std::shared_ptr<Event>>();
+		SendEventToAllConnectedPlayers(EventFactory::Get()->Serialize(evt, nickname));
 
-		switch(evt->type)
-		{
-			case gamelib::EventType::PlayerMovedEventType:
-
-				// Our player moved. Tell the other players.
-				auto playerMovedEvent = std::dynamic_pointer_cast<PlayerMovedEvent>(evt);
-				Json payload = Json::object
-				{
-					{ "messageType", ToString(evt->type) },
-					{ "direction", ToString(playerMovedEvent->direction) },
-					{ "nickname", nickname }
-				};
-
-				// Serialize
-				auto serializedEvent = payload.dump();
-
-				// Radiate duplicate serialized event to all connected players
-				SendToConnectedPlayers(serializedEvent);
-				
-			break;
-		}
-
-		return createdEvents;
-
+		auto noCreatedEvents = std::vector<std::shared_ptr<Event>>();
+		return noCreatedEvents;
 	}
 
-	void GameServer::SendToConnectedPlayers(std::string& serializedEvent)
+	void GameServer::SendEventToAllConnectedPlayers(std::string serializedEvent)
 	{
 		for (auto player : Players)
 		{

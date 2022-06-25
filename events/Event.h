@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <memory>
+#include <exceptions/EngineException.h>
+#include <sstream>
 
 namespace gamelib
 {
@@ -45,6 +47,80 @@ namespace gamelib
 			case EventType::NetworkTrafficReceived: return "NetworkPlayerTrafficReceived";
 			default:      
 				return "[Unknown EventType]";
+		}
+	}
+
+	inline gamelib::EventType FromString(std::string eventType)
+	{
+		if(eventType == ToString(EventType::ControllerMoveEvent))
+		{
+			return EventType::ControllerMoveEvent;
+		}
+		else if (eventType == ToString(EventType::LevelChangedEventType))
+		{
+			return EventType::LevelChangedEventType;
+		}
+		else if (eventType == ToString(EventType::DoLogicUpdateEventType))
+		{
+			return EventType::DoLogicUpdateEventType;
+		}
+		else if (eventType == ToString(EventType::DoLogicUpdateEventType))
+		{
+			return EventType::DoLogicUpdateEventType;
+		}
+		else if (eventType == ToString(EventType::AddGameObjectToCurrentScene))
+		{
+			return EventType::AddGameObjectToCurrentScene;
+		}
+		else if (eventType == ToString(EventType::PlayerMovedEventType))
+		{
+			return EventType::PlayerMovedEventType;
+		}
+		else if (eventType == ToString(EventType::SceneLoaded))
+		{
+			return EventType::SceneLoaded;
+		}
+		else if (eventType == ToString(EventType::SettingsReloaded))
+		{
+			return EventType::SettingsReloaded;
+		}
+		else if (eventType == ToString(EventType::GenerateNewLevel))
+		{
+			return EventType::GenerateNewLevel;
+		}
+		else if (eventType == ToString(EventType::InvalidMove))
+		{
+			return EventType::InvalidMove;
+		}
+		else if (eventType == ToString(EventType::Fire))
+		{
+			return EventType::Fire;
+		}
+		else if (eventType == ToString(EventType::FetchedPickup))
+		{
+			return EventType::FetchedPickup;
+		}
+		else if (eventType == ToString(EventType::GameObject))
+		{
+			return EventType::GameObject;
+		}
+		else if (eventType == ToString(EventType::DrawCurrentScene))
+		{
+			return EventType::DrawCurrentScene;
+		}
+		else if (eventType == ToString(EventType::NetworkPlayerJoined))
+		{
+			return EventType::NetworkPlayerJoined;
+		}
+		else if (eventType == ToString(EventType::NetworkTrafficReceived))
+		{
+			return EventType::NetworkTrafficReceived;
+		}
+		else
+		{
+			std::stringstream message;
+			message << "Unknown Event Type " << eventType;
+			THROW(0,message.str(), "Event");
 		}
 	}
 

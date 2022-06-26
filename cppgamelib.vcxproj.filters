@@ -255,6 +255,18 @@
     <ClInclude Include="net\MessageHeader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="net\TcpGameServerConnection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\UdpGameServerConnection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\IGameServerConnection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\UdpNetworkPlayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -465,6 +477,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="net\MessageHeader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="net\TcpGameServerConnection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="net\UdpGameServerConnection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

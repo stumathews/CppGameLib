@@ -15,6 +15,7 @@ namespace gamelib
 	class EventManager;
 	class Networking;
 	class EventFactory;
+	class IGameServerConnection;
 
 	class GameServer : public gamelib::EventSubscriber
 	{
@@ -35,57 +36,20 @@ namespace gamelib
 		/// </summary>
 		void CheckForPlayerTraffic();
 
-		/// <summary>
-		/// Write message back to the client
-		/// </summary>
-		/// <param name="i"></param>
-		void ParseReceivedPlayerPayload(const size_t& playerId, char* payload, int playloadLength);
-
-		void ProcessRequestPlayerDetailsMessage(int playerId, gamelib::MessageHeader& messageHeader);
-
-		void ProcessPingMessage(const size_t& playerId);
-
-
-		void SendToConnectedPlayersExceptToSender(const std::string& senderNickname, std::string serializedMessage, const size_t& playerId);
-
-		/// <summary>
-		/// New connection on main server listening socket?
-		/// </summary>
-		void CheckForNewPlayers();
-
-
 		std::string address;
 		std::string port;
-		std::vector<gamelib::NetworkPlayer> Players;
 
 	private:
-
-		void RaiseNetworkTrafficReceievedEvent(char  buffer[512], const size_t& i, int bytesReceived);
-
+				
+		std::shared_ptr<IGameServerConnection> gameServerConnection;
+		
 		/// <summary>
-		/// A set of file descriptors that are checked for writability
-		/// </summary>
-		fd_set readfds;
-		SOCKET listeningSocket;
-
-		/// <summary>
-		/// // How long to wait for network data the arrive {0,0} means non-blocking
-		/// </summary>
-		struct timeval timeout;
-
-		/// <summary>
-		/// NIck name of this machine
+		/// Nick name of this machine
 		/// </summary>
 		std::string nickname;
 
 		// Inherited via EventSubscriber
 		virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt) override;
-
-		/// <summary>
-		/// Radiate duplicate serialized event to all connected players
-		/// </summary>
-		/// <param name="serializedEvent"></param>
-		void SendEventToAllConnectedPlayers(std::string serializedEvent);
 
 		virtual std::string GetSubscriberName() override;
 
@@ -93,6 +57,7 @@ namespace gamelib
 		EventManager* eventManager;
 		Networking* networking;
 		EventFactory* eventFactory;
+		bool isTcp;
 
 	};
 }

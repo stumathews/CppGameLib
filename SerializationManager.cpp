@@ -125,6 +125,16 @@ namespace gamelib
 		return eventSerialization->CreatePingMessage();
 	}
 
+	std::string SerializationManager::UpdateTarget(std::string target, std::string serializedMessage)
+	{
+		std::string error;
+		auto parsedJson = Json::parse(serializedMessage, error);
+		Json::object json_obj = parsedJson.object_items();
+		json_obj["nickname"] = target;
+		Json another_json = json_obj;
+		return another_json.dump();
+	}
+
 	bool SerializationManager::Initialize()
 	{		
 		// Change the serializtion format here

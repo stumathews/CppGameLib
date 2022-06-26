@@ -170,6 +170,7 @@
     <ClInclude Include="events\IEventSerializationManager.h" />
     <ClInclude Include="json\JsonEventSerializationManager.h" />
     <ClInclude Include="json\json11.h" />
+    <ClInclude Include="net\IGameServerConnection.h" />
     <ClInclude Include="net\MessageHeader.h" />
     <ClInclude Include="net\NetworkPlayer.h" />
     <ClInclude Include="net\GameClient.h" />
@@ -198,6 +199,7 @@
     <ClInclude Include="net\Networking.h" />
     <ClInclude Include="net\NetworkEvent.h" />
     <ClInclude Include="net\NetworkManager.h" />
+    <ClInclude Include="net\UdpNetworkPlayer.h" />
     <ClInclude Include="objects\MultipleInheritableEnableSharedFromThis.h" />
     <ClInclude Include="objects\DrawableGameObject.h" />
     <ClInclude Include="events\AddGameObjectToCurrentSceneEvent.h" />
@@ -234,9 +236,11 @@
     <ClInclude Include="scene\SceneManager.h" />
     <ClInclude Include="SerializationManager.h" />
     <ClInclude Include="SpriteAsset.h" />
+    <ClInclude Include="net\TcpGameServerConnection.h" />
     <ClInclude Include="Tests\Tests\GraphicAssetFactory.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="tinyxml2.h" />
+    <ClInclude Include="net\UdpGameServerConnection.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="util\COMUtils.h" />
     <ClInclude Include="util\RectDebugging.h" />
@@ -308,8 +312,10 @@
     <ClCompile Include="scene\SceneManager.cpp" />
     <ClCompile Include="SerializationManager.cpp" />
     <ClCompile Include="SpriteAsset.cpp" />
+    <ClCompile Include="net\TcpGameServerConnection.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
+    <ClCompile Include="net\UdpGameServerConnection.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="util\RectDebugging.cpp" />
     <ClCompile Include="util\SettingDetail.cpp" />

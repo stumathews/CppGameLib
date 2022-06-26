@@ -31,6 +31,8 @@ namespace gamelib
 
 			std::string CreatePingMessage();
 
+			std::string UpdateTarget(std::string target, std::string serialisedMessage);
+
 			bool Initialize();
 
 			// Cannot copy an SerializationManager

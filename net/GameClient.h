@@ -49,6 +49,7 @@ namespace gamelib
 		SerializationManager* serializationManager;
 		Networking* networking;
 		EventFactory* eventFactory;
+		bool isTcp;
 
 		// Inherited via EventSubscriber
 		virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt) override;

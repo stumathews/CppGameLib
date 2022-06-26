@@ -29,7 +29,7 @@ namespace gamelib
 
 		// Inherited via IGameServerConnection
 		virtual void CheckForPlayerTraffic() override;
-		void RaiseNetworkTrafficReceievedEvent(char buffer[512], int bytesReceived);
+		void RaiseNetworkTrafficReceievedEvent(char buffer[512], int bytesReceived, PeerInfo fromClient);
 		void SendToConnectedPlayersExceptToSender(const std::string& senderNickname, std::string serializedMessage);
 		struct timeval timeout;
 		fd_set readfds;

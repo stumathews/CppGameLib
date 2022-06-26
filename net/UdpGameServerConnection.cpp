@@ -62,13 +62,20 @@ namespace gamelib
 		{
 			ParseReceivedPlayerPayload(buffer, bufferLength, fromClient);
 
-			RaiseNetworkTrafficReceievedEvent(buffer, bytesReceived);
+			RaiseNetworkTrafficReceievedEvent(buffer, bytesReceived, fromClient);
 		}
 	}
 
-	void UdpGameServerConnection::RaiseNetworkTrafficReceievedEvent(char buffer[512], int bytesReceived)
+	void UdpGameServerConnection::RaiseNetworkTrafficReceievedEvent(char buffer[512], int bytesReceived, PeerInfo fromClient)
 	{
-		auto identifier = "find identifier in message";
+		std::string identifier = "unknown";
+		for(auto player : Players)
+		{
+			if(player.peerInfo.Address.sin_port == fromClient.Address.sin_port)
+			{
+				identifier = player.NickName;
+			}
+		}
 		auto event = eventFactory->CreateNetworkTrafficReceivedEvent(buffer, identifier, bytesReceived);
 
 		eventManager->RaiseEventWithNoLogging(event);
@@ -114,7 +121,6 @@ namespace gamelib
 				eventManager->DispatchEventToSubscriber(event, msgHeader.MessageTarget);
 			}
 		}
-
 	}
 
 	void UdpGameServerConnection::ProcessPingMessage(PeerInfo fromClient)

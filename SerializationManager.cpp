@@ -45,9 +45,31 @@ namespace gamelib
 		return header;
 	}
 
+	std::string SerializationManager::Serialize(std::shared_ptr<Event> evt, std::string target)
+	{
+		// TODO: Update the list of events that can be sent over the network
+
+		switch(evt->type)
+		{
+			case gamelib::EventType::PlayerMovedEventType:
+				return CreatePlayerMovedEventMessage(evt, target);
+			break;
+			case gamelib::EventType::ControllerMoveEvent:
+				return CreateControllerMoveEventMessage(evt, target);
+				break;
+			default:
+				return CreateUnknownEventMessage(evt, target);
+		}
+
+		return std::string();
+		
+	}
+
 	std::shared_ptr<Event> SerializationManager::Deserialize(MessageHeader messageHeader, std::string serializedMessage)
 	{
 		std::shared_ptr<Event> event = nullptr;
+
+		// TODO: Update the list of messages (serialised events) that we can be consumed by the network clients, i.e deserialized
 
 		switch(FromString(messageHeader.MessageType))
 		{
@@ -70,27 +92,7 @@ namespace gamelib
 		auto controllerMoveEvent = std::dynamic_pointer_cast<ControllerMoveEvent>(evt);
 		return eventSerialization->SerializeControllerMoveEvent(controllerMoveEvent, target);
 	}
-	
-	std::string SerializationManager::Serialize(std::shared_ptr<Event> evt, std::string target)
-	{
-		switch(evt->type)
-		{
-			case gamelib::EventType::PlayerMovedEventType:
-				return CreatePlayerMovedEventMessage(evt, target);
-			break;
-			case gamelib::EventType::ControllerMoveEvent:
-				return CreateControllerMoveEventMessage(evt, target);
-				break;
-			default:
-				return CreateUnknownEventMessage(evt, target);
-		}
-
-		return std::string();
 		
-	}
-
-
-
 	std::string SerializationManager::CreateUnknownEventMessage(std::shared_ptr<Event> evt, std::string target)
 	{
 		return eventSerialization->CreateUnknownEventMessage(evt, target);

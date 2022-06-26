@@ -61,7 +61,6 @@ namespace gamelib
 		if (bytesReceived > 0)
 		{
 			ParseReceivedPlayerPayload(buffer, bufferLength, fromClient);
-
 			RaiseNetworkTrafficReceievedEvent(buffer, bytesReceived, fromClient);
 		}
 	}
@@ -74,8 +73,10 @@ namespace gamelib
 			if(player.peerInfo.Address.sin_port == fromClient.Address.sin_port)
 			{
 				identifier = player.NickName;
+				break;
 			}
 		}
+
 		auto event = eventFactory->CreateNetworkTrafficReceivedEvent(buffer, identifier, bytesReceived);
 
 		eventManager->RaiseEventWithNoLogging(event);
@@ -91,8 +92,7 @@ namespace gamelib
 				continue;
 			}
 
-			auto updatedMessage = serializationManager->UpdateTarget(serializedMessage, player.NickName);
-			sendto(listeningSocket, updatedMessage.c_str(), updatedMessage.length(), 0, (sockaddr*) &player.peerInfo.Address, player.peerInfo.Length);
+			sendto(listeningSocket, serializedMessage.c_str(), serializedMessage.length(), 0, (sockaddr*) &player.peerInfo.Address, player.peerInfo.Length);
 		}
 	}
 
@@ -115,8 +115,7 @@ namespace gamelib
 			SendToConnectedPlayersExceptToSender(msgHeader.MessageTarget, inPayload);
 
 			// Send to ourself
-			auto event = serializationManager->Deserialize(msgHeader, inPayload);
-			if(event)
+			if(auto event = serializationManager->Deserialize(msgHeader, inPayload))
 			{
 				eventManager->DispatchEventToSubscriber(event, msgHeader.MessageTarget);
 			}

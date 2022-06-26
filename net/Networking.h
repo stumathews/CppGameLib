@@ -135,6 +135,9 @@ namespace gamelib
 	 */
 	 SOCKET netUdpClient(const char* hname, const char* sname, struct sockaddr_in* sap);
 
+	 // Creates a 'connected' UDP client see: https://www.masterraghu.com/subjects/np/introduction/unix_network_programming_v1.3/ch08lev1sec11.html
+	 SOCKET netConnectedUdpClient(const char* hname, const char* sname);
+
 	/** \brief fill in a sockaddr_in structure
 	 *
 	 * \param hname char* hostname string

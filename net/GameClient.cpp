@@ -50,32 +50,24 @@ namespace gamelib
 		std::stringstream message; message << "Connecting to game server: " << gameServer->address << ":" << gameServer->port;
 		Logger::Get()->LogThis(message.str());
 		
-		if(this->isTcp)
-		{
-			clientSocketToGameSever = networking->netTcpClient(gameServer->address.c_str(), gameServer->port.c_str());	
-
-		}
-		else
-		{
-			struct sockaddr_in sap;
-			clientSocketToGameSever = networking->netUdpClient(gameServer->address.c_str(), gameServer->port.c_str(), &sap );	
-			if (connect(clientSocketToGameSever, (struct sockaddr * )&sap, sizeof(sap)))		
-			{
-				networking->netError( 1, errno, "connect failed" );
-			}	
-		}
-
-		// Send player details straight away to the server
-		auto response = serializationManager->CreateRequestPlayerDetailsMessageResponse(nickName);
-
-		int sendResult = isTcp ? networking->netSendVRec(clientSocketToGameSever, response.c_str(), response.size())
-								 : send(clientSocketToGameSever, response.c_str(), response.size(),0); 
+		clientSocketToGameSever = this->isTcp ? networking->netTcpClient(gameServer->address.c_str(), gameServer->port.c_str())
+									: networking->netConnectedUdpClient(gameServer->address.c_str(), gameServer->port.c_str());
+		
+		SendPlayerDetails();
 						
 		if(clientSocketToGameSever)
 		{
 			this->IsDiconnectedFromGameServer = false;
 		}
-	}	
+	}
+	void GameClient::SendPlayerDetails()
+	{
+		auto response = serializationManager->CreateRequestPlayerDetailsMessageResponse(nickName);
+
+		int sendResult = isTcp ? networking->netSendVRec(clientSocketToGameSever, response.c_str(), response.size())
+			: send(clientSocketToGameSever, response.c_str(), response.size(), 0);
+	}
+
 
 	void GameClient::Listen()
 	{

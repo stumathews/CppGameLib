@@ -302,6 +302,17 @@ namespace gamelib
 	    return s;
     }
 
+	SOCKET Networking::netConnectedUdpClient(const char* hname, const char* sname)
+    {    
+		struct sockaddr_in sap;
+	    SOCKET s = netUdpClient(hname, sname, &sap);
+		if (connect(s, (struct sockaddr * )&sap, sizeof(sap)))		
+		{
+			netError( 1, errno, "connect failed" );
+		}	
+		return s;
+    }
+
     void Networking::netSetAddress(const char* hname, const char* sname, sockaddr_in* sap, const char* protocol)    
     {
 	    struct servent *sp;

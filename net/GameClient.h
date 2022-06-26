@@ -20,6 +20,7 @@ namespace gamelib
 		
 		// Make an initial connection to the game server. This will register a socket with the game server tat we can later use to talk to it
 		void Connect(std::shared_ptr<GameServer> gameServer);
+		void SendPlayerDetails();
 		void PingGameServer();
 
 		/// <summary>

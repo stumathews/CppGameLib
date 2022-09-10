@@ -21,7 +21,7 @@ protected:
 
 TEST(SettingsManagerTests, OpenFileTest)
 {
-	const auto expected_settings_count = 33;
+	const auto expected_settings_count = 57;
 	EXPECT_TRUE(SettingsManager::Get()->Load("settings.xml")); 
 
 	// Should have loaded 13 settings by default from the settings file
@@ -30,7 +30,7 @@ TEST(SettingsManagerTests, OpenFileTest)
 
 TEST(SettingsManagerTests, AddSetting)
 {
-	const auto expected_settings_count = 36;
+	const auto expected_settings_count = 60;
 	SettingsManager::Get()->Load();	
 	SettingsManager::Get()->AddSetting("global", "name", SettingDetail("name", "mazer", "string"));
 	SettingsManager::Get()->AddSetting("global", "genre", SettingDetail("name", "platformer", "string"));
@@ -55,7 +55,5 @@ TEST(SettingsManagerTests, GetSettingType)
 {
 	SettingsManager::Get()->Load();
 	EXPECT_EQ(4, SettingsManager::Get()->GetInt("global", "max_loops"));
-	EXPECT_EQ("Stuart", SettingsManager::Get()->GetString("global", "author"));
 	EXPECT_EQ(true, SettingsManager::Get()->GetBool("global", "verbose"));
-	EXPECT_EQ(123456789L, SettingsManager::Get()->GetLong("global", "longnumber"));
 }

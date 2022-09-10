@@ -3,8 +3,10 @@
 #include <string>
 #include <WinSock2.h>
 #include <vector>
-#include <net/NetworkPlayer.h>
+#include <net/TcpNetworkPlayer.h>
 #include <net/MessageHeader.h>
+#include <events/Event.h>
+#include <events/EventSubscriber.h>
 
 namespace gamelib
 {
@@ -12,7 +14,7 @@ namespace gamelib
 	class EventManager;
 	class SerializationManager;
 	class EventFactory;
-	class TcpGameServerConnection : public IGameServerConnection
+	class TcpGameServerConnection : public IGameServerConnection,  public gamelib::EventSubscriber
 	{
 	public:
 
@@ -47,7 +49,14 @@ namespace gamelib
 		/// How long to wait for network data the arrive {0,0} means non-blocking
 		/// </summary>
 		struct timeval timeout;
-		std::vector<gamelib::NetworkPlayer> Players;
+		std::vector<gamelib::TcpNetworkPlayer> Players;
+
+		// Inherited via EventSubscriber
+		virtual std::vector<std::shared_ptr<gamelib::Event>> HandleEvent(std::shared_ptr<gamelib::Event> evt) override;
+		virtual std::string GetSubscriberName() override;
+
+		// Inherited via IGameServerConnection
+		virtual void Create() override;
 	};
 }
 

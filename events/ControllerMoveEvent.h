@@ -8,7 +8,7 @@ namespace gamelib
 	{
 	public:
 		explicit ControllerMoveEvent(Direction dir);
-		Direction direction;
+		Direction Direction;
 		std::string ToString() override;
 	};
 }

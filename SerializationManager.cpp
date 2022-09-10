@@ -6,6 +6,7 @@
 #include <json/JsonEventSerializationManager.h>
 #include <events/ControllerMoveEvent.h>
 #include <events/PlayerMovedEvent.h>
+#include <events/StartNetworkLevelEvent.h>
 
 using namespace json11;
 
@@ -57,6 +58,9 @@ namespace gamelib
 			case gamelib::EventType::ControllerMoveEvent:
 				return CreateControllerMoveEventMessage(evt, target);
 				break;
+			case gamelib::EventType::StartNetworkLevel:
+				return CreateStartNetworkLevelMessage(evt, target);
+				break;
 			default:
 				return CreateUnknownEventMessage(evt, target);
 		}
@@ -76,6 +80,8 @@ namespace gamelib
 		case EventType::PlayerMovedEventType:
 			return std::dynamic_pointer_cast<Event>(eventSerialization->DeserializePlayerMovedEvent(serializedMessage));
 			break;
+		case EventType::StartNetworkLevel:
+			return std::dynamic_pointer_cast<Event>(eventSerialization->DeserializeStartNetworkLevel(serializedMessage));
 		}
 		
 		return event;
@@ -91,6 +97,12 @@ namespace gamelib
 	{
 		auto controllerMoveEvent = std::dynamic_pointer_cast<ControllerMoveEvent>(evt);
 		return eventSerialization->SerializeControllerMoveEvent(controllerMoveEvent, target);
+	}
+
+	std::string SerializationManager::CreateStartNetworkLevelMessage(std::shared_ptr<Event> evt, std::string target)
+	{
+		auto startNetworkLevelEvent = std::dynamic_pointer_cast<StartNetworkLevelEvent>(evt);
+		return eventSerialization->SerializeStartNetworkLevelEvent(startNetworkLevelEvent, target);
 	}
 		
 	std::string SerializationManager::CreateUnknownEventMessage(std::shared_ptr<Event> evt, std::string target)

@@ -51,9 +51,12 @@ std::string ErrorLogManager::GetTimeString()
 
 	localtime_s(&newTime, &now);
 
+	timeString << std::setw(2) << std::setfill('0') << newTime.tm_mday << "-";
+	timeString << std::setw(2) << std::setfill('0') << newTime.tm_mon << "-";
+	timeString << std::setw(2) << std::setfill('0') << 1900 + newTime.tm_year << " ";
 	timeString << std::setw(2) << std::setfill('0') << newTime.tm_hour << ":";
 	timeString << std::setw(2) << std::setfill('0') << newTime.tm_min << ":";
-	timeString << std::setw(2) << std::setfill('0') << newTime.tm_sec;;
+	timeString << std::setw(2) << std::setfill('0') << newTime.tm_sec;
 
 	return timeString.str();
 }

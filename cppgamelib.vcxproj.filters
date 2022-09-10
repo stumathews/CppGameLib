@@ -237,7 +237,7 @@
     <ClInclude Include="json\json11.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="net\NetworkPlayer.h">
+    <ClInclude Include="net\TcpNetworkPlayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="events\EventFactory.h">
@@ -265,6 +265,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="net\UdpNetworkPlayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\NetworkPlayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="events\StartNetworkLevelEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="events\NetworkPlayerJoinedEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -461,7 +470,7 @@
     <ClCompile Include="json\json11.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="net\NetworkPlayer.cpp">
+    <ClCompile Include="net\TcpNetworkPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="events\EventFactory.cpp">
@@ -483,6 +492,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="net\UdpGameServerConnection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="net\NetworkPlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="net\UdpNetworkPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,4 +1,5 @@
-#include "gtest/gtest.h"
+//#include "gtest/gtest.h"
+#include "pch.h"
 #include <graphic/GraphicAsset.h>
 #include "tinyxml2.h"
 #include <tuple>

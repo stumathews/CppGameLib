@@ -2,6 +2,9 @@
 #include <json/JsonEventSerializationManager.h>
 #include <memory>
 #include <exceptions/EngineException.h>
+#include <events/StartNetworkLevelEvent.h>
+#include <net/NetworkPlayer.h>
+#include <events/NetworkPlayerJoinedEvent.h>
 
 namespace gamelib
 {
@@ -51,5 +54,19 @@ namespace gamelib
 		event->Identifier = identifier;
 		event->bytesReceived = bytesReceived;
 		return event;
+	}
+	std::shared_ptr<SceneChangedEvent> EventFactory::CreateLevelEvent(int level)
+	{
+		return std::shared_ptr<SceneChangedEvent>(new SceneChangedEvent(level));
+	}
+
+	std::shared_ptr<StartNetworkLevelEvent> EventFactory::CreateStartNetworkLevelEvent(int level)
+	{
+		return std::shared_ptr<StartNetworkLevelEvent>(new StartNetworkLevelEvent(level));
+	}
+
+	std::shared_ptr<NetworkPlayerJoinedEvent> EventFactory::CreateNetworkPlayerJoinedEvent(NetworkPlayer player)
+	{
+		return std::shared_ptr<NetworkPlayerJoinedEvent>(new NetworkPlayerJoinedEvent(player));
 	}
 }

@@ -29,8 +29,9 @@ namespace gamelib
 	}
 
 	void GameClient::Initialize()
-	{
-		
+	{		
+		Logger::Get()->LogThis("Initializing game client...");
+
 		this->eventManager = EventManager::Get();
 		this->serializationManager = SerializationManager::Get();
 		this->networking = Networking::Get();
@@ -39,6 +40,15 @@ namespace gamelib
 		this->nickName  = SettingsManager::Get()->GetString("networking", "nickname");
 		this->isTcp = SettingsManager::Get()->GetBool("networking", "isTcp");
 
+		Logger::Get()->LogThis(isTcp ? "Client using TCP" : "Client using UDP");
+		Logger::Get()->LogThis("Nickname:");
+		Logger::Get()->LogThis(nickName);
+
+		SubscribeToGameEvents();
+	}
+
+	void GameClient::SubscribeToGameEvents()
+	{
 		// We subscribe to some of our own events and send them to the game server...
 		eventManager->SubscribeToEvent(EventType::PlayerMovedEventType, this);
 		eventManager->SubscribeToEvent(EventType::ControllerMoveEvent, this);
@@ -50,8 +60,11 @@ namespace gamelib
 		std::stringstream message; message << "Connecting to game server: " << gameServer->address << ":" << gameServer->port;
 		Logger::Get()->LogThis(message.str());
 		
-		clientSocketToGameSever = this->isTcp ? networking->netTcpClient(gameServer->address.c_str(), gameServer->port.c_str())
-									: networking->netConnectedUdpClient(gameServer->address.c_str(), gameServer->port.c_str());
+		clientSocketToGameSever = this->isTcp 
+			? networking->netTcpClient(gameServer->address.c_str(), gameServer->port.c_str())
+			: networking->netConnectedUdpClient(gameServer->address.c_str(), gameServer->port.c_str());
+		
+		Logger::Get()->LogThis("Server socket created. Connected to server.");
 		
 		SendPlayerDetails();
 						
@@ -62,10 +75,16 @@ namespace gamelib
 	}
 	void GameClient::SendPlayerDetails()
 	{
+		Logger::Get()->LogThis("Regestering client with game server.");
+
 		auto response = serializationManager->CreateRequestPlayerDetailsMessageResponse(nickName);
 
-		int sendResult = isTcp ? networking->netSendVRec(clientSocketToGameSever, response.c_str(), response.size())
+		int sendResult = isTcp
+			? networking->netSendVRec(clientSocketToGameSever, response.c_str(), response.size())
 			: send(clientSocketToGameSever, response.c_str(), response.size(), 0);
+		
+		Logger::Get()->LogThis(sendResult == 0 ? "Error: 0 bytes sent." : "client/player details successfully sent.");
+		
 	}
 
 
@@ -95,6 +114,7 @@ namespace gamelib
 
 	void GameClient::CheckSocketForTraffic()
 	{
+		// Process network data coming from the game server
 		if (FD_ISSET(clientSocketToGameSever, &readfds))
 		{
 			const int DEFAULT_BUFLEN = 512;
@@ -103,16 +123,13 @@ namespace gamelib
 			ZeroMemory(readBuffer, bufferLength);
 
 			// Read the payload off the network, wait for all the data
-			int bytesReceived = isTcp ? networking->netReadVRec(clientSocketToGameSever, readBuffer, bufferLength)
-									  : recv(clientSocketToGameSever, readBuffer, bufferLength, 0); 
+			int bytesReceived = isTcp 
+					? networking->netReadVRec(clientSocketToGameSever, readBuffer, bufferLength)
+					: recv(clientSocketToGameSever, readBuffer, bufferLength, 0); 
 
 			if (bytesReceived > 0)
 			{
-				// We successfully read some data... 
-
 				ParseReceivedServerPayload(readBuffer);
-
-				// Automatically log all data received by the client from the server
 				RaiseNetworkTrafficReceivedEvent(readBuffer, bytesReceived);
 
 				this->IsDiconnectedFromGameServer = false;
@@ -129,25 +146,33 @@ namespace gamelib
 	{		
 		auto msgHeader = serializationManager->GetMessageHeader(buffer);
 		auto messageType = msgHeader.MessageType;
-
-		// We recieved some data from the game server:
 		
+		// Send client registration response immediately back to server
 		if(messageType == "requestPlayerDetails")
 		{
 			auto response = serializationManager->CreateRequestPlayerDetailsMessageResponse(nickName);
 
 			int sendResult = isTcp ? networking->netSendVRec(clientSocketToGameSever, response.c_str(), response.size())
 								   : send(clientSocketToGameSever, response.c_str(), response.size(), 0);
+			return;
 		}
-		else 
-		{
-			// These are player messages arriving from the game server, pent them to their targets
-			auto event = serializationManager->Deserialize(msgHeader, buffer);
-			if(event)
+		
+		// This puts events sent by the game server, over the network, onto our local event stack.
+		auto event = serializationManager->Deserialize(msgHeader, buffer);
+		
+		// Some events are known not to have a specific subscriber target
+		bool noTarget = messageType == ToString(EventType::StartNetworkLevel);
+
+		if(event)
+		{			
+			if (noTarget)
 			{
-				eventManager->DispatchEventToSubscriber(event, msgHeader.MessageTarget);	
+				eventManager->DispatchEventToSubscriber(event);
+				return;
 			}
-			
+
+			// Notice target, send only to a specific target
+			eventManager->DispatchEventToSubscriber(event, msgHeader.MessageTarget);	
 		}
 	}
 
@@ -158,11 +183,18 @@ namespace gamelib
 
 	std::vector<std::shared_ptr<Event>> GameClient::HandleEvent(std::shared_ptr<Event> evt)
 	{		
+		std::vector<std::shared_ptr<Event>> createdEvents;
+
+		Logger::Get()->LogThis("Sending client event to server:");
+		Logger::Get()->LogThis(evt->ToString());
+
 		auto message = serializationManager->Serialize(evt, nickName);
 		int sendResult = isTcp ? networking->netSendVRec(clientSocketToGameSever, message.c_str(), message.size())
 							   : send(clientSocketToGameSever, message.c_str(), message.size(), 0);
 
-		return std::vector<std::shared_ptr<Event>>();;
+		Logger::Get()->LogThis(sendResult > 0 ? "Successfully sent." : "Error no data sent");
+
+		return createdEvents;
 	}
 
 	std::string GameClient::GetSubscriberName()
@@ -172,9 +204,13 @@ namespace gamelib
 
 	void GameClient::PingGameServer()
 	{
+		Logger::Get()->LogThis("Pinging game server...");
+
 		auto message = serializationManager->CreatePingMessage();
 		int sendResult = isTcp ? networking->netSendVRec(clientSocketToGameSever, message.c_str(), message.size())
 							   : send(clientSocketToGameSever, message.c_str(), message.size(), 0);
+
+		Logger::Get()->LogThis(sendResult > 0 ? "Sent ping request" : "Error, no data sent");
 
 		if (sendResult == SOCKET_ERROR) 
 		{

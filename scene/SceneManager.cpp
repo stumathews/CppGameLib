@@ -418,7 +418,7 @@ namespace gamelib
 									gameWorld.GetGameObjects().push_back(gameObject);
 
 									// Add game object to this layer
-									layer->layerObjects.push_back(gameObject);																
+									layer->layerObjects.push_back(gameObject);
 								}
 							}
 						}

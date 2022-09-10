@@ -44,6 +44,7 @@ namespace gamelib
 	/// <returns>true if initialised, false otherwise</returns>
 	bool ResourceManager::Initialize()
 	{
+		IndexResourceFile();
 		return LogThis("ResourceManager::initialize()", SettingsManager::Get()->GetBool("global", "verbose"), [&]()
 		{			
 			EventManager::Get()->SubscribeToEvent(EventType::LevelChangedEventType, this ); // we will load the resources for the level that has been loaded

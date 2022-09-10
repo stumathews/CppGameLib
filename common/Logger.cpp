@@ -47,6 +47,9 @@ namespace gamelib
 		{
 			LogToStdOut(message);
 		}
+
+		ErrorLogManager::GetErrorLogManager()->LogMessage(message);
+
 	}
 
 	void Logger::LogToStdOut(const string message) const

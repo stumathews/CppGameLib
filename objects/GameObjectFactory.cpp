@@ -15,7 +15,8 @@ namespace gamelib
 	/// Build Game object from XML
 	/// </summary>
 	/// <param name="scene_object_xml">XML element describing game object</param>
-	/// <returns></returns>
+	/// <returns>GameObject</returns>
+	/// <returns>GameObject</returns>
 	shared_ptr<GameObject> GameObjectFactory::BuildGameObject(XMLElement * sceneObject) const
 	{
 		// Game Object details:
@@ -44,56 +45,52 @@ namespace gamelib
 				// This object is associated with a resource, so use the resource manager
 
 				GetAssetForResourceIdParse(attributeValue, /*out*/ asset);
-				continue; // Move to the next attribute on element
+				continue;
 			}
-			
-			// Object's initial x position
+
 			if(attributeName == "posx")
 			{
 				OnPosXParse(x, attributeValue);
-				continue; // Move to the next attribute on element
+				continue;
 			}
 
-			// Object initial visibility setting
 			if(attributeName == "visible")
 			{
 				OnVisibleParse(isVisible, attributeValue);
-				continue; // Move to the next attribute on element
+				continue;
 			}
 
-			// object initial y position
 			if(attributeName == "posy")
 			{
 				OnPosYParse(y, attributeValue);
-				continue; // Move to the next attribute on element
+				continue;
 			}
 
-			// object's associated colour key
 			if(attributeName == "colourKey") 
 			{
 				OnColourKeyParse(isColourKeyEnabled, attributeValue);
-				continue; // Move to the next attribute on element
+				continue;
 			}
 
 			// Objects red color
 			if(attributeName._Equal("r")) 
 			{
 				OnRedParse(redValue, attributeValue);
-				continue; // Move to the next attribute on element
+				continue;
 			}
 
 			// Objects green color
 			if(attributeName == "g") 
 			{
 				OnGreenParse(greenValue, attributeValue);
-				continue; // Move to the next attribute on element
+				continue;
 			}
 
 			// Objects blue color
 			if (attributeName == "b")
 			{
 				OnBlueParse(blueValue, attributeValue);
-				continue; // Move to the next attribute on element
+				continue;
 			}
 		}
 			

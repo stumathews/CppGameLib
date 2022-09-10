@@ -23,7 +23,8 @@ namespace gamelib
 		GameObject,
 		DrawCurrentScene,
 		NetworkPlayerJoined,
-		NetworkTrafficReceived
+		NetworkTrafficReceived,
+		StartNetworkLevel,
 	};
 
 	inline const char* ToString(EventType type)
@@ -46,6 +47,7 @@ namespace gamelib
 			case EventType::DrawCurrentScene: return "DrawCurrentScene";
 			case EventType::NetworkPlayerJoined: return "NetworkPlayerJoined";
 			case EventType::NetworkTrafficReceived: return "NetworkPlayerTrafficReceived";
+			case EventType::StartNetworkLevel: return "StartNetworkPlayerLevel";
 			case EventType::Unknown: return "Unknown";
 			default:      
 				return "[Unknown EventType]";
@@ -117,6 +119,10 @@ namespace gamelib
 		else if (eventType == ToString(EventType::NetworkTrafficReceived))
 		{
 			return EventType::NetworkTrafficReceived;
+		}
+		else if(eventType == ToString(EventType::StartNetworkLevel))
+		{
+			return EventType::StartNetworkLevel;
 		}
 		else
 		{

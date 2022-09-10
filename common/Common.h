@@ -11,6 +11,7 @@
 #include "objects/GameObject.h"
 #include "common/Logger.h"
 #include "exceptions/EngineException.h"
+#include "Logging/ErrorLogManager.h"
 
 namespace gamelib
 {
@@ -23,8 +24,11 @@ namespace gamelib
 	inline bool IsSuccess(const bool condition, const std::string message)
 	{
 		const auto is = condition == true;
-		if(is == true)
+		if (is == true)
+		{		
 			Logger::Get()->LogThis(message);
+			ErrorLogManager::GetErrorLogManager()->LogMessage(message);
+		}
 		return is;
 	}
 
@@ -34,6 +38,7 @@ namespace gamelib
 		if (isFalse == true)
 		{
 			Logger::Get()->LogThis(message);
+			ErrorLogManager::GetErrorLogManager()->LogMessage(message);
 		}
 		return ignore == true ? !ignore : isFalse;
 	}
@@ -44,6 +49,7 @@ namespace gamelib
 		if(isFatal)
 		{
 			Logger::Get()->LogThis("Fatal error encountered.", be_verbose);
+			ErrorLogManager::GetErrorLogManager()->LogMessage(message);
 			std::string key;
 			std::cin >> key;
 		}

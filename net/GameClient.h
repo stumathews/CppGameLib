@@ -2,6 +2,8 @@
 #include "GameServer.h"
 #include <common/Logger.h>
 #include <WinSock2.h>
+//#include <winsock2.h>
+#include <Ws2tcpip.h>
 #include <events/EventSubscriber.h>
 
 
@@ -16,7 +18,13 @@ namespace gamelib
 	public:
 		~GameClient();
 		GameClient();
+
+		/// <summary>
+		/// Initializes the Game client.
+		/// </summary>
 		void Initialize();
+
+		void SubscribeToGameEvents();
 		
 		// Make an initial connection to the game server. This will register a socket with the game server tat we can later use to talk to it
 		void Connect(std::shared_ptr<GameServer> gameServer);

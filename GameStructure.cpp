@@ -1,11 +1,8 @@
-#include <SDL.h>
 #include <SDL_image.h>
 #include <winsock2.h>
 #include <Ws2tcpip.h>
 #include <Windows.h>
 #include <iostream>
-#include <SDL_mixer.h>
-#include <SDL_ttf.h>
 #include "GameStructure.h"
 #include <functional>
 #include "audio/AudioManager.h"
@@ -22,7 +19,7 @@
 #include "common/aliases.h"
 #include <string>
 #include <net/NetworkManager.h>
-
+#include "Logging/ErrorLogManager.h"
 
 using namespace std;
 
@@ -31,18 +28,89 @@ namespace gamelib
 	/// <summary>
 	/// Create the game structure
 	/// </summary>
-	/// <param name="eventAdmin">Event manager</param>
-	/// <param name="resource_admin">Resource manager</param>
-	/// <param name="config">Settings manager</param>
-	/// <param name="world"></param>
-	/// <param name="scene_admin"></param>
-	/// <param name="graphics_admin"></param>
-	/// <param name="audio_admin"></param>
-	/// <param name="get_input_func"></param>
-	/// <param name="Logger"></param>
 	GameStructure::GameStructure(std::function<void()> getControllerInputFunction)
 			: _getControllerInputFunction(std::move(getControllerInputFunction))
 			{ }
+
+	/// <summary>
+	/// Update & Draw until the game ends
+	/// </summary>
+	/// <returns></returns>
+	bool GameStructure::DoGameLoop()
+	{
+		// A 'tick' reprents one update call(). 
+		// We want a fixed number of ticks within a real unit of time. 
+		// A real unit of time does not change (1 second is always one second in the real world)
+		// irrespective of what the hardware you are running on. So if we can ensure we have the same number of updates in one second, the update rate
+		// will always be te same, the we have a fixed update rate. 
+
+		// t0 repreesnts the time when the last update() finished.
+		// t1 when re-evaluated represents the time elapsed since t0 (last update)
+
+		// t1-t0 is the elapsed time since the last update and is called the frame-time, and includes the time taken to draw.
+		// The frame-time is the time it it takes to since the last update, and which includes subsequent drawing
+		// that a new update might be ready to be called again or if not, more drawing can be done.
+
+		// Initialize/prepare process by saying last update occured right now.
+		auto t0 = GetTimeNowMs();
+
+		const auto maxLoops = SettingsManager::Get()->GetInt("global", "max_loops");
+
+		// Get required time(ms) in per update() call. 
+		// This is a pre-calculated ms value that will represents a desired fixed number times that update must be called in 1 second,
+		// as multiples of this value will equal 1 second.
+		const auto TICK_TIME = SettingsManager::Get()->GetInt("global", "tick_time_ms");
+
+		while (!SceneManager::Get()->GetGameWorld().IsGameDone) // main game loop (exact speed of loops is hardware dependaant)
+		{
+			const auto t1 = GetTimeNowMs(); // t1 is the time now, and at t0, the last update was called.
+			auto delta = t1 - t0;	// elapsedTimeSinceLastUpdateFinished		
+
+			auto frameTimePerLoop = 0;  // Sum of update intervals we could get in 1 game loop (hardware dependant).
+			auto num_loops = 0;  // Number of loops 
+
+			// Update() needs to be called every x times a second (ie thats pre-defined and therefore fixed)
+			// To achieve this means every 1000/20 milliseconds (50ms) update() must be called. 
+			// Note: 1 second is 1000 milliseconds, thus 1000/20 - 50ms
+
+			// Update() needs to happen or 'tick' x times a second or every 50 ms 
+			// We skip update() if next 50ms interval not yet reached ie elapse time since last update < 50ms (TICK_TIME)
+			// However if we are within the next 50ms interval execute update() 
+
+			while ((t1 - t0) > TICK_TIME && num_loops < maxLoops) // (t1 - t0) is the elapsed time since the last update
+			{
+				// +TICK_TIME has just occured, since last update so do another update
+				// update logic
+				Update(t1 - t0);
+				// At this point, we are now into a new 'frame' or loop of the game-loop
+
+				// t0 repreesnts the time when the last update() finished.
+				// Update it (t0) to +TICK_TIME since that last time it happened.
+				t0 += TICK_TIME;
+
+				// Total time so far is what it was plus TICK_TIME (as being > TICK_TIME is what got us here)
+				frameTimePerLoop += TICK_TIME; // This should add up as many ms TICK_TIME's in a hw frame/gameloop.
+				num_loops++;
+			}
+
+			HandleSpareTime(frameTimePerLoop); // handle player input, general housekeeping (Event Manager processing)
+
+			if (SceneManager::Get()->GetGameWorld().IsNetworkGame && (t1 - t0) > TICK_TIME)
+			{
+				t0 = t1 - TICK_TIME;
+			}
+
+			if (SceneManager::Get()->GetGameWorld().CanDraw)
+			{
+				// How much within the new 'tick' are we?
+				const auto percentWithinTick = min(1.0f, float((t1 - t0) / TICK_TIME)); // NOLINT(bugprone-integer-division)				
+				Draw(percentWithinTick);
+			}
+			// cout << frameTimePerLoop/TICK_TIME << " updates/ticks per game loop" << endl;
+		}
+		std::cout << "Game done" << std::endl;
+		return true;
+	}
 
 	/// <summary>
 	/// tear down and unloda game subsystems when the game shuts down
@@ -72,24 +140,24 @@ namespace gamelib
 		
 		// Perform the initialiation
 		return LogThis("GameStructure::initialize()", beVerbose, [&]()
-		{			
-			// Initialize resource manager
-			const auto resourceManagerInitialized = LogOnFailure(ResourceManager::Get()->Initialize(), "Could not initialize resource manager");
+		{
+			if (SettingsManager::Get()->GetBool("global", "isNetworkGame"))
+			{
+				// Initialize NetworkManager
+				const auto networkManagerInitialized = LogOnFailure(NetworkManager::Get()->Initialize(), "Could not initialize network manager");
+			}
 
-			// Initialize event manager
-			const auto eventManagerInitialized = LogOnFailure(EventManager::Get()->Initialize(), "Could not initialize event manager");
-
-			// Initialize SceneManager
-			const auto sceneManagerInitialized = LogOnFailure(SceneManager::Get()->Initialize(), "Could not initialize scene manager");
-
-			// Initialize SDL
-			const auto SdLInitialized = LogOnFailure(InitializeSDL(screenWidth, screenHeight, windowTitle), "Could not initialize SDL, aborting.");
-
-			// Initialize Networking
-			const auto networkManagerInitialized = LogOnFailure(NetworkManager::Get()->Initialize(), "Could not initialize network manager");
+			auto title = SettingsManager::Get()->GetBool("global", "isNetworkGame")
+				? NetworkManager::Get()->IsGameServer()
+				? "Mazer 2D (Multiplayer - Server)" : "Mazer 2D (Multiplayer - Client)"
+				: "Mazer 2D - Single Player Mode";
 
 			// Final check to see if all subsystems are initialised ok
-			if (IsFailedOrFalse(SdLInitialized) || IsFailedOrFalse(eventManagerInitialized) || IsFailedOrFalse(resourceManagerInitialized) || IsFailedOrFalse(sceneManagerInitialized) || IsFailedOrFalse(settingsInitialized))
+			if (IsFailedOrFalse(LogOnFailure(InitializeSDL(screenWidth, screenHeight, title), "Could not initialize SDL, aborting.")) ||
+				IsFailedOrFalse(LogOnFailure(EventManager::Get()->Initialize(), "Could not initialize event manager")) ||
+				IsFailedOrFalse(LogOnFailure(ResourceManager::Get()->Initialize(), "Could not initialize resource manager")) ||
+				IsFailedOrFalse(LogOnFailure(SceneManager::Get()->Initialize(), "Could not initialize scene manager")) ||
+				IsFailedOrFalse(settingsInitialized))
 			{
 				return false;
 			}
@@ -110,10 +178,7 @@ namespace gamelib
 
 	void GameStructure::ReadNetwork() const
 	{
-		NetworkManager::Get()->GetNetworkEvent();
-
-		
-
+		NetworkManager::Get()->Listen();
 	}
 
 	/// <summary>
@@ -151,9 +216,7 @@ namespace gamelib
 	/// Is run x FPS to maintain a timed series on constant updates
 	/// </summary>
 	void GameStructure::Update(float deltaMs)
-	{	
-		// make the game do something now...show game activity that the user will then respond to
-		// this generates game play
+	{
 		UpdateWorld(deltaMs);
 	}
 
@@ -182,14 +245,10 @@ namespace gamelib
 	/// <param name="frame_time"></param>
 	void GameStructure::HandleSpareTime(long frame_time) const 	
 	{
-		// Read input from player
 		ReadKeyboard();
-
-		// Read input from the network
 		ReadNetwork();
-
-		// Contacts all event subscribers for all events that are currently waiting to be processed in the event queue
-		EventManager::Get()->ProcessAllEvents(); 
+		
+		EventManager::Get()->ProcessAllEvents();  
 	}
 
 	/// <summary>
@@ -202,7 +261,6 @@ namespace gamelib
 	{
 		return LogOnFailure(SDLGraphicsManager::Get()->Initialize(screenWidth, screenHeight, windowTitle.c_str()), "Failed to initialize SDL graphics manager");
 	}
-
 
 	/// <summary>
 	/// Unload and uninitialize key game sybsystems incl SDL, Image and font libraries and the resource manager
@@ -219,92 +277,14 @@ namespace gamelib
 				
 			return true;
 		}
-		catch(...)
+		catch(exception &e)
 		{
+			ErrorLogManager::GetErrorLogManager()->LogMessage(e.what());
 			return false;
 		}
 	}
 
-	/// <summary>
-	/// Update & Draw until the game ends
-	/// </summary>
-	/// <returns></returns>
-	bool GameStructure::DoGameLoop()
-	{
-		// A 'tick' reprents one update call(). 
-		// We want a fixed number of ticks within a real unit of time. 
-		// A real unit of time does not change (1 second is always one second in the real world)
-		// irrespective of what the hardware you are running on. So if we can ensure we have the same number of updates in one second, the update rate
-		// will always be te same, the we have a fixed update rate. 
 
-		// t0 repreesnts the time when the last update() finished.
-		// t1 when re-evaluated represents the time elapsed since t0 (last update)
-
-		// t1-t0 is the elapsed time since the last update and is called the frame-time, and includes the time taken to draw.
-		// The frame-time is the time it it takes to since the last update, and which includes subsequent drawing
-		// that a new update might be ready to be called again or if not, more drawing can be done.
-
-		// Initialize/prepare process by saying last update occured right now.
-		auto t0 = GetTimeNowMs();
-
-		const auto maxLoops = SettingsManager::Get()->GetInt("global", "max_loops");
-
-		// Get required time(ms) in per update() call. 
-		// This is a pre-calculated ms value that will represents a desired fixed number times that update must be called in 1 second,
-		// as multiples of this value will equal 1 second.
-		const auto TICK_TIME = SettingsManager::Get()->GetInt("global", "tick_time_ms"); 
-		
-		while (!SceneManager::Get()->GetGameWorld().IsGameDone) // main game loop (exact speed of loops is hardware dependaant)
-		{
-			const auto t1 =  GetTimeNowMs(); // t1 is the time now, and at t0, the last update was called.
-			auto delta = t1 - t0;	// elapsedTimeSinceLastUpdateFinished		
-			
-			auto frameTimePerLoop = 0;  // Sum of update intervals we could get in 1 game loop (hardware dependant).
-			auto num_loops = 0;  // Number of loops 
-			
-			// Update() needs to be called every x times a second (ie thats pre-defined and therefore fixed)
-			// To achieve this means every 1000/20 milliseconds (50ms) update() must be called. 
-			// Note: 1 second is 1000 milliseconds, thus 1000/20 - 50ms
-
-			// Update() needs to happen or 'tick' x times a second or every 50 ms 
-			// We skip update() if next 50ms interval not yet reached ie elapse time since last update < 50ms (TICK_TIME)
-			// However if we are within the next 50ms interval execute update() 
-			
-			while ((t1 - t0) > TICK_TIME && num_loops < maxLoops) // (t1 - t0) is the elapsed time since the last update
-			{
-				// +TICK_TIME has just occured, since last update so do another update
-				// update logic
-				Update(t1-t0);
-				// At this point, we are now into a new 'frame' or loop of the game-loop
-
-				// t0 repreesnts the time when the last update() finished.
-				// Update it (t0) to +TICK_TIME since that last time it happened.
-				t0 += TICK_TIME;
-
-				// Total time so far is what it was plus TICK_TIME (as being > TICK_TIME is what got us here)
-				frameTimePerLoop += TICK_TIME; // This should add up as many ms TICK_TIME's in a hw frame/gameloop.
-				num_loops++;
-			}
-
-			HandleSpareTime(frameTimePerLoop); // handle player input, general housekeeping (Event Manager processing)
-
-			if (SceneManager::Get()->GetGameWorld().IsNetworkGame && (t1 - t0) > TICK_TIME)
-			{
-				t0 = t1 - TICK_TIME;
-			}
-
-			
-			if (SceneManager::Get()->GetGameWorld().CanDraw)
-			{
-				// How much within the new 'tick' are we?
-				const auto percentWithinTick = min(1.0f , float((t1 - t0) /TICK_TIME)); // NOLINT(bugprone-integer-division)				
-				Draw(percentWithinTick);
-			}
-			// cout << frameTimePerLoop/TICK_TIME << " updates/ticks per game loop" << endl;
-		}
-		std::cout << "Game done" << std::endl;
-		return true;
-	}
 	
 }
 

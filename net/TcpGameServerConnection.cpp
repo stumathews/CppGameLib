@@ -4,6 +4,7 @@
 #include <events/EventManager.h>
 #include <events/EventFactory.h>
 #include <SerializationManager.h>
+#include <events/NetworkPlayerJoinedEvent.h>
 
 namespace gamelib
 {
@@ -24,9 +25,7 @@ namespace gamelib
 		this->networking = Networking::Get();
 		this->eventFactory = EventFactory::Get();
 		this->eventManager = EventManager::Get();
-		this->serializationManager = SerializationManager::Get();
-
-		listeningSocket = networking->netTcpServer(host.c_str(), port.c_str());
+		this->serializationManager = SerializationManager::Get();		
 	}
 
 	void TcpGameServerConnection::Listen()
@@ -68,12 +67,29 @@ namespace gamelib
 
 			if (connectedSocket != INVALID_SOCKET)
 			{
-				Players.push_back(NetworkPlayer(connectedSocket)); // Store incoming player sockets so we can listen for incoming player data too
+				auto newPlayer = TcpNetworkPlayer(connectedSocket);
+				Players.push_back(newPlayer); // Store incoming player sockets so we can listen for incoming player data too
 				
-				eventManager->RaiseEventWithNoLogging(std::make_shared<gamelib::Event>(gamelib::EventType::NetworkPlayerJoined));
+				//eventManager->RaiseEventWithNoLogging(std::make_shared<gamelib::Event>(gamelib::EventType::NetworkPlayerJoined));
+				eventManager->RaiseEvent(eventFactory->CreateNetworkPlayerJoinedEvent(newPlayer), this);
 			}			
 			
 		}
+	}
+
+	std::vector<std::shared_ptr<Event>> TcpGameServerConnection::HandleEvent(std::shared_ptr<Event> evt)
+	{
+		return std::vector<std::shared_ptr<Event>>();
+	}
+
+	std::string TcpGameServerConnection::GetSubscriberName()
+	{
+		return "TcpGameServerConnection";
+	}
+
+	void TcpGameServerConnection::Create()
+	{
+		listeningSocket = networking->netTcpServer(host.c_str(), port.c_str());
 	}
 
 	void TcpGameServerConnection::CheckForPlayerTraffic()
@@ -98,7 +114,6 @@ namespace gamelib
 				if (bytesReceived > 0)
 				{
 					ParseReceivedPlayerPayload(playerId, buffer, bufferLength);
-
 					RaiseNetworkTrafficReceievedEvent(buffer, playerId, bytesReceived);
 				}
 

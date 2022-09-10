@@ -11,6 +11,7 @@
 #include <net/IGameServerConnection.h>
 #include <net/TcpGameServerConnection.h>
 #include <net/UdpGameServerConnection.h>
+#include <events/StartNetworkLevelEvent.h>
 
 using namespace json11;
 
@@ -27,29 +28,31 @@ namespace gamelib
 
 	void GameServer::Initialize()
 	{
-		Logger::Get()->LogThis("Game Server Starting.");
+		Logger::Get()->LogThis("Game Server Starting...");
 
-		this->serializationManager = SerializationManager::Get();
-		this->eventManager = EventManager::Get();
-		this->networking = Networking::Get();
-		this->eventFactory = EventFactory::Get();
+		serializationManager = SerializationManager::Get();
+		eventManager = EventManager::Get();
+		networking = Networking::Get();
+		eventFactory = EventFactory::Get();
+		isTcp = SettingsManager::Get()->GetBool("networking", "isTcp");
 
-		this->isTcp = SettingsManager::Get()->GetBool("networking", "isTcp");
+		Logger::Get()->LogThis(this->isTcp ? "Using TCP" : "Using UDP");
 
-		// Create a new server socket connection
+		// Create a new server socket connection, either TCP or UDP depending on game configuration
 		gameServerConnection = this->isTcp ? std::dynamic_pointer_cast<IGameServerConnection>(std::shared_ptr<TcpGameServerConnection>(new TcpGameServerConnection(address, port)))
 										   : std::dynamic_pointer_cast<IGameServerConnection>(std::shared_ptr<UdpGameServerConnection>(new UdpGameServerConnection(address, port)));
 		
 		gameServerConnection->Initialize();
+		gameServerConnection->Create();
 
-		// Read client nickname
-		this->nickname  = SettingsManager::Get()->GetString("networking", "nickname");
+		// Get our nickname
+		nickname  = SettingsManager::Get()->GetString("networking", "nickname");
 
-		// Send our events off on the network
+		// We're interested in some of the our own game's events
 		eventManager->SubscribeToEvent(EventType::PlayerMovedEventType, this);
 		eventManager->SubscribeToEvent(EventType::ControllerMoveEvent, this);
-		eventManager->SubscribeToEvent(EventType::Fire, this);
-		
+		eventManager->SubscribeToEvent(EventType::Fire, this);	
+		eventManager->SubscribeToEvent(EventType::StartNetworkLevel, this);
 	}
 	
 	void GameServer::Listen()
@@ -63,7 +66,7 @@ namespace gamelib
 	}
 
 	std::vector<std::shared_ptr<Event>> GameServer::HandleEvent(std::shared_ptr<Event> evt)
-	{				
+	{
 		gameServerConnection->SendEventToAllPlayers(serializationManager->Serialize(evt, nickname)); 
 
 		return std::vector<std::shared_ptr<Event>>();

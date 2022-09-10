@@ -15,6 +15,7 @@ namespace gamelib
 		std::shared_ptr<IEventSerializationManager> eventSerialization;
 		std::string CreatePlayerMovedEventMessage(std::shared_ptr<Event> event, std::string target);
 		std::string CreateControllerMoveEventMessage(std::shared_ptr<Event> evt, std::string target);
+		std::string CreateStartNetworkLevelMessage(std::shared_ptr<Event> evt, std::string target);
 		public:
 			static SerializationManager* Get();
 			SerializationManager();

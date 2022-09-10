@@ -4,6 +4,8 @@
 #include <events/EventFactory.h>
 #include <SerializationManager.h>
 #include <net/PeerInfo.h>
+#include <events/NetworkPlayerJoinedEvent.h>
+#include <events/Event.h>
 
 namespace gamelib
 {
@@ -26,8 +28,6 @@ namespace gamelib
 		this->eventManager = EventManager::Get();
 		this->serializationManager = SerializationManager::Get();
 		
-		// Makes UDP Server Socket
-		listeningSocket = networking->netUdpServer(host.c_str(), port.c_str());
 	}
 
 	void UdpGameServerConnection::Listen()
@@ -72,7 +72,7 @@ namespace gamelib
 		{
 			if(player.peerInfo.Address.sin_port == fromClient.Address.sin_port)
 			{
-				identifier = player.NickName;
+				identifier = player.GetNickName();
 				break;
 			}
 		}
@@ -87,7 +87,7 @@ namespace gamelib
 		// Loop through all the known players we have and send them this message
 		for(auto player : Players)
 		{
-			if(player.NickName == senderNickname)
+			if(player.GetNickName() == senderNickname)
 			{
 				continue;
 			}
@@ -140,9 +140,13 @@ namespace gamelib
 			}
 		}
 
+		// Add new player
 		if(!found)
 		{
-			Players.push_back(UdpNetworkPlayer(fromClient, messageHeader.MessageTarget));
+			auto newPlayer = UdpNetworkPlayer(fromClient, messageHeader.MessageTarget);
+			Players.push_back(newPlayer);
+			
+			eventManager->RaiseEvent(eventFactory->CreateNetworkPlayerJoinedEvent(newPlayer), this);
 		}
 	}
 
@@ -152,6 +156,22 @@ namespace gamelib
 		{
 			int sendResult = sendto(listeningSocket, serializedEvent.c_str(), serializedEvent.size(), 0, (sockaddr*) &player.peerInfo.Address, player.peerInfo.Length);
 		}
+	}
+
+	std::vector<std::shared_ptr<Event>> UdpGameServerConnection::HandleEvent(std::shared_ptr<Event> evt)
+	{
+		// We dont handle events yet
+		return std::vector<std::shared_ptr<Event>>();
+	}
+
+	std::string UdpGameServerConnection::GetSubscriberName()
+	{
+		return "UdpGameServerConnection";
+	}
+
+	void UdpGameServerConnection::Create()
+	{
+		listeningSocket = networking->netUdpServer(host.c_str(), port.c_str());
 	}
 
 }

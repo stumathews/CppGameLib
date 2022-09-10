@@ -52,7 +52,7 @@ namespace gamelib
 		/// Initialize Winsock
 		/// </summary>
 		/// <returns></returns>
-		bool Initialize();
+		bool InitializeWinSock();
 
 		// Cannot copy an NetworkManager
 		Networking(Networking const&) = delete;

@@ -6,13 +6,15 @@
 #include <vector>
 #include <net/UdpNetworkPlayer.h>
 #include <net/PeerInfo.h>
+#include <events/EventSubscriber.h>
+#include <events/Event.h>
 namespace gamelib
 {
 	class Networking;
 	class EventManager;
 	class SerializationManager;
 	class EventFactory;
-	class UdpGameServerConnection : public IGameServerConnection
+	class UdpGameServerConnection : public IGameServerConnection, public gamelib::EventSubscriber
 	{
 	public:
 		UdpGameServerConnection(std::string host, std::string port);
@@ -45,6 +47,13 @@ namespace gamelib
 
 		// Inherited via IGameServerConnection
 		virtual void SendEventToAllPlayers(std::string serializedEvent) override;
+
+		// Inherited via EventSubscriber
+		virtual std::vector<std::shared_ptr<gamelib::Event>> HandleEvent(std::shared_ptr<gamelib::Event> evt) override;
+		virtual std::string GetSubscriberName() override;
+
+		// Inherited via IGameServerConnection
+		virtual void Create() override;
 	};
 }
 

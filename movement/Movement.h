@@ -8,8 +8,7 @@ class Room;
 class Movement
 {
 public:
-	Movement(float durationMs, std::string movementTargetId, int maxPixels = 20, bool debug = false);
-	~Movement();
+	Movement(float durationMs, std::string targetRoom, int maxPixels = 20, bool debug = false);
 	bool IsComplete();
 	void Update(float deltaMs);
 	unsigned int TakePixelsToMove();
@@ -24,6 +23,7 @@ public:
 	static int id;
 private:
 	float pixelsPerMs;
+	float msPerPixel;
 	unsigned int pixelsTraveled;
 	float durationMs;
 	unsigned int pixelsToMove;

@@ -1,18 +1,20 @@
 #pragma once
-#include <net/PeerInfo.h>
+
+#include "NetworkPlayer.h"
+#include "PeerInfo.h"
 #include <string>
+
 namespace gamelib
 {
-	class UdpNetworkPlayer
+	class UdpNetworkPlayer : public gamelib::NetworkPlayer
 	{
 	public:
 		UdpNetworkPlayer(PeerInfo peerInfo, std::string nickName)
 		{
 			this->peerInfo = peerInfo;
-			this->NickName = nickName;
+			SetNickName(nickName);
 		}
 
 		PeerInfo peerInfo;		
-		std::string NickName;
 	};
 }

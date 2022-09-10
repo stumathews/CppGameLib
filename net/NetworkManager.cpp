@@ -12,17 +12,20 @@ namespace gamelib
 		maxPlayers = SettingsManager::Get()->GetInt("networking", "maxPlayers");
 	}
 
+	bool NetworkManager::IsGameServer()
+	{
+		return isGameServer;
+	}
+
 	bool NetworkManager::Initialize()
 	{
-		Networking::Get()->Initialize();
+		Networking::Get()->InitializeWinSock();
 		
-		// We are either a game server or we are connecting to one
 		Server = std::shared_ptr<gamelib::GameServer>(new gamelib::GameServer(gameServerAddress, gameServerPort));
 
 		if(isGameServer)
 		{			
 			Server->Initialize();
-			// We also want to connect to ourselves as a client, so that incomming player data is sent to 'all connected' clients
 		}
 		else
 		{
@@ -51,6 +54,7 @@ namespace gamelib
 		
 		Instance = nullptr;
 	}
+
 	void NetworkManager::PingGameServer() const
 	{
 		if(!isGameServer)
@@ -59,20 +63,18 @@ namespace gamelib
 		}
 	}
 
-	NetworkEvent NetworkManager::GetNetworkEvent()
+	void NetworkManager::Listen()
 	{
-		auto networking = Networking::Get();
-		if(isGameServer)
-		{			
-			// Check for any incomming traffic
-			Server->Listen();
-		}else
+		if (SettingsManager::Get()->GetBool("global", "isNetworkGame"))
 		{
-			// Check for any incomming traffic 
-			Client->Listen();
+			if (isGameServer)
+			{
+				Server->Listen();
+			}
+			else
+			{
+				Client->Listen();
+			}
 		}
-
-
-		return NetworkEvent();
 	}
 }

@@ -3,9 +3,9 @@
 using namespace std;
 namespace gamelib
 {
-	ControllerMoveEvent::ControllerMoveEvent(Direction dir): Event(EventType::ControllerMoveEvent)
+	ControllerMoveEvent::ControllerMoveEvent(gamelib::Direction dir): Event(EventType::ControllerMoveEvent)
 	{
-		direction = dir;
+		Direction = dir;
 	}
 
 	string ControllerMoveEvent::ToString()

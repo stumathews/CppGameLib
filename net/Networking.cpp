@@ -24,7 +24,7 @@ namespace gamelib
 	}
 
 	
-	bool Networking::Initialize()
+	bool Networking::InitializeWinSock()
 	{
 		Logger::Get()->LogThis("Initializing Winsock2");
 		WSADATA wsaData;

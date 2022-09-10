@@ -16,17 +16,11 @@ namespace gamelib
 
 	std::string Event::ToString()
 	{
-		return "generic event";
+		return gamelib::ToString(type);
 	}
 
 	std::string operator+(const std::string& str, const EventType type)
 	{
 		return str + std::to_string(ToInteger(type));
 	}
-
-	/*template <typename T>
-	std::shared_ptr<T> Event::DownCast()
-	{
-		return std::make_shared<T>(dynamic_cast<T>(this));
-	}*/
 }

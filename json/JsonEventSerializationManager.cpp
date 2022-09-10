@@ -1,6 +1,7 @@
 #include "JsonEventSerializationManager.h"
 #include <events/PlayerMovedEvent.h>
 #include <events/ControllerMoveEvent.h>
+#include <events/StartNetworkLevelEvent.h>
 
 using namespace json11;
 namespace gamelib
@@ -13,12 +14,21 @@ namespace gamelib
         return std::shared_ptr<PlayerMovedEvent>(new PlayerMovedEvent(gamelib::FromDirectionString(direction)));
     }	
 
+	std::shared_ptr<StartNetworkLevelEvent> gamelib::JsonEventSerializationManager::DeserializeStartNetworkLevel(std::string serializedMessage)
+	{
+		std::string error;
+		auto payload = Json::parse(serializedMessage.c_str(), error);
+        const auto& level = payload["level"].int_value();
+        return std::shared_ptr<StartNetworkLevelEvent>(new StartNetworkLevelEvent(level));
+	
+	}
+
 	std::string gamelib::JsonEventSerializationManager::SerializeControllerMoveEvent(std::shared_ptr<ControllerMoveEvent> object, std::string target)
     {
         Json payload = Json::object
 		{
 			{ "messageType", ToString(object->type) },
-			{ "direction", ToString(object->direction) },
+			{ "direction", ToString(object->Direction) },
 			{ "nickname", target }
 		};
 
@@ -48,9 +58,21 @@ namespace gamelib
 		return sendPayload.dump();
     }
 
+	std::string JsonEventSerializationManager::SerializeStartNetworkLevelEvent(std::shared_ptr<StartNetworkLevelEvent> evt, std::string target)
+	{
+		Json payload = Json::object
+		{
+			{ "messageType", ToString(evt->type) },
+			{ "level", evt->level },
+			{ "nickname", target }
+		};
+
+		return payload.dump();
+	}
+
 	std::string JsonEventSerializationManager::CreateUnknownEventMessage(std::shared_ptr<Event> evt, std::string target) 
 	{
-		 Json payload = Json::object
+		Json payload = Json::object
 		{
 			{ "messageType", "unknown" },
 			{ "nickname", target }

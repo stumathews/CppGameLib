@@ -4,12 +4,12 @@
 #include "NetworkEvent.h"
 #include "Connection.h"
 #include <memory>
-//#include <net/Networking.h>
 #include <net/GameClient.h>
 #include <net/GameServer.h>
 
 namespace gamelib
 {
+	// Setups networking to listens for network events
 	class NetworkManager
 	{
 	protected:
@@ -24,17 +24,19 @@ namespace gamelib
 	public:
 		static NetworkManager* Get();
 		NetworkManager();
+		bool IsGameServer();
 		bool Initialize();
 
 		// Cannot copy an NetworkManager
 		NetworkManager(NetworkManager const&) = delete;
 	
 		~NetworkManager();
-		
+				
 		// Cannot assign to an NetworkManager
 		void operator=(NetworkManager const&) = delete;
 
-		NetworkEvent GetNetworkEvent();
+		// Listen for network traffic destined for this this game server or this client
+		void Listen();
 		void PingGameServer() const;
 
 		std::shared_ptr<GameClient> Client = nullptr;

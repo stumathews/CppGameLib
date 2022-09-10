@@ -5,9 +5,12 @@
 #include <memory>
 #include <string>
 #include <events/NetworkTrafficRecievedEvent.h>
+#include <events/SceneChangedEvent.h>
+#include <net/NetworkPlayer.h>
 
 namespace gamelib
 {
+	class NetworkPlayerJoinedEvent;
 	class EventFactory
 	{
 	protected:
@@ -29,8 +32,10 @@ namespace gamelib
 
 		std::shared_ptr<PlayerMovedEvent> CreatePlayerMovedEvent(gamelib::Direction direction, std::string target);
 		std::shared_ptr<PlayerMovedEvent> CreatePlayerMovedEvent(std::string serializedMessage);
-
 		std::shared_ptr<NetworkTrafficRecievedEvent> CreateNetworkTrafficReceivedEvent(std::string message, std::string identifier, int bytesReceived);
+		std::shared_ptr<SceneChangedEvent> CreateLevelEvent(int level);
+		std::shared_ptr<StartNetworkLevelEvent> CreateStartNetworkLevelEvent(int level);
+		std::shared_ptr<NetworkPlayerJoinedEvent> CreateNetworkPlayerJoinedEvent(NetworkPlayer player);
 	};
 }
 

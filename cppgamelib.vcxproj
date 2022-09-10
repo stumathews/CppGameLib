@@ -30,26 +30,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -168,11 +168,14 @@
     <ClInclude Include="audio\AudioAsset.h" />
     <ClInclude Include="events\EventFactory.h" />
     <ClInclude Include="events\IEventSerializationManager.h" />
+    <ClInclude Include="events\NetworkPlayerJoinedEvent.h" />
+    <ClInclude Include="events\StartNetworkLevelEvent.h" />
     <ClInclude Include="json\JsonEventSerializationManager.h" />
     <ClInclude Include="json\json11.h" />
     <ClInclude Include="net\IGameServerConnection.h" />
     <ClInclude Include="net\MessageHeader.h" />
     <ClInclude Include="net\NetworkPlayer.h" />
+    <ClInclude Include="net\TcpNetworkPlayer.h" />
     <ClInclude Include="net\GameClient.h" />
     <ClInclude Include="net\GameServer.h" />
     <ClInclude Include="net\Connection.h" />
@@ -259,6 +262,7 @@
     <ClCompile Include="json\json11.cpp" />
     <ClCompile Include="net\MessageHeader.cpp" />
     <ClCompile Include="net\NetworkPlayer.cpp" />
+    <ClCompile Include="net\TcpNetworkPlayer.cpp" />
     <ClCompile Include="net\GameClient.cpp" />
     <ClCompile Include="net\GameServer.cpp" />
     <ClCompile Include="net\Connection.cpp" />
@@ -279,6 +283,7 @@
     <ClCompile Include="net\NetworkEvent.cpp" />
     <ClCompile Include="net\Networking.cpp" />
     <ClCompile Include="net\NetworkManager.cpp" />
+    <ClCompile Include="net\UdpNetworkPlayer.cpp" />
     <ClCompile Include="objects\MultipleInheritableEnableSharedFromThis.cpp" />
     <ClCompile Include="objects\DrawableGameObject.cpp" />
     <ClCompile Include="events\AddGameObjectToCurrentSceneEvent.cpp" />

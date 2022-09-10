@@ -6,7 +6,8 @@ namespace gamelib
 	class PlayerMovedEvent;
 	class ControllerMoveEvent;
 	class Event;
-	class IEventSerializationManager
+	class StartNetworkLevelEvent;
+	class IEventSerializationManager	 
 	{
 	public:
 		virtual std::shared_ptr<PlayerMovedEvent> DeserializePlayerMovedEvent(std::string serializedMessage) = 0;
@@ -16,6 +17,8 @@ namespace gamelib
 		virtual std::string CreatePingMessage() = 0;
 		virtual std::string SerializeControllerMoveEvent(std::shared_ptr<ControllerMoveEvent> object, std::string target) = 0;
 		virtual std::string CreateUnknownEventMessage(std::shared_ptr<Event> evt, std::string target) = 0;
+		virtual std::string SerializeStartNetworkLevelEvent(std::shared_ptr<StartNetworkLevelEvent> evt, std::string target) = 0;
+		virtual std::shared_ptr<StartNetworkLevelEvent> DeserializeStartNetworkLevel(std::string serializedMessage) = 0;
 	};
 }
 

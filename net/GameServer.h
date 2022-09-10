@@ -4,7 +4,6 @@
 #include <vector>
 #include <common/Logger.h>
 #include <WinSock2.h>
-#include <net/NetworkPlayer.h>
 #include <events/EventSubscriber.h>
 #include <net/MessageHeader.h>
 
@@ -41,6 +40,7 @@ namespace gamelib
 
 	private:
 				
+		// Game server connection can either be in TCP or UDP
 		std::shared_ptr<IGameServerConnection> gameServerConnection;
 		
 		/// <summary>

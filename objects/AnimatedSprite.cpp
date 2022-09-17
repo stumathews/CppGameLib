@@ -1,4 +1,4 @@
-#include "Sprite.h"
+#include "AnimatedSprite.h"
 #include "SDL.h"
 #include "windows.h"
 #include "exceptions/EngineException.h"
@@ -9,15 +9,12 @@ using namespace std;
 
 namespace gamelib
 {
-	AnimatedSprite::AnimatedSprite(uint xPos, uint yPos, float frameDurationMs, bool isVisible, ABCDRectangle dimensions) : 
-		frameDurationMs(frameDurationMs), 
-		currentFrameNumber(0), 
-		startFrameNumber(0), 
-		timeLastFrameShown(0), 
-		Dimensions(dimensions),
-		DrawableGameObject(xPos, yPos, isVisible) 
+	AnimatedSprite::AnimatedSprite(uint xPos, uint yPos, float inFrameDurationMs, bool isVisible, ABCDRectangle dimensions) : DrawableGameObject(xPos, yPos, isVisible) 
 	{ 
-
+		frameDurationMs = inFrameDurationMs;
+		currentFrameNumber = startFrameNumber = timeLastFrameShown = 0;
+		Dimensions = dimensions;
+		LoadSettings();
 	}
 
 	shared_ptr<AnimatedSprite> AnimatedSprite::Create(int x, int y, std::shared_ptr<SpriteAsset> spriteAsset)
@@ -41,7 +38,6 @@ namespace gamelib
 	/// <summary>
 	/// Set game object type
 	/// </summary>
-	/// <returns></returns>
 	GameObjectType AnimatedSprite::GetGameObjectType()
 	{
 		return GameObjectType::AnimatedSprite;
@@ -53,8 +49,18 @@ namespace gamelib
 	/// <param name="renderer"></param>
 	void AnimatedSprite::Draw(SDL_Renderer* renderer)
 	{
-		DrawableGameObject::Draw(renderer);
-		//Update(0.0f);	// why do we have to do this in the draw function?	I think its because we need to move the key frame/do timer stuff
+		DrawableGameObject::Draw(renderer);		
+	}
+
+	void AnimatedSprite::LoadSettings()
+	{
+		debug = SettingsManager::Get()->GetBool("sprite", "debug");
+	}
+
+	void AnimatedSprite::MoveSprite(int x, int y)
+	{
+		Position.SetX(x);
+		Position.SetY(y);
 	}
 
 	/// <summary>
@@ -68,49 +74,51 @@ namespace gamelib
 		// Switch to the next frame if we've been on the current frame too long
 		if (durationSinceLastFrameMs >= frameDurationMs)
 		{
-			// Record which frame we're on
-			currentFrameNumber++;
+			AdvanceCurrentFrameNumber();
 
 			// Only cycle through supported animation groups
-			SkipUnsupportedAnimationGroupFrames();
-						
-			// Need to cycle back to the first frame if we're on the last in the key frames
-			if (currentFrameNumber >= KeyFrames.size())
-			{
-				currentFrameNumber = startFrameNumber;
-			}
+			SkipUnsupportedAnimationGroupFrames();			
 
+			
 			SetAnimationFrame(currentFrameNumber);
 
 			timeLastFrameShown = timeGetTime();
 		}
 	}
 
-	void AnimatedSprite::SkipUnsupportedAnimationGroupFrames()
+	void AnimatedSprite::AdvanceCurrentFrameNumber()
 	{
+		// Move to the next frame number
+		currentFrameNumber++;
+
+		// Need to cycle back to the first frame if we're on the last in the key frames
 		if (currentFrameNumber >= KeyFrames.size())
 		{
 			currentFrameNumber = startFrameNumber;
 		}
+	}
 
-		// If we are set to use an animation group name, skip others in the keyframes
+	void AnimatedSprite::SetSingleFrameDuration(int frameDuration)
+	{
+		frameDurationMs = frameDuration;
+	}
+
+	void AnimatedSprite::SkipUnsupportedAnimationGroupFrames()
+	{
 		if (!animationFrameGroup.empty())
-		{
-			// inspect current frame
-			bool isGroupFrame = KeyFrames[currentFrameNumber].group == animationFrameGroup;
+		{			
+			bool isGroupFrame = IsCurrentFrameInAnimationGroup();
 			while (!isGroupFrame)
 			{
-				// skip if not a group same as configured group
-				currentFrameNumber++;
-				if (currentFrameNumber >= KeyFrames.size())
-				{
-					currentFrameNumber = startFrameNumber;
-				}
-				// is next frame a group frame?
-				isGroupFrame = KeyFrames[currentFrameNumber].group == animationFrameGroup;
+				AdvanceCurrentFrameNumber();
+				isGroupFrame = IsCurrentFrameInAnimationGroup();
 			}
-			int done = currentFrameNumber;
 		}
+	}
+
+	bool AnimatedSprite::IsCurrentFrameInAnimationGroup()
+	{
+		return KeyFrames[currentFrameNumber].group == animationFrameGroup;
 	}
 
 	/// <summary>
@@ -119,16 +127,6 @@ namespace gamelib
 	void AnimatedSprite::PlayAnimation()
 	{
 		stopped = false;
-		const auto resource = GetGraphic();
-		if(!HasGraphic())
-		{
-			// Asset not loaded yet
-			return;
-		}
-
-		currentFrameNumber = startFrameNumber;
-		SetAnimationFrame(currentFrameNumber);
-		timeLastFrameShown = timeGetTime();
 	}
 
 	/// <summary>
@@ -145,14 +143,13 @@ namespace gamelib
 	}
 
 	/// <summary>
-	/// Set animation frame number
+	/// Set animation frame number. This is the keyframe which will be drawn
 	/// </summary>
-	/// <param name="FrameNumber"></param>
 	void AnimatedSprite::SetAnimationFrame(uint FrameNumber) const
 	{
 		if(!HasGraphic() || stopped)
-			return;
-
+			return;		
+		
 		// Get the rectangle that defines the viewport
 		auto& viewPort = GetGraphic()->GetViewPort();
 
@@ -175,7 +172,7 @@ namespace gamelib
 		// Get the rectangle that defines the viewport
 		auto& viewPort = GetGraphic()->GetViewPort();
 
-		// And change it in-place
+		// Update viewport
 		viewPort = 
 		{ 
 			Dimensions.GetAx(), 

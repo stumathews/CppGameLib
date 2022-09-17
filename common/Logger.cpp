@@ -14,6 +14,7 @@ namespace gamelib
 			Instance = new Logger( [=](std::string message)
 			{
 				ErrorLogManager::GetErrorLogManager()->LogMessage(message);	
+				LogToStdOut(message);
 			});
 		}
 		return Instance;
@@ -52,8 +53,7 @@ namespace gamelib
 
 	}
 
-	void Logger::LogToStdOut(const string message) const
-	{
+	void Logger::LogToStdOut(const string message) 	{
 		cout << message << endl;
 	}
 

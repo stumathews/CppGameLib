@@ -2,20 +2,24 @@
 #include "pch.h"
 #include <memory>
 #include <string>
+#include <Direction.h>
 
 class Room;
 
 class Movement
 {
 public:
-	Movement(float durationMs, std::string targetRoom, int maxPixels = 20, bool debug = false);
+	Movement(float durationMs, gamelib::Direction direction, int maxPixels = 20, bool debug = false);
 	bool IsComplete();
+
+	// Calculate the movement in pixels to move for the amount of time that has elapsed
 	void Update(float deltaMs);
 	unsigned int TakePixelsToMove();
+	unsigned int PreviewPixelsToMove();
 	unsigned int GetPixelsTraveled();
 	unsigned int GetPixelsStillToTravel();
 	void SpendPixels();
-
+	gamelib::Direction direction;
 	// This is the who the movement is to/for etc
 	std::string GetMovementTargetId();
 
@@ -29,7 +33,7 @@ private:
 	unsigned int pixelsToMove;
 	unsigned int totalTargetMovePixels;
 	bool isComplete;
-	std::string movementTargetId;
+	std::string movementTowardsTargetId;
 	bool debug;
 
 };

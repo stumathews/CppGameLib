@@ -27,7 +27,7 @@ namespace gamelib
 		static Logger* Instance;
 	private:
 		logging_func func;	
-		void LogToStdOut(const std::string message) const;
+		void static LogToStdOut(const std::string message);
 		Logger(logging_func func = nullptr);
 	};
 }

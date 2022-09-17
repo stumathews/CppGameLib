@@ -5,5 +5,7 @@ namespace gamelib
 		: GraphicAsset(uid, name, path, type, scene, dimensions)
 	{
 		assetType = Asset::AssetType::Sprite;
+		FrameDurationMs = 0;
+		
 	}
 }

@@ -203,6 +203,7 @@
     <ClInclude Include="net\NetworkEvent.h" />
     <ClInclude Include="net\NetworkManager.h" />
     <ClInclude Include="net\UdpNetworkPlayer.h" />
+    <ClInclude Include="objects\StaticSprite.h" />
     <ClInclude Include="objects\MultipleInheritableEnableSharedFromThis.h" />
     <ClInclude Include="objects\DrawableGameObject.h" />
     <ClInclude Include="events\AddGameObjectToCurrentSceneEvent.h" />
@@ -228,7 +229,7 @@
     <ClInclude Include="objects\Component.h" />
     <ClInclude Include="objects\GameObject.h" />
     <ClInclude Include="objects\GameObjectFactory.h" />
-    <ClInclude Include="objects\Sprite.h" />
+    <ClInclude Include="objects\AnimatedSprite.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="net\PeerInfo.h" />
     <ClInclude Include="events\NetworkTrafficRecievedEvent.h" />
@@ -284,6 +285,7 @@
     <ClCompile Include="net\Networking.cpp" />
     <ClCompile Include="net\NetworkManager.cpp" />
     <ClCompile Include="net\UdpNetworkPlayer.cpp" />
+    <ClCompile Include="objects\StaticSprite.cpp" />
     <ClCompile Include="objects\MultipleInheritableEnableSharedFromThis.cpp" />
     <ClCompile Include="objects\DrawableGameObject.cpp" />
     <ClCompile Include="events\AddGameObjectToCurrentSceneEvent.cpp" />
@@ -306,7 +308,7 @@
     <ClCompile Include="objects\Component.cpp" />
     <ClCompile Include="objects\GameObject.cpp" />
     <ClCompile Include="objects\GameObjectFactory.cpp" />
-    <ClCompile Include="objects\Sprite.cpp" />
+    <ClCompile Include="objects\AnimatedSprite.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="net\PeerInfo.cpp" />
     <ClCompile Include="events\NetworkTrafficRecievedEvent.cpp" />

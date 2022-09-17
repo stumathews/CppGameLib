@@ -24,6 +24,7 @@ namespace gamelib
 		Room,
 		Player,
 		AnimatedSprite,
+		StaticSprite,
 		Pickup,
 	};
 
@@ -118,16 +119,6 @@ namespace gamelib
 		/// Each game object may be visible
 		/// </summary>
 		bool isVisible;
-				
-		/*/// <summary>
-		/// Each game object has a x-orordinate
-		/// </summary>
-		int x;
-
-		/// <summary>
-		/// Each game object has a y-orordinate
-		/// </summary>
-		int y;*/
 
 		gamelib::coordinate<int> Position;
 
@@ -163,8 +154,6 @@ namespace gamelib
 
 		// Initialize game objects defaults
 		void SetDefaults(bool isVisible, int x, int y);
-
-		//std::shared_ptr<GameObjectMover> mover = nullptr;
 	};
 }
 

@@ -1,6 +1,6 @@
 #include "GameObjectFactory.h"
 #include "GameObject.h"
-#include "Sprite.h"
+#include "AnimatedSprite.h"
 #include "resource/ResourceManager.h"
 #include "common/StaticConfig.h"
 #include "common/aliases.h"

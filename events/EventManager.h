@@ -76,6 +76,7 @@ namespace gamelib
 		// Event subscribers (aka event handlers)
 		std::map<EventType, std::vector<IEventSubscriber*>> event_subscribers_;
 		bool resetting = false;
+		bool logEvents;
 	};
 }
 

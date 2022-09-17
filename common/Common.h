@@ -57,7 +57,7 @@ namespace gamelib
 		
 	inline bool LogThis(const std::string &message, bool verbose, const std::function<bool()>& action,  bool print_finished = true, bool run_if = true)
 	{
-		LogMessage(message, SettingsManager::Get()->GetBool("global","verbose"));
+		LogMessage(message, verbose);
 		bool result;
 		if(run_if)
 		{
@@ -81,7 +81,7 @@ namespace gamelib
 	{
 		if(condition == false){
 			
-			LogMessage(message, SettingsManager::Get()->GetBool("global", "verbose"));
+			LogMessage(message, true);
 		}
 		return condition;
 	}

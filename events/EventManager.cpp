@@ -47,7 +47,11 @@ namespace gamelib
 	}
 
 	
-	bool EventManager::Initialize() { return true; }
+	bool EventManager::Initialize() 
+	{ 
+		logEvents = SettingsManager::Get()->GetBool("EventManager", "logEvents");
+		return true;
+	}
 
 	void EventManager::ClearSubscribers()
 	{
@@ -68,7 +72,7 @@ namespace gamelib
 			return;
 		}
 
-		if(SettingsManager::Get()->GetBool("EventManager", "logEvents"))
+		if(logEvents)
 		{
 			std::stringstream log;
 			log << "EventManager: " << you->GetSubscriberName()  << " raised to event " << ToString(event->type);

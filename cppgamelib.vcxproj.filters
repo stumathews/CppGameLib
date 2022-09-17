@@ -96,7 +96,7 @@
     <ClInclude Include="objects\GameObjectFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="objects\Sprite.h">
+    <ClInclude Include="objects\AnimatedSprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="graphic\Drawing.h">
@@ -276,6 +276,9 @@
     <ClInclude Include="events\NetworkPlayerJoinedEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="objects\StaticSprite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -332,7 +335,7 @@
     <ClCompile Include="objects\GameObjectFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="objects\Sprite.cpp">
+    <ClCompile Include="objects\AnimatedSprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="graphic\Drawing.cpp">
@@ -498,6 +501,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="net\UdpNetworkPlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="objects\StaticSprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

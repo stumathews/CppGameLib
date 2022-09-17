@@ -55,6 +55,7 @@ namespace gamelib
 		int countResources = 0;
 		int countLoadedResources = 0;
 		int countUnloadedResources = 0;
+		bool debug;
 		
 	};
 }

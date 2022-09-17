@@ -4,34 +4,37 @@
 #include <common/Logger.h>
 #include <sstream>
 #include <util/SettingsManager.h>
+#include <Direction.h>
 
 int Movement::id = 0;
 
-Movement::Movement(float durationMs, std::string movementTargetId, int maxPixelsToMove, bool debug)
+Movement::Movement(float durationMs, gamelib::Direction direction, int maxPixelsToMove, bool debug)
 {
 	id++;
+
+	this->direction = direction;
 
 	// The expected total movement duration
 	this->durationMs = durationMs;
 
 	// The total number of pixels to have moved when the movement duration is completed
-	this->totalTargetMovePixels = maxPixelsToMove;
+	totalTargetMovePixels = maxPixelsToMove;
 
 	// Interval or length of distance to move in a millisecond
-	this->pixelsPerMs = totalTargetMovePixels / durationMs;
-	this->msPerPixel = durationMs / maxPixelsToMove;
+	pixelsPerMs = totalTargetMovePixels / durationMs;
+	msPerPixel = durationMs / maxPixelsToMove;
 
 	// Keep travel between update invervals how many pixels the movement has completed so far
-	this->pixelsTraveled = 0;
+	pixelsTraveled = 0;
 
 	// Number of pixels to move (dynamicially updated)
-	this->pixelsToMove = 0;
+	pixelsToMove = 0;
 
 	// Indication if the number of total expected pixels moxed or duration is met
-	this->isComplete = false;
+	isComplete = false;
 
-	// 
-	this->movementTargetId = movementTargetId;
+	// Room Id as String
+	this->movementTowardsTargetId = movementTowardsTargetId;
 
 	// Its possible to debug the movements internal operation
 	this->debug = debug;
@@ -42,6 +45,7 @@ void Movement::Update(float deltaMs)
 	if(pixelsTraveled < totalTargetMovePixels)
 	{
 		pixelsToMove = ceil(pixelsPerMs * deltaMs);
+		pixelsToMove = 3;
 	}
 	else
 	{
@@ -51,7 +55,7 @@ void Movement::Update(float deltaMs)
 	if(debug)
 	{
 		std::stringstream message;
-		message << id << ": deltaMS:" << deltaMs << "Move " << pixelsToMove << " towards target " << movementTargetId << ". " << GetPixelsTraveled() << "/" << totalTargetMovePixels;
+		message << id << ": deltaMS:" << deltaMs << "Move " << pixelsToMove << " towards target " << movementTowardsTargetId << ". " << GetPixelsTraveled() << "/" << totalTargetMovePixels;
 			
 		gamelib::Logger::Get()->LogThis(message.str());
 	}
@@ -65,6 +69,11 @@ bool Movement::IsComplete()
 unsigned int Movement::TakePixelsToMove()
 {	
 	SpendPixels();
+	return pixelsToMove;
+}
+
+unsigned int Movement::PreviewPixelsToMove()
+{
 	return pixelsToMove;
 }
 
@@ -85,5 +94,5 @@ void Movement::SpendPixels()
 
 std::string Movement::GetMovementTargetId()
 {
-	return movementTargetId;
+	return movementTowardsTargetId;
 }

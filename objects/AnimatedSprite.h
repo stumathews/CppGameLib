@@ -36,14 +36,22 @@ namespace gamelib
 		/// Draw sprite
 		/// </summary>
 		/// <param name="renderer"></param>
-		void Draw(SDL_Renderer* renderer) override;			
+		void Draw(SDL_Renderer* renderer) override;	
+
+		void LoadSettings() override;
+
+		void MoveSprite(int x, int y);
 		
 		/// <summary>
 		/// Update sprite
 		/// </summary>
 		void Update(float deltaMs) override;
+		void AdvanceCurrentFrameNumber();
 		void SkipUnsupportedAnimationGroupFrames();
 
+		bool IsCurrentFrameInAnimationGroup();
+
+		void SetSingleFrameDuration(int frameDuration);
 		
 		/// <summary>
 		/// Play animation
@@ -124,6 +132,8 @@ namespace gamelib
 		/// If the animation has stopped
 		/// </summary>
 		bool stopped = false;
+
+		bool debug = false;
 
 	};
 }

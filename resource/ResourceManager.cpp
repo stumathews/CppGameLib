@@ -45,7 +45,8 @@ namespace gamelib
 	bool ResourceManager::Initialize()
 	{
 		IndexResourceFile();
-		return LogThis("ResourceManager::initialize()", SettingsManager::Get()->GetBool("global", "verbose"), [&]()
+		debug = SettingsManager::Get()->GetBool("global", "verbose");
+		return LogThis("ResourceManager::initialize()", debug, [&]()
 		{			
 			EventManager::Get()->SubscribeToEvent(EventType::LevelChangedEventType, this ); // we will load the resources for the level that has been loaded
 			return true;
@@ -61,7 +62,7 @@ namespace gamelib
 	{
 		if(event->type == EventType::LevelChangedEventType)
 		{
-			LogThis("Detected level change. Loading level assets...", SettingsManager::Get()->GetBool("global", "verbose"), [&]()
+			LogThis("Detected level change. Loading level assets...", debug, [&]()
 			{
 				LoadSceneAssets(dynamic_pointer_cast<SceneChangedEvent>(event)->scene_id);
 				return true;
@@ -109,7 +110,7 @@ namespace gamelib
 	/// </summary>
 	void ResourceManager::Unload()
 	{
-		LogThis("Unloading all resources...", SettingsManager::Get()->GetBool("global", "verbose"), [&]()
+		LogThis("Unloading all resources...", debug, [&]()
 		{
 			for(const auto &item : resourcesByName)
 			{

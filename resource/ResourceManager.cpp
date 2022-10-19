@@ -42,9 +42,9 @@ namespace gamelib
 	/// </summary>
 	/// <param name="eventAdmin">Event admin</param>
 	/// <returns>true if initialised, false otherwise</returns>
-	bool ResourceManager::Initialize()
-	{
-		IndexResourceFile();
+	bool ResourceManager::Initialize(std::string filePath)
+	{		
+		IndexResourceFile(filePath);
 		debug = SettingsManager::Get()->GetBool("global", "verbose");
 		return LogThis("ResourceManager::initialize()", debug, [&]()
 		{			

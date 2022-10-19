@@ -26,7 +26,7 @@ namespace gamelib
 		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> the_event) override;
 		void Unload();
 		
-		bool Initialize();
+		bool Initialize(std::string filePath);
 	    std::string GetSubscriberName() override;
 
 		// index the resoures file

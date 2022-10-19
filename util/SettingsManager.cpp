@@ -1,5 +1,6 @@
 #include "SettingsManager.h"
 #include "tinyxml2.h"
+#include <exceptions/EngineException.h>
 using namespace std;
 
 namespace gamelib
@@ -119,12 +120,19 @@ namespace gamelib
 	
 	bool SettingsManager::GetBool(std::string section, std::string name)
 	{
-		return settings.at(section)[name].ToBool();
+		return settings.at(section)[name].ToBool();		
 	}
 	
 	int SettingsManager::GetInt(std::string section, std::string name)
 	{
-		return settings[section][name].ToInt();
+		try
+		{
+			return settings[section][name].ToInt();
+		}
+		catch (exception& e)
+		{
+			THROW(12, "Could not find setting [" + section + "][" + name + "]", "Settings");
+		}
 	}
 
 	string SettingsManager::GetString(std::string section, std::string name)

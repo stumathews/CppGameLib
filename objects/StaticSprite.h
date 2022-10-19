@@ -30,12 +30,12 @@ public:
     {
         return KeyFrames.size(); 
     }
+    void AdvanceFrame();
 private:
     // Create a static sprite
     StaticSprite(gamelib::coordinate<int> position, std::shared_ptr<gamelib::SpriteAsset> spriteAsset);
     std::vector<gamelib::KeyFrame> KeyFrames;
     std::shared_ptr<gamelib::SpriteAsset> asset;
-       
-
+    int currentFrame;
 };
 

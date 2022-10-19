@@ -28,7 +28,7 @@ namespace gamelib
 		/// Initialize Game Subsystems
 		/// </summary>
 		/// <returns></returns>
-		bool InitializeGameSubSystems(int screenWidth, int screenHeight, std::string windowTitle);
+		bool InitializeGameSubSystems(int screenWidth, int screenHeight, std::string windowTitle, std::string resourceFilePath);
 
 		/// <summary>
 		/// releases resources incl. resource admin and other game subsystems

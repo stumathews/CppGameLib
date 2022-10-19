@@ -20,8 +20,6 @@ public:
 	unsigned int GetPixelsStillToTravel();
 	void SpendPixels();
 	gamelib::Direction direction;
-	// This is the who the movement is to/for etc
-	std::string GetMovementTargetId();
 
 	// This is just a way to identify a movement 
 	static int id;

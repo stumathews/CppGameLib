@@ -33,9 +33,6 @@ Movement::Movement(float durationMs, gamelib::Direction direction, int maxPixels
 	// Indication if the number of total expected pixels moxed or duration is met
 	isComplete = false;
 
-	// Room Id as String
-	this->movementTowardsTargetId = movementTowardsTargetId;
-
 	// Its possible to debug the movements internal operation
 	this->debug = debug;
 }
@@ -45,7 +42,6 @@ void Movement::Update(float deltaMs)
 	if(pixelsTraveled < totalTargetMovePixels)
 	{
 		pixelsToMove = ceil(pixelsPerMs * deltaMs);
-		pixelsToMove = 3;
 	}
 	else
 	{
@@ -55,7 +51,7 @@ void Movement::Update(float deltaMs)
 	if(debug)
 	{
 		std::stringstream message;
-		message << id << ": deltaMS:" << deltaMs << "Move " << pixelsToMove << " towards target " << movementTowardsTargetId << ". " << GetPixelsTraveled() << "/" << totalTargetMovePixels;
+		message << "Movement #" << id << ": Delta Ms: " << deltaMs << " Move " << pixelsToMove << "pixels towards target " << gamelib::ToString(direction) << ". " << GetPixelsTraveled() << "/" << totalTargetMovePixels;
 			
 		gamelib::Logger::Get()->LogThis(message.str());
 	}
@@ -90,9 +86,4 @@ unsigned int Movement::GetPixelsStillToTravel()
 void Movement::SpendPixels()
 {
 	pixelsTraveled += pixelsToMove;
-}
-
-std::string Movement::GetMovementTargetId()
-{
-	return movementTowardsTargetId;
 }

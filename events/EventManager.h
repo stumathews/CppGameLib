@@ -11,6 +11,8 @@
 
 namespace gamelib
 {
+	
+	// Raises and dispatches events to subscribers	
 	class EventManager : public EventSubscriber
 	{
 

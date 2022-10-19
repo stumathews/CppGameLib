@@ -33,6 +33,12 @@ std::vector<std::shared_ptr<gamelib::Event>> StaticSprite::HandleEvent(std::shar
 	return std::vector<std::shared_ptr<gamelib::Event>>();
 }
 
+void StaticSprite::AdvanceFrame()
+{		
+	currentFrame = currentFrame < GetNumKeyFrames() - 1 ? currentFrame + 1 : 0;
+	SetFrame(currentFrame);
+}
+
 void StaticSprite::SetFrame(gamelib::uint FrameNumber) 
 {
 	if (!HasGraphic())

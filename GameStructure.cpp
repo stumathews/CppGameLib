@@ -124,7 +124,7 @@ namespace gamelib
 	///  Initializes game subsystems resource manager and SDL	
 	/// </summary>
 	/// <returns>true if subsystems initialised, false otherwise</returns>
-	bool GameStructure::InitializeGameSubSystems(int screenWidth, int screenHeight, string windowTitle)
+	bool GameStructure::InitializeGameSubSystems(int screenWidth, int screenHeight, std::string windowTitle, std::string resourceFilePath)
 	{
 		// Initialize the settings manager
 		const auto settingsInitialized = SettingsManager::Get()->Load("game/settings.xml");
@@ -155,7 +155,7 @@ namespace gamelib
 			// Final check to see if all subsystems are initialised ok
 			if (IsFailedOrFalse(LogOnFailure(InitializeSDL(screenWidth, screenHeight, title), "Could not initialize SDL, aborting.")) ||
 				IsFailedOrFalse(LogOnFailure(EventManager::Get()->Initialize(), "Could not initialize event manager")) ||
-				IsFailedOrFalse(LogOnFailure(ResourceManager::Get()->Initialize(), "Could not initialize resource manager")) ||
+				IsFailedOrFalse(LogOnFailure(ResourceManager::Get()->Initialize(resourceFilePath), "Could not initialize resource manager")) ||
 				IsFailedOrFalse(LogOnFailure(SceneManager::Get()->Initialize(), "Could not initialize scene manager")) ||
 				IsFailedOrFalse(settingsInitialized))
 			{

@@ -36,8 +36,7 @@ TEST_F(SceneManagerTests, Initialize)
 
 TEST_F(SceneManagerTests, get_scene_layers)
 {
-	ResourceManager::Get()->Initialize();
-	ResourceManager::Get()->IndexResourceFile("Resources.xml");
+	ResourceManager::Get()->Initialize("Resources.xml");
 	GameWorldData data;
 	SceneManager* sceneManager = SceneManager::Get();
 	
@@ -56,7 +55,12 @@ TEST_F(SceneManagerTests, get_scene_layers)
 	EXPECT_TRUE(layer->visible) << "Layer not visible";
 	EXPECT_EQ(layer->zorder, 0) << "Z-order is wrong";
 	EXPECT_EQ(layer->layerObjects.size(), 1) << "Expected 1 game object in the layer";	
-	EXPECT_STREQ(game_object.lock()->GetName().c_str(), "AnimatedSprite") << "Wrong game object";
-		
+	EXPECT_STREQ(game_object.lock()->GetName().c_str(), "AnimatedSprite") << "Wrong game object";		
+}
+
+TEST_F(SceneManagerTests, remove_object_from_layer)
+{
+
+
 }
 

@@ -21,8 +21,8 @@ class ResourceManagerTests : public testing::Test
 
 
   const int exp_uid = 1;
-  const string exp_name = "MainTheme.wav";
-  const int exp_scene = 0;
+  const string exp_name = "LevelMusic4";
+  const int exp_scene = 4;
   const string exp_type = "music";
   const string exp_filename = "Assets/Music/MainTheme.wav";
   const string resource_file_path = "Resources.xml";
@@ -41,7 +41,7 @@ class ResourceManagerTests : public testing::Test
 
 TEST_F(ResourceManagerTests, Initialize)
 {
-	EXPECT_TRUE(ResourceManager::Get()->Initialize()) << "Expected resource manager initialization to succeed";
+	EXPECT_TRUE(ResourceManager::Get()->Initialize("Resources.xml")) << "Expected resource manager initialization to succeed";
 	EXPECT_EQ(EventManager::Get()->GetSubscriptions()[EventType::LevelChangedEventType].size(), 1) << "Expected to subscribe to LevelChangedEventType";
 	EXPECT_STREQ(
 		EventManager::Get()->GetSubscriptions()[EventType::LevelChangedEventType][0]->GetSubscriberName().c_str(),
@@ -51,7 +51,7 @@ TEST_F(ResourceManagerTests, Initialize)
 TEST_F(ResourceManagerTests, read_resources)
 {
 	ResourceManager::Get()->IndexResourceFile(resource_file_path);
-	EXPECT_EQ(ResourceManager::Get()->GetCountResources(), 12) << "Expected 12 assets to be loaded";
+	EXPECT_EQ(ResourceManager::Get()->GetCountResources(), 18) << "Expected 18 assets to be loaded";
 }
 
 TEST_F(ResourceManagerTests, get_resource_via_string)
@@ -78,7 +78,7 @@ TEST_F(ResourceManagerTests, get_resource_via_int)
 
 TEST_F(ResourceManagerTests, unload)
 {
-	ResourceManager::Get()->Initialize();
+	ResourceManager::Get()->Initialize("Resources.xml");
 	ResourceManager::Get()->IndexResourceFile(resource_file_path);
 	ResourceManager::Get()->Unload();
 	EXPECT_EQ(0, ResourceManager::Get()->GetCountUnloadedResources()) << "Asset count is not 0 after unload";

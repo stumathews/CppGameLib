@@ -2,10 +2,11 @@
 
 #include <memory>
 #include "Event.h"
-#include "objects/GameObject.h"
 
 namespace gamelib
 {
+	class GameObject;
+
 	/// <summary>
 	/// Add a Game Object to scene event
 	/// </summary>

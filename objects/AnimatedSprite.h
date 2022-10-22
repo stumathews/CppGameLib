@@ -61,9 +61,9 @@ namespace gamelib
 		/// <summary>
 		/// Stop animation
 		/// </summary>
-		void StopAnimation();
+		void DisableAnimation();
 
-		void StartAnimation();
+		void EnableAnimation();
 
 		/// <summary>
 		/// Set animation Frame

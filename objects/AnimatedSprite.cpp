@@ -132,12 +132,12 @@ namespace gamelib
 	/// <summary>
 	/// Stop animation
 	/// </summary>
-	void AnimatedSprite::StopAnimation()
+	void AnimatedSprite::DisableAnimation()
 	{
 		stopped = true;
 	}
 
-	void AnimatedSprite::StartAnimation()
+	void AnimatedSprite::EnableAnimation()
 	{
 		stopped = false;
 	}

@@ -5,6 +5,8 @@
 #include <events/StartNetworkLevelEvent.h>
 #include <net/NetworkPlayer.h>
 #include <events/NetworkPlayerJoinedEvent.h>
+#include <events/IEventSubscriber.h>
+#include <events\AddGameObjectToCurrentSceneEvent.h>
 
 namespace gamelib
 {
@@ -68,5 +70,10 @@ namespace gamelib
 	std::shared_ptr<NetworkPlayerJoinedEvent> EventFactory::CreateNetworkPlayerJoinedEvent(NetworkPlayer player)
 	{
 		return std::shared_ptr<NetworkPlayerJoinedEvent>(new NetworkPlayerJoinedEvent(player));
+	}
+
+	std::shared_ptr<AddGameObjectToCurrentSceneEvent> EventFactory::CreateAddToSceneEvent(std::shared_ptr<GameObject> obj)
+	{
+		return std::shared_ptr<AddGameObjectToCurrentSceneEvent>(new AddGameObjectToCurrentSceneEvent(obj));
 	}
 }

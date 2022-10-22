@@ -11,6 +11,9 @@
 namespace gamelib
 {
 	class NetworkPlayerJoinedEvent;
+	class AddGameObjectToCurrentSceneEvent;
+	class GameObject;
+
 	class EventFactory
 	{
 	protected:
@@ -36,6 +39,7 @@ namespace gamelib
 		std::shared_ptr<SceneChangedEvent> CreateLevelEvent(int level);
 		std::shared_ptr<StartNetworkLevelEvent> CreateStartNetworkLevelEvent(int level);
 		std::shared_ptr<NetworkPlayerJoinedEvent> CreateNetworkPlayerJoinedEvent(NetworkPlayer player);
+		std::shared_ptr<AddGameObjectToCurrentSceneEvent> CreateAddToSceneEvent(std::shared_ptr<GameObject> obj);
 	};
 }
 

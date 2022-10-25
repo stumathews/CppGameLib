@@ -39,6 +39,7 @@ namespace gamelib
 
 		// Create new game object at specific coordinate
 		GameObject(int x, int y, bool is_visible);
+		GameObject(gamelib::coordinate<int> coordinate, bool isVisible);
 					
 		/// <summary>
 		/// Allow Game Object to subscribe to event system

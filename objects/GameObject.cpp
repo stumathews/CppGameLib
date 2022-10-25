@@ -26,6 +26,12 @@ namespace gamelib
 		SetDefaults(isVisible, x, y);		
 	}
 
+	GameObject::GameObject(gamelib::coordinate<int> coordinate, bool isVisible)
+	{
+		GameObject::LoadSettings();
+		SetDefaults(isVisible, coordinate.GetX(), coordinate.GetY());
+	}
+
 	
 	/// <summary>
 	/// Handle any Game Object events

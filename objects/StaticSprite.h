@@ -21,6 +21,7 @@ public:
     virtual void Update(float deltaMs) override {};
     void Initialize();
     static std::shared_ptr<StaticSprite> Create(int x, int y, std::shared_ptr<gamelib::SpriteAsset> spriteAsset);
+    static std::shared_ptr<StaticSprite> Create(gamelib::coordinate<int> coordinate, std::shared_ptr<gamelib::SpriteAsset> spriteAsset);
     /// <summary>
     /// Ordered set of key frames
     /// </summary>

@@ -20,6 +20,11 @@ std::shared_ptr<StaticSprite> StaticSprite::Create(int x, int y, std::shared_ptr
 	return sprite;
 }
 
+std::shared_ptr<StaticSprite> StaticSprite::Create(gamelib::coordinate<int> coordinate, std::shared_ptr<gamelib::SpriteAsset> spriteAsset)
+{
+	return Create(coordinate.GetX(), coordinate.GetY(), spriteAsset);
+}
+
 std::vector<std::shared_ptr<gamelib::Event>> StaticSprite::HandleEvent(std::shared_ptr<gamelib::Event> event)
 {
 	

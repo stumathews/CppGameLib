@@ -1,6 +1,6 @@
 #include "DrawableGameObject.h"
 #include <SDL.h>
-
+#include <util/Tuple.h>
 using namespace std;
 
 namespace gamelib
@@ -143,6 +143,13 @@ namespace gamelib
 		: GameObject(x, y, is_visible)
 	{
 		SetDefaults(isVisible, x, y);
+	}
+
+
+	DrawableGameObject::DrawableGameObject(gamelib::coordinate<int> coordinate, const bool is_visible)
+		: GameObject(coordinate, is_visible)
+	{
+
 	}
 
 	/// <summary>

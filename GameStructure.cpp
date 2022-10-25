@@ -270,21 +270,23 @@ namespace gamelib
 	{
 		try 
 		{
-			ResourceManager::Get()->Unload();		
+			// Unload all the content currently stored in memort
+			ResourceManager::Get()->Unload();
+
+			// Finish/Finalize library usage
 			TTF_Quit();
 			IMG_Quit();
 			SDL_Quit();
 				
+			// All was well
 			return true;
 		}
 		catch(exception &e)
 		{
+			// Something went wrong
 			ErrorLogManager::GetErrorLogManager()->LogMessage(e.what());
 			return false;
 		}
-	}
-
-
-	
+	}	
 }
 

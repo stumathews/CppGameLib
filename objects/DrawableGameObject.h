@@ -17,6 +17,7 @@ namespace gamelib
 		DrawableGameObject(const bool is_visible);
 
 		DrawableGameObject(const int x, const int y, const bool is_visible);
+		DrawableGameObject(gamelib::coordinate<int> coordinate, const bool is_visible);
 
 		void DrawGraphic(SDL_Renderer* renderer) const;
 

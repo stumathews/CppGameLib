@@ -25,7 +25,8 @@ namespace gamelib
 			return;
 		}
 
-		// We can draw the graphic resource if we have one however (this requires the decendents to call ensure they call GameObject::Draw() explicitly)
+		// We can draw the graphic resource if we have one however 
+		// (this requires the decendents to call ensure they call GameObject::Draw() explicitly)
 		if (HasGraphic())
 		{
 			DrawGraphic(renderer);

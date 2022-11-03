@@ -23,11 +23,7 @@ namespace gamelib
 
 		// What we do when we unload the Gamestructure
 		~GameStructure();
-	
-		/// <summary>
-		/// Initialize Game Subsystems
-		/// </summary>
-		/// <returns></returns>
+		
 		bool InitializeGameSubSystems(int screenWidth, int screenHeight, std::string windowTitle, std::string resourceFilePath);
 
 		/// <summary>
@@ -69,11 +65,6 @@ namespace gamelib
 		/// Initialize SDL
 		/// </summary>
 		bool InitializeSDL(int screen_width, int screen_height, std::string windowTitle);
-
-		/// <summary>
-		/// Update World/level etc
-		/// </summary>
-		void UpdateWorld(float deltaMs) const;
 
 		/// <summary>
 		/// Read keyboard/controller input

@@ -12,7 +12,7 @@ namespace gamelib
 	AnimatedSprite::AnimatedSprite(uint xPos, uint yPos, float inFrameDurationMs, bool isVisible, ABCDRectangle dimensions) : DrawableGameObject(xPos, yPos, isVisible) 
 	{ 
 		frameDurationMs = inFrameDurationMs;
-		currentFrameNumber = startFrameNumber = timeLastFrameShown = 0;
+		currentFrameNumber = startFrameNumber = deltaTime = 0;
 		Dimensions = dimensions;
 		LoadSettings();
 	}
@@ -68,7 +68,7 @@ namespace gamelib
 	/// </summary>
 	void AnimatedSprite::Update(float deltaMs)
 	{
-		const unsigned long durationSinceLastFrameMs = timeGetTime() - timeLastFrameShown;
+		const unsigned long durationSinceLastFrameMs = timeGetTime() - deltaTime;
 		const auto countKeyFrames = KeyFrames.size();
 		
 		// Switch to the next frame if we've been on the current frame too long
@@ -82,7 +82,7 @@ namespace gamelib
 			
 			SetAnimationFrame(currentFrameNumber);
 
-			timeLastFrameShown = timeGetTime();
+			deltaTime = timeGetTime();
 		}
 	}
 

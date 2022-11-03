@@ -111,7 +111,7 @@ namespace gamelib
 		/// <summary>
 		/// Time taken lst frame was shown
 		/// </summary>
-		unsigned long timeLastFrameShown;
+		unsigned long deltaTime;
 				
 		/// <summary>
 		/// Current frame number

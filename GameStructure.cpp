@@ -38,6 +38,11 @@ namespace gamelib
 	/// <returns></returns>
 	bool GameStructure::DoGameLoop()
 	{
+		const auto maxUpdates = SettingsManager::Get()->GetInt("global", "max_loops");
+
+		// Tick/update every tick_time_ms, ie if tick_time_ms = 10, then will tick/update 10 times in one second
+		const auto TICK_TIME = SettingsManager::Get()->GetInt("global", "tick_time_ms");
+
 		// A 'tick' reprents one update call(). 
 		// We want a fixed number of ticks within a real unit of time. 
 		// A real unit of time does not change (1 second is always one second in the real world)
@@ -52,48 +57,45 @@ namespace gamelib
 		// that a new update might be ready to be called again or if not, more drawing can be done.
 
 		// Initialize/prepare process by saying last update occured right now.
-		auto t0 = GetTimeNowMs();
-
-		const auto maxLoops = SettingsManager::Get()->GetInt("global", "max_loops");
-
-		// Get required time(ms) in per update() call. 
-		// This is a pre-calculated ms value that will represents a desired fixed number times that update must be called in 1 second,
-		// as multiples of this value will equal 1 second.
-		const auto TICK_TIME = SettingsManager::Get()->GetInt("global", "tick_time_ms");
+		auto t0 = GetTimeNowMs();		
 
 		while (!SceneManager::Get()->GetGameWorld().IsGameDone) // main game loop (exact speed of loops is hardware dependaant)
 		{
 			const auto t1 = GetTimeNowMs(); // t1 is the time now, and at t0, the last update was called.
-			auto delta = t1 - t0;	// elapsedTimeSinceLastUpdateFinished		
+			// t1 has been affected by the time to update and draw.
 
-			auto frameTimePerLoop = 0;  // Sum of update intervals we could get in 1 game loop (hardware dependant).
-			auto num_loops = 0;  // Number of loops 
+			auto elapsedTime = 0;  // Elapsed time in counted as number of updates per 1 game loop (hardware dependant).
+			auto countUpdates = 0;  // Number of loops 
 
-			// Update() needs to be called every x times a second (ie thats pre-defined and therefore fixed)
-			// To achieve this means every 1000/20 milliseconds (50ms) update() must be called. 
-			// Note: 1 second is 1000 milliseconds, thus 1000/20 - 50ms
+			// Update() can be called every tick_time_ms which will result in a constant amount of ticks, as a ms is a ms independant on hardware.			
+			// Update() will 'tick' x times a second, depending on how long a tick is set to be, ie. tick_time_ms
 
-			// Update() needs to happen or 'tick' x times a second or every 50 ms 
-			// We skip update() if next 50ms interval not yet reached ie elapse time since last update < 50ms (TICK_TIME)
-			// However if we are within the next 50ms interval execute update() 
-
-			while ((t1 - t0) > TICK_TIME && num_loops < maxLoops) // (t1 - t0) is the elapsed time since the last update
+			// updating time!
+			
+			// allow for multiple successive updates if the previous a) drawing b) sparetime operations (t1) took too long (longer than
+			// 1 tick_time_ms and so we couldn't do an update, so make up for it here)
+			// This only means it executes the right number of updates within a second, not that they have the same interval between them
+			while ((t1 - t0) > TICK_TIME && countUpdates < maxUpdates)
 			{
 				// +TICK_TIME has just occured, since last update so do another update
 				// update logic
 				Update(t1 - t0);
-				// At this point, we are now into a new 'frame' or loop of the game-loop
-
-				// t0 repreesnts the time when the last update() finished.
-				// Update it (t0) to +TICK_TIME since that last time it happened.
+				
 				t0 += TICK_TIME;
 
-				// Total time so far is what it was plus TICK_TIME (as being > TICK_TIME is what got us here)
-				frameTimePerLoop += TICK_TIME; // This should add up as many ms TICK_TIME's in a hw frame/gameloop.
-				num_loops++;
+				elapsedTime += TICK_TIME;
+				countUpdates++;
 			}
 
-			HandleSpareTime(frameTimePerLoop); // handle player input, general housekeeping (Event Manager processing)
+			// at this point the stats we have are: 
+			// 1) the elapsed time taken in 1 hardware loop
+			// 2) the number of updates in 1 hardware loop, while (still ensuring we alway update every tick_time_ms)
+
+			// Misc tasks
+
+			HandleSpareTime(elapsedTime); // handle player input, general housekeeping (Event Manager processing)
+
+			// drawing time!
 
 			if (SceneManager::Get()->GetGameWorld().IsNetworkGame && (t1 - t0) > TICK_TIME)
 			{
@@ -106,7 +108,6 @@ namespace gamelib
 				const auto percentWithinTick = min(1.0f, float((t1 - t0) / TICK_TIME)); // NOLINT(bugprone-integer-division)				
 				Draw(percentWithinTick);
 			}
-			// cout << frameTimePerLoop/TICK_TIME << " updates/ticks per game loop" << endl;
 		}
 		std::cout << "Game done" << std::endl;
 		return true;
@@ -124,7 +125,7 @@ namespace gamelib
 	///  Initializes game subsystems resource manager and SDL	
 	/// </summary>
 	/// <returns>true if subsystems initialised, false otherwise</returns>
-	bool GameStructure::InitializeGameSubSystems(int screenWidth, int screenHeight, std::string windowTitle, std::string resourceFilePath)
+	bool GameStructure::InitializeGameSubSystems(int screenWidth, int screenHeight, string windowTitle, string resourceFilePath)
 	{
 		// Initialize the settings manager
 		const auto settingsInitialized = SettingsManager::Get()->Load("game/settings.xml");
@@ -201,29 +202,19 @@ namespace gamelib
 		return "Game";
 	}
 
-	
-	/// <summary>
-	/// Updates, monitors what the world is doing around the player. This is usually what the player reacts to
-	/// </summary>
-	void GameStructure::UpdateWorld(float deltaMs) const
-	{
-		// Time-sensitive, skip queue. Send Update event to all subscribers who support updates and make them process it right now
-		EventManager::Get()->DispatchEventToSubscriber(make_shared<LogicUpdateEvent>(deltaMs));		
-	}
-
 	/// <summary>
 	/// Update logic in game.
 	/// Is run x FPS to maintain a timed series on constant updates
 	/// </summary>
 	void GameStructure::Update(float deltaMs)
 	{
-		UpdateWorld(deltaMs);
+		// Time-sensitive, skip queue. Send Update event to all subscribers who support updates and make them process it right now
+		EventManager::Get()->DispatchEventToSubscriber(make_shared<LogicUpdateEvent>(deltaMs));
 	}
 
 	/// <summary>
 	/// Draws the game
 	/// </summary>
-	/// <param name="percent_within_tick"></param>
 	void GameStructure::Draw(float percent_within_tick)
 	{		
 		// Time-sensitive, skip queue. Draws the current scene
@@ -242,8 +233,7 @@ namespace gamelib
 	/// <summary>
 	/// Process all pending events
 	/// </summary>
-	/// <param name="frame_time"></param>
-	void GameStructure::HandleSpareTime(long frame_time) const 	
+	void GameStructure::HandleSpareTime(long elapsedTime) const 	
 	{
 		ReadKeyboard();
 		ReadNetwork();

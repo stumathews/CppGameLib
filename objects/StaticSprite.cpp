@@ -5,15 +5,18 @@
 #include <events/DoLogicUpdateEvent.h>
 using namespace std;
 
-StaticSprite::StaticSprite(gamelib::coordinate<int> startingPosition, std::shared_ptr<gamelib::SpriteAsset> spriteAsset) 
-	: gamelib::DrawableGameObject(startingPosition.GetX(), startingPosition.GetY(), true)
+StaticSprite::StaticSprite(gamelib::coordinate<int> startingPosition, std::shared_ptr<gamelib::SpriteAsset> spriteAsset, bool isVisible = true) 
+	: gamelib::DrawableGameObject(startingPosition.GetX(), startingPosition.GetY(), isVisible )
 {
 	asset = spriteAsset;
+	isVisible = isVisible;
 }
 
 std::shared_ptr<StaticSprite> StaticSprite::Create(int x, int y, std::shared_ptr<gamelib::SpriteAsset> spriteAsset)
 {	
 	auto sprite = shared_ptr<StaticSprite>(new StaticSprite(gamelib::coordinate<int>(x, y), spriteAsset));
+	
+	// Here we actually set te graphic that the sprite actually uses to show itself
 	sprite->SetGraphic(spriteAsset);
 	sprite->KeyFrames = spriteAsset->KeyFrames;
 	sprite->SetFrame(0);
@@ -26,14 +29,13 @@ std::shared_ptr<StaticSprite> StaticSprite::Create(gamelib::coordinate<int> coor
 }
 
 std::vector<std::shared_ptr<gamelib::Event>> StaticSprite::HandleEvent(std::shared_ptr<gamelib::Event> event)
-{
-	
+{	
 	switch (event->type)
 	{
-	case gamelib::EventType::DoLogicUpdateEventType:
-		auto updateInfo = std::static_pointer_cast<gamelib::LogicUpdateEvent>(event);
-		Update(updateInfo->deltaMs);
-	break;
+		case gamelib::EventType::DoLogicUpdateEventType:
+			auto updateInfo = std::static_pointer_cast<gamelib::LogicUpdateEvent>(event);
+			Update(updateInfo->deltaMs);
+			break;
 	}
 	return std::vector<std::shared_ptr<gamelib::Event>>();
 }
@@ -70,11 +72,6 @@ gamelib::GameObjectType StaticSprite::GetGameObjectType()
 
 void StaticSprite::LoadSettings()
 {
-}
-
-void StaticSprite::Initialize()
-{
-	isVisible = true; 
 }
 
 void StaticSprite::Draw(SDL_Renderer* renderer)

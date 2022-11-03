@@ -8,7 +8,9 @@
 #include <events/Event.h>
 #include <events/IEventSubscriber.h>
 
-
+/// <summary>
+/// A static sprite may advance its sprite image manually or never
+/// </summary>
 class StaticSprite : public gamelib::DrawableGameObject
 {
 
@@ -19,9 +21,18 @@ public:
 
     virtual gamelib::GameObjectType GetGameObjectType() override;
     virtual void Update(float deltaMs) override {};
-    void Initialize();
+
+    /// <summary>
+    /// Create sprite
+    /// </summary>
     static std::shared_ptr<StaticSprite> Create(int x, int y, std::shared_ptr<gamelib::SpriteAsset> spriteAsset);
+    
+    /// <summary>
+    /// Create sprite
+    /// </summary>
+    /// <returns></returns>
     static std::shared_ptr<StaticSprite> Create(gamelib::coordinate<int> coordinate, std::shared_ptr<gamelib::SpriteAsset> spriteAsset);
+   
     /// <summary>
     /// Ordered set of key frames
     /// </summary>
@@ -31,10 +42,12 @@ public:
     {
         return KeyFrames.size(); 
     }
+
+    
     void AdvanceFrame();
 private:
     // Create a static sprite
-    StaticSprite(gamelib::coordinate<int> position, std::shared_ptr<gamelib::SpriteAsset> spriteAsset);
+    StaticSprite(gamelib::coordinate<int> position, std::shared_ptr<gamelib::SpriteAsset> spriteAsset, bool isVisible);
     std::vector<gamelib::KeyFrame> KeyFrames;
     std::shared_ptr<gamelib::SpriteAsset> asset;
     int currentFrame;

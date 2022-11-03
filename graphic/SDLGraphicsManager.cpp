@@ -165,7 +165,12 @@ namespace gamelib
 		// Show what we've drawn
 		SDL_RenderPresent(windowRenderer);
 	}
-	
+
+	void SDLGraphicsManager::ShowOnly() const
+	{
+		SDL_RenderPresent(windowRenderer);
+	}
+
 	/// <summary>
 	/// Uninitialize the SDL Graphics manager
 	/// </summary>

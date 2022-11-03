@@ -39,6 +39,7 @@ namespace gamelib
 
 		static std::shared_ptr<GraphicAsset> ToGraphicAsset(const std::shared_ptr<Asset>& asset);
 		void ClearAndDraw(std::function<void(SDL_Renderer* renderer)>& drawObjects) const;
+		void ShowOnly() const;
 	protected:		
 		static SDLGraphicsManager* Instance;
 	private:		

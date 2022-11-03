@@ -9,7 +9,7 @@
 #include "common/Common.h"
 #include "common/constants.h"
 #include "events/AddGameObjectToCurrentSceneEvent.h"
-#include "events/DoLogicUpdateEvent.h"
+#include "events/UpdateAllGameObjectsEvent.h"
 #include "events/EventManager.h"
 #include "events/ControllerMoveEvent.h"
 #include "events/SceneChangedEvent.h"
@@ -209,7 +209,7 @@ namespace gamelib
 	void GameStructure::Update(float deltaMs)
 	{
 		// Time-sensitive, skip queue. Send Update event to all subscribers who support updates and make them process it right now
-		EventManager::Get()->DispatchEventToSubscriber(make_shared<LogicUpdateEvent>(deltaMs));
+		EventManager::Get()->DispatchEventToSubscriber(make_shared<UpdateAllGameObjectsEvent>(deltaMs));		
 	}
 
 	/// <summary>
@@ -218,7 +218,7 @@ namespace gamelib
 	void GameStructure::Draw(float percent_within_tick)
 	{		
 		// Time-sensitive, skip queue. Draws the current scene
-		EventManager::Get()->DispatchEventToSubscriber(std::shared_ptr<Event>(new Event(EventType::DrawCurrentScene)));		
+		EventManager::Get()->DispatchEventToSubscriber(std::shared_ptr<Event>(new Event(EventType::DrawCurrentScene)));
 	}
 
 	/// <summary>

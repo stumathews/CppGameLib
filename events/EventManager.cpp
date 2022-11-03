@@ -77,7 +77,7 @@ namespace gamelib
 			std::stringstream log;
 			log << "EventManager: " << you->GetSubscriberName()  << " raised to event " << ToString(event->type);
 		
-			if(event->type != EventType::DoLogicUpdateEventType)
+			if(event->type != EventType::UpdateAllGameObjectsEventType)
 			{
 				Logger::Get()->LogThis(log.str());
 			}

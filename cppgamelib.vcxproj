@@ -207,7 +207,7 @@
     <ClInclude Include="objects\MultipleInheritableEnableSharedFromThis.h" />
     <ClInclude Include="objects\DrawableGameObject.h" />
     <ClInclude Include="events\AddGameObjectToCurrentSceneEvent.h" />
-    <ClInclude Include="events\DoLogicUpdateEvent.h" />
+    <ClInclude Include="events\UpdateAllGameObjectsEvent.h" />
     <ClInclude Include="events\Event.h" />
     <ClInclude Include="events\Events.h" />
     <ClInclude Include="events\EventManager.h" />
@@ -289,7 +289,7 @@
     <ClCompile Include="objects\MultipleInheritableEnableSharedFromThis.cpp" />
     <ClCompile Include="objects\DrawableGameObject.cpp" />
     <ClCompile Include="events\AddGameObjectToCurrentSceneEvent.cpp" />
-    <ClCompile Include="events\DoLogicUpdateEvent.cpp" />
+    <ClCompile Include="events\UpdateAllGameObjectsEvent.cpp" />
     <ClCompile Include="events\Event.cpp" />
     <ClCompile Include="events\EventManager.cpp" />
     <ClCompile Include="events\IEventSubscriber.cpp" />

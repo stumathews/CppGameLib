@@ -75,7 +75,7 @@
     <ClInclude Include="events\AddGameObjectToCurrentSceneEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="events\DoLogicUpdateEvent.h">
+    <ClInclude Include="events\UpdateAllGameObjectsEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="events\Event.h">
@@ -314,7 +314,7 @@
     <ClCompile Include="events\AddGameObjectToCurrentSceneEvent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="events\DoLogicUpdateEvent.cpp">
+    <ClCompile Include="events\UpdateAllGameObjectsEvent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="events\Event.cpp">

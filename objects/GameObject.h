@@ -26,6 +26,7 @@ namespace gamelib
 		AnimatedSprite,
 		StaticSprite,
 		Pickup,
+		DrawableFrameRate
 	};
 
 	class GameObject : public IEventSubscriber

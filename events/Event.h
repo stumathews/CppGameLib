@@ -11,7 +11,7 @@ namespace gamelib
 		Unknown,
 		ControllerMoveEvent,
 		LevelChangedEventType,
-		DoLogicUpdateEventType,
+		UpdateAllGameObjectsEventType,
 		AddGameObjectToCurrentScene,
 		PlayerMovedEventType,
 		SceneLoaded,
@@ -34,7 +34,7 @@ namespace gamelib
 
 			case EventType::ControllerMoveEvent: return "ControllerMoveEvent";
 			case EventType::LevelChangedEventType: return "LevelChangedEventType";
-			case EventType::DoLogicUpdateEventType: return "DoLogicUpdateEventType";
+			case EventType::UpdateAllGameObjectsEventType: return "DoLogicUpdateEventType";
 			case EventType::AddGameObjectToCurrentScene: return "AddGameObjectToCurrentScene";
 			case EventType::PlayerMovedEventType: return "PlayerMovedEventType";
 			case EventType::SceneLoaded: return "SceneLoaded";
@@ -63,14 +63,10 @@ namespace gamelib
 		else if (eventType == ToString(EventType::LevelChangedEventType))
 		{
 			return EventType::LevelChangedEventType;
-		}
-		else if (eventType == ToString(EventType::DoLogicUpdateEventType))
+		}		
+		else if (eventType == ToString(EventType::UpdateAllGameObjectsEventType))
 		{
-			return EventType::DoLogicUpdateEventType;
-		}
-		else if (eventType == ToString(EventType::DoLogicUpdateEventType))
-		{
-			return EventType::DoLogicUpdateEventType;
+			return EventType::UpdateAllGameObjectsEventType;
 		}
 		else if (eventType == ToString(EventType::AddGameObjectToCurrentScene))
 		{

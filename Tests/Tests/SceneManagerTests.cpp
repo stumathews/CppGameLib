@@ -31,7 +31,7 @@ TEST_F(SceneManagerTests, Initialize)
 	EXPECT_TRUE(SceneManager::Get()->Initialize());
 	EXPECT_EQ(EventManager::Get()->GetSubscriptions()[EventType::LevelChangedEventType].size(), 1) << "Scene manager not automatically subscribed to LevelChangedEventType event";
 	EXPECT_EQ(EventManager::Get()->GetSubscriptions()[EventType::AddGameObjectToCurrentScene].size(), 1) << "Scene manager not automatically subscribed to AddGameObjectToCurrentScene event";
-	EXPECT_EQ(EventManager::Get()->GetSubscriptions().size(), 5) << "Expected only 5 subscriptions to be made initially, included subscription by graphics manager";
+	EXPECT_EQ(EventManager::Get()->GetSubscriptions().size(), 6) << "Expected only 6 subscriptions to be made initially, included subscription by graphics manager";
 }
 
 TEST_F(SceneManagerTests, get_scene_layers)

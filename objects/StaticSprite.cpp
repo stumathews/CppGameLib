@@ -2,7 +2,6 @@
 #include "StaticSprite.h"
 #include <common/TypeAliases.h>
 #include <memory>
-#include <events/DoLogicUpdateEvent.h>
 using namespace std;
 
 StaticSprite::StaticSprite(gamelib::coordinate<int> startingPosition, std::shared_ptr<gamelib::SpriteAsset> spriteAsset, bool isVisible = true) 
@@ -30,13 +29,6 @@ std::shared_ptr<StaticSprite> StaticSprite::Create(gamelib::coordinate<int> coor
 
 std::vector<std::shared_ptr<gamelib::Event>> StaticSprite::HandleEvent(std::shared_ptr<gamelib::Event> event)
 {	
-	switch (event->type)
-	{
-		case gamelib::EventType::DoLogicUpdateEventType:
-			auto updateInfo = std::static_pointer_cast<gamelib::LogicUpdateEvent>(event);
-			Update(updateInfo->deltaMs);
-			break;
-	}
 	return std::vector<std::shared_ptr<gamelib::Event>>();
 }
 

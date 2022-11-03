@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "common/StaticConfig.h"
-#include "events/DoLogicUpdateEvent.h"
+#include "events/UpdateAllGameObjectsEvent.h"
 #include "events/EventManager.h"
 #include <events/EventSubscriber.h>
 #include <objects/MultipleInheritableEnableSharedFromThis.h>
@@ -30,8 +30,8 @@ class EventManagerTests : public ::testing::Test
   
   
   dummy_subscriber subscriber;	
-  const shared_ptr<LogicUpdateEvent> the_event = shared_ptr<LogicUpdateEvent>(new LogicUpdateEvent(10.0f));
-  const EventType EventType = EventType::DoLogicUpdateEventType;
+  const shared_ptr<UpdateAllGameObjectsEvent> the_event = shared_ptr<UpdateAllGameObjectsEvent>(new UpdateAllGameObjectsEvent(10.0f));
+  const EventType EventType = EventType::UpdateAllGameObjectsEventType;
 
   void SetUp() override
   {

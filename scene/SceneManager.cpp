@@ -11,6 +11,7 @@
 #include "events/SceneChangedEvent.h"
 #include "events/SceneLoadedEvent.h"
 #include "objects/GameObjectFactory.h"
+#include <events/UpdateAllGameObjectsEvent.h>
 
 using namespace std;
 
@@ -67,6 +68,7 @@ namespace gamelib
 			EventManager::Get()->SubscribeToEvent(EventType::GenerateNewLevel, this);
 			EventManager::Get()->SubscribeToEvent(EventType::GameObject, this);
 			EventManager::Get()->SubscribeToEvent(EventType::DrawCurrentScene, this);
+			EventManager::Get()->SubscribeToEvent(EventType::UpdateAllGameObjectsEventType, this);
 
 			return true;
 		}, true, true);
@@ -102,7 +104,11 @@ namespace gamelib
 				// load in new scene
 				LoadNewScene(event);			
 				break;
-			case EventType::DoLogicUpdateEventType:
+			case EventType::UpdateAllGameObjectsEventType:
+				for (auto object : GetGameWorld().GetGameObjects())
+				{
+					object->Update(std::static_pointer_cast<gamelib::UpdateAllGameObjectsEvent>(event)->deltaMs);
+				}
 				break;	
 			case EventType::AddGameObjectToCurrentScene:  
 				{ // new scope

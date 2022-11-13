@@ -6,9 +6,21 @@
 
 class Room;
 
+/// <summary>
+/// A movement is defined as a movement in a specified direction, over a time period in which it must reach its destination
+/// </summary>
 class Movement
 {
 public:
+	
+	/// <summary>
+	///  A movement is defined as a movement in a specified direction, over a time period in which it must reach its destination.
+	/// </summary>
+	/// <param name="durationMs">How long should this movement take overall to comeplete</param>
+	/// <param name="direction">Direction of the movements</param>
+	/// <param name="maxPixels">The total distance that the movement should move once its complete, this linearly interpolated over the duration of the move</param>
+	/// <param name="debug">log movement info</param>
+	/// <returns></returns>
 	Movement(float durationMs, gamelib::Direction direction, int maxPixels = 20, bool debug = false);
 	bool IsComplete();
 

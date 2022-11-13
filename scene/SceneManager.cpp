@@ -127,7 +127,10 @@ namespace gamelib
 				// Inspect the GameObject Event context for details on what to do with this GameObject
 				if (gameObjectEvent->context == GameObjectEventContext::Remove)
 				{
-					RemoveGameObjectFromLayers(gameObjectEvent->gameObject->Id);
+					if (gameObjectEvent->gameObject) // sometimes the game object is already gone
+					{
+						RemoveGameObjectFromLayers(gameObjectEvent->gameObject->Id);
+					}
 				}
 				break;
 		}

@@ -41,12 +41,12 @@ namespace gamelib
 		/// Draw the game 
 		/// </summary>
 		/// <param name=""></param>
-		void Draw(float);
+		void Draw(unsigned long);
 
 		/// <summary>
 		/// Update the game
 		/// </summary>
-		void Update(float deltaMs);
+		void Update(unsigned long deltaMs);
 		
 		/// <summary>
 		/// Handle any game Structure events

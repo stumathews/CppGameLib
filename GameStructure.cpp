@@ -20,6 +20,7 @@
 #include <string>
 #include <net/NetworkManager.h>
 #include "Logging/ErrorLogManager.h"
+#include <events/UpdateProcessesEvent.h>
 
 using namespace std;
 
@@ -206,16 +207,17 @@ namespace gamelib
 	/// Update logic in game.
 	/// Is run x FPS to maintain a timed series on constant updates
 	/// </summary>
-	void GameStructure::Update(float deltaMs)
+	void GameStructure::Update(unsigned long deltaMs)
 	{
 		// Time-sensitive, skip queue. Send Update event to all subscribers who support updates and make them process it right now
-		EventManager::Get()->DispatchEventToSubscriber(make_shared<UpdateAllGameObjectsEvent>(deltaMs));		
+		EventManager::Get()->DispatchEventToSubscriber(make_shared<UpdateAllGameObjectsEvent>(deltaMs));	
+		EventManager::Get()->DispatchEventToSubscriber(make_shared<UpdateProcessesEvent>(deltaMs));
 	}
 
 	/// <summary>
 	/// Draws the game
 	/// </summary>
-	void GameStructure::Draw(float percent_within_tick)
+	void GameStructure::Draw(unsigned long percent_within_tick)
 	{		
 		// Time-sensitive, skip queue. Draws the current scene
 		EventManager::Get()->DispatchEventToSubscriber(std::shared_ptr<Event>(new Event(EventType::DrawCurrentScene)));

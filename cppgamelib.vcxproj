@@ -233,6 +233,10 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="net\PeerInfo.h" />
     <ClInclude Include="events\NetworkTrafficRecievedEvent.h" />
+    <ClInclude Include="processes\Action.h" />
+    <ClInclude Include="processes\DelayProcess.h" />
+    <ClInclude Include="processes\Process.h" />
+    <ClInclude Include="processes\ProcessManager.h" />
     <ClInclude Include="resource\ResourceManager.h" />
     <ClInclude Include="scene\Layer.h" />
     <ClInclude Include="scene\ABCDRectangle.h" />
@@ -312,6 +316,7 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="net\PeerInfo.cpp" />
     <ClCompile Include="events\NetworkTrafficRecievedEvent.cpp" />
+    <ClCompile Include="processes\ProcessManager.cpp" />
     <ClCompile Include="resource\ResourceManager.cpp" />
     <ClCompile Include="scene\ABCDRectangle.cpp" />
     <ClCompile Include="scene\Layer.cpp" />

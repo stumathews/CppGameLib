@@ -25,6 +25,7 @@ namespace gamelib
 		NetworkPlayerJoined,
 		NetworkTrafficReceived,
 		StartNetworkLevel,
+		UpdateProcesses,
 	};
 
 	inline const char* ToString(EventType type)

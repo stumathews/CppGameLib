@@ -46,7 +46,6 @@ namespace gamelib
 		/// </summary>
 		Mix_Music* AsMusic() const;
 
-		
 		/// <summary>
 		/// Load audio into memory
 		/// </summary>

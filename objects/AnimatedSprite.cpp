@@ -9,7 +9,7 @@ using namespace std;
 
 namespace gamelib
 {
-	AnimatedSprite::AnimatedSprite(uint xPos, uint yPos, float inFrameDurationMs, bool isVisible, ABCDRectangle dimensions) : DrawableGameObject(xPos, yPos, isVisible) 
+	AnimatedSprite::AnimatedSprite(uint xPos, uint yPos, float inFrameDurationMs, bool IsVisible, ABCDRectangle dimensions) : DrawableGameObject(xPos, yPos, IsVisible) 
 	{ 
 		frameDurationMs = inFrameDurationMs;
 		currentFrameNumber = startFrameNumber = deltaTime = 0;

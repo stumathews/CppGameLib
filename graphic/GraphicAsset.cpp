@@ -35,7 +35,7 @@ namespace gamelib
 		{				
 			if (HasColourKey())
 			{
-				SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, colourKey.Red, colourKey.Green, colourKey.Blue));
+				SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, ColourKey.Red, ColourKey.Green, ColourKey.Blue));
 			}
 
 			// Create texture from surface pixels
@@ -101,13 +101,13 @@ namespace gamelib
 
 	void GraphicAsset::SetColourKey(int red, int green, int blue)
 	{
-		colourKey = { red, green, blue };
+		ColourKey = { red, green, blue };
 		hasColourKey = true;
 	}
 
 	ColourKey GraphicAsset::GetColourKey()
 	{
-		return colourKey;
+		return ColourKey;
 	}
 
 	bool GraphicAsset::HasColourKey()

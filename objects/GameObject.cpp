@@ -14,22 +14,22 @@ namespace gamelib
 {	
 	using namespace std;
 
-	GameObject::GameObject(bool isVisible)
+	GameObject::GameObject(bool IsVisible)
 	{
 		GameObject::LoadSettings();
-		SetDefaults(isVisible, 0, 0);
+		SetDefaults(IsVisible, 0, 0);
 	}
 
-	GameObject::GameObject(const int x, const int y, bool isVisible )
+	GameObject::GameObject(const int x, const int y, bool IsVisible )
 	{
 		GameObject::LoadSettings();
-		SetDefaults(isVisible, x, y);		
+		SetDefaults(IsVisible, x, y);		
 	}
 
-	GameObject::GameObject(gamelib::coordinate<int> coordinate, bool isVisible)
+	GameObject::GameObject(gamelib::coordinate<int> coordinate, bool IsVisible)
 	{
 		GameObject::LoadSettings();
-		SetDefaults(isVisible, coordinate.GetX(), coordinate.GetY());
+		SetDefaults(IsVisible, coordinate.GetX(), coordinate.GetY());
 	}
 
 	
@@ -66,9 +66,7 @@ namespace gamelib
 	{
 		// Game Object usually does not draw itself... but decendents do.
 	}
-
 	
-
 	/// <summary>
 	/// Get Name
 	/// </summary>
@@ -90,20 +88,16 @@ namespace gamelib
 	/// <summary>
 	/// Set defaults
 	/// </summary>
-	void GameObject::SetDefaults(bool isVisible, int x, int y)
+	void GameObject::SetDefaults(bool newIsVisible, int x, int y)
 	{
-		this->isVisible = isVisible;
-		/*this->x = x;
-		this->y = y;*/
+		IsVisible = newIsVisible;
+		
 		Position.SetX(x);
 		Position.SetY(y);
 
 		// In this sensible?
 		Bounds = { Position.GetX(), Position.GetY(), 0 , 0 };
 		
-		// mover supports move operations
-		//mover = shared_ptr<GameObjectMover>(new GameObjectMover(this, SettingsManager::Get()->get_int("player", "move_interval")));
-
 		// Increase the Internal Object Id
 		Id = lastGameObjectId++;
 	}	
@@ -112,9 +106,9 @@ namespace gamelib
 	/// Set Tag
 	/// </summary>
 	/// <param name="tag"></param>
-	void GameObject::SetTag(const string tag)
+	void GameObject::SetTag(const string newTag)
 	{
-		this->tag = tag;
+		tag = newTag;
 	}
 
 	string GameObject::GetSubscriberName()
@@ -125,7 +119,7 @@ namespace gamelib
 	/// <summary>
 	/// Provide Id to event system
 	/// </summary>
-	/// <returns></returns>
+	/// <returns>SubscriberId</returns>
 
 	int GameObject::GetSubscriberId() 
 	{
@@ -135,7 +129,7 @@ namespace gamelib
 	/// <summary>
 	/// Get Tag
 	/// </summary>
-	/// <returns></returns>
+	/// <returns>Arbitrary tag</returns>
 	string GameObject::GetTag() const
 	{
 		return this->tag;

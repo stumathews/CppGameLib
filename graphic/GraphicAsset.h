@@ -68,7 +68,7 @@ namespace gamelib
 	
 		bool hasColourKey;
 
-		ColourKey colourKey;
+		ColourKey ColourKey;
 
 		/// <summary>
 		/// The binary data that will represent the resource once its loaded.

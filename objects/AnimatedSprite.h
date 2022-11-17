@@ -18,7 +18,7 @@ namespace gamelib
 		/// <summary>
 		/// Create a Sprite
 		/// </summary>
-		AnimatedSprite(uint x, uint y, float frameDuration, bool isVisible, ABCDRectangle dimensions);
+		AnimatedSprite(uint x, uint y, float frameDuration, bool IsVisible, ABCDRectangle dimensions);
 
 		AnimatedSprite() = default;
 

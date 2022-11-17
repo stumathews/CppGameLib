@@ -60,7 +60,7 @@ namespace gamelib
             auto dimensions = ABCDRectangle(0, 0, width, height);
 
             graphicAsset = shared_ptr<GraphicAsset>(new GraphicAsset(uid, name, fileName, type, level, dimensions));
-            ColourKey colourKey;
+            ColourKey ColourKey;
 
             // Process Asset children
             for (auto pAssetChild = assetNode->FirstChild(); pAssetChild; pAssetChild = pAssetChild->NextSibling())
@@ -87,13 +87,13 @@ namespace gamelib
                     auto red = stoi(attributes.at("red"));
                     auto green = stoi(attributes.at("green"));
                     auto blue = stoi(attributes.at("blue"));
-                    colourKey = ColourKey(red, green, blue);
+                    ColourKey = gamelib::ColourKey(red, green, blue);
                 }
             }
 
-            if (colourKey.IsSet())
+            if (ColourKey.IsSet())
             {
-                graphicAsset->SetColourKey(colourKey.Red, colourKey.Green, colourKey.Blue);
+                graphicAsset->SetColourKey(ColourKey.Red, ColourKey.Green, ColourKey.Blue);
             }
         }
         return graphicAsset;

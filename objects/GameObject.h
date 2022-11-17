@@ -40,7 +40,7 @@ namespace gamelib
 
 		// Create new game object at specific coordinate
 		GameObject(int x, int y, bool is_visible);
-		GameObject(gamelib::coordinate<int> coordinate, bool isVisible);
+		GameObject(gamelib::coordinate<int> coordinate, bool IsVisible);
 					
 		/// <summary>
 		/// Allow Game Object to subscribe to event system
@@ -120,7 +120,7 @@ namespace gamelib
 		/// <summary>
 		/// Each game object may be visible
 		/// </summary>
-		bool isVisible;
+		bool IsVisible;
 
 		gamelib::coordinate<int> Position;
 
@@ -155,7 +155,7 @@ namespace gamelib
 		static int lastGameObjectId;
 
 		// Initialize game objects defaults
-		void SetDefaults(bool isVisible, int x, int y);
+		void SetDefaults(bool IsVisible, int x, int y);
 	};
 }
 

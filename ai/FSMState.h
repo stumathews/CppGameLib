@@ -2,6 +2,7 @@
 #include <list>
 #include <functional>
 #include "FSMTransition.h"
+#include <string>
 
 namespace gamelib
 {

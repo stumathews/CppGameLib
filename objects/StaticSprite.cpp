@@ -4,11 +4,11 @@
 #include <memory>
 using namespace std;
 
-StaticSprite::StaticSprite(gamelib::coordinate<int> startingPosition, std::shared_ptr<gamelib::SpriteAsset> spriteAsset, bool isVisible = true) 
-	: gamelib::DrawableGameObject(startingPosition.GetX(), startingPosition.GetY(), isVisible )
+StaticSprite::StaticSprite(gamelib::coordinate<int> startingPosition, std::shared_ptr<gamelib::SpriteAsset> spriteAsset, bool IsVisible = true) 
+	: gamelib::DrawableGameObject(startingPosition.GetX(), startingPosition.GetY(), IsVisible )
 {
 	asset = spriteAsset;
-	isVisible = isVisible;
+	IsVisible = IsVisible;
 }
 
 std::shared_ptr<StaticSprite> StaticSprite::Create(int x, int y, std::shared_ptr<gamelib::SpriteAsset> spriteAsset)

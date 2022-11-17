@@ -25,7 +25,7 @@ namespace gamelib
 		uint blueValue = 0;
 		uint x = 0;
 		uint y = 0;
-		auto isVisible = false;
+		auto IsVisible = false;
 		auto isColourKeyEnabled = false;
 
 		// Generic asset we will construct
@@ -56,7 +56,7 @@ namespace gamelib
 
 			if(attributeName == "visible")
 			{
-				OnVisibleParse(isVisible, attributeValue);
+				OnVisibleParse(IsVisible, attributeValue);
 				continue;
 			}
 
@@ -95,7 +95,7 @@ namespace gamelib
 		}
 			
 		// Take all the discovered details about the scene object and make a Game Object fom it
-		return InitializeGameObject(emptyGameObject, x, y, isVisible, asset, isColourKeyEnabled, redValue, greenValue, blueValue);		
+		return InitializeGameObject(emptyGameObject, x, y, IsVisible, asset, isColourKeyEnabled, redValue, greenValue, blueValue);		
 	}
 
 	/// <summary>
@@ -134,7 +134,7 @@ namespace gamelib
 	shared_ptr<GameObject>& GameObjectFactory::InitializeGameObject(shared_ptr<GameObject>& gameObject,
 																	uint x,
 																	uint y,
-																	bool isVisible,
+																	bool IsVisible,
 																	shared_ptr<Asset>& asset,
 																	const bool colourKeyEnabled,
 																	const uint& red,
@@ -155,7 +155,7 @@ namespace gamelib
 		{
 			auto spriteAsset = dynamic_pointer_cast<SpriteAsset>(asset);
 			auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
-			auto sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, 100, isVisible, spriteAsset->Dimensions));
+			auto sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, 100, IsVisible, spriteAsset->Dimensions));
 			
 			sprite->SetTag(spriteAsset->name);
 
@@ -175,7 +175,7 @@ namespace gamelib
 			sprite->SupportsColourKey(colourKeyEnabled);
 
 			// Set the game object's visibility
-			sprite->isVisible = isVisible;
+			sprite->IsVisible = IsVisible;
 
 			// Tell the render what colour it should consider as transparent i.e ignore drawing
 			if (sprite->HasColourKey())
@@ -188,7 +188,7 @@ namespace gamelib
 		else if(asset->assetType == Asset::AssetType::Graphic)
 		{
 			auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
-			auto sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, 100, isVisible, graphicAsset->Dimensions));
+			auto sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, 100, IsVisible, graphicAsset->Dimensions));
 			
 			// Set underlying graphic
 			sprite->SetGraphic(graphicAsset);
@@ -203,7 +203,7 @@ namespace gamelib
 			sprite->SupportsColourKey(colourKeyEnabled);
 
 			// Set the game object's visibility
-			sprite->isVisible = isVisible;
+			sprite->IsVisible = IsVisible;
 
 			// Tell the render what colour it should consider as transparent i.e ignore drawing
 			if (sprite->HasColourKey())

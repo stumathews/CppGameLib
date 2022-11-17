@@ -47,7 +47,7 @@ public:
     void AdvanceFrame();
 private:
     // Create a static sprite
-    StaticSprite(gamelib::coordinate<int> position, std::shared_ptr<gamelib::SpriteAsset> spriteAsset, bool isVisible);
+    StaticSprite(gamelib::coordinate<int> position, std::shared_ptr<gamelib::SpriteAsset> spriteAsset, bool IsVisible);
     std::vector<gamelib::KeyFrame> KeyFrames;
     std::shared_ptr<gamelib::SpriteAsset> asset;
     int currentFrame;

@@ -31,9 +31,9 @@ namespace gamelib
 		Logger::Get()->LogThis("Game Server Starting...");
 
 		serializationManager = SerializationManager::Get();
-		eventManager = EventManager::Get();
+		_eventManager = EventManager::Get();
 		networking = Networking::Get();
-		eventFactory = EventFactory::Get();
+		_eventFactory = EventFactory::Get();
 		isTcp = SettingsManager::Get()->GetBool("networking", "isTcp");
 
 		Logger::Get()->LogThis(this->isTcp ? "Using TCP" : "Using UDP");
@@ -49,10 +49,10 @@ namespace gamelib
 		nickname  = SettingsManager::Get()->GetString("networking", "nickname");
 
 		// We're interested in some of the our own game's events
-		eventManager->SubscribeToEvent(EventType::PlayerMovedEventType, this);
-		eventManager->SubscribeToEvent(EventType::ControllerMoveEvent, this);
-		eventManager->SubscribeToEvent(EventType::Fire, this);	
-		eventManager->SubscribeToEvent(EventType::StartNetworkLevel, this);
+		_eventManager->SubscribeToEvent(EventType::PlayerMovedEventType, this);
+		_eventManager->SubscribeToEvent(EventType::ControllerMoveEvent, this);
+		_eventManager->SubscribeToEvent(EventType::Fire, this);	
+		_eventManager->SubscribeToEvent(EventType::StartNetworkLevel, this);
 	}
 	
 	void GameServer::Listen()

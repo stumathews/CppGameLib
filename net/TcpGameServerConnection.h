@@ -27,9 +27,9 @@ namespace gamelib
 		std::string host, port;
 
 		SerializationManager* serializationManager;
-		EventManager* eventManager;
+		EventManager* _eventManager;
 		Networking* networking;
-		EventFactory* eventFactory;
+		EventFactory* _eventFactory;
 
 
 		// Inherited via IGameServerConnection

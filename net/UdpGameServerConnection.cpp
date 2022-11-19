@@ -16,16 +16,16 @@ namespace gamelib
 		this->timeout.tv_sec = 0;
 		this->timeout.tv_usec = 0;
 		this->serializationManager = nullptr;
-		this->eventManager = nullptr;
+		this->_eventManager = nullptr;
 		this->networking = nullptr;
-		this->eventFactory = nullptr;
+		this->_eventFactory = nullptr;
 	}
 
 	void UdpGameServerConnection::Initialize()
 	{
 		this->networking = Networking::Get();
-		this->eventFactory = EventFactory::Get();
-		this->eventManager = EventManager::Get();
+		this->_eventFactory = EventFactory::Get();
+		this->_eventManager = EventManager::Get();
 		this->serializationManager = SerializationManager::Get();
 		
 	}
@@ -77,9 +77,9 @@ namespace gamelib
 			}
 		}
 
-		auto event = eventFactory->CreateNetworkTrafficReceivedEvent(buffer, identifier, bytesReceived);
+		auto event = _eventFactory->CreateNetworkTrafficReceivedEvent(buffer, identifier, bytesReceived);
 
-		eventManager->RaiseEventWithNoLogging(event);
+		_eventManager->RaiseEventWithNoLogging(event);
 	}
 
 	void UdpGameServerConnection::SendToConnectedPlayersExceptToSender(const std::string& senderNickname, std::string serializedMessage)
@@ -117,7 +117,7 @@ namespace gamelib
 			// Send to ourself
 			if(auto event = serializationManager->Deserialize(msgHeader, inPayload))
 			{
-				eventManager->DispatchEventToSubscriber(event, msgHeader.MessageTarget);
+				_eventManager->DispatchEventToSubscriber(event, msgHeader.MessageTarget);
 			}
 		}
 	}
@@ -146,7 +146,7 @@ namespace gamelib
 			auto newPlayer = UdpNetworkPlayer(fromClient, messageHeader.MessageTarget);
 			Players.push_back(newPlayer);
 			
-			eventManager->RaiseEvent(eventFactory->CreateNetworkPlayerJoinedEvent(newPlayer), this);
+			_eventManager->RaiseEvent(_eventFactory->CreateNetworkPlayerJoinedEvent(newPlayer), this);
 		}
 	}
 

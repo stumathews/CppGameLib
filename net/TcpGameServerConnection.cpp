@@ -15,16 +15,16 @@ namespace gamelib
 		this->timeout.tv_sec = 0;
 		this->timeout.tv_usec = 0;
 		this->serializationManager = nullptr;
-		this->eventManager = nullptr;
+		this->_eventManager = nullptr;
 		this->networking = nullptr;
-		this->eventFactory = nullptr;
+		this->_eventFactory = nullptr;
 	}
 	
 	void TcpGameServerConnection::Initialize()
 	{
 		this->networking = Networking::Get();
-		this->eventFactory = EventFactory::Get();
-		this->eventManager = EventManager::Get();
+		this->_eventFactory = EventFactory::Get();
+		this->_eventManager = EventManager::Get();
 		this->serializationManager = SerializationManager::Get();		
 	}
 
@@ -71,7 +71,7 @@ namespace gamelib
 				Players.push_back(newPlayer); // Store incoming player sockets so we can listen for incoming player data too
 				
 				//eventManager->RaiseEventWithNoLogging(std::make_shared<gamelib::Event>(gamelib::EventType::NetworkPlayerJoined));
-				eventManager->RaiseEvent(eventFactory->CreateNetworkPlayerJoinedEvent(newPlayer), this);
+				_eventManager->RaiseEvent(_eventFactory->CreateNetworkPlayerJoinedEvent(newPlayer), this);
 			}			
 			
 		}
@@ -161,7 +161,7 @@ namespace gamelib
 			auto event = serializationManager->Deserialize(msgHeader, inPayload);
 			if(event)
 			{
-				eventManager->DispatchEventToSubscriber(event, msgHeader.MessageTarget);
+				_eventManager->DispatchEventToSubscriber(event, msgHeader.MessageTarget);
 			}
 		}
 
@@ -169,9 +169,9 @@ namespace gamelib
 
 	void TcpGameServerConnection::RaiseNetworkTrafficReceievedEvent(char buffer[512], const size_t& i, int bytesReceived)
 	{
-		auto event = eventFactory->CreateNetworkTrafficReceivedEvent(buffer, std::to_string(i + 1), bytesReceived);
+		auto event = _eventFactory->CreateNetworkTrafficReceivedEvent(buffer, std::to_string(i + 1), bytesReceived);
 
-		eventManager->RaiseEventWithNoLogging(event);
+		_eventManager->RaiseEventWithNoLogging(event);
 	}
 
 	void TcpGameServerConnection::ProcessPingMessage(const size_t& playerId)

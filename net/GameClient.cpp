@@ -21,10 +21,10 @@ namespace gamelib
 		this->clientSocketToGameSever = -1;
 		this->IsDiconnectedFromGameServer = true;
 		this->readfds = {0};
-		this->eventManager = nullptr;
+		this->_eventManager = nullptr;
 		this->serializationManager = nullptr;
 		this->networking = nullptr;
-		this->eventFactory = nullptr;
+		this->_eventFactory = nullptr;
 		this->isTcp = true;
 	}
 
@@ -32,10 +32,10 @@ namespace gamelib
 	{		
 		Logger::Get()->LogThis("Initializing game client...");
 
-		this->eventManager = EventManager::Get();
+		this->_eventManager = EventManager::Get();
 		this->serializationManager = SerializationManager::Get();
 		this->networking = Networking::Get();
-		this->eventFactory = EventFactory::Get();
+		this->_eventFactory = EventFactory::Get();
 
 		this->nickName  = SettingsManager::Get()->GetString("networking", "nickname");
 		this->isTcp = SettingsManager::Get()->GetBool("networking", "isTcp");
@@ -50,9 +50,9 @@ namespace gamelib
 	void GameClient::SubscribeToGameEvents()
 	{
 		// We subscribe to some of our own events and send them to the game server...
-		eventManager->SubscribeToEvent(EventType::PlayerMovedEventType, this);
-		eventManager->SubscribeToEvent(EventType::ControllerMoveEvent, this);
-		eventManager->SubscribeToEvent(EventType::Fire, this);
+		_eventManager->SubscribeToEvent(EventType::PlayerMovedEventType, this);
+		_eventManager->SubscribeToEvent(EventType::ControllerMoveEvent, this);
+		_eventManager->SubscribeToEvent(EventType::Fire, this);
 	}
 
 	void GameClient::Connect(std::shared_ptr<GameServer> gameServer)
@@ -167,18 +167,18 @@ namespace gamelib
 		{			
 			if (noTarget)
 			{
-				eventManager->DispatchEventToSubscriber(event);
+				_eventManager->DispatchEventToSubscriber(event);
 				return;
 			}
 
 			// Notice target, send only to a specific target
-			eventManager->DispatchEventToSubscriber(event, msgHeader.MessageTarget);	
+			_eventManager->DispatchEventToSubscriber(event, msgHeader.MessageTarget);	
 		}
 	}
 
 	void GameClient::RaiseNetworkTrafficReceivedEvent(char  buffer[512], int bytesReceived)
 	{
-		eventManager->RaiseEventWithNoLogging(eventFactory->CreateNetworkTrafficReceivedEvent(buffer, "Game Server", bytesReceived));
+		_eventManager->RaiseEventWithNoLogging(_eventFactory->CreateNetworkTrafficReceivedEvent(buffer, "Game Server", bytesReceived));
 	}
 
 	std::vector<std::shared_ptr<Event>> GameClient::HandleEvent(std::shared_ptr<Event> evt)

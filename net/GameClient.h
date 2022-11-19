@@ -54,10 +54,10 @@ namespace gamelib
 		// What is the maximum amount of data to read off the network.
 		int readBufferLength;
 		std::string nickName;
-		EventManager* eventManager;
+		EventManager* _eventManager;
 		SerializationManager* serializationManager;
 		Networking* networking;
-		EventFactory* eventFactory;
+		EventFactory* _eventFactory;
 		bool isTcp;
 
 		// Inherited via EventSubscriber

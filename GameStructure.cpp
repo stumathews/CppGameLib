@@ -66,7 +66,7 @@ namespace gamelib
 			// t1 has been affected by the time to update and draw.
 
 			auto elapsedTime = 0;  // Elapsed time in counted as number of updates per 1 game loop (hardware dependant).
-			auto countUpdates = 0;  // Number of loops 
+			auto _countUpdates = 0;  // Number of loops 
 
 			// Update() can be called every tick_time_ms which will result in a constant amount of ticks, as a ms is a ms independant on hardware.			
 			// Update() will 'tick' x times a second, depending on how long a tick is set to be, ie. tick_time_ms
@@ -76,7 +76,7 @@ namespace gamelib
 			// allow for multiple successive updates if the previous a) drawing b) sparetime operations (t1) took too long (longer than
 			// 1 tick_time_ms and so we couldn't do an update, so make up for it here)
 			// This only means it executes the right number of updates within a second, not that they have the same interval between them
-			while ((t1 - t0) > TICK_TIME && countUpdates < maxUpdates)
+			while ((t1 - t0) > TICK_TIME && _countUpdates < maxUpdates)
 			{
 				// +TICK_TIME has just occured, since last update so do another update
 				// update logic
@@ -85,7 +85,7 @@ namespace gamelib
 				t0 += TICK_TIME;
 
 				elapsedTime += TICK_TIME;
-				countUpdates++;
+				_countUpdates++;
 			}
 
 			// at this point the stats we have are: 

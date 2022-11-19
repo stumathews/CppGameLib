@@ -155,63 +155,63 @@ namespace gamelib
 		{
 			auto spriteAsset = dynamic_pointer_cast<SpriteAsset>(asset);
 			auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
-			auto sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, 100, IsVisible, spriteAsset->Dimensions));
+			auto _sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, 100, IsVisible, spriteAsset->Dimensions));
 			
-			sprite->SetTag(spriteAsset->name);
+			_sprite->SetTag(spriteAsset->name);
 
 			// Set the AnimatedSprite's key frames
-			sprite->KeyFrames = spriteAsset->KeyFrames;	
+			_sprite->KeyFrames = spriteAsset->KeyFrames;	
 
 			// Set the graphic asset of the Animated Sprite
-			sprite->SetGraphic(graphicAsset);
+			_sprite->SetGraphic(graphicAsset);
 
 			// Start playing the animation
-			sprite->PlayAnimation();
+			_sprite->PlayAnimation();
 
 			// Load the game objects individual settings
-			sprite->LoadSettings();
+			_sprite->LoadSettings();
 
 			// Set the colour key on the game object
-			sprite->SupportsColourKey(colourKeyEnabled);
+			_sprite->SupportsColourKey(colourKeyEnabled);
 
 			// Set the game object's visibility
-			sprite->IsVisible = IsVisible;
+			_sprite->IsVisible = IsVisible;
 
 			// Tell the render what colour it should consider as transparent i.e ignore drawing
-			if (sprite->HasColourKey())
+			if (_sprite->HasColourKey())
 			{
-				sprite->SetColourKey(red, green, blue);
+				_sprite->SetColourKey(red, green, blue);
 			}
 
-			gameObject = sprite;
+			gameObject = _sprite;
 		}
 		else if(asset->assetType == Asset::AssetType::Graphic)
 		{
 			auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
-			auto sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, 100, IsVisible, graphicAsset->Dimensions));
+			auto _sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, 100, IsVisible, graphicAsset->Dimensions));
 			
 			// Set underlying graphic
-			sprite->SetGraphic(graphicAsset);
+			_sprite->SetGraphic(graphicAsset);
 
 			// Show the entire graphic
-			sprite->AdjustViewportToCurrentDimensions();
+			_sprite->AdjustViewportToCurrentDimensions();
 
 			// Load the game objects individual settings
-			sprite->LoadSettings();
+			_sprite->LoadSettings();
 
 			// Set the colour key on the game object
-			sprite->SupportsColourKey(colourKeyEnabled);
+			_sprite->SupportsColourKey(colourKeyEnabled);
 
 			// Set the game object's visibility
-			sprite->IsVisible = IsVisible;
+			_sprite->IsVisible = IsVisible;
 
 			// Tell the render what colour it should consider as transparent i.e ignore drawing
-			if (sprite->HasColourKey())
+			if (_sprite->HasColourKey())
 			{
-				sprite->SetColourKey(red, green, blue);
+				_sprite->SetColourKey(red, green, blue);
 			}
 
-			gameObject = sprite;
+			gameObject = _sprite;
 		}
 		else
 		{

@@ -26,7 +26,8 @@ namespace gamelib
 		AnimatedSprite,
 		StaticSprite,
 		Pickup,
-		DrawableFrameRate
+		DrawableFrameRate,
+		Hotspot
 	};
 
 	class GameObject : public IEventSubscriber
@@ -145,6 +146,10 @@ namespace gamelib
 		Inventory Components;
 
 		std::map<std::string, std::string> stringProperties;
+
+		SDL_Rect CalculateBounds(coordinate<int> Position, int _width, int height) { return { Position.GetX(), Position.GetY(), _width, height}; }
+		
+		void UpdateBounds(unsigned int inParentWidth, unsigned int inParentHeight);
 
 	private:	
 

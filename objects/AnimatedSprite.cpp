@@ -19,20 +19,20 @@ namespace gamelib
 
 	shared_ptr<AnimatedSprite> AnimatedSprite::Create(int x, int y, std::shared_ptr<SpriteAsset> spriteAsset)
 	{
-		auto sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, spriteAsset->FrameDurationMs, true, spriteAsset->Dimensions));
+		auto _sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, spriteAsset->FrameDurationMs, true, spriteAsset->Dimensions));
 		
-		sprite->SetGraphic(spriteAsset);
-		sprite->KeyFrames = spriteAsset->KeyFrames;
+		_sprite->SetGraphic(spriteAsset);
+		_sprite->KeyFrames = spriteAsset->KeyFrames;
 
-		Initialize(sprite);
+		Initialize(_sprite);
 
-		return sprite;
+		return _sprite;
 	}
 
-	void AnimatedSprite::Initialize(std::shared_ptr<AnimatedSprite> sprite)
+	void AnimatedSprite::Initialize(std::shared_ptr<AnimatedSprite> _sprite)
 	{
 		// The sprite will initially be set to the first frame
-		sprite->SetAnimationFrame(0);
+		_sprite->SetAnimationFrame(0);
 	}
 
 	/// <summary>

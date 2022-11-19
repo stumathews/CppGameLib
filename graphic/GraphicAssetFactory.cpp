@@ -55,9 +55,9 @@ namespace gamelib
             auto type = assetAttributes["type"];
             auto level = assetAttributes["scene"] == "" ? 0 : stoi(assetAttributes["scene"]);
             auto isAnimated = Utils::StrToBool(assetAttributes["isAnimated"]);
-            auto width = stoi(assetAttributes["width"]);
+            auto _width = stoi(assetAttributes["width"]);
             auto height = stoi(assetAttributes["height"]);
-            auto dimensions = ABCDRectangle(0, 0, width, height);
+            auto dimensions = ABCDRectangle(0, 0, _width, height);
 
             graphicAsset = shared_ptr<GraphicAsset>(new GraphicAsset(uid, name, fileName, type, level, dimensions));
             ColourKey ColourKey;
@@ -68,16 +68,16 @@ namespace gamelib
                 string assetChildName = pAssetChild->Value();
                 
                 // Look to see if this is a sprite
-                shared_ptr<SpriteAsset> sprite = nullptr;
+                shared_ptr<SpriteAsset> _sprite = nullptr;
                 if (assetChildName == "sprite")
                 {
                     // Yes, is a sprite, process it
-                    sprite = shared_ptr<SpriteAsset>(new SpriteAsset(graphicAsset->uid, graphicAsset->name, graphicAsset->path, graphicAsset->type, graphicAsset->scene, dimensions));
+                    _sprite = shared_ptr<SpriteAsset>(new SpriteAsset(graphicAsset->uid, graphicAsset->name, graphicAsset->path, graphicAsset->type, graphicAsset->scene, dimensions));
                     
-                    ParseSprite(pAssetChild, sprite);
+                    ParseSprite(pAssetChild, _sprite);
 
                     // Upcast to Asset
-                    graphicAsset = sprite;
+                    graphicAsset = _sprite;
                     graphicAsset->assetType = Asset::AssetType::Sprite;
                 }
 
@@ -99,7 +99,7 @@ namespace gamelib
         return graphicAsset;
     }
 
-    void GraphicAssetFactory::ParseSpriteAnimation(tinyxml2::XMLNode* animation, shared_ptr<SpriteAsset> sprite)
+    void GraphicAssetFactory::ParseSpriteAnimation(tinyxml2::XMLNode* animation, shared_ptr<SpriteAsset> _sprite)
     {
         auto animationAttributes = GetNodeAttributes(animation);
 
@@ -117,13 +117,13 @@ namespace gamelib
                     //duration = stoi(attributes.at("duration"));
                     duration = stof(attributes.at("duration"));
                 }
-                sprite->FrameDurationMs = duration;
-                ParseSpriteKeyFrames(pAnimationChild, sprite);
+                _sprite->FrameDurationMs = duration;
+                ParseSpriteKeyFrames(pAnimationChild, _sprite);
             }
         }
     }
 
-    void GraphicAssetFactory::ParseSprite(tinyxml2::XMLNode* pSprite, shared_ptr<SpriteAsset> sprite)
+    void GraphicAssetFactory::ParseSprite(tinyxml2::XMLNode* pSprite, shared_ptr<SpriteAsset> _sprite)
     {
         for (auto pSpriteChild = pSprite->FirstChild(); pSpriteChild; pSpriteChild = pSpriteChild->NextSibling())
         {
@@ -132,12 +132,12 @@ namespace gamelib
             if (spriteChildName == "animation")
             {
                 auto attributes = GetNodeAttributes(pSpriteChild);
-                ParseSpriteAnimation(pSpriteChild, sprite);
+                ParseSpriteAnimation(pSpriteChild, _sprite);
             }
         }        
     }
 
-    void GraphicAssetFactory::ParseSpriteKeyFrames(tinyxml2::XMLNode* pKeyFrames, shared_ptr<SpriteAsset> sprite)
+    void GraphicAssetFactory::ParseSpriteKeyFrames(tinyxml2::XMLNode* pKeyFrames, shared_ptr<SpriteAsset> _sprite)
     {
         for (auto pKeyFrameChild = pKeyFrames->FirstChild(); pKeyFrameChild; pKeyFrameChild = pKeyFrameChild->NextSibling())
         {
@@ -145,12 +145,12 @@ namespace gamelib
 
             if (spriteChildName == "keyframe")
             {
-                ParseSpriteKeyFrame(pKeyFrameChild, sprite);
+                ParseSpriteKeyFrame(pKeyFrameChild, _sprite);
             }
         }
     }
 
-    void GraphicAssetFactory::ParseSpriteKeyFrame(tinyxml2::XMLNode* pKeyFrame, shared_ptr<SpriteAsset> sprite)
+    void GraphicAssetFactory::ParseSpriteKeyFrame(tinyxml2::XMLNode* pKeyFrame, shared_ptr<SpriteAsset> _sprite)
     {
         auto keyFrameAttributes = GetNodeAttributes(pKeyFrame);
         auto x = stoi(keyFrameAttributes.at("x"));
@@ -160,7 +160,7 @@ namespace gamelib
         auto hasGroup = keyFrameAttributes.count("group") > 0;
         string group = hasGroup ? keyFrameAttributes["group"] : "";
         
-        sprite->KeyFrames.push_back(KeyFrame(x, y, w, h, group));
+        _sprite->KeyFrames.push_back(KeyFrame(x, y, w, h, group));
     }
 }
 

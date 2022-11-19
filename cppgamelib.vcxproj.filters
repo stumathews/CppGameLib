@@ -291,6 +291,9 @@
     <ClInclude Include="processes\ProcessManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Hotspot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -519,6 +522,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="processes\ProcessManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hotspot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

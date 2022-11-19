@@ -13,13 +13,13 @@ StaticSprite::StaticSprite(gamelib::coordinate<int> startingPosition, std::share
 
 std::shared_ptr<StaticSprite> StaticSprite::Create(int x, int y, std::shared_ptr<gamelib::SpriteAsset> spriteAsset)
 {	
-	auto sprite = shared_ptr<StaticSprite>(new StaticSprite(gamelib::coordinate<int>(x, y), spriteAsset));
+	auto _sprite = shared_ptr<StaticSprite>(new StaticSprite(gamelib::coordinate<int>(x, y), spriteAsset));
 	
 	// Here we actually set te graphic that the sprite actually uses to show itself
-	sprite->SetGraphic(spriteAsset);
-	sprite->KeyFrames = spriteAsset->KeyFrames;
-	sprite->SetFrame(0);
-	return sprite;
+	_sprite->SetGraphic(spriteAsset);
+	_sprite->KeyFrames = spriteAsset->KeyFrames;
+	_sprite->SetFrame(0);
+	return _sprite;
 }
 
 std::shared_ptr<StaticSprite> StaticSprite::Create(gamelib::coordinate<int> coordinate, std::shared_ptr<gamelib::SpriteAsset> spriteAsset)

@@ -72,24 +72,24 @@ TEST(GraphicAssetFactoryTests, ParseSprite)
 
     // When Parsing the node
     auto asset = GraphicAssetFactory::Get()->Parse(node);
-    auto sprite = dynamic_pointer_cast<SpriteAsset>(asset);
+    auto _sprite = dynamic_pointer_cast<SpriteAsset>(asset);
     // Ensure...
-    EXPECT_EQ(sprite->uid, 9);
-    EXPECT_EQ(sprite->scene, 3);
-    EXPECT_EQ(sprite->Dimensions.GetWidth(), 64);
-    EXPECT_EQ(sprite->Dimensions.GetHeight(), 65);
-    EXPECT_EQ(sprite->name, string("p1.png"));
-    EXPECT_EQ(sprite->type, string("graphic"));
-    EXPECT_EQ(sprite->path, string("Assets/Platformer/Base pack/Player/p1_walk/p1_walk.png"));
-    EXPECT_EQ(sprite->assetType, gamelib::Asset::AssetType::Sprite);
-    EXPECT_EQ(sprite->KeyFrames.size(), 11);
-    EXPECT_EQ(sprite->GetColourKey(), ColourKey(255,255,255)) << "Invalid colour key";
-    EXPECT_TRUE(sprite->KeyFrames[4].HasGroup());
-    EXPECT_EQ(sprite->KeyFrames[4].group, "one");
-    EXPECT_TRUE(sprite->KeyFrames[5].HasGroup());
-    EXPECT_EQ(sprite->KeyFrames[5].group, "one");
-    EXPECT_TRUE(sprite->KeyFrames[10].HasGroup());
-    EXPECT_EQ(sprite->KeyFrames[10].group, "one");    
-    EXPECT_FALSE(sprite->KeyFrames[0].HasGroup());
+    EXPECT_EQ(_sprite->uid, 9);
+    EXPECT_EQ(_sprite->scene, 3);
+    EXPECT_EQ(_sprite->Dimensions.GetWidth(), 64);
+    EXPECT_EQ(_sprite->Dimensions.GetHeight(), 65);
+    EXPECT_EQ(_sprite->name, string("p1.png"));
+    EXPECT_EQ(_sprite->type, string("graphic"));
+    EXPECT_EQ(_sprite->path, string("Assets/Platformer/Base pack/Player/p1_walk/p1_walk.png"));
+    EXPECT_EQ(_sprite->assetType, gamelib::Asset::AssetType::Sprite);
+    EXPECT_EQ(_sprite->KeyFrames.size(), 11);
+    EXPECT_EQ(_sprite->GetColourKey(), ColourKey(255,255,255)) << "Invalid colour key";
+    EXPECT_TRUE(_sprite->KeyFrames[4].HasGroup());
+    EXPECT_EQ(_sprite->KeyFrames[4].group, "one");
+    EXPECT_TRUE(_sprite->KeyFrames[5].HasGroup());
+    EXPECT_EQ(_sprite->KeyFrames[5].group, "one");
+    EXPECT_TRUE(_sprite->KeyFrames[10].HasGroup());
+    EXPECT_EQ(_sprite->KeyFrames[10].group, "one");    
+    EXPECT_FALSE(_sprite->KeyFrames[0].HasGroup());
 }
 

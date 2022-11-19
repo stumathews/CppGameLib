@@ -85,6 +85,11 @@ namespace gamelib
 		
 	}
 
+	void GameObject::UpdateBounds(unsigned int _width, unsigned int height)
+	{
+		Bounds = CalculateBounds(Position, _width, height);
+	}
+
 	/// <summary>
 	/// Set defaults
 	/// </summary>

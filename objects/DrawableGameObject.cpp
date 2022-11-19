@@ -137,7 +137,7 @@ namespace gamelib
 	DrawableGameObject::DrawableGameObject(gamelib::coordinate<int> coordinate, const bool is_visible)
 		: GameObject(coordinate, is_visible)
 	{
-
+		SetDefaults(is_visible, coordinate.GetX(), coordinate.GetY());
 	}
 
 	/// <summary>

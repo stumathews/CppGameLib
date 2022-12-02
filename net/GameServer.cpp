@@ -65,7 +65,7 @@ namespace gamelib
 		gameServerConnection->CheckForPlayerTraffic();		
 	}
 
-	std::vector<std::shared_ptr<Event>> GameServer::HandleEvent(std::shared_ptr<Event> evt)
+	std::vector<std::shared_ptr<Event>> GameServer::HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs)
 	{
 		gameServerConnection->SendEventToAllPlayers(serializationManager->Serialize(evt, nickname)); 
 

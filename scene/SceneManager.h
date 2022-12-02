@@ -122,7 +122,7 @@ namespace gamelib
 		/// </summary>
 		/// <param name="the_event"></param>
 		/// <returns></returns>
-		std::vector<std::shared_ptr<gamelib::Event>> HandleEvent(std::shared_ptr<gamelib::Event> the_event) override;
+		std::vector<std::shared_ptr<gamelib::Event>> HandleEvent(std::shared_ptr<gamelib::Event> the_event, unsigned long deltaMs) override;
 
 		/// <summary>
 		/// Remove game object from layer

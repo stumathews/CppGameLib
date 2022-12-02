@@ -36,7 +36,7 @@ namespace gamelib
 	/// <summary>
 	/// Handle any Game Object events
 	/// </summary>
-	vector<shared_ptr<Event>> GameObject::HandleEvent(const std::shared_ptr<Event> the_event)
+	vector<shared_ptr<Event>> GameObject::HandleEvent(const std::shared_ptr<Event> the_event, unsigned long deltaMs)
 	{
 		// We dont handle any events
 		return vector<shared_ptr<Event>>();

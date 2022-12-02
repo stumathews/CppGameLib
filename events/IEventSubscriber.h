@@ -18,7 +18,7 @@ namespace gamelib
 		/// </summary>
 		/// <param name="evt">Incoming event to handle</param>
 		/// <returns>List of generated events while handling current event</returns>
-		virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt) = 0;
+		virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs = 0) = 0;
 
 		/// <summary>
 		/// Each subscriber must have a name

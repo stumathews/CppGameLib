@@ -51,7 +51,7 @@ namespace gamelib
 		/// <summary>
 		/// Handle any game Structure events
 		/// </summary>
-		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> event) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> event, unsigned long deltaMs) override;
 
 		/// <summary>
 		/// Name we register with the event system

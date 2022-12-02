@@ -12,17 +12,12 @@ namespace gamelib
 		/// <summary>
 		/// Create a Logic Update Event
 		/// </summary>
-		UpdateAllGameObjectsEvent(unsigned long deltaMs);
+		UpdateAllGameObjectsEvent();
 
 		/// <summary>
 		/// All events should have a string version
 		/// </summary>
 		/// <returns></returns>
 		std::string ToString() override;
-
-		/// <summary>
-		/// How long it took the last update
-		/// </summary>
-		unsigned long deltaMs;
 	};
 }

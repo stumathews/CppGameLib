@@ -88,7 +88,7 @@ namespace gamelib
 	/// <summary>
 	/// Handle Scene Manager events
 	/// </summary>
-	vector<shared_ptr<Event>> SceneManager::HandleEvent(const std::shared_ptr<Event> event)
+	vector<shared_ptr<Event>> SceneManager::HandleEvent(const std::shared_ptr<Event> event, unsigned long deltaMs)
 	{
 		vector<shared_ptr<Event>> secondaryEvents;
 
@@ -107,7 +107,7 @@ namespace gamelib
 			case EventType::UpdateAllGameObjectsEventType:
 				for (auto object : GetGameWorld().GetGameObjects())
 				{
-					object->Update(std::static_pointer_cast<gamelib::UpdateAllGameObjectsEvent>(event)->deltaMs);
+					object->Update(deltaMs);
 				}
 				break;	
 			case EventType::AddGameObjectToCurrentScene:  

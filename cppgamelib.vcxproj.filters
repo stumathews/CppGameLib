@@ -294,6 +294,9 @@
     <ClInclude Include="Hotspot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="movement\IMovement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">

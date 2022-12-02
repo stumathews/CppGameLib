@@ -188,7 +188,7 @@ namespace gamelib
 	/// </summary>
 	/// <param name="the_event">The incoming event</param>
 	/// <returns>List of generated events that occured while processing this event</returns>
-	vector<shared_ptr<Event>> GameStructure::HandleEvent(std::shared_ptr<Event> the_event)
+	vector<shared_ptr<Event>> GameStructure::HandleEvent(std::shared_ptr<Event> the_event, unsigned long deltaMs)
 	{
 		// GameStructure does not subscribe to any events
 		return vector<shared_ptr<Event>>();
@@ -209,9 +209,12 @@ namespace gamelib
 	/// </summary>
 	void GameStructure::Update(unsigned long deltaMs)
 	{
-		// Time-sensitive, skip queue. Send Update event to all subscribers who support updates and make them process it right now
-		EventManager::Get()->DispatchEventToSubscriber(make_shared<UpdateAllGameObjectsEvent>(deltaMs));	
-		EventManager::Get()->DispatchEventToSubscriber(make_shared<UpdateProcessesEvent>(deltaMs));
+		ReadKeyboard();
+		ReadNetwork();
+
+		EventManager::Get()->ProcessAllEvents(deltaMs);
+		EventManager::Get()->DispatchEventToSubscriber(make_shared<UpdateAllGameObjectsEvent>(), deltaMs);
+		EventManager::Get()->DispatchEventToSubscriber(make_shared<UpdateProcessesEvent>(), deltaMs);
 	}
 
 	/// <summary>
@@ -220,7 +223,7 @@ namespace gamelib
 	void GameStructure::Draw(unsigned long percent_within_tick)
 	{		
 		// Time-sensitive, skip queue. Draws the current scene
-		EventManager::Get()->DispatchEventToSubscriber(std::shared_ptr<Event>(new Event(EventType::DrawCurrentScene)));
+		EventManager::Get()->DispatchEventToSubscriber(std::shared_ptr<Event>(new Event(EventType::DrawCurrentScene)), 0UL);
 	}
 
 	/// <summary>
@@ -237,10 +240,7 @@ namespace gamelib
 	/// </summary>
 	void GameStructure::HandleSpareTime(long elapsedTime) const 	
 	{
-		ReadKeyboard();
-		ReadNetwork();
 		
-		EventManager::Get()->ProcessAllEvents();  
 	}
 
 	/// <summary>

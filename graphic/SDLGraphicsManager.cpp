@@ -38,7 +38,7 @@ namespace gamelib
 	/// <summary>
 	/// Handle any events we've subscribed to
 	/// </summary>
-	vector<shared_ptr<Event>> SDLGraphicsManager::HandleEvent(const std::shared_ptr<Event> event) 
+	vector<shared_ptr<Event>> SDLGraphicsManager::HandleEvent(const std::shared_ptr<Event> event, unsigned long deltaMs)
 	{ 
 		return vector<shared_ptr<Event>>();	
 	}	

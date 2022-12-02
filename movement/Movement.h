@@ -3,13 +3,14 @@
 #include <memory>
 #include <string>
 #include <Direction.h>
+#include "IMovement.h"
 
 class Room;
 
 /// <summary>
 /// A movement is defined as a movement in a specified direction, over a time period in which it must reach its destination
 /// </summary>
-class Movement
+class Movement : public gamelib::IMovement
 {
 public:
 	
@@ -45,6 +46,15 @@ private:
 	bool isComplete;
 	std::string movementTowardsTargetId;
 	bool debug;
+
+
+public:
+	// Inherited via IMovement
+	virtual gamelib::Direction GetDirection() override;
+
+
+	// Inherited via IMovement
+	virtual unsigned short GetPixelsToMove() override;
 
 };
 

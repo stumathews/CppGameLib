@@ -52,7 +52,7 @@ namespace gamelib
 		std::vector<gamelib::TcpNetworkPlayer> Players;
 
 		// Inherited via EventSubscriber
-		virtual std::vector<std::shared_ptr<gamelib::Event>> HandleEvent(std::shared_ptr<gamelib::Event> evt) override;
+		virtual std::vector<std::shared_ptr<gamelib::Event>> HandleEvent(std::shared_ptr<gamelib::Event> evt, unsigned long deltaMs) override;
 		virtual std::string GetSubscriberName() override;
 
 		// Inherited via IGameServerConnection

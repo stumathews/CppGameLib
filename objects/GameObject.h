@@ -62,7 +62,7 @@ namespace gamelib
 		/// </summary>
 		/// <param name="event"></param>
 		/// <returns></returns>
-		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> event) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> event, unsigned long deltaMs) override;
 
 		/// <summary>
 		/// Provide name to event system

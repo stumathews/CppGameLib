@@ -43,7 +43,7 @@ namespace gamelib
 		void SubscribeToEvent(EventType type, IEventSubscriber* pYou);
 
 		// Directly send event to subscriber without going through the event queue
-		void DispatchEventToSubscriber(const std::shared_ptr<Event>& event);
+		void DispatchEventToSubscriber(const std::shared_ptr<Event>& event, unsigned long deltaMs);
 
 		// Directly send event to a specific targetted subscriber (subscriber name) without going through the event queue
 		void DispatchEventToSubscriber(const std::shared_ptr<Event>& event, std::string target);
@@ -51,14 +51,14 @@ namespace gamelib
 		// Goes through all the events on the primary and secondary queues and passes them to their respective event handlers
 		// Primary queue is incremented with event when an event is raised via the RaiseEvent() function. This can be one at any time.
 		// secondary queue is composed automatically of events that occured while processing the primary queue. 
-		void ProcessAllEvents();
+		void ProcessAllEvents(unsigned long deltaMs = 0UL);
 
 		std::map<EventType, std::vector<IEventSubscriber*>>& GetSubscriptions();
 
 
 		// Inherited via IEventSubscriber
 		
-		virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt) override;
+		virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs) override;
 
 		virtual std::string GetSubscriberName() override;
 

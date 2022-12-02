@@ -17,7 +17,7 @@ class StaticSprite : public gamelib::DrawableGameObject
 public:
     // Inherited via DrawableGameObject
     virtual void Draw(SDL_Renderer* renderer) override;
-    std::vector<std::shared_ptr<gamelib::Event>> HandleEvent(std::shared_ptr<gamelib::Event> event) override;
+    std::vector<std::shared_ptr<gamelib::Event>> HandleEvent(std::shared_ptr<gamelib::Event> event, unsigned long deltaMs) override;
 
     virtual gamelib::GameObjectType GetGameObjectType() override;
     virtual void Update(float deltaMs) override {};

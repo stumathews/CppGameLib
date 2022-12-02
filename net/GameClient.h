@@ -61,7 +61,7 @@ namespace gamelib
 		bool isTcp;
 
 		// Inherited via EventSubscriber
-		virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt) override;
+		virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs) override;
 		virtual std::string GetSubscriberName() override;
 	};
 }

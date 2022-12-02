@@ -58,7 +58,7 @@ namespace gamelib
 	/// </summary>
 	/// <param name="event"></param>
 	/// <returns></returns>
-	vector<shared_ptr<Event>> ResourceManager::HandleEvent(const shared_ptr<Event> event)
+	vector<shared_ptr<Event>> ResourceManager::HandleEvent(const shared_ptr<Event> event, unsigned long deltaMs)
 	{
 		if(event->type == EventType::LevelChangedEventType)
 		{

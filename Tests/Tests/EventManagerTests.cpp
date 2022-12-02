@@ -13,7 +13,7 @@ class dummy_subscriber final : public EventSubscriber, public inheritable_enable
 public:
 	bool handle_event_received = false;
 	
-	virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt) override
+	virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs) override
 	{
 		handle_event_received = true;
 		return std::vector<std::shared_ptr<Event>>();
@@ -30,7 +30,7 @@ class EventManagerTests : public ::testing::Test
   
   
   dummy_subscriber subscriber;	
-  const shared_ptr<UpdateAllGameObjectsEvent> the_event = shared_ptr<UpdateAllGameObjectsEvent>(new UpdateAllGameObjectsEvent(10.0f));
+  const shared_ptr<UpdateAllGameObjectsEvent> the_event = shared_ptr<UpdateAllGameObjectsEvent>(new UpdateAllGameObjectsEvent());
   const EventType EventType = EventType::UpdateAllGameObjectsEventType;
 
   void SetUp() override
@@ -94,7 +94,7 @@ TEST_F(EventManagerTests, SubscribeToEvent)
 TEST_F(EventManagerTests, DispatchEventDirectlyToSubscriber)
 {
 	EventManager::Get()->SubscribeToEvent(EventType, &subscriber);
-	EventManager::Get()->DispatchEventToSubscriber(the_event);
+	EventManager::Get()->DispatchEventToSubscriber(the_event, 0UL);
 	EXPECT_EQ(EventManager::Get()->count_ready(), 0) << "Direct dispatch of event to subscriber should not show up in event queues";
 	EXPECT_TRUE(subscriber.handle_event_received) << "subscriber was not directly notified";
 	EXPECT_TRUE(the_event->processed) << "The event was not marked as processed";

@@ -110,7 +110,7 @@ namespace gamelib
 	/// The subscriber does the work.
 	/// </summary>
 	/// <param name="event">Event to send to subscribers</param>
-	void EventManager::DispatchEventToSubscriber(const shared_ptr<Event>& event)
+	void EventManager::DispatchEventToSubscriber(const shared_ptr<Event>& event, unsigned long deltaMs)
 	{
 		// Go through each subscriber of the event and have the subscriber handle it
 		for (const auto& pSubscriber :  event_subscribers_[event->type])
@@ -121,7 +121,7 @@ namespace gamelib
 			if(pSubscriber)
 			{
 				// allow subscriber to process the event
-				for(const auto &secondary_event : pSubscriber->HandleEvent(event))
+				for(const auto &secondary_event : pSubscriber->HandleEvent(event, deltaMs))
 				{
 					// any results from processing are put onto the secondary queue
 					secondary_event_queue_.push(secondary_event);
@@ -153,21 +153,20 @@ namespace gamelib
 		event->processed = true;
 	}
 
-	void EventManager::ProcessAllEvents()
+	void EventManager::ProcessAllEvents(unsigned long deltaMs)
 	{
 		auto event_count = 0;
 			
 		while(!primary_event_queue_.empty())
 		{
 			const auto& event = primary_event_queue_.front();
-
 			event->eventId = event_count++;
 							
 			if(event->processed) // for safety sake
 				continue;
 			
 			// Ask each subscriber to deal with event			
-			DispatchEventToSubscriber(event);
+			DispatchEventToSubscriber(event, deltaMs);
 
 			if(!primary_event_queue_.empty())
 				primary_event_queue_.pop();
@@ -192,7 +191,7 @@ namespace gamelib
 	/// </summary>
 	/// <param name="evt"></param>
 	/// <returns></returns>
-	std::vector<std::shared_ptr<Event>> EventManager::HandleEvent(std::shared_ptr<Event> evt)
+	std::vector<std::shared_ptr<Event>> EventManager::HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs)
 	{
 		// Does not handle any events in the event queue itself
 		std::vector<std::shared_ptr<Event>> generated_events;

@@ -167,7 +167,7 @@ namespace gamelib
 		{			
 			if (noTarget)
 			{
-				_eventManager->DispatchEventToSubscriber(event);
+				_eventManager->DispatchEventToSubscriber(event, 0UL);
 				return;
 			}
 
@@ -181,7 +181,7 @@ namespace gamelib
 		_eventManager->RaiseEventWithNoLogging(_eventFactory->CreateNetworkTrafficReceivedEvent(buffer, "Game Server", bytesReceived));
 	}
 
-	std::vector<std::shared_ptr<Event>> GameClient::HandleEvent(std::shared_ptr<Event> evt)
+	std::vector<std::shared_ptr<Event>> GameClient::HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs)
 	{		
 		std::vector<std::shared_ptr<Event>> createdEvents;
 

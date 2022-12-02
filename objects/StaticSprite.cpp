@@ -27,7 +27,7 @@ std::shared_ptr<StaticSprite> StaticSprite::Create(gamelib::coordinate<int> coor
 	return Create(coordinate.GetX(), coordinate.GetY(), spriteAsset);
 }
 
-std::vector<std::shared_ptr<gamelib::Event>> StaticSprite::HandleEvent(std::shared_ptr<gamelib::Event> event)
+std::vector<std::shared_ptr<gamelib::Event>> StaticSprite::HandleEvent(std::shared_ptr<gamelib::Event> event, unsigned long deltaMs)
 {	
 	return std::vector<std::shared_ptr<gamelib::Event>>();
 }

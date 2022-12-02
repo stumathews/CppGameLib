@@ -87,3 +87,13 @@ void Movement::SpendPixels()
 {
 	pixelsTraveled += pixelsToMove;
 }
+
+gamelib::Direction Movement::GetDirection()
+{
+	return direction;
+}
+
+unsigned short Movement::GetPixelsToMove()
+{
+	return 5;
+}

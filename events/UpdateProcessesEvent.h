@@ -5,8 +5,7 @@ namespace gamelib
 	class UpdateProcessesEvent : public Event
 	{
 	public:
-		UpdateProcessesEvent(unsigned long deltaMs): Event(EventType::UpdateProcesses), deltaMs(deltaMs) {}
+		UpdateProcessesEvent(): Event(EventType::UpdateProcesses) {}
 		std::string ToString() override { return "UpdateProcessesEvent"; }
-		unsigned long deltaMs;
 	};
 }

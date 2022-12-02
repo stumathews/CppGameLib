@@ -173,6 +173,7 @@
     <ClInclude Include="Hotspot.h" />
     <ClInclude Include="json\JsonEventSerializationManager.h" />
     <ClInclude Include="json\json11.h" />
+    <ClInclude Include="movement\IMovement.h" />
     <ClInclude Include="net\IGameServerConnection.h" />
     <ClInclude Include="net\MessageHeader.h" />
     <ClInclude Include="net\NetworkPlayer.h" />

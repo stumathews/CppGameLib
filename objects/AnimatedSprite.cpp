@@ -9,7 +9,7 @@ using namespace std;
 
 namespace gamelib
 {
-	AnimatedSprite::AnimatedSprite(uint xPos, uint yPos, float inFrameDurationMs, bool IsVisible, ABCDRectangle dimensions) : DrawableGameObject(xPos, yPos, IsVisible) 
+	AnimatedSprite::AnimatedSprite(coordinate<int> position, float inFrameDurationMs, bool IsVisible, ABCDRectangle dimensions) : DrawableGameObject(position, IsVisible)
 	{ 
 		frameDurationMs = inFrameDurationMs;
 		currentFrameNumber = startFrameNumber = deltaTime = 0;
@@ -17,9 +17,9 @@ namespace gamelib
 		LoadSettings();
 	}
 
-	shared_ptr<AnimatedSprite> AnimatedSprite::Create(int x, int y, std::shared_ptr<SpriteAsset> spriteAsset)
+	shared_ptr<AnimatedSprite> AnimatedSprite::Create(coordinate<int> position, std::shared_ptr<SpriteAsset> spriteAsset)
 	{
-		auto _sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(x, y, spriteAsset->FrameDurationMs, true, spriteAsset->Dimensions));
+		auto _sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(position, spriteAsset->FrameDurationMs, true, spriteAsset->Dimensions));
 		
 		_sprite->SetGraphic(spriteAsset);
 		_sprite->KeyFrames = spriteAsset->KeyFrames;
@@ -29,43 +29,9 @@ namespace gamelib
 		return _sprite;
 	}
 
-	void AnimatedSprite::Initialize(std::shared_ptr<AnimatedSprite> _sprite)
-	{
-		// The sprite will initially be set to the first frame
-		_sprite->SetAnimationFrame(0);
-	}
 
-	/// <summary>
-	/// Set game object type
-	/// </summary>
-	GameObjectType AnimatedSprite::GetGameObjectType()
-	{
-		return GameObjectType::AnimatedSprite;
-	}
+	void AnimatedSprite::Update(unsigned long deltaMs, string animationGroup) { SetAnimationFrameGroup(animationGroup); Update(deltaMs); }
 
-	/// <summary>
-	/// Draw sprite
-	/// </summary>
-	/// <param name="renderer"></param>
-	void AnimatedSprite::Draw(SDL_Renderer* renderer)
-	{
-		DrawableGameObject::Draw(renderer);		
-	}
-
-	void AnimatedSprite::LoadSettings()
-	{
-		debug = SettingsManager::Get()->GetBool("sprite", "debug");
-	}
-
-	void AnimatedSprite::MoveSprite(int x, int y)
-	{
-		Position.SetX(x);
-		Position.SetY(y);
-	}
-
-	/// <summary>
-	/// Update sprite
-	/// </summary>
 	void AnimatedSprite::Update(float deltaMs)
 	{
 		const unsigned long durationSinceLastFrameMs = timeGetTime() - deltaTime;
@@ -75,11 +41,7 @@ namespace gamelib
 		if (durationSinceLastFrameMs >= frameDurationMs)
 		{
 			AdvanceCurrentFrameNumber();
-
-			// Only cycle through supported animation groups
-			SkipUnsupportedAnimationGroupFrames();			
-
-			
+			SkipUnsupportedAnimationGroupFrames(); // Only cycle through supported animation groups
 			SetAnimationFrame(currentFrameNumber);
 
 			deltaTime = timeGetTime();
@@ -87,9 +49,8 @@ namespace gamelib
 	}
 
 	void AnimatedSprite::AdvanceCurrentFrameNumber()
-	{
-		// Move to the next frame number
-		currentFrameNumber++;
+	{		
+		currentFrameNumber++; // Move to the next frame number
 
 		// Need to cycle back to the first frame if we're on the last in the key frames
 		if (currentFrameNumber >= KeyFrames.size())
@@ -98,10 +59,7 @@ namespace gamelib
 		}
 	}
 
-	void AnimatedSprite::SetSingleFrameDuration(int frameDuration)
-	{
-		frameDurationMs = frameDuration;
-	}
+	void AnimatedSprite::SetSingleFrameDuration(int frameDuration) { frameDurationMs = frameDuration; }
 
 	void AnimatedSprite::SkipUnsupportedAnimationGroupFrames()
 	{
@@ -116,31 +74,17 @@ namespace gamelib
 		}
 	}
 
-	bool AnimatedSprite::IsCurrentFrameInAnimationGroup()
-	{
-		return KeyFrames[currentFrameNumber].group == animationFrameGroup;
-	}
-
-	/// <summary>
-	/// Play animation
-	/// </summary>
-	void AnimatedSprite::PlayAnimation()
-	{
-		stopped = false;
-	}
-
-	/// <summary>
-	/// Stop animation
-	/// </summary>
-	void AnimatedSprite::DisableAnimation()
-	{
-		stopped = true;
-	}
-
-	void AnimatedSprite::EnableAnimation()
-	{
-		stopped = false;
-	}
+	void AnimatedSprite::Initialize(std::shared_ptr<AnimatedSprite> _sprite) { _sprite->SetAnimationFrame(0); }
+	void AnimatedSprite::Draw(SDL_Renderer* renderer) { DrawableGameObject::Draw(renderer); }
+	void AnimatedSprite::LoadSettings() { debug = SettingsManager::Get()->GetBool("sprite", "debug"); }
+	void AnimatedSprite::MoveSprite(int x, int y) { Position.SetX(x); Position.SetY(y); }
+	bool AnimatedSprite::IsCurrentFrameInAnimationGroup() { return KeyFrames[currentFrameNumber].group == animationFrameGroup; }
+	void AnimatedSprite::PlayAnimation() { stopped = false; }
+	void AnimatedSprite::DisableAnimation() { stopped = true; }
+	void AnimatedSprite::EnableAnimation() { stopped = false; }
+	std::string AnimatedSprite::GetName() { return "AnimatedSprite"; }
+	void AnimatedSprite::AddKeyFrame(KeyFrame keyFrame) { KeyFrames.push_back(keyFrame); }
+	void AnimatedSprite::SetAnimationFrameGroup(std::string group) { animationFrameGroup = group; }
 
 	/// <summary>
 	/// Set animation frame number. This is the keyframe which will be drawn
@@ -166,8 +110,7 @@ namespace gamelib
 
 	void AnimatedSprite::AdjustViewportToCurrentDimensions()
 	{
-		if (!HasGraphic())
-			return;
+		if (!HasGraphic()) { return; }
 
 		// Get the rectangle that defines the viewport
 		auto& viewPort = GetGraphic()->GetViewPort();
@@ -182,23 +125,6 @@ namespace gamelib
 		};
 	}
 
-	/// <summary>
-	/// Name of this class
-	/// </summary>
-	/// <returns></returns>
-	std::string AnimatedSprite::GetName()
-	{
-		return "AnimatedSprite";
-	}
 
-	void AnimatedSprite::AddKeyFrame(KeyFrame keyFrame)
-	{
-		KeyFrames.push_back(keyFrame);
-	}
-
-	void AnimatedSprite::SetAnimationFrameGroup(std::string group)
-	{
-		animationFrameGroup = group;
-	}
 
 }

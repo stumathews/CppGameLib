@@ -18,64 +18,35 @@ namespace gamelib
 
 	public:
 		static EventManager* Get();
-		size_t count_ready() const;
-
-		// Clears subscribers, primary and secondary queues
-		void reset();
-
-		// Cannot copy an event manager
-		EventManager(EventManager const&) = delete;
+		EventManager(EventManager const&) = delete; // Cannot copy an event manager
 		~EventManager();
+		void operator=(EventManager const&) = delete; // Cannot assign to an event manager
 		
-		// Cannot assign to an event manager
-		void operator=(EventManager const&) = delete;
-
-		bool Initialize();
-
+		void RemoveEventSubscription(const int subscription_id, gamelib::EventType type);
+		void Unsubscribe(const int subscription_id);
+		void reset(); // Clears subscribers, primary and secondary queues		
 		void ClearSubscribers();
-		
-		// Raise an arbitrary event
 		void RaiseEvent(const std::shared_ptr<Event> event, IEventSubscriber* you);
-
 		void RaiseEventWithNoLogging(const std::shared_ptr<Event> event);
-
-		// Add yourself as an event handler (aka event subscriber) to handle an event of type EventType
 		void SubscribeToEvent(EventType type, IEventSubscriber* pYou);
-
-		// Directly send event to subscriber without going through the event queue
 		void DispatchEventToSubscriber(const std::shared_ptr<Event>& event, unsigned long deltaMs);
-
-		// Directly send event to a specific targetted subscriber (subscriber name) without going through the event queue
 		void DispatchEventToSubscriber(const std::shared_ptr<Event>& event, std::string target);
-		
 		// Goes through all the events on the primary and secondary queues and passes them to their respective event handlers
 		// Primary queue is incremented with event when an event is raised via the RaiseEvent() function. This can be one at any time.
 		// secondary queue is composed automatically of events that occured while processing the primary queue. 
 		void ProcessAllEvents(unsigned long deltaMs = 0UL);
-
-		std::map<EventType, std::vector<IEventSubscriber*>>& GetSubscriptions();
-
-
-		// Inherited via IEventSubscriber
-		
+				
+		bool Initialize();
 		virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs) override;
-
 		virtual std::string GetSubscriberName() override;
-
-		void RemoveEventSubscription(const int subscription_id, gamelib::EventType type);
-		void Unsubscribe(const int subscription_id);
+		std::map<EventType, std::vector<IEventSubscriber*>>& GetSubscriptions();
+		size_t count_ready() const;
 	protected:
 		static EventManager* Instance;
 	private:
-		EventManager();
-
-		// Primary queue used for event processing
-		std::queue<std::shared_ptr<Event>> primary_event_queue_;
-
-		// used to hold events occurring out of processing of primary events
-		std::queue<std::shared_ptr<Event>> secondary_event_queue_;
-
-		// Event subscribers (aka event handlers)
+		EventManager();		
+		std::queue<std::shared_ptr<Event>> primary_event_queue_; // Primary queue used for event processing 		
+		std::queue<std::shared_ptr<Event>> secondary_event_queue_; // used to hold events occurring out of processing of primary events
 		std::map<EventType, std::vector<IEventSubscriber*>> event_subscribers_;
 		bool resetting = false;
 		bool logEvents;

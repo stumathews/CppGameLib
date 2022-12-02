@@ -4,11 +4,6 @@
 
 namespace gamelib
 {
-	void Hotspot::Update(gamelib::coordinate<int> parentPosition)
-	{
-		Position = parentPosition;
-	}
-
 	SDL_Rect Hotspot::GetBounds()
 	{
 		auto hotspotPosition = GetPosition();
@@ -28,8 +23,8 @@ namespace gamelib
 	}
 
 	gamelib::coordinate<int> Hotspot::CalculateHotspotPosition() { return CalculateHotspotPosition(ParentPosition.GetX(), ParentPosition.GetY()); }
-
 	gamelib::coordinate<int> Hotspot::GetPosition() { return CalculateHotspotPosition(Position.GetX(), Position.GetY()); }
+	void Hotspot::Update(gamelib::coordinate<int> parentPosition) { Position = parentPosition; }
 
 	void Hotspot::Draw(SDL_Renderer* renderer)
 	{

@@ -32,7 +32,7 @@ namespace gamelib
 	}
 
 	/// <summary>
-	/// Set color key
+	/// Set color key - colour it should consider as transparent i.e ignore drawing
 	/// </summary>
 	void DrawableGameObject::SetColourKey(const Uint8 r, const Uint8 g, const Uint8 b)
 	{

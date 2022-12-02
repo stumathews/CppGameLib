@@ -4,6 +4,9 @@
 #include "GameObject.h"
 #include "common/aliases.h"
 #include "asset/Asset.h"
+#include <graphic/ColourKey.h>
+#include <objects/AnimatedSprite.h>
+
 namespace gamelib
 {
 	class ResourceManager;
@@ -30,6 +33,12 @@ namespace gamelib
 	private:
 		static GameObjectFactory& instance;
 
+		void BuildGraphic(std::shared_ptr<gamelib::Asset>& asset, const gamelib::coordinate<int>& position, bool IsVisible, gamelib::ColourKey& colourKey, std::shared_ptr<gamelib::GameObject>& templateObject) const;
+
+		void BuildSprite(std::shared_ptr<gamelib::Asset>& asset, const gamelib::coordinate<int>& position, bool IsVisible, gamelib::ColourKey& colourKey, std::shared_ptr<gamelib::GameObject>& templateObject) const;
+
+		void SetupCommonSprite(std::shared_ptr<gamelib::AnimatedSprite>& _sprite, std::shared_ptr<gamelib::Asset>& asset, std::shared_ptr<gamelib::GraphicAsset>& graphicAsset, gamelib::ColourKey& colourKey, bool IsVisible) const;
+
 		// Parsing object attribute handlers
 		void OnBlueParse(gamelib::uint& blue, std::string& detail_value) const;
 		void OnGreenParse(gamelib::uint& green, std::string& detail_value) const;
@@ -40,11 +49,8 @@ namespace gamelib
 		void OnPosXParse(gamelib::uint& x, std::string& detail_value) const;
 		void GetAssetForResourceIdParse(std::string& detail_value, std::shared_ptr<gamelib::Asset>& resource) const;
 
-		/// <summary>
-		/// Initializes the Game object
-		/// </summary>
-		std::shared_ptr<GameObject>& InitializeGameObject(std::shared_ptr<GameObject>& game_object, uint x, uint y, bool is_visible, std::shared_ptr<Asset>& resource, bool color_key_enabled, const uint& red, const uint& green, const uint& blue) const;
-		
+		std::shared_ptr<gamelib::GameObject>& InitializeGameObject(std::shared_ptr<gamelib::GameObject>& templateObject, gamelib::coordinate<int> position, bool IsVisible, std::shared_ptr<gamelib::Asset>& asset, gamelib::ColourKey colourKey) const;
+
 		// Private constructor 
 		GameObjectFactory() = default;
 

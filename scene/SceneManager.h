@@ -23,7 +23,6 @@ namespace gamelib
 	    SceneManager& operator=(SceneManager const&)  = delete;
 		SceneManager& operator=(SceneManager &&) = delete;
 
-		GameWorldData& GetGameWorld();
 		void SetSceneFolder(std::string sceneFolder);
 		bool Initialize(std::string sceneFolder = "game/");
 		void StartScene(int scene_id);
@@ -37,6 +36,7 @@ namespace gamelib
 		void DrawScene();
 		void AddGameObjectToScene(std::shared_ptr<Event> event);
 		void LoadNewScene(const std::shared_ptr<Event> &the_event);
+		void OnSceneLoaded(std::shared_ptr<Event> event);		
 		void OnVisibleParse(std::shared_ptr<gamelib::Layer> layer, const std::string& value);
 		void OnPosYParse(std::shared_ptr<gamelib::Layer> layer, const std::string& value);
 		void OnPosXParse(std::shared_ptr<gamelib::Layer>, const std::string& value);
@@ -46,11 +46,14 @@ namespace gamelib
 		void Update();
 		void RemoveGameObjectFromLayers(int game_object_id);
 		std::shared_ptr<Layer> AddLayer(const std::string &name);
-		std::shared_ptr<Layer> FindLayer(const std::string &name);		
+		std::shared_ptr<Layer> FindLayer(const std::string &name);	
+		std::shared_ptr<GameObject> GetGameObjectFrom(std::shared_ptr<gamelib::Event> event);
 		std::vector<std::shared_ptr<gamelib::Event>> HandleEvent(std::shared_ptr<gamelib::Event> the_event, unsigned long deltaMs) override;
+		std::vector <std::shared_ptr<gamelib::GameObject>> GetAllObjects();
 		void UpdateAllObjects(unsigned long deltaMs);
 		std::string GetSubscriberName() override;
 		bool ReadSceneFile(const std::string& filename);
+		bool CompareLayerOrder(const std::shared_ptr<gamelib::Layer> rhs, const std::shared_ptr<gamelib::Layer> lhs);
 		void OnGameObjectEventReceived(std::shared_ptr<gamelib::Event> event);
 
 		std::list<std::shared_ptr<gamelib::Layer>> layers;

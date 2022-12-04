@@ -1,10 +1,12 @@
 #include "GameObjectEvent.h"
 #include <events/GameObjectEvent.h>
+using namespace std;
+
 namespace gamelib
 {
 
-	GameObjectEvent::GameObjectEvent(const int event_id, GameObject* gameObject, GameObjectEventContext context)
-		: Event(EventType::GameObject, event_id), context(context), gameObject(std::move(gameObject))
+	GameObjectEvent::GameObjectEvent(shared_ptr<GameObject> gameObject, GameObjectEventContext context)
+		: Event(EventType::GameObject), context(context), gameObject(std::move(gameObject))
 	{
 	}
 

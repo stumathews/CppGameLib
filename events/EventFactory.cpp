@@ -56,7 +56,7 @@ namespace gamelib
 	
 	std::shared_ptr<NetworkTrafficRecievedEvent> EventFactory::CreateNetworkTrafficReceivedEvent(std::string message, std::string identifier, int bytesReceived)
 	{
-		auto event = std::shared_ptr<gamelib::NetworkTrafficRecievedEvent>(new NetworkTrafficRecievedEvent(gamelib::EventType::NetworkTrafficReceived, 0));
+		auto event = std::shared_ptr<gamelib::NetworkTrafficRecievedEvent>(new NetworkTrafficRecievedEvent(gamelib::EventType::NetworkTrafficReceived));
 		event->Message = message;
 		event->Identifier = identifier;
 		event->bytesReceived = bytesReceived;

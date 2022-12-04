@@ -44,7 +44,9 @@ namespace gamelib
 	protected:
 		static EventManager* Instance;
 	private:
-		EventManager();		
+		EventManager();	
+		void AddToSecondaryEventQueue(std::shared_ptr<gamelib::Event> event, gamelib::IEventSubscriber* originator);
+		void LogEventRaised(gamelib::IEventSubscriber* you, const std::shared_ptr<gamelib::Event>& event);
 		std::queue<std::shared_ptr<Event>> primary_event_queue_; // Primary queue used for event processing 		
 		std::queue<std::shared_ptr<Event>> secondary_event_queue_; // used to hold events occurring out of processing of primary events
 		std::map<EventType, std::vector<IEventSubscriber*>> event_subscribers_;

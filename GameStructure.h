@@ -35,7 +35,7 @@ namespace gamelib
 		/// Do the Game Loop
 		/// </summary>
 		/// <returns></returns>
-		bool DoGameLoop();
+		bool DoGameLoop(GameWorldData* gameWorldData);
 		
 		/// <summary>
 		/// Draw the game 

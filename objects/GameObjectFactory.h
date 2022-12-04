@@ -10,6 +10,7 @@
 namespace gamelib
 {
 	class ResourceManager;
+	class StaticSprite;
 
 	/// <summary>
 	/// Constructs a Game Object from the details about a game object (usually from file)
@@ -29,13 +30,13 @@ namespace gamelib
 		/// <param name="scene_object_xml">Raw Object XML element</param>
 		/// <returns>GameObject</returns>
 		std::shared_ptr<GameObject> BuildGameObject(tinyxml2::XMLElement* scene_object_xml) const;
+
+		void BuildGraphic(std::shared_ptr<gamelib::Asset>& asset, const gamelib::coordinate<int>& position, bool IsVisible, gamelib::ColourKey& colourKey, std::shared_ptr<gamelib::GameObject>& templateObject) const;
+		void BuildSprite(std::shared_ptr<gamelib::Asset>& asset, const gamelib::coordinate<int>& position, bool IsVisible, gamelib::ColourKey& colourKey, std::shared_ptr<gamelib::GameObject>& templateObject) const;
+		std::shared_ptr<gamelib::StaticSprite> BuildStaticSprite(std::shared_ptr<gamelib::Asset> asset, const gamelib::coordinate<int>& position);
 		
 	private:
 		static GameObjectFactory& instance;
-
-		void BuildGraphic(std::shared_ptr<gamelib::Asset>& asset, const gamelib::coordinate<int>& position, bool IsVisible, gamelib::ColourKey& colourKey, std::shared_ptr<gamelib::GameObject>& templateObject) const;
-
-		void BuildSprite(std::shared_ptr<gamelib::Asset>& asset, const gamelib::coordinate<int>& position, bool IsVisible, gamelib::ColourKey& colourKey, std::shared_ptr<gamelib::GameObject>& templateObject) const;
 
 		void SetupCommonSprite(std::shared_ptr<gamelib::AnimatedSprite>& _sprite, std::shared_ptr<gamelib::Asset>& asset, std::shared_ptr<gamelib::GraphicAsset>& graphicAsset, gamelib::ColourKey& colourKey, bool IsVisible) const;
 

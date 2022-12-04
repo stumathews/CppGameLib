@@ -26,6 +26,7 @@ namespace gamelib
 		NetworkTrafficReceived,
 		StartNetworkLevel,
 		UpdateProcesses,
+		GameWon,
 	};
 
 	inline const char* ToString(EventType type)
@@ -50,6 +51,7 @@ namespace gamelib
 			case EventType::NetworkTrafficReceived: return "NetworkPlayerTrafficReceived";
 			case EventType::StartNetworkLevel: return "StartNetworkPlayerLevel";
 			case EventType::Unknown: return "Unknown";
+			case EventType::GameWon: return "GameWon";
 			default:      
 				return "[Unknown EventType]";
 		}
@@ -130,13 +132,17 @@ namespace gamelib
 	class Event
 	{
 	public:
-		explicit Event(EventType type, int event_id = 0);
-		int eventId = 0;
+		explicit Event(EventType type);
+		int Id = 0;
 		bool processed = false;
 		EventType type;
+		std::string origin;
 		virtual EventType GetGameObjectType();
 		virtual std::string ToString();
 		virtual ~Event() = default;
+	private:
+		// Game Object Id counter
+		static int lastEventId;
 	};
 
 	std::string operator+(const std::string& str, const EventType type);	

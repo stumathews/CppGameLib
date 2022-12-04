@@ -50,26 +50,24 @@ namespace gamelib
 
 	void EventManager::RaiseEvent(const shared_ptr<Event> event, IEventSubscriber* you)  // NOLINT(performance-unnecessary-value-param)
 	{	
-		if(event == nullptr)
-		{
-			THROW(0, "Can't raise a null or empty event", "EventManager");
-			return;
-		}
-
+		if(event == nullptr) { THROW(0, "Can't raise a null or empty event", "EventManager"); return; }
 		if(!you) { Logger::Get()->LogThis("Invalid sender", true); return; }
+		
+		event->origin = you->GetSubscriberName();
+		primary_event_queue_.push(event);		
 
-		if(logEvents)
+		LogEventRaised(you, event);
+	}
+
+	void EventManager::LogEventRaised(gamelib::IEventSubscriber* you, const std::shared_ptr<gamelib::Event>& event)
+	{
+		if (logEvents)
 		{
 			std::stringstream log;
-			log << "EventManager: " << you->GetSubscriberName()  << " raised to event " << ToString(event->type);
-		
-			if(event->type != EventType::UpdateAllGameObjectsEventType)
-			{
-				Logger::Get()->LogThis(log.str());
-			}
-		}
+			log << "EventManager: " << you->GetSubscriberName() << " raised to event " << ToString(event->type);
 
-		primary_event_queue_.push(event);		
+			if (event->type != EventType::UpdateAllGameObjectsEventType) { Logger::Get()->LogThis(log.str()); }
+		}
 	}
 
 	void EventManager::RaiseEventWithNoLogging(const std::shared_ptr<Event> event) { primary_event_queue_.push(event); }
@@ -97,20 +95,24 @@ namespace gamelib
 		// Go through each subscriber of the event and have the subscriber handle it
 		for (const auto& pSubscriber :  event_subscribers_[event->type])
 		{
-			if (event_subscribers_.empty()) { return; } // if reset()
+			if (event_subscribers_.empty()) { return; } 
+			if (!pSubscriber) { continue; }
 			
-			// Check if the subscriber pointer is valid
-			if(pSubscriber)
+			// allow subscriber to process the event
+			for(const auto &secondary_event : pSubscriber->HandleEvent(event, deltaMs))
 			{
-				// allow subscriber to process the event
-				for(const auto &secondary_event : pSubscriber->HandleEvent(event, deltaMs))
-				{
-					// any results from processing are put onto the secondary queue
-					secondary_event_queue_.push(secondary_event);
-				}	
-			}
+				AddToSecondaryEventQueue(secondary_event, pSubscriber);
+			}	
+			
 		}
 		event->processed = true;
+	}
+
+	void EventManager::AddToSecondaryEventQueue(std::shared_ptr<gamelib::Event> secondary_event, gamelib::IEventSubscriber* originSubscriber)
+	{
+		// any results from processing are put onto the secondary queue
+		secondary_event->origin = originSubscriber->GetSubscriberName();
+		secondary_event_queue_.push(secondary_event);
 	}
 
 	void EventManager::DispatchEventToSubscriber(const shared_ptr<Event>& event, std::string target)
@@ -119,30 +121,24 @@ namespace gamelib
 		for (const auto& pSubscriber :  event_subscribers_[event->type])
 		{
 			if (event_subscribers_.empty()) { return; } // if reset()
+			if (!pSubscriber) { continue; }
 			if (pSubscriber->GetSubscriberName() != target) { return; }
-			
-			// Check if the subscriber pointer is valid
-			if(pSubscriber)
+						
+			// allow subscriber to process the event
+			for(const auto &secondary_event : pSubscriber->HandleEvent(event))
 			{
-				// allow subscriber to process the event
-				for(const auto &secondary_event : pSubscriber->HandleEvent(event))
-				{
-					// any results from processing are put onto the secondary queue
-					secondary_event_queue_.push(secondary_event);
-				}	
-			}
+				AddToSecondaryEventQueue(secondary_event, pSubscriber);
+			}	
+			
 		}
 		event->processed = true;
 	}
 
 	void EventManager::ProcessAllEvents(unsigned long deltaMs)
-	{
-		auto event_count = 0;
-			
+	{			
 		while(!primary_event_queue_.empty())
 		{
 			const auto& event = primary_event_queue_.front();
-			event->eventId = event_count++;
 							
 			if (event->processed) { continue; }
 			

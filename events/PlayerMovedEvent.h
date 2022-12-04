@@ -4,6 +4,7 @@
 #include "ControllerMoveEvent.h"
 namespace gamelib
 {
+	class GameObject;
 	class PlayerMovedEvent final : public Event
 	{
 	public:
@@ -12,7 +13,6 @@ namespace gamelib
 		{
 		}
 
-		
 		std::string ToString() override;
 		const Direction direction;
 	};

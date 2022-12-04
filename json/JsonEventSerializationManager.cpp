@@ -6,6 +6,18 @@
 using namespace json11;
 namespace gamelib
 {
+	std::string gamelib::JsonEventSerializationManager::SerializePlayerMovedEvent(std::shared_ptr<PlayerMovedEvent> object, std::string target)
+	{
+		Json payload = Json::object
+		{
+			{ "messageType", ToString(object->type) },
+			{ "direction", ToString(object->direction) },
+			{ "nickname", target }
+		};
+
+		return payload.dump();
+	}
+
     std::shared_ptr<PlayerMovedEvent> gamelib::JsonEventSerializationManager::DeserializePlayerMovedEvent(std::string serializedMessage)
     {
         std::string error;
@@ -35,17 +47,7 @@ namespace gamelib
 		return payload.dump();        
     }
 
-    std::string gamelib::JsonEventSerializationManager::SerializePlayerMovedEvent(std::shared_ptr<PlayerMovedEvent> object, std::string target)
-    {
-        Json payload = Json::object
-		{
-			{ "messageType", ToString(object->type) },
-			{ "direction", ToString(object->direction) },
-			{ "nickname", target }
-		};
-
-		return payload.dump();
-    }	
+    	
 
     std::string JsonEventSerializationManager::CreateRequestPlayerDetailsMessage()
     {

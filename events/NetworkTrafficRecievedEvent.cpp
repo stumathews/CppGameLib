@@ -2,7 +2,7 @@
 
 namespace gamelib
 {
-	NetworkTrafficRecievedEvent::NetworkTrafficRecievedEvent(gamelib::EventType eventType, int eventId) : Event(eventType, eventId) 
+	NetworkTrafficRecievedEvent::NetworkTrafficRecievedEvent(gamelib::EventType eventType) : Event(eventType) 
 	{
 
 	}

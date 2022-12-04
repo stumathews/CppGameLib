@@ -13,10 +13,8 @@ namespace gamelib
 			shared_ptr<Process> currProcess = (*it);
 			list<shared_ptr<Process>>::iterator thisIt = it;
 			++it;
-			if (currProcess->GetState() == Process::Uninitialized)
-				currProcess->OnInit();
-			if (currProcess->GetState() == Process::Running)
-				currProcess->OnUpdate(deltaMs);
+			if (currProcess->GetState() == Process::Uninitialized) { currProcess->OnInit(); }
+			if (currProcess->GetState() == Process::Running) { currProcess->OnUpdate(deltaMs); }
 
 			if (currProcess->IsDead())
 			{

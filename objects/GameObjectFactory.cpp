@@ -5,6 +5,7 @@
 #include "common/StaticConfig.h"
 #include "common/aliases.h"
 #include "SpriteAsset.h"
+#include "StaticSprite.h"
 
 using namespace tinyxml2;
 using namespace std;
@@ -86,11 +87,17 @@ namespace gamelib
 		auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
 		auto _sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(position, 100, IsVisible, graphicAsset->Dimensions));
 
+
 		SetupCommonSprite(_sprite, asset, graphicAsset, colourKey, IsVisible);
 
 		_sprite->AdjustViewportToCurrentDimensions();
 
 		templateObject = _sprite;
+	}
+
+	std::shared_ptr<StaticSprite> GameObjectFactory::BuildStaticSprite(std::shared_ptr<gamelib::Asset> asset, const gamelib::coordinate<int>& position)
+	{
+		return StaticSprite::Create(position, dynamic_pointer_cast<gamelib::SpriteAsset>(asset));
 	}
 
 	void GameObjectFactory::BuildSprite(std::shared_ptr<gamelib::Asset>& asset, const gamelib::coordinate<int>& position, bool IsVisible, gamelib::ColourKey& colourKey, std::shared_ptr<gamelib::GameObject>& templateObject) const

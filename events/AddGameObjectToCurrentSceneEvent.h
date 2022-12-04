@@ -19,7 +19,7 @@ namespace gamelib
 		/// </summary>
 		/// <param name="game_object"></param>
 		/// <param name="event_id"></param>
-		AddGameObjectToCurrentSceneEvent(std::shared_ptr<GameObject> gameObject, int eventid = 0);
+		AddGameObjectToCurrentSceneEvent(std::shared_ptr<GameObject> gameObject);
 
 		/// <summary>
 		/// Set game Object

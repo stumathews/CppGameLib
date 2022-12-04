@@ -7,7 +7,7 @@ namespace gamelib
 	class NetworkTrafficRecievedEvent :  public Event
 	{
 	public:
-		NetworkTrafficRecievedEvent(gamelib::EventType eventType, int eventId);
+		NetworkTrafficRecievedEvent(gamelib::EventType eventType);
 		virtual EventType GetGameObjectType() override;
 		virtual std::string ToString() override;
 		std::string Identifier;

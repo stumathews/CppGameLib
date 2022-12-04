@@ -8,7 +8,7 @@ namespace gamelib
 	{
 	public:
 
-		explicit StartNetworkLevelEvent(int level) : Event(EventType::StartNetworkLevel, 0)
+		explicit StartNetworkLevelEvent(int level) : Event(EventType::StartNetworkLevel)
 		{
 			this->level = level;
 		}

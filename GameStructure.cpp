@@ -37,7 +37,7 @@ namespace gamelib
 	/// Update & Draw until the game ends
 	/// </summary>
 	/// <returns></returns>
-	bool GameStructure::DoGameLoop()
+	bool GameStructure::DoGameLoop(GameWorldData* gameWorldData)
 	{
 		const auto maxUpdates = SettingsManager::Get()->GetInt("global", "max_loops");
 
@@ -60,7 +60,7 @@ namespace gamelib
 		// Initialize/prepare process by saying last update occured right now.
 		auto t0 = GetTimeNowMs();		
 
-		while (!SceneManager::Get()->GetGameWorld().IsGameDone) // main game loop (exact speed of loops is hardware dependaant)
+		while (!gameWorldData->IsGameDone) // main game loop (exact speed of loops is hardware dependaant)
 		{
 			const auto t1 = GetTimeNowMs(); // t1 is the time now, and at t0, the last update was called.
 			// t1 has been affected by the time to update and draw.
@@ -98,12 +98,12 @@ namespace gamelib
 
 			// drawing time!
 
-			if (SceneManager::Get()->GetGameWorld().IsNetworkGame && (t1 - t0) > TICK_TIME)
+			if (gameWorldData->IsNetworkGame && (t1 - t0) > TICK_TIME)
 			{
 				t0 = t1 - TICK_TIME;
 			}
 
-			if (SceneManager::Get()->GetGameWorld().CanDraw)
+			if (gameWorldData->CanDraw)
 			{
 				// How much within the new 'tick' are we?
 				const auto percentWithinTick = min(1.0f, float((t1 - t0) / TICK_TIME)); // NOLINT(bugprone-integer-division)				

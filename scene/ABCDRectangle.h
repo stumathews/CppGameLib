@@ -40,13 +40,14 @@ namespace gamelib
 		void SetY(int y);
 		void SetHeight(int h);
 		void SetWidth(int w);
+		void reinitialize(int x, int y, int w, int h);
+
 		int GetHeight() const;
 		int GetWidth() const;
 
+		bool Intersects(const ABCDRectangle& a, const ABCDRectangle& b);
+
 		coordinate<int> GetCenter();
-
-		void reinitialize(int x, int y, int w, int h);
-
 	private:
 		int x,y,w,h;
 	};

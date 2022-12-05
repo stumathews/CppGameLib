@@ -26,12 +26,9 @@ using namespace std;
 
 namespace gamelib
 {
-	/// <summary>
-	/// Create the game structure
-	/// </summary>
-	GameStructure::GameStructure(std::function<void()> getControllerInputFunction)
-			: _getControllerInputFunction(std::move(getControllerInputFunction))
-			{ }
+
+	GameStructure::GameStructure(std::function<void()> getControllerInputFunction) 
+		: _getControllerInputFunction(std::move(getControllerInputFunction)) { }
 
 	/// <summary>
 	/// Update & Draw until the game ends
@@ -98,15 +95,12 @@ namespace gamelib
 
 			// drawing time!
 
-			if (gameWorldData->IsNetworkGame && (t1 - t0) > TICK_TIME)
-			{
-				t0 = t1 - TICK_TIME;
-			}
+			if (gameWorldData->IsNetworkGame && (t1 - t0) > TICK_TIME) { t0 = t1 - TICK_TIME; }
 
 			if (gameWorldData->CanDraw)
 			{
 				// How much within the new 'tick' are we?
-				const auto percentWithinTick = min(1.0f, float((t1 - t0) / TICK_TIME)); // NOLINT(bugprone-integer-division)				
+				const auto percentWithinTick = min(1.0f, (t1 - t0) / TICK_TIME); // NOLINT(bugprone-integer-division)				
 				Draw(percentWithinTick);
 			}
 		}
@@ -114,38 +108,19 @@ namespace gamelib
 		return true;
 	}
 
-	/// <summary>
-	/// tear down and unloda game subsystems when the game shuts down
-	/// </summary>
-	GameStructure::~GameStructure()
-	{
-		UnloadGameSubsystems();
-	}
-	
-	/// <summary>
-	///  Initializes game subsystems resource manager and SDL	
-	/// </summary>
-	/// <returns>true if subsystems initialised, false otherwise</returns>
 	bool GameStructure::InitializeGameSubSystems(int screenWidth, int screenHeight, string windowTitle, string resourceFilePath)
 	{
-		// Initialize the settings manager
 		const auto settingsInitialized = SettingsManager::Get()->Load("game/settings.xml");
-		
-		// Load key game subsystem settings
 		const auto beVerbose = SettingsManager::Get()->GetBool("global","verbose");
 
-		if(screenWidth == 0)
-			screenWidth = SettingsManager::Get()->GetInt("global", "screen_width");
-
-		if(screenHeight == 0)
-			screenHeight = SettingsManager::Get()->GetInt("global", "screen_height");
+		if (screenWidth == 0) { screenWidth = SettingsManager::Get()->GetInt("global", "screen_width"); }
+		if (screenHeight == 0) { screenHeight = SettingsManager::Get()->GetInt("global", "screen_height"); }
 		
 		// Perform the initialiation
 		return LogThis("GameStructure::initialize()", beVerbose, [&]()
 		{
 			if (SettingsManager::Get()->GetBool("global", "isNetworkGame"))
 			{
-				// Initialize NetworkManager
 				const auto networkManagerInitialized = LogOnFailure(NetworkManager::Get()->Initialize(), "Could not initialize network manager");
 			}
 
@@ -159,54 +134,12 @@ namespace gamelib
 				IsFailedOrFalse(LogOnFailure(EventManager::Get()->Initialize(), "Could not initialize event manager")) ||
 				IsFailedOrFalse(LogOnFailure(ResourceManager::Get()->Initialize(resourceFilePath), "Could not initialize resource manager")) ||
 				IsFailedOrFalse(LogOnFailure(SceneManager::Get()->Initialize(), "Could not initialize scene manager")) ||
-				IsFailedOrFalse(settingsInitialized))
-			{
-				return false;
-			}
+				IsFailedOrFalse(settingsInitialized)) { return false; }
 						
 			return true;
 		}, true, true);
 	}
 
-	
-	/// <summary>
-	/// Keeps and updated snapshot of the player state
-	/// </summary>
-	void GameStructure::ReadKeyboard() const
-	{
-		// Read from game controller
-		_getControllerInputFunction();	
-	}
-
-	void GameStructure::ReadNetwork() const
-	{
-		NetworkManager::Get()->Listen();
-	}
-
-	/// <summary>
-	/// Handle top-level game events
-	/// </summary>
-	/// <param name="the_event">The incoming event</param>
-	/// <returns>List of generated events that occured while processing this event</returns>
-	vector<shared_ptr<Event>> GameStructure::HandleEvent(std::shared_ptr<Event> the_event, unsigned long deltaMs)
-	{
-		// GameStructure does not subscribe to any events
-		return vector<shared_ptr<Event>>();
-	}
-
-	/// <summary>
-	/// Indicate who we are in the event system
-	/// </summary>
-	/// <returns></returns>
-	string GameStructure::GetSubscriberName()
-	{
-		return "Game";
-	}
-
-	/// <summary>
-	/// Update logic in game.
-	/// Is run x FPS to maintain a timed series on constant updates
-	/// </summary>
 	void GameStructure::Update(unsigned long deltaMs)
 	{
 		ReadKeyboard();
@@ -217,52 +150,23 @@ namespace gamelib
 		EventManager::Get()->DispatchEventToSubscriber(make_shared<UpdateProcessesEvent>(), deltaMs);
 	}
 
-	/// <summary>
-	/// Draws the game
-	/// </summary>
 	void GameStructure::Draw(unsigned long percent_within_tick)
 	{		
 		// Time-sensitive, skip queue. Draws the current scene
 		EventManager::Get()->DispatchEventToSubscriber(std::shared_ptr<Event>(new Event(EventType::DrawCurrentScene)), 0UL);
 	}
 
-	/// <summary>
-	/// Gets time in milliseconds now
-	/// </summary>
-	/// <returns>Time In Milliseconds</returns>
-	long GameStructure::GetTimeNowMs() 
-	{
-		return timeGetTime();
-	}
 
-	/// <summary>
-	/// Process all pending events
-	/// </summary>
-	void GameStructure::HandleSpareTime(long elapsedTime) const 	
-	{
-		
-	}
-
-	/// <summary>
-	/// Initialized SDL
-	/// </summary>
-	/// <param name="screen_width">Width of the screen</param>
-	/// <param name="screen_height">Height of the screen</param>
-	/// <returns>true if SDL is successfully initialized, false otherwise</returns>
 	bool GameStructure::InitializeSDL(const int screenWidth, const int screenHeight, string windowTitle)
 	{
 		return LogOnFailure(SDLGraphicsManager::Get()->Initialize(screenWidth, screenHeight, windowTitle.c_str()), "Failed to initialize SDL graphics manager");
 	}
 
-	/// <summary>
-	/// Unload and uninitialize key game sybsystems incl SDL, Image and font libraries and the resource manager
-	/// </summary>
-	/// <returns>true if unloading succeeded, false otherwise</returns>
 	bool GameStructure::UnloadGameSubsystems()
 	{
 		try 
 		{
-			// Unload all the content currently stored in memort
+			// Unload all the content currently stored in memory
 			ResourceManager::Get()->Unload();
 
 			// Finish/Finalize library usage
@@ -279,6 +183,14 @@ namespace gamelib
 			ErrorLogManager::GetErrorLogManager()->LogMessage(e.what());
 			return false;
 		}
-	}	
+	}
+
+	void GameStructure::ReadKeyboard() const { _getControllerInputFunction(); }
+	void GameStructure::ReadNetwork() const { NetworkManager::Get()->Listen(); }
+	void GameStructure::HandleSpareTime(long elapsedTime) const { }
+	vector<shared_ptr<Event>> GameStructure::HandleEvent(std::shared_ptr<Event> the_event, unsigned long deltaMs) { return vector<shared_ptr<Event>>(); }
+	string GameStructure::GetSubscriberName() { return "Game"; }
+	long GameStructure::GetTimeNowMs() { return timeGetTime(); }
+	GameStructure::~GameStructure() { UnloadGameSubsystems(); }
 }
 

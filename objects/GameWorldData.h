@@ -23,7 +23,7 @@ namespace gamelib
 		/// </summary>
 		bool CanDraw = true;
 
-		std::shared_ptr<gamelib::GameObject> player;
+		std::weak_ptr<gamelib::GameObject> player;
 	};
 }
 

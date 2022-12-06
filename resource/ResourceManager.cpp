@@ -18,24 +18,8 @@ namespace gamelib
 	using namespace tinyxml2;
 	using namespace std;
 		
-	ResourceManager::ResourceManager()
-	{ }
-
-	ResourceManager* ResourceManager::Get()
-	{
-		if (Instance == nullptr)
-		{
-			Instance = new ResourceManager();
-		}
-		return Instance;
-	}
-
-	ResourceManager::~ResourceManager()
-	{
-		Instance = nullptr;
-	}
-
-	ResourceManager* ResourceManager::Instance = nullptr;
+	ResourceManager::ResourceManager() { debug = false; }
+	ResourceManager::~ResourceManager() { Instance = nullptr; }
 
 	/// <summary>
 	/// Initialise the resrouce manager
@@ -132,12 +116,9 @@ namespace gamelib
 	{	
 		Logger::Get()->LogThis("ResourceManager: reading resources.xml.");
 		
-		XMLDocument xmlDocument;
-		
-		// Load resource file
+		XMLDocument xmlDocument;		
 		xmlDocument.LoadFile(resourceFilePath.c_str()); 
 		
-		// Parse resource file
 		if(xmlDocument.ErrorID() == 0)
 		{		
 			auto* pAssetsNode = xmlDocument.FirstChildElement("Assets");
@@ -152,10 +133,7 @@ namespace gamelib
 						shared_ptr<Asset> theAsset = nullptr;
 						const char* ptrAssetType;
 
-						// Fetch type of the current asset
-						element->QueryStringAttribute("type", &ptrAssetType);			
-
-						// Create an asset for asset type						
+						element->QueryStringAttribute("type", &ptrAssetType);					
 						theAsset = CreateAssetFromElement(ptrAssetType, theAsset, element);						
 
 						// Store the asset reference, but dont load it
@@ -239,32 +217,9 @@ namespace gamelib
 		countResources++;
 	}
 
-	/// <summary>
-	/// Provide subscriber name to event system
-	/// </summary>
-	/// <returns>Name of resource manager </returns>
-	string ResourceManager::GetSubscriberName()
-	{
-		return "resource manager";	
-	}
-
-	/// <summary>
-	/// Get Asset Info by Name
-	/// </summary>
-	/// <param name="name">Name of the asset</param>
-	/// <returns>Assert info</returns>
-	shared_ptr<Asset> ResourceManager::GetAssetInfo(const string& name)
-	{
-		return resourcesByName[name];		
-	}
-
-	/// <summary>
-	/// Get Asset info by Id
-	/// </summary>
-	/// <param name="uuid">Id of the asset as found in asset file</param>
-	/// <returns>Asset info</returns>
-	shared_ptr<Asset> ResourceManager::GetAssetInfo(const int uuid)
-	{
-		return resourcesById[uuid];
-	}
+	string ResourceManager::GetSubscriberName()	{ return "resource manager";}
+	shared_ptr<Asset> ResourceManager::GetAssetInfo(const string& name) {return resourcesByName[name]; }
+	shared_ptr<Asset> ResourceManager::GetAssetInfo(const int uuid) { return resourcesById[uuid]; }
+	ResourceManager* ResourceManager::Get() { if (Instance == nullptr) { Instance = new ResourceManager(); } return Instance; }
+	ResourceManager* ResourceManager::Instance = nullptr;
 }

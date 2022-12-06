@@ -49,7 +49,7 @@ namespace gamelib
 		std::shared_ptr<Layer> FindLayer(const std::string &name);	
 		std::shared_ptr<GameObject> GetGameObjectFrom(std::shared_ptr<gamelib::Event> event);
 		std::vector<std::shared_ptr<gamelib::Event>> HandleEvent(std::shared_ptr<gamelib::Event> the_event, unsigned long deltaMs) override;
-		std::vector <std::shared_ptr<gamelib::GameObject>> GetAllObjects();
+		std::vector <std::weak_ptr<gamelib::GameObject>> GetAllObjects();
 		void UpdateAllObjects(unsigned long deltaMs);
 		std::string GetSubscriberName() override;
 		bool ReadSceneFile(const std::string& filename);

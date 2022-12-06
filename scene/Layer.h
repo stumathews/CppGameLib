@@ -23,7 +23,7 @@ namespace gamelib
 		bool ZOrder() { return zorder; }
 		void SetName(std::string inName) { name = inName; }
 		std::string Name() { return name; }
-		std::list<std::shared_ptr<GameObject>> Objects;
+		std::list<std::weak_ptr<GameObject>> Objects;
 	private:
 		std::string name;
 		

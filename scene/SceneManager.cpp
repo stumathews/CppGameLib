@@ -78,7 +78,10 @@ namespace gamelib
 
 	void SceneManager::UpdateAllObjects(unsigned long deltaMs)
 	{
-		for (auto& object : GetAllObjects()) { object->Update(deltaMs); }
+		for (auto& object : GetAllObjects()) 
+		{
+			if (auto ptr = object.lock()) { ptr->Update(deltaMs); }
+		}
 	}
 
 	void SceneManager::OnGameObjectEventReceived(shared_ptr<gamelib::Event> event)
@@ -171,10 +174,10 @@ namespace gamelib
 					for (const auto& gameObject : Layer->Objects)
 					{
 						// If it is active
-						if (gameObject && gameObject->IsActive)
+						if (auto ptr = gameObject.lock())
 						{
 							// draw yourself!
-							gameObject->Draw(windowRenderer);
+							ptr->Draw(windowRenderer);
 						}						
 					}
 				}
@@ -184,14 +187,14 @@ namespace gamelib
 		SDLGraphicsManager::Get()->ClearAndDraw(renderAllObjectsFn);
 	}
 
-	std::vector <std::shared_ptr<gamelib::GameObject>> SceneManager::GetAllObjects()
+	std::vector <std::weak_ptr<gamelib::GameObject>> SceneManager::GetAllObjects()
 	{
-		std::vector<std::shared_ptr<gamelib::GameObject>> gameObjects;
+		std::vector<std::weak_ptr<gamelib::GameObject>> gameObjects;
 		for (const auto& Layer : GetLayers())
 		{
 			for (const auto& gameObject : Layer->Objects)
 			{
-				if (gameObject) { gameObjects.push_back(gameObject); }				
+				gameObjects.push_back(gameObject);				
 			}			
 		}
 		return gameObjects;

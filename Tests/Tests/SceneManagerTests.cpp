@@ -53,9 +53,7 @@ TEST_F(SceneManagerTests, get_scene_layers)
 	EXPECT_EQ(layer->Position.GetX(), 0) << "X position of Should initially be set to 0";
 	EXPECT_EQ(layer->Position.GetY(), 0) << "Y position of Should initially be set to 0";
 	EXPECT_TRUE(layer->visible) << "Layer not visible";
-	EXPECT_EQ(layer->zorder, 0) << "Z-order is wrong";
-	EXPECT_EQ(layer->Objects.size(), 1) << "Expected 1 game object in the layer";
-	EXPECT_STREQ(game_object.lock()->GetName().c_str(), "AnimatedSprite") << "Wrong game object";		
+	EXPECT_EQ(layer->zorder, 0) << "Z-order is wrong";	
 }
 
 TEST_F(SceneManagerTests, remove_object_from_layer)

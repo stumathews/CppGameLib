@@ -34,7 +34,7 @@ namespace gamelib
 		std::shared_ptr<gamelib::AnimatedSprite> BuildGraphic(std::string name, std::string type, std::shared_ptr<gamelib::Asset> asset, const gamelib::coordinate<int>& position, bool IsVisible) const;
 		std::shared_ptr<gamelib::AnimatedSprite> BuildSprite(std::string name, std::string type, std::shared_ptr<gamelib::Asset> asset, const gamelib::coordinate<int>& position, bool IsVisible) const;
 		std::shared_ptr<gamelib::StaticSprite> BuildStaticSprite(std::string name, std::string type, std::shared_ptr<gamelib::Asset> asset, const gamelib::coordinate<int>& position);
-		
+
 	private:
 		static GameObjectFactory& instance;
 

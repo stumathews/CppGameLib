@@ -14,7 +14,7 @@ namespace gamelib
 	class AnimatedSprite final : public DrawableGameObject
 	{	
 	public:
-		AnimatedSprite(gamelib::coordinate<int> position, float frameDuration, bool IsVisible, ABCDRectangle dimensions);
+		AnimatedSprite(std::string name, std::string type, gamelib::coordinate<int> position, float frameDuration, bool IsVisible, ABCDRectangle dimensions);
 		AnimatedSprite() = default;
 		static std::shared_ptr<AnimatedSprite> Create(gamelib::coordinate<int> position, std::shared_ptr<SpriteAsset> asset);
 		static void Initialize(std::shared_ptr<AnimatedSprite> animatedSprite);

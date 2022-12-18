@@ -9,7 +9,8 @@ using namespace std;
 
 namespace gamelib
 {
-	AnimatedSprite::AnimatedSprite(coordinate<int> position, float inFrameDurationMs, bool IsVisible, ABCDRectangle dimensions) : DrawableGameObject(position, IsVisible)
+	AnimatedSprite::AnimatedSprite(std::string name, std::string type, coordinate<int> position, float inFrameDurationMs, bool IsVisible, ABCDRectangle dimensions) 
+		: DrawableGameObject(name, type, position, IsVisible)
 	{ 
 		frameDurationMs = inFrameDurationMs;
 		currentFrameNumber = startFrameNumber = deltaTime = 0;
@@ -19,7 +20,7 @@ namespace gamelib
 
 	shared_ptr<AnimatedSprite> AnimatedSprite::Create(coordinate<int> position, std::shared_ptr<SpriteAsset> spriteAsset)
 	{
-		auto _sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(position, spriteAsset->FrameDurationMs, true, spriteAsset->Dimensions));
+		auto _sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite("", "", position, spriteAsset->FrameDurationMs, true, spriteAsset->Dimensions));
 		
 		_sprite->SetGraphic(spriteAsset);
 		_sprite->KeyFrames = spriteAsset->KeyFrames;

@@ -31,14 +31,14 @@ namespace gamelib
 		/// <returns>GameObject</returns>
 		std::shared_ptr<GameObject> BuildGameObject(tinyxml2::XMLElement* scene_object_xml) const;
 
-		void BuildGraphic(std::shared_ptr<gamelib::Asset>& asset, const gamelib::coordinate<int>& position, bool IsVisible, gamelib::ColourKey& colourKey, std::shared_ptr<gamelib::GameObject>& templateObject) const;
-		void BuildSprite(std::shared_ptr<gamelib::Asset>& asset, const gamelib::coordinate<int>& position, bool IsVisible, gamelib::ColourKey& colourKey, std::shared_ptr<gamelib::GameObject>& templateObject) const;
-		std::shared_ptr<gamelib::StaticSprite> BuildStaticSprite(std::shared_ptr<gamelib::Asset> asset, const gamelib::coordinate<int>& position);
+		std::shared_ptr<gamelib::AnimatedSprite> BuildGraphic(std::string name, std::string type, std::shared_ptr<gamelib::Asset> asset, const gamelib::coordinate<int>& position, bool IsVisible) const;
+		std::shared_ptr<gamelib::AnimatedSprite> BuildSprite(std::string name, std::string type, std::shared_ptr<gamelib::Asset> asset, const gamelib::coordinate<int>& position, bool IsVisible) const;
+		std::shared_ptr<gamelib::StaticSprite> BuildStaticSprite(std::string name, std::string type, std::shared_ptr<gamelib::Asset> asset, const gamelib::coordinate<int>& position);
 		
 	private:
 		static GameObjectFactory& instance;
 
-		void SetupCommonSprite(std::shared_ptr<gamelib::AnimatedSprite>& _sprite, std::shared_ptr<gamelib::Asset>& asset, std::shared_ptr<gamelib::GraphicAsset>& graphicAsset, gamelib::ColourKey& colourKey, bool IsVisible) const;
+		void SetupCommonSprite(std::shared_ptr<gamelib::AnimatedSprite>& _sprite, std::shared_ptr<gamelib::Asset>& asset, std::shared_ptr<gamelib::GraphicAsset>& graphicAsset, bool IsVisible) const;
 
 		// Parsing object attribute handlers
 		void OnBlueParse(gamelib::uint& blue, std::string& detail_value) const;
@@ -48,9 +48,11 @@ namespace gamelib
 		void OnPosYParse(gamelib::uint& y, std::string& detail_value) const;
 		void OnVisibleParse(bool& visible, std::string& detail_value) const;
 		void OnPosXParse(gamelib::uint& x, std::string& detail_value) const;
+		void OnNameParse(std::string& x, std::string& detail_value) const;
+		void OnTypeParse(std::string& x, std::string& detail_value) const;
 		void GetAssetForResourceIdParse(std::string& detail_value, std::shared_ptr<gamelib::Asset>& resource) const;
 
-		std::shared_ptr<gamelib::GameObject>& InitializeGameObject(std::shared_ptr<gamelib::GameObject>& templateObject, gamelib::coordinate<int> position, bool IsVisible, std::shared_ptr<gamelib::Asset>& asset, gamelib::ColourKey colourKey) const;
+		std::shared_ptr<gamelib::GameObject> InitializeGameObject(std::string& name, std::string& type, gamelib::coordinate<int> position, bool IsVisible, std::shared_ptr<gamelib::Asset> asset) const;
 
 		// Private constructor 
 		GameObjectFactory() = default;

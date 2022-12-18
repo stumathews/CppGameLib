@@ -16,33 +16,29 @@ namespace gamelib
 
 	shared_ptr<GameObject> GameObjectFactory::BuildGameObject(XMLElement * objectElement) const
 	{
-		uint redValue, greenValue, blueValue;
-		redValue = greenValue = blueValue = 0;
-		uint x = 0;
-		uint y = 0;
-		auto IsVisible = false;
-		auto isColourKeyEnabled = false;
+		uint redValue = 0, greenValue = 0, blueValue = 0;
+		uint x = 0, y = 0;
+		string name, type;
+		auto IsVisible = false, isColourKeyEnabled = false;
 		shared_ptr<Asset> asset;		
-		auto templateObject = shared_ptr<GameObject>(nullptr);
 
 		for(const auto* attribute = objectElement->FirstAttribute(); attribute; attribute = attribute->Next()) 
 		{
-			string attributeName(attribute->Name());
-			string attributeValue(attribute->Value());		
+			string attributeName = attribute->Name();
+			string attributeValue = attribute->Value();		
 						
 			if (attributeName == "resourceId") { GetAssetForResourceIdParse(attributeValue, /*out*/ asset); continue; }
 			if (attributeName == "posx") { OnPosXParse(x, attributeValue); continue; }
 			if (attributeName == "visible") { OnVisibleParse(IsVisible, attributeValue); continue; }
 			if (attributeName == "posy") { OnPosYParse(y, attributeValue); continue; }
-			if (attributeName == "colourKey") { OnColourKeyParse(isColourKeyEnabled, attributeValue); continue; }
 			if (attributeName == "r") { OnRedParse(redValue, attributeValue); continue; }
 			if (attributeName == "g") { OnGreenParse(greenValue, attributeValue); continue; }
 			if (attributeName == "b") { OnBlueParse(blueValue, attributeValue); continue; }
+			if (attributeName == "name") { OnNameParse(name, attributeValue); continue; }
+			if (attributeName == "type") { OnTypeParse(name, attributeValue); continue; }
 		}
-
-		auto colourKey = gamelib::ColourKey(redValue, greenValue, blueValue);
-
-		return InitializeGameObject(templateObject, coordinate<int>(x, y), IsVisible, asset, colourKey);
+				
+		return InitializeGameObject(name, type, coordinate<int>(x, y), IsVisible, asset);		
 	}
 
 
@@ -66,64 +62,58 @@ namespace gamelib
 		}
 	}
 
-	shared_ptr<GameObject>& GameObjectFactory::InitializeGameObject(shared_ptr<GameObject>& templateObject, coordinate<int> position, bool IsVisible, shared_ptr<Asset>& asset, ColourKey colourKey) const
+	shared_ptr<GameObject> GameObjectFactory::InitializeGameObject(string& name, string& type, coordinate<int> position, bool IsVisible, shared_ptr<Asset> asset) const
 	{
 		if (asset == nullptr) { throw exception("cannot initialize game object with out an associated asset"); }
-		if ((colourKey.Red < 0 || colourKey.Red > 255) || (colourKey.Blue < 0 || colourKey.Blue > 255) || (colourKey.Green < 0 || colourKey.Green > 255)) { throw exception("Invalid color values when constructing game object"); }
 		
 		switch (asset->assetType)
 		{
-			case Asset::AssetType::Sprite:  BuildSprite(asset, position, IsVisible, colourKey, /* (out/in) */ templateObject); break;
-			case Asset::AssetType::Graphic: BuildGraphic(asset, position, IsVisible, colourKey, /* (out/in) */ templateObject); break;
-			default: 
-				throw exception((string("Graphic asset not supported:") + asset->type).c_str()); break; 
+			case Asset::AssetType::Sprite:  return BuildSprite(name, type, asset, position, IsVisible); break;
+			case Asset::AssetType::Graphic: return BuildGraphic(name, type, asset, position, IsVisible); break;
+			default: throw exception((string("Graphic asset not supported:") + asset->type).c_str()); break; 
 		}
-
-		return templateObject;
 	}
 
-	void GameObjectFactory::BuildGraphic(std::shared_ptr<gamelib::Asset>& asset, const gamelib::coordinate<int>& position, bool IsVisible, gamelib::ColourKey& colourKey, std::shared_ptr<gamelib::GameObject>& templateObject) const
+	shared_ptr<AnimatedSprite> GameObjectFactory::BuildGraphic(string name, string type, std::shared_ptr<gamelib::Asset> asset, const gamelib::coordinate<int>& position, bool IsVisible) const
 	{
 		auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
-		auto _sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(position, 100, IsVisible, graphicAsset->Dimensions));
+		auto _sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(name, type, position, 100, IsVisible, graphicAsset->Dimensions));
 
-
-		SetupCommonSprite(_sprite, asset, graphicAsset, colourKey, IsVisible);
+		SetupCommonSprite(_sprite, asset, graphicAsset, IsVisible);
 
 		_sprite->AdjustViewportToCurrentDimensions();
 
-		templateObject = _sprite;
+		return _sprite;
 	}
 
-	std::shared_ptr<StaticSprite> GameObjectFactory::BuildStaticSprite(std::shared_ptr<gamelib::Asset> asset, const gamelib::coordinate<int>& position)
+	std::shared_ptr<StaticSprite> GameObjectFactory::BuildStaticSprite(std::string name, std::string type, std::shared_ptr<gamelib::Asset> asset, const gamelib::coordinate<int>& position)
 	{
 		return StaticSprite::Create(position, dynamic_pointer_cast<gamelib::SpriteAsset>(asset));
 	}
 
-	void GameObjectFactory::BuildSprite(std::shared_ptr<gamelib::Asset>& asset, const gamelib::coordinate<int>& position, bool IsVisible, gamelib::ColourKey& colourKey, std::shared_ptr<gamelib::GameObject>& templateObject) const
+	shared_ptr<AnimatedSprite> GameObjectFactory::BuildSprite(string name, string type, std::shared_ptr<gamelib::Asset> asset, const gamelib::coordinate<int>& position, bool IsVisible) const
 	{
 		auto spriteAsset = dynamic_pointer_cast<SpriteAsset>(asset);
 		auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
-		auto _sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(position, 100, IsVisible, spriteAsset->Dimensions));
-
-		SetupCommonSprite(_sprite, asset, graphicAsset, colourKey, IsVisible);
+		auto _sprite = shared_ptr<AnimatedSprite>(new AnimatedSprite(name, type, position, 100, IsVisible, spriteAsset->Dimensions));
+		SetupCommonSprite(_sprite, asset, graphicAsset, IsVisible);
 
 		_sprite->KeyFrames = spriteAsset->KeyFrames;
 		_sprite->PlayAnimation();	
 
-		templateObject = _sprite;
+		return _sprite;
 	}
 
-	void GameObjectFactory::SetupCommonSprite(std::shared_ptr<gamelib::AnimatedSprite>& _sprite, std::shared_ptr<gamelib::Asset>& asset, std::shared_ptr<gamelib::GraphicAsset>& graphicAsset, gamelib::ColourKey& colourKey, bool IsVisible) const
+	void GameObjectFactory::SetupCommonSprite(std::shared_ptr<gamelib::AnimatedSprite>& _sprite, std::shared_ptr<gamelib::Asset>& asset, std::shared_ptr<gamelib::GraphicAsset>& graphicAsset, bool IsVisible) const
 	{
 		_sprite->SetTag(asset->name);
 		_sprite->SetGraphic(graphicAsset);
 		_sprite->LoadSettings();
-		_sprite->SupportsColourKey(colourKey.IsSet());
+		_sprite->SupportsColourKey(graphicAsset->GetColourKey().IsSet());
 		_sprite->IsVisible = IsVisible;
 
 		// Tell the render what colour it should consider as transparent i.e ignore drawing
-		if (_sprite->HasColourKey()) { _sprite->SetColourKey(colourKey.Red, colourKey.Green, colourKey.Blue); }
+		if (_sprite->HasColourKey()) { _sprite->SetColourKey(graphicAsset->GetColourKey().Red, graphicAsset->GetColourKey().Green, graphicAsset->GetColourKey().Blue); }
 	}
 
 	void GameObjectFactory::OnBlueParse(gamelib::uint& blue, std::string& detail_value) const { blue = stoi(detail_value); }
@@ -133,6 +123,8 @@ namespace gamelib
 	void GameObjectFactory::OnPosYParse(gamelib::uint& y, std::string& detail_value) const { y = stoi(detail_value); }
 	void GameObjectFactory::OnVisibleParse(bool& visible, std::string& detail_value) const { visible = detail_value._Equal("true") ? true : false; }
 	void GameObjectFactory::OnPosXParse(gamelib::uint& x, std::string& detail_value) const { x = stoi(detail_value); }
+	void GameObjectFactory::OnNameParse(string& x, std::string& detail_value) const { x = detail_value; }
+	void GameObjectFactory::OnTypeParse(string& x, std::string& detail_value) const { x = detail_value; }
 
 	void GameObjectFactory::ThrowCouldNotFindAssetException(std::shared_ptr<gamelib::Asset>& asset, std::string& detail_value) const
 	{

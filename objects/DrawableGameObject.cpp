@@ -46,14 +46,15 @@ namespace gamelib
 	/// <summary>
 	/// Set defaults
 	/// </summary>
-	void DrawableGameObject::SetDefaults(bool NewIsVisible, int x, int y)
+	void DrawableGameObject::SetDefaults(std::string inName, std::string inType, bool NewIsVisible, int x, int y)
 	{
 		IsVisible = NewIsVisible;
 		Position.SetX(x);
 		Position.SetY(y);
 
 		Bounds = { Position.GetX(), Position.GetY(), 0 , 0 };
-		
+		Name = inName;
+		Type = inType;
 		IsColorKeyEnabled = false;
 		ColourKey = {};
 		Graphic = nullptr;
@@ -124,20 +125,20 @@ namespace gamelib
 	DrawableGameObject::DrawableGameObject(const bool is_visible)
 		: GameObject(is_visible)
 	{
-		SetDefaults(IsVisible, 0, 0);
+		SetDefaults("unknown", "unknown", IsVisible, 0, 0);
 	}
 
 	DrawableGameObject::DrawableGameObject(const int x, const int y, const bool is_visible)
 		: GameObject(x, y, is_visible)
 	{
-		SetDefaults(IsVisible, x, y);
+		SetDefaults("unknown", "unknown", IsVisible, x, y);
 	}
 
 
-	DrawableGameObject::DrawableGameObject(gamelib::coordinate<int> coordinate, const bool is_visible)
-		: GameObject(coordinate, is_visible)
+	DrawableGameObject::DrawableGameObject(std::string name, std::string type, gamelib::coordinate<int> coordinate, const bool is_visible)
+		: GameObject(name, type, coordinate, is_visible)
 	{
-		SetDefaults(is_visible, coordinate.GetX(), coordinate.GetY());
+		SetDefaults(name, type, is_visible, coordinate.GetX(), coordinate.GetY());
 	}
 
 	/// <summary>

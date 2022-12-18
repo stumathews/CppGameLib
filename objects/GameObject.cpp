@@ -16,7 +16,7 @@ namespace gamelib
 
 	GameObject::GameObject(bool IsVisible) { GameObject::LoadSettings(); SetDefaults(IsVisible, 0, 0); }
 	GameObject::GameObject(const int x, const int y, bool IsVisible ) { GameObject::LoadSettings(); SetDefaults(IsVisible, x, y); }
-	GameObject::GameObject(gamelib::coordinate<int> coordinate, bool IsVisible) { GameObject::LoadSettings(); SetDefaults(IsVisible, coordinate.GetX(), coordinate.GetY()); }
+	GameObject::GameObject(std::string name, std::string type, gamelib::coordinate<int> coordinate, bool IsVisible) { GameObject::LoadSettings(); SetDefaults(IsVisible, coordinate.GetX(), coordinate.GetY()); }
 	
 	void GameObject::SubscribeToEvent(EventType type) { EventManager::Get()->SubscribeToEvent(type, this); }
 	void GameObject::RaiseEvent(const shared_ptr<Event>& the_event) { EventManager::Get()->RaiseEvent(the_event, this); }
@@ -25,7 +25,7 @@ namespace gamelib
 	void GameObject::UpdateBounds(unsigned int _width, unsigned int height) { Bounds = CalculateBounds(Position, _width, height); }
 	void GameObject::SetTag(const string newTag) { tag = newTag; }
 
-	string GameObject::GetName() { return "game_object"; }
+	string GameObject::GetName() { return Name; }
 	string GameObject::GetSubscriberName() { return GetName(); }
 	string GameObject::GetTag() const { return this->tag; }
 

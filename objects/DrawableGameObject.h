@@ -16,7 +16,7 @@ namespace gamelib
 		DrawableGameObject() = default;
 		DrawableGameObject(const bool is_visible);
 		DrawableGameObject(const int x, const int y, const bool is_visible);
-		DrawableGameObject(gamelib::coordinate<int> coordinate, const bool is_visible);
+		DrawableGameObject(std::string name, std::string type, gamelib::coordinate<int> coordinate, const bool is_visible);
 
 		/// <summary>
 		/// Draw Graphic
@@ -36,7 +36,7 @@ namespace gamelib
 		/// <param name="isVisible"></param>
 		/// <param name="x"></param>
 		/// <param name="y"></param>
-		void SetDefaults(bool IsVisible, int x, int y);
+		void SetDefaults(std::string inName, std::string inType, bool IsVisible, int x, int y);
 
 		/// <summary>
 		/// Get Graphic

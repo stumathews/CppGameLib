@@ -6,7 +6,7 @@ namespace gamelib
 	class PeerInfo
 	{
 	public:
-		PeerInfo(sockaddr_in address, int length)
+		PeerInfo(const sockaddr_in address, int length)
 		{
 			this->Address = address;
 			this->Length = sizeof(address);
@@ -15,9 +15,9 @@ namespace gamelib
 		PeerInfo()
 		{
 			this->Length = sizeof(Address);
-			this->Address = {0};
+			this->Address = {};
 		}
-		sockaddr_in Address;
+		sockaddr_in Address{};
 		int Length;
 	};
 }

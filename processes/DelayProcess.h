@@ -3,14 +3,14 @@
 
 namespace gamelib
 {
-	class DelayProcess: public Process
+	class DelayProcess final : public Process
 	{
 		unsigned long delayTargetMs;
 		unsigned long delayedMs;
 	public:
-		explicit DelayProcess(unsigned long delayMs) : delayTargetMs(delayMs), delayedMs(0) {}
+		explicit DelayProcess(const unsigned long delayMs) : Process(), delayTargetMs(delayMs), delayedMs(0) {}
 	protected:
-		virtual void OnUpdate(unsigned long deltaMs) override
+		void OnUpdate(const unsigned long deltaMs) override
 		{
 			delayedMs += deltaMs; 
 			if (delayedMs >= delayTargetMs)

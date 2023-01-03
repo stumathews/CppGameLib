@@ -1,19 +1,18 @@
 #pragma once
 #include "Event.h"
-#include <string>
-#include <vector>
+
 namespace gamelib
 {
 	class StartNetworkLevelEvent final : public Event
 	{
 	public:
 
-		explicit StartNetworkLevelEvent(int level) : Event(EventType::StartNetworkLevel)
+		explicit StartNetworkLevelEvent(const int level) : Event(EventType::StartNetworkLevel)
 		{
-			this->level = level;
+			this->Level = level;
 		}
 	
-		int level;
+		int Level;
 
 	};
 }

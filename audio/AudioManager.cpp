@@ -29,7 +29,7 @@ namespace gamelib
 	/// <summary>
 	/// Create Audio Asset
 	/// </summary>
-	shared_ptr<Asset> AudioManager::CreateAsset(tinyxml2::XMLElement * element, ResourceManager& resource_admin) const
+	shared_ptr<Asset> AudioManager::CreateAsset(const tinyxml2::XMLElement * assetXmlElement, ResourceManager& resourceManager)
 	{
 		int uuid;
 		const char* type;
@@ -37,15 +37,16 @@ namespace gamelib
 		const char* name;
 		int scene;
 
-		element->QueryIntAttribute("uid", &uuid);
-		element->QueryStringAttribute("type", &type);
-		element->QueryStringAttribute("filename", &path);
-		element->QueryStringAttribute("name", &name);
-		element->QueryIntAttribute("scene", &scene);
+		assetXmlElement->QueryIntAttribute("uid", &uuid);
+		assetXmlElement->QueryStringAttribute("type", &type);
+		assetXmlElement->QueryStringAttribute("filename", &path);
+		assetXmlElement->QueryStringAttribute("name", &name);
+		assetXmlElement->QueryIntAttribute("scene", &scene);
 
 		// ... Read anything specific to audio in the element here...	
 		
-		auto audio = shared_ptr<AudioAsset>(new AudioAsset(uuid, string(name), string(path), string(type), scene, resource_admin));
+		auto audio = std::make_shared<AudioAsset>(uuid, string(name), string(path), string(type), scene,
+		                                          resourceManager);
 
 		return audio;
 	}
@@ -53,19 +54,19 @@ namespace gamelib
 	/// <summary>
 	/// Play Music
 	/// </summary>
-	/// <param name="as_music"></param>
-	void AudioManager::Play(Mix_Music* as_music)
+	/// <param name="music"></param>
+	void AudioManager::Play(Mix_Music* music)
 	{
-		Mix_PlayMusic(as_music, -1);
+		Mix_PlayMusic(music, -1);
 	}
 
 	/// <summary>
 	/// Play sound
 	/// </summary>
-	/// <param name="as_fx"></param>
-	void AudioManager::Play(Mix_Chunk* as_fx)
+	/// <param name="soundEffect"></param>
+	void AudioManager::Play(Mix_Chunk* soundEffect)
 	{
-		Mix_PlayChannel(-1, as_fx, 0);
+		Mix_PlayChannel(-1, soundEffect, 0);
 	}
 
 	/// <summary>
@@ -77,7 +78,7 @@ namespace gamelib
 	{	
 		if (asset->assetType != Asset::AssetType::Audio)
 		{
-			THROW(97, "Cannot cast a generic asset that is not an audio asset to an audio asset", "Audio Manager");
+			THROW(97, "Cannot cast a generic asset that is not an audio asset to an audio asset", "Audio Manager")
 		}
 
 		return AsAsset<AudioAsset>(asset);

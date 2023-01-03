@@ -1,13 +1,10 @@
 #pragma once
 #include <string>
 
-namespace gamelib
+namespace gamelib::constants
 {
-	namespace constants
-	{
-		const std::string playerTag = "Player";
-		const std::string playerComponentName = "PlayerDetails";
-		const std::string game_world = "GameWorldData";
+	const std::string PlayerTag = "Player";
+	const std::string PlayerComponentName = "PlayerDetails";
+	const std::string GameWorld = "GameWorldData";
 
-	}
 }

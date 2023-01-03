@@ -15,13 +15,13 @@ namespace gamelib
 	{
 	public:
 		Layer();
-		bool visible;
-		unsigned int zorder;
+		bool Visible;
+		unsigned int Zorder;
 
-		coordinate<int> Position;
-		bool IsVisible() { return visible; }
-		bool ZOrder() { return zorder; }
-		void SetName(std::string inName) { name = inName; }
+		Coordinate<int> Position;
+		[[nodiscard]] bool IsVisible() const { return Visible; }
+		[[nodiscard]] bool ZOrder() const { return Zorder; }
+		void SetName(const std::string& inName) { name = inName; }
 		std::string Name() { return name; }
 		std::list<std::weak_ptr<GameObject>> Objects;
 	private:

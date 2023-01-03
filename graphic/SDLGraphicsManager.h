@@ -24,31 +24,29 @@ namespace gamelib
 		SDLGraphicsManager(SDLGraphicsManager &&other) = delete;	
 		SDLGraphicsManager & operator=(SDLGraphicsManager &&other) = delete;
 		SDLGraphicsManager& operator=(SDLGraphicsManager const&)  = delete;
-		~SDLGraphicsManager();
+		~SDLGraphicsManager() override;
 			
 		
-		SDL_Window* window = nullptr; //The window we'll be rendering to
-		SDL_Renderer* windowRenderer = nullptr; //The window renderer
-		SDL_Surface* windowSurface = nullptr; 
-		bool Initialize(const uint width = 800, uint height = 600, const char* window_title = nullptr);	
+		SDL_Window* Window = nullptr; //The window we'll be rendering to
+		SDL_Renderer* WindowRenderer = nullptr; //The window renderer
+		SDL_Surface* WindowSurface = nullptr; 
+		bool Initialize(uint width = 800, uint height = 600, const char* windowTitle = nullptr);
 
-		uint get_screen_width() const { return screenWidth;}
-		uint get_screen_height() const { return screenHeight;}
+		[[nodiscard]] uint GetScreenWidth() const { return screenWidth;}
+		[[nodiscard]] uint GetScreenHeight() const { return screenHeight;}
 		
 	    std::string GetSubscriberName() override;
 
 		static std::shared_ptr<GraphicAsset> ToGraphicAsset(const std::shared_ptr<Asset>& asset);
-		void ClearAndDraw(std::function<void(SDL_Renderer* renderer)>& drawObjects) const;
+		void ClearAndDraw(const std::function<void(SDL_Renderer* renderer)>& drawObjects) const;
 		void ShowOnly() const;
 	protected:		
 		static SDLGraphicsManager* Instance;
 	private:		
 		SDLGraphicsManager();
 		uint screenWidth = 0;
-		uint screenHeight = 0;
-		
-		bool beVerbose = false;
-		ListOfEvents HandleEvent(const std::shared_ptr<Event> the_event, unsigned long deltaMs) override;
+		uint screenHeight = 0;		
+		ListOfEvents HandleEvent(std::shared_ptr<Event> theEvent, unsigned long deltaMs) override;
 	};
 }
 #endif

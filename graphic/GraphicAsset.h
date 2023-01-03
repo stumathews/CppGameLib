@@ -2,7 +2,6 @@
 #include <SDL.h>
 #include "asset/asset.h"
 #include "common/aliases.h"
-#include "util/SettingsManager.h"
 #include <list>
 #include <KeyFrame.h>
 #include <Inventory.h>
@@ -12,7 +11,7 @@
 namespace gamelib
 {
 	/// <summary>
-	/// A stand-alone graphics resource with backing storage that can load and unload itselfe
+	/// A stand-alone graphics resource with backing storage that can load and unload itself
 	/// </summary>
 	class GraphicAsset : public Asset
 	{
@@ -20,14 +19,14 @@ namespace gamelib
 		/// <summary>
 		/// Create A Graphic Asset
 		/// </summary>
-		GraphicAsset(const int uid, 
-			const std::string name, 
-			const std::string& path, 
-			const std::string& type, 
-			const int level, 
-			const ABCDRectangle& dimensions);
+		GraphicAsset(int inUid, 
+		             const std::string& inName, 
+		             const std::string& inPath, 
+		             const std::string& inType,
+		             int level, 
+		             const ABCDRectangle& dimensions);
 
-		virtual ~GraphicAsset();		
+		~GraphicAsset() override;		
 
 		/// <summary>
 		/// Load the resource onto the surface
@@ -50,7 +49,7 @@ namespace gamelib
 		/// Gets the graphic's texture
 		/// </summary>
 		/// <returns></returns>
-		SDL_Texture* GetTexture() const;
+		[[nodiscard]] SDL_Texture* GetTexture() const;
 				
 		std::list<KeyFrame> KeyFrames;
 
@@ -60,9 +59,9 @@ namespace gamelib
 
 		void SetColourKey(int red, int green, int blue);
 
-		ColourKey GetColourKey();
+		[[nodiscard]] ColourKey GetColourKey() const;
 
-		bool HasColourKey();
+		[[nodiscard]] bool HasColourKey() const;
 
 	private:
 	

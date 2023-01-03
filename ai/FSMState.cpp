@@ -1,6 +1,5 @@
 #include "FSMState.h"
 
-
 using namespace std;
 
 namespace gamelib
@@ -30,16 +29,16 @@ namespace gamelib
 		}
 	};
 
-	void FSMState::SetOnEnter(std::function<void()> onEnter)
+	void FSMState::SetOnEnter(const std::function<void()>& onEnter)
 	{
 		OnEnterFn = onEnter;
 	}
 
-	void FSMState::SetOnExit(std::function<void()> onExit)
+	void FSMState::SetOnExit(const std::function<void()>& onExit)
 	{
 		OnExitFn = onExit;
 	}
-	void FSMState::SetOnUpdate(std::function<void()> onUpdate)
+	void FSMState::SetOnUpdate(const std::function<void()>& onUpdate)
 	{
 		OnUpdateFn = onUpdate;
 	}

@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+#include "audio/AudioManager.h"
 
 #include "common/StaticConfig.h"
 #include "events/EventManager.h"
@@ -7,6 +8,7 @@
 #include "objects/GameObject.h"
 #include "resource/ResourceManager.h"
 #include "scene/SceneManager.h"
+#include "util/SettingsManager.h"
 
 using namespace std;
 using namespace gamelib;

@@ -10,10 +10,10 @@ namespace gamelib
 	class Component
 	{			
 	public:
-		Component(const std::string name);		
+		explicit Component(std::string name);		
 		std::string GetName() const;
-		void SetName(std::string name);
-		std::map<std::string, std::string> strings;
+		void SetName(const std::string& name);
+		std::map<std::string, std::string> Strings;
 	private:
 		std::string name;
 	};

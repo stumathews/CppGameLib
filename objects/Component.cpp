@@ -2,8 +2,8 @@
 namespace gamelib
 {	
 	
-	Component::Component(const std::string name) 
-		: name(name)
+	Component::Component(std::string name) 
+		: name(std::move(name))
 	{
 	}
 
@@ -13,7 +13,7 @@ namespace gamelib
 	}
 
 
-	void Component::SetName(const std::string name)
+	void Component::SetName(const std::string& name)
 	{
 		this->name = name;
 	}

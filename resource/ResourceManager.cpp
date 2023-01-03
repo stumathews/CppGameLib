@@ -1,17 +1,15 @@
 #include "ResourceManager.h"
 #include "tinyxml2.h"
-#include <iostream>
 #include <map>
 #include <memory>
-//#include "game/exceptions/game_exception.h"
 #include "audio/AudioManager.h"
 #include "common/Common.h"
 #include "events/EventManager.h"
 #include "events/SceneChangedEvent.h"
 #include "font/FontManager.h"
-#include "graphic/SDLGraphicsManager.h"
 #include <exceptions/EngineException.h>
 #include "graphic/GraphicAssetFactory.h"
+#include "util/SettingsManager.h"
 
 namespace gamelib
 {	
@@ -24,9 +22,7 @@ namespace gamelib
 	/// <summary>
 	/// Initialise the resrouce manager
 	/// </summary>
-	/// <param name="eventAdmin">Event admin</param>
-	/// <returns>true if initialised, false otherwise</returns>
-	bool ResourceManager::Initialize(std::string filePath)
+	bool ResourceManager::Initialize(const std::string& filePath)
 	{		
 		IndexResourceFile(filePath);
 		debug = SettingsManager::Get()->GetBool("global", "verbose");
@@ -44,16 +40,16 @@ namespace gamelib
 	/// <returns></returns>
 	vector<shared_ptr<Event>> ResourceManager::HandleEvent(const shared_ptr<Event> event, unsigned long deltaMs)
 	{
-		if(event->type == EventType::LevelChangedEventType)
+		if(event->Type == EventType::LevelChangedEventType)
 		{
 			LogThis("Detected level change. Loading level assets...", debug, [&]()
 			{
-				LoadSceneAssets(dynamic_pointer_cast<SceneChangedEvent>(event)->scene_id);
+				LoadSceneAssets(dynamic_pointer_cast<SceneChangedEvent>(event)->SceneId);
 				return true;
 			}, true, true);
 		}
 
-		return vector<shared_ptr<Event>>();
+		return {};
 	}
 
 	/// <summary>
@@ -92,7 +88,7 @@ namespace gamelib
 	/// <summary>
 	/// Ask each asset to unload itself
 	/// </summary>
-	void ResourceManager::Unload()
+	void ResourceManager::Unload() const
 	{
 		LogThis("Unloading all resources...", debug, [&]()
 		{
@@ -112,7 +108,7 @@ namespace gamelib
 	/// <summary>
 	/// Index the Resources.xml file	 
 	/// </summary>
-	void ResourceManager::IndexResourceFile(string resourceFilePath)
+	void ResourceManager::IndexResourceFile(const string& resourceFilePath)
 	{	
 		Logger::Get()->LogThis("ResourceManager: reading resources.xml.");
 		
@@ -143,21 +139,21 @@ namespace gamelib
 						}
 						else
 						{
-							auto message = string("No asset manager defined for ") + ptrAssetType;
+							const auto message = string("No asset manager defined for ") + ptrAssetType;
 							Logger::Get()->LogThis(message);
-							THROW((int)ResourceManager::ErrorNumbers::NoAssetManagerForType, message, this->GetSubscriberName());
+							THROW(static_cast<int>(ResourceManager::ErrorNumbers::NoAssetManagerForType), message, this->GetSubscriberName())
 						}
 					}
 				}
 			}
 			else
 			{
-				THROW(12, "No Assets found", GetSubscriberName());
+				THROW(12, "No Assets found", GetSubscriberName())
 			}
 		}
 		else
 		{
-			THROW((int) ResourceManager::ErrorNumbers::FailedToLoadResourceFile, "Failed to load resources file", this->GetSubscriberName());
+			THROW(static_cast<int>(ResourceManager::ErrorNumbers::FailedToLoadResourceFile), "Failed to load resources file", this->GetSubscriberName())
 		}
 
 		LogMessage(to_string(countResources) + string(" assets available in resource manager."));
@@ -167,10 +163,11 @@ namespace gamelib
 	/// Creates Asset Info from an entry in the resource file
 	/// </summary>
 	/// <param name="type">Type of asset identified in the resource file</param>
-	/// <param name="the_asset">The asset info</param>
+	/// <param name="asset"></param>
 	/// <param name="element">the current element containing the asset data</param>
 	/// <returns></returns>
-	std::shared_ptr<gamelib::Asset>& ResourceManager::CreateAssetFromElement(const char* type, std::shared_ptr<gamelib::Asset>& asset, tinyxml2::XMLElement* const& element)
+	std::shared_ptr<Asset>& ResourceManager::CreateAssetFromElement(const char* type, std::shared_ptr<Asset>& asset,
+	                                                                XMLElement* const& element)
 	{
 		// Create a graphic asset
 		if (strcmp(type, "graphic") == 0)
@@ -191,8 +188,8 @@ namespace gamelib
 		}
 		else
 		{
-			auto message = string("Unknown resource type:") + type;
-			THROW((int)ResourceManager::ErrorNumbers::UnknownResourceType, message, GetSubscriberName());
+			const auto message = string("Unknown resource type:") + type;
+			THROW(static_cast<int>(ResourceManager::ErrorNumbers::UnknownResourceType), message, GetSubscriberName())
 		}
 
 		return asset;
@@ -201,7 +198,7 @@ namespace gamelib
 	/// <summary>
 	/// Indexes the asset info
 	/// </summary>
-	/// <param name="theAsset">the asset info to store</param>
+	/// <param name="asset">the asset info to store</param>
 	void ResourceManager::StoreAsset(const shared_ptr<Asset>& asset)
 	{
 		// assets are explicitly associated with a scene that it will work in

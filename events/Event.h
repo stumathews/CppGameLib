@@ -1,7 +1,5 @@
 #pragma once
 #include <string>
-#include <memory>
-#include <exceptions/EngineException.h>
 #include <sstream>
 
 namespace gamelib
@@ -29,7 +27,7 @@ namespace gamelib
 		GameWon,
 	};
 
-	inline const char* ToString(EventType type)
+	inline const char* ToString(const EventType type)
 	{
 		switch (type)
 		{
@@ -52,81 +50,78 @@ namespace gamelib
 			case EventType::StartNetworkLevel: return "StartNetworkPlayerLevel";
 			case EventType::Unknown: return "Unknown";
 			case EventType::GameWon: return "GameWon";
-			default:      
-				return "[Unknown EventType]";
+			case EventType::UpdateProcesses: return "UpdateProcesses";
 		}
+		return nullptr;
 	}
 
-	inline gamelib::EventType FromString(std::string eventType)
+	inline EventType FromString(const std::string& eventType)
 	{
 		if(eventType == ToString(EventType::ControllerMoveEvent))
 		{
 			return EventType::ControllerMoveEvent;
 		}
-		else if (eventType == ToString(EventType::LevelChangedEventType))
+		if (eventType == ToString(EventType::LevelChangedEventType))
 		{
 			return EventType::LevelChangedEventType;
-		}		
-		else if (eventType == ToString(EventType::UpdateAllGameObjectsEventType))
+		}
+		if (eventType == ToString(EventType::UpdateAllGameObjectsEventType))
 		{
 			return EventType::UpdateAllGameObjectsEventType;
 		}
-		else if (eventType == ToString(EventType::AddGameObjectToCurrentScene))
+		if (eventType == ToString(EventType::AddGameObjectToCurrentScene))
 		{
 			return EventType::AddGameObjectToCurrentScene;
 		}
-		else if (eventType == ToString(EventType::PlayerMovedEventType))
+		if (eventType == ToString(EventType::PlayerMovedEventType))
 		{
 			return EventType::PlayerMovedEventType;
 		}
-		else if (eventType == ToString(EventType::SceneLoaded))
+		if (eventType == ToString(EventType::SceneLoaded))
 		{
 			return EventType::SceneLoaded;
 		}
-		else if (eventType == ToString(EventType::SettingsReloaded))
+		if (eventType == ToString(EventType::SettingsReloaded))
 		{
 			return EventType::SettingsReloaded;
 		}
-		else if (eventType == ToString(EventType::GenerateNewLevel))
+		if (eventType == ToString(EventType::GenerateNewLevel))
 		{
 			return EventType::GenerateNewLevel;
 		}
-		else if (eventType == ToString(EventType::InvalidMove))
+		if (eventType == ToString(EventType::InvalidMove))
 		{
 			return EventType::InvalidMove;
 		}
-		else if (eventType == ToString(EventType::Fire))
+		if (eventType == ToString(EventType::Fire))
 		{
 			return EventType::Fire;
 		}
-		else if (eventType == ToString(EventType::FetchedPickup))
+		if (eventType == ToString(EventType::FetchedPickup))
 		{
 			return EventType::FetchedPickup;
 		}
-		else if (eventType == ToString(EventType::GameObject))
+		if (eventType == ToString(EventType::GameObject))
 		{
 			return EventType::GameObject;
 		}
-		else if (eventType == ToString(EventType::DrawCurrentScene))
+		if (eventType == ToString(EventType::DrawCurrentScene))
 		{
 			return EventType::DrawCurrentScene;
 		}
-		else if (eventType == ToString(EventType::NetworkPlayerJoined))
+		if (eventType == ToString(EventType::NetworkPlayerJoined))
 		{
 			return EventType::NetworkPlayerJoined;
 		}
-		else if (eventType == ToString(EventType::NetworkTrafficReceived))
+		if (eventType == ToString(EventType::NetworkTrafficReceived))
 		{
 			return EventType::NetworkTrafficReceived;
 		}
-		else if(eventType == ToString(EventType::StartNetworkLevel))
+		if(eventType == ToString(EventType::StartNetworkLevel))
 		{
 			return EventType::StartNetworkLevel;
 		}
-		else
-		{
-			return EventType::Unknown;
-		}
+		return EventType::Unknown;
 	}
 
 	class Event
@@ -134,18 +129,18 @@ namespace gamelib
 	public:
 		explicit Event(EventType type);
 		int Id = 0;
-		bool processed = false;
-		EventType type;
-		std::string origin;
+		bool Processed = false;
+		EventType Type;
+		std::string Origin;
 		virtual EventType GetGameObjectType();
 		virtual std::string ToString();
-		virtual ~Event() = default;
+		virtual ~Event();
 	private:
 		// Game Object Id counter
 		static int lastEventId;
 	};
 
-	std::string operator+(const std::string& str, const EventType type);	
+	std::string operator+(const std::string& str, EventType type);	
 }
 
 

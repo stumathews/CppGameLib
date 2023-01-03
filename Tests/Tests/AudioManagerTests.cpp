@@ -36,7 +36,7 @@ class AudioManagerTests : public testing::Test
 TEST_F(AudioManagerTests, to_resource)
 {
 	// When casting a Asset* to a AudioAsset...
-	auto resource = audio_admin->ToAudioAsset(audio_asset_ptr);
+	const auto resource = audio_admin->ToAudioAsset(audio_asset_ptr);
 	
 	EXPECT_STREQ(resource->name.c_str(), RESOURCE_NAME.c_str()) << "Resource name is invalid";
 	EXPECT_EQ(resource->isLoadedInMemory, false) << "is loaded flag is invalid";

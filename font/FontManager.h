@@ -9,14 +9,12 @@ namespace tinyxml2 {
 
 namespace gamelib
 {
-	// Managers a set of font resources
 	class FontManager
 	{
 	public:	 		
 		static FontManager* Get();
 		~FontManager();
-		// Creates an audio Resource
-		std::shared_ptr<Asset> CreateAsset(tinyxml2::XMLElement * assetXmlElement) const;
+		std::shared_ptr<Asset> CreateAsset(const tinyxml2::XMLElement * assetXmlElement) const;
 		static std::shared_ptr<FontAsset> ToFontAsset(const std::shared_ptr<Asset>& asset);
 	protected:
 		static FontManager* Instance;

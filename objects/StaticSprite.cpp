@@ -1,21 +1,21 @@
-#include "pch.h"
 #include "StaticSprite.h"
-#include <common/TypeAliases.h>
 #include <memory>
 using namespace std;
 
 namespace gamelib
 {
-	StaticSprite::StaticSprite(gamelib::coordinate<int> startingPosition, std::shared_ptr<gamelib::SpriteAsset> spriteAsset, bool IsVisible = true)
-		: gamelib::DrawableGameObject(startingPosition.GetX(), startingPosition.GetY(), IsVisible)
+	StaticSprite::StaticSprite(const Coordinate<int> position, const std::shared_ptr<SpriteAsset>
+	                           & spriteAsset, const bool isVisible = true)
+		: DrawableGameObject(position.GetX(), position.GetY(), isVisible)
 	{
 		asset = spriteAsset;
-		IsVisible = IsVisible;
+		this->IsVisible = isVisible;
 	}
 
-	std::shared_ptr<StaticSprite> StaticSprite::Create(int x, int y, std::shared_ptr<gamelib::SpriteAsset> spriteAsset)
+	std::shared_ptr<StaticSprite> StaticSprite::Create(const int x, const int y, const std::shared_ptr<SpriteAsset>
+	                                                   & spriteAsset)
 	{
-		auto _sprite = shared_ptr<StaticSprite>(new StaticSprite(gamelib::coordinate<int>(x, y), spriteAsset));
+		auto _sprite = shared_ptr<StaticSprite>(new StaticSprite(gamelib::Coordinate<int>(x, y), spriteAsset));
 
 		// Here we actually set te graphic that the sprite actually uses to show itself
 		_sprite->SetGraphic(spriteAsset);
@@ -24,14 +24,16 @@ namespace gamelib
 		return _sprite;
 	}
 
-	std::shared_ptr<StaticSprite> StaticSprite::Create(gamelib::coordinate<int> coordinate, std::shared_ptr<gamelib::SpriteAsset> spriteAsset)
+	std::shared_ptr<StaticSprite> StaticSprite::Create(const Coordinate<int> coordinate, const std::shared_ptr<
+		                                                   SpriteAsset>
+	                                                   & spriteAsset)
 	{
 		return Create(coordinate.GetX(), coordinate.GetY(), spriteAsset);
 	}
 
-	std::vector<std::shared_ptr<gamelib::Event>> StaticSprite::HandleEvent(std::shared_ptr<gamelib::Event> event, unsigned long deltaMs)
+	std::vector<std::shared_ptr<Event>> StaticSprite::HandleEvent(std::shared_ptr<Event> event, unsigned long deltaMs)
 	{
-		return std::vector<std::shared_ptr<gamelib::Event>>();
+		return {};
 	}
 
 	void StaticSprite::AdvanceFrame()
@@ -40,7 +42,7 @@ namespace gamelib
 		SetFrame(currentFrame);
 	}
 
-	void StaticSprite::SetFrame(gamelib::uint FrameNumber)
+	void StaticSprite::SetFrame(const uint FrameNumber) const
 	{
 		if (!HasGraphic())
 			return;
@@ -52,16 +54,16 @@ namespace gamelib
 		if (KeyFrames.size() > 0)
 		{
 			// Dynamic: Adjust it to refer to the position of the frame in the picture
-			viewPort.x = KeyFrames[FrameNumber].x;
-			viewPort.y = KeyFrames[FrameNumber].y;
-			viewPort.w = KeyFrames[FrameNumber].w;
-			viewPort.h = KeyFrames[FrameNumber].h;
+			viewPort.x = KeyFrames[FrameNumber].X;
+			viewPort.y = KeyFrames[FrameNumber].Y;
+			viewPort.w = KeyFrames[FrameNumber].W;
+			viewPort.h = KeyFrames[FrameNumber].H;
 		}
 	}
 
-	gamelib::GameObjectType StaticSprite::GetGameObjectType()
+	GameObjectType StaticSprite::GetGameObjectType()
 	{
-		return gamelib::GameObjectType::StaticSprite;
+		return GameObjectType::StaticSprite;
 	}
 
 	void StaticSprite::LoadSettings()

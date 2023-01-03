@@ -6,40 +6,40 @@
 using namespace json11;
 namespace gamelib
 {
-	std::string gamelib::JsonEventSerializationManager::SerializePlayerMovedEvent(std::shared_ptr<PlayerMovedEvent> object, std::string target)
+	std::string JsonEventSerializationManager::SerializePlayerMovedEvent(const std::shared_ptr<PlayerMovedEvent> object, std::string target)
 	{
-		Json payload = Json::object
+		const Json payload = Json::object
 		{
-			{ "messageType", ToString(object->type) },
-			{ "direction", ToString(object->direction) },
+			{ "messageType", ToString(object->Type) },
+			{ "direction", ToString(object->Direction) },
 			{ "nickname", target }
 		};
 
 		return payload.dump();
 	}
 
-    std::shared_ptr<PlayerMovedEvent> gamelib::JsonEventSerializationManager::DeserializePlayerMovedEvent(std::string serializedMessage)
+    std::shared_ptr<PlayerMovedEvent> JsonEventSerializationManager::DeserializePlayerMovedEvent(const std::string serializedMessage)
     {
         std::string error;
-		auto payload = Json::parse(serializedMessage.c_str(), error);
+        const auto payload = Json::parse(serializedMessage.c_str(), error);
         const auto& direction = payload["direction"].string_value();
-        return std::shared_ptr<PlayerMovedEvent>(new PlayerMovedEvent(gamelib::FromDirectionString(direction)));
+        return std::make_shared<PlayerMovedEvent>(FromDirectionString(direction));
     }	
 
-	std::shared_ptr<StartNetworkLevelEvent> gamelib::JsonEventSerializationManager::DeserializeStartNetworkLevel(std::string serializedMessage)
+	std::shared_ptr<StartNetworkLevelEvent> JsonEventSerializationManager::DeserializeStartNetworkLevel(const std::string serializedMessage)
 	{
 		std::string error;
-		auto payload = Json::parse(serializedMessage.c_str(), error);
+		const auto payload = Json::parse(serializedMessage.c_str(), error);
         const auto& level = payload["level"].int_value();
-        return std::shared_ptr<StartNetworkLevelEvent>(new StartNetworkLevelEvent(level));
+        return std::make_shared<StartNetworkLevelEvent>(level);
 	
 	}
 
-	std::string gamelib::JsonEventSerializationManager::SerializeControllerMoveEvent(std::shared_ptr<ControllerMoveEvent> object, std::string target)
+	std::string JsonEventSerializationManager::SerializeControllerMoveEvent(const std::shared_ptr<ControllerMoveEvent> object, std::string target)
     {
-        Json payload = Json::object
+	    const Json payload = Json::object
 		{
-			{ "messageType", ToString(object->type) },
+			{ "messageType", ToString(object->Type) },
 			{ "direction", ToString(object->Direction) },
 			{ "nickname", target }
 		};
@@ -52,7 +52,7 @@ namespace gamelib
     std::string JsonEventSerializationManager::CreateRequestPlayerDetailsMessage()
     {
         // Request player details
-		Json sendPayload = Json::object 
+        const Json sendPayload = Json::object 
 		{
 			{ "messageType", "requestPlayerDetails" }
 		};
@@ -60,12 +60,12 @@ namespace gamelib
 		return sendPayload.dump();
     }
 
-	std::string JsonEventSerializationManager::SerializeStartNetworkLevelEvent(std::shared_ptr<StartNetworkLevelEvent> evt, std::string target)
+	std::string JsonEventSerializationManager::SerializeStartNetworkLevelEvent(const std::shared_ptr<StartNetworkLevelEvent> evt, std::string target)
 	{
-		Json payload = Json::object
+		const Json payload = Json::object
 		{
-			{ "messageType", ToString(evt->type) },
-			{ "level", evt->level },
+			{ "messageType", ToString(evt->Type) },
+			{ "level", evt->Level },
 			{ "nickname", target }
 		};
 
@@ -74,7 +74,7 @@ namespace gamelib
 
 	std::string JsonEventSerializationManager::CreateUnknownEventMessage(std::shared_ptr<Event> evt, std::string target) 
 	{
-		Json payload = Json::object
+		const Json payload = Json::object
 		{
 			{ "messageType", "unknown" },
 			{ "nickname", target }
@@ -99,11 +99,11 @@ namespace gamelib
 
 		*/
 
-		Json sendPayload = Json::object
+		const Json sendPayload = Json::object
 		{
 			{ "messageType", "pong" },
 			{ "isHappy", true },
-			{ "eventType", (int)gamelib::EventType::NetworkTrafficReceived },
+			{ "eventType", static_cast<int>(EventType::NetworkTrafficReceived) },
 			{ "names", Json::array{ "Stuart", "Jenny", "bruce" } },
 			{ "ages", Json::array{ 1, 2, 3 } },
 			{ "fish", Json::object{ { "yo", "sushi" } } }
@@ -114,10 +114,10 @@ namespace gamelib
 
 	std::string JsonEventSerializationManager::CreatePingMessage()
 	{
-		Json payload = Json::object{
+		const Json payload = Json::object{
 			{ "messageType", "ping" },
 			{ "isHappy", false },
-			{ "eventType", (int)gamelib::EventType::NetworkTrafficReceived },
+			{ "eventType", static_cast<int>(EventType::NetworkTrafficReceived) },
 			{ "names", Json::array{ "Stuart", "Jenny", "bruce" } },
 			{ "ages", Json::array{ 1, 2, 3 } },
 			{ "fish", Json::object{ { "yo", "sushi" } } }

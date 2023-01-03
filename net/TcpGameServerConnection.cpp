@@ -4,11 +4,10 @@
 #include <events/EventManager.h>
 #include <events/EventFactory.h>
 #include <SerializationManager.h>
-#include <events/NetworkPlayerJoinedEvent.h>
 
 namespace gamelib
 {
-	TcpGameServerConnection::TcpGameServerConnection(std::string host, std::string port)
+	TcpGameServerConnection::TcpGameServerConnection(const std::string& host, const std::string& port)
 	{
 		this->host = host;
 		this->port = port;
@@ -30,14 +29,14 @@ namespace gamelib
 
 	void TcpGameServerConnection::Listen()
 	{
-		const auto maxSockets = 5; // Number of pending connections to have in the queue at any one moment
+		constexpr auto maxSockets = 5; // Number of pending connections to have in the queue at any one moment
 		
 		FD_ZERO(&readfds); // Clear the list of sockets that we are listening for/on			
 		FD_SET(listeningSocket, &readfds); // Add it to the list of file descriptors to listen for readability
 				
 		
 		// Also listen for any traffic on any of the player's sockets
-		for(auto player : Players)
+		for(const auto& player : Players)
 		{
 			if(player.IsConnected())
 			{
@@ -47,7 +46,7 @@ namespace gamelib
 		
 		
 		// Check monitored sockets for incoming 'readable' data
-		auto dataIsAvailable = select(maxSockets, &readfds, NULL, NULL, &timeout) > 0; 
+		const auto dataIsAvailable = select(maxSockets, &readfds, nullptr, nullptr, &timeout) > 0; 
 		
 		if (dataIsAvailable)
 		{			
@@ -60,14 +59,12 @@ namespace gamelib
 	{
 		if (FD_ISSET(listeningSocket, &readfds))
 		{
-			SOCKET connectedSocket;
-			
-			PeerInfo peerInfo;			
-			connectedSocket = accept(listeningSocket, (struct sockaddr*)&peerInfo.Address, &peerInfo.Length);			
+			PeerInfo peerInfo;
+			const SOCKET connectedSocket = accept(listeningSocket, (sockaddr*)&peerInfo.Address, &peerInfo.Length);			
 
 			if (connectedSocket != INVALID_SOCKET)
 			{
-				auto newPlayer = TcpNetworkPlayer(connectedSocket);
+				const auto newPlayer = TcpNetworkPlayer(connectedSocket);
 				Players.push_back(newPlayer); // Store incoming player sockets so we can listen for incoming player data too
 				
 				//eventManager->RaiseEventWithNoLogging(std::make_shared<gamelib::Event>(gamelib::EventType::NetworkPlayerJoined));
@@ -79,7 +76,7 @@ namespace gamelib
 
 	std::vector<std::shared_ptr<Event>> TcpGameServerConnection::HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs)
 	{
-		return std::vector<std::shared_ptr<Event>>();
+		return {};
 	}
 
 	std::string TcpGameServerConnection::GetSubscriberName()
@@ -105,16 +102,16 @@ namespace gamelib
 			{
 				const int DEFAULT_BUFLEN = 512;
 				char buffer[DEFAULT_BUFLEN];
-				int bufferLength = DEFAULT_BUFLEN;
+				constexpr int bufferLength = DEFAULT_BUFLEN;
 				ZeroMemory(buffer, bufferLength);
 
 				// Read all incoming data
-				int bytesReceived = networking->netReadVRec(Players[playerId].GetSocket(), buffer, bufferLength);
+				const int bytesReceived = networking->netReadVRec(Players[playerId].GetSocket(), buffer, bufferLength);
 
 				if (bytesReceived > 0)
 				{
 					ParseReceivedPlayerPayload(playerId, buffer, bufferLength);
-					RaiseNetworkTrafficReceievedEvent(buffer, playerId, bytesReceived);
+					RaiseNetworkTrafficReceivedEvent(buffer, playerId, bytesReceived);
 				}
 
 				if (bytesReceived == SOCKET_ERROR && WSAGetLastError() == WSAECONNRESET)
@@ -122,7 +119,7 @@ namespace gamelib
 					// Connection closed. Remove the socket from those being monitored for incoming traffic
 					Players[playerId].SetIsConnected(false);
 
-					auto result = shutdown(Players[playerId].GetSocket(), SD_BOTH);
+					const auto result = shutdown(Players[playerId].GetSocket(), SD_BOTH);
 					if (result == SOCKET_ERROR)
 					{
 						printf("shutdown failed: %d\n", WSAGetLastError());
@@ -134,7 +131,7 @@ namespace gamelib
 		}
 	}
 
-	void TcpGameServerConnection::ParseReceivedPlayerPayload(const size_t& playerId, char* inPayload, int payloadLength)
+	void TcpGameServerConnection::ParseReceivedPlayerPayload(const size_t& playerId, const char* inPayload, int payloadLength)
 	{
 		if(!Players[playerId].IsConnected())
 		{
@@ -142,7 +139,7 @@ namespace gamelib
 		}
 
 		auto msgHeader = serializationManager->GetMessageHeader(inPayload);
-		auto messageType = msgHeader.MessageType;
+		const auto messageType = msgHeader.MessageType;
 
 		if(messageType == "ping")
 		{	
@@ -150,7 +147,7 @@ namespace gamelib
 		}
 		else if(messageType == "requestPlayerDetails")
 		{
-			ProcessRequestPlayerDetailsMessage((int)playerId, msgHeader);
+			ProcessRequestPlayerDetailsMessage(static_cast<int>(playerId), msgHeader);
 		}		
 		else
 		{
@@ -158,7 +155,7 @@ namespace gamelib
 			SendToConnectedPlayersExceptToSender(msgHeader.MessageTarget, inPayload, playerId);
 
 			// Send to ourself
-			auto event = serializationManager->Deserialize(msgHeader, inPayload);
+			const auto event = serializationManager->Deserialize(msgHeader, inPayload);
 			if(event)
 			{
 				_eventManager->DispatchEventToSubscriber(event, msgHeader.MessageTarget);
@@ -167,20 +164,21 @@ namespace gamelib
 
 	}
 
-	void TcpGameServerConnection::RaiseNetworkTrafficReceievedEvent(char buffer[512], const size_t& i, int bytesReceived)
+	void TcpGameServerConnection::RaiseNetworkTrafficReceivedEvent(char buffer[512], const size_t& i, const int bytesReceived) const
 	{
-		auto event = _eventFactory->CreateNetworkTrafficReceivedEvent(buffer, std::to_string(i + 1), bytesReceived);
+		const auto event = _eventFactory->CreateNetworkTrafficReceivedEvent(buffer, std::to_string(i + 1), bytesReceived);
 
 		_eventManager->RaiseEventWithNoLogging(event);
 	}
 
-	void TcpGameServerConnection::ProcessPingMessage(const size_t& playerId)
+	void TcpGameServerConnection::ProcessPingMessage(const size_t& playerId) const
 	{
-		auto data = serializationManager->CreatePongMessage();
-		networking->netSendVRec(Players[playerId].GetSocket(), data.c_str(), data.length());
+		const auto data = serializationManager->CreatePongMessage();
+		networking->netSendVRec(Players[playerId].GetSocket(), data.c_str(), static_cast<int>(data.length()));
 	}
 
-	void TcpGameServerConnection::SendToConnectedPlayersExceptToSender(const std::string& senderNickname, std::string serializedMessage, const size_t& playerId)
+	void TcpGameServerConnection::SendToConnectedPlayersExceptToSender(const std::string& senderNickname, const std::string
+	                                                                   & serializedMessage, const size_t& playerId) const
 	{
 		for (auto player : Players)
 		{
@@ -189,32 +187,32 @@ namespace gamelib
 				continue;
 			}
 
-			networking->netSendVRec(Players[playerId].GetSocket(), serializedMessage.c_str(), serializedMessage.length());
+			networking->netSendVRec(Players[playerId].GetSocket(), serializedMessage.c_str(), static_cast<int>(serializedMessage.length()));
 		}
 	}
 
-	void TcpGameServerConnection::ProcessRequestPlayerDetailsMessage(int playerId, gamelib::MessageHeader& messageHeader)
+	void TcpGameServerConnection::ProcessRequestPlayerDetailsMessage(const int playerId, const MessageHeader& messageHeader)
 	{
 		// Record the players nickname
 		Players[playerId].SetNickName(messageHeader.MessageTarget);
 	}
 
-	void TcpGameServerConnection::SendEventToAllPlayers(std::string serializedEvent)
+	void TcpGameServerConnection::SendEventToAllPlayers(const std::string serializedEvent)
 	{		
-		for (auto player : Players)
+		for (const auto& player : Players)
 		{
 			if (!player.IsConnected())
 			{
 				continue;
 			}
 
-			int sendResult = networking->netSendVRec(player.GetSocket(), serializedEvent.c_str(), serializedEvent.size());
+			networking->netSendVRec(player.GetSocket(), serializedEvent.c_str(), static_cast<int>(serializedEvent.size()));
 		}
 	}	
 	
 	TcpGameServerConnection::~TcpGameServerConnection()
 	{
-		for(auto player : Players)
+		for(const auto& player : Players)
 		{			
 			closesocket(player.GetSocket());
 			Logger::Get()->LogThis("Closed player connection.");

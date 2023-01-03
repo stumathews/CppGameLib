@@ -10,21 +10,22 @@ namespace gamelib
 	/// <summary>
 	/// Create Audio asset
 	/// </summary>
-	AudioAsset::AudioAsset(const int uid, string name, const string path, const string type, int scene, ResourceManager& resource_admin) 
-		: Asset(uid, name, path, type, scene), resourceManager(resource_admin)
+	AudioAsset::AudioAsset(const int inUid, const string& inName, const string& inPath, const string& inType, const int inScene,
+	                       ResourceManager& resourceAdmin) 
+		: Asset(inUid, inName, inPath, inType, inScene), resourceManager(resourceAdmin)
 	{
 		assetType = AssetType::Audio;
-		if (type._Equal("fx"))
+		if (inType._Equal("fx"))
 		{
 			audioAssetType = AudioAssetType::SoundEffect;
 		}
-		else if (type._Equal("music"))
+		else if (inType._Equal("music"))
 		{
 			audioAssetType = AudioAssetType::Music;
 		}
 		else
 		{
-			THROW(99, string("Unknown Audio Asset sub type: ") + type, "Audio Asset");
+			THROW(99, string("Unknown Audio Asset sub type: ") + inType, "Audio Asset")
 		}
 	}
 
@@ -33,7 +34,7 @@ namespace gamelib
 	/// </summary>
 	Mix_Chunk* AudioAsset::AsSoundEffect() const
 	{ 
-		return soundEffect;
+		return SoundEffect;
 	}
 
 	/// <summary>
@@ -41,7 +42,7 @@ namespace gamelib
 	/// </summary>
 	Mix_Music* AudioAsset::AsMusic() const
 	{ 
-		return music; 
+		return Music; 
 	}
 
 	/// <summary>
@@ -51,15 +52,15 @@ namespace gamelib
 	{
 		if (audioAssetType == AudioAssetType::SoundEffect)
 		{
-			soundEffect = Mix_LoadWAV(resourceManager.GetAssetInfo(name)->path.c_str());
+			SoundEffect = Mix_LoadWAV(resourceManager.GetAssetInfo(name)->path.c_str());
 		}
 		else if(audioAssetType == AudioAssetType::Music)
 		{
-			music = Mix_LoadMUS(resourceManager.GetAssetInfo(name)->path.c_str());
+			Music = Mix_LoadMUS(resourceManager.GetAssetInfo(name)->path.c_str());
 		}
 		else
 		{
-			THROW(99, string("Unknown audio asset sub type") + type, "Audio Asset");
+			THROW(99, string("Unknown audio asset sub type") + type, "Audio Asset")
 		}
 		
 		isLoadedInMemory = true;
@@ -72,16 +73,16 @@ namespace gamelib
 	{
 		if(audioAssetType == AudioAssetType::SoundEffect)
 		{
-			Mix_FreeChunk(soundEffect);
-			soundEffect = nullptr;
+			Mix_FreeChunk(SoundEffect);
+			SoundEffect = nullptr;
 			isLoadedInMemory = false;
 		}
 		else 
 		{
 			if(audioAssetType == AudioAssetType::Music)
 			{
-				Mix_FreeMusic( music );
-				music = nullptr;
+				Mix_FreeMusic( Music );
+				Music = nullptr;
 				isLoadedInMemory = false;
 			}
 		}

@@ -1,26 +1,25 @@
 #include <SDL_image.h>
 #include <winsock2.h>
-#include <Ws2tcpip.h>
 #include <Windows.h>
 #include <iostream>
 #include "GameStructure.h"
 #include <functional>
+#include <SDL_ttf.h>
+
 #include "audio/AudioManager.h"
 #include "common/Common.h"
-#include "common/constants.h"
 #include "events/AddGameObjectToCurrentSceneEvent.h"
 #include "events/UpdateAllGameObjectsEvent.h"
 #include "events/EventManager.h"
-#include "events/ControllerMoveEvent.h"
-#include "events/SceneChangedEvent.h"
 #include "graphic/SDLGraphicsManager.h"
 #include "resource/ResourceManager.h"
 #include "scene/SceneManager.h"
-#include "common/aliases.h"
 #include <string>
 #include <net/NetworkManager.h>
 #include "Logging/ErrorLogManager.h"
 #include <events/UpdateProcessesEvent.h>
+
+#include "util/SettingsManager.h"
 
 using namespace std;
 
@@ -34,7 +33,7 @@ namespace gamelib
 	/// Update & Draw until the game ends
 	/// </summary>
 	/// <returns></returns>
-	bool GameStructure::DoGameLoop(GameWorldData* gameWorldData)
+	bool GameStructure::DoGameLoop(const GameWorldData* gameWorldData) const
 	{
 		const auto maxUpdates = SettingsManager::Get()->GetInt("global", "max_loops");
 
@@ -63,7 +62,7 @@ namespace gamelib
 			// t1 has been affected by the time to update and draw.
 
 			auto elapsedTime = 0;  // Elapsed time in counted as number of updates per 1 game loop (hardware dependant).
-			auto _countUpdates = 0;  // Number of loops 
+			auto countUpdates = 0;  // Number of loops 
 
 			// Update() can be called every tick_time_ms which will result in a constant amount of ticks, as a ms is a ms independant on hardware.			
 			// Update() will 'tick' x times a second, depending on how long a tick is set to be, ie. tick_time_ms
@@ -73,7 +72,7 @@ namespace gamelib
 			// allow for multiple successive updates if the previous a) drawing b) sparetime operations (t1) took too long (longer than
 			// 1 tick_time_ms and so we couldn't do an update, so make up for it here)
 			// This only means it executes the right number of updates within a second, not that they have the same interval between them
-			while ((t1 - t0) > TICK_TIME && _countUpdates < maxUpdates)
+			while ((t1 - t0) > TICK_TIME && countUpdates < maxUpdates)
 			{
 				// +TICK_TIME has just occured, since last update so do another update
 				// update logic
@@ -82,7 +81,7 @@ namespace gamelib
 				t0 += TICK_TIME;
 
 				elapsedTime += TICK_TIME;
-				_countUpdates++;
+				countUpdates++;
 			}
 
 			// at this point the stats we have are: 
@@ -100,15 +99,15 @@ namespace gamelib
 			if (gameWorldData->CanDraw)
 			{
 				// How much within the new 'tick' are we?
-				const auto percentWithinTick = min(1.0f, (t1 - t0) / TICK_TIME); // NOLINT(bugprone-integer-division)				
-				Draw(percentWithinTick);
+				const auto percentWithinTick = min(1.0f, (t1 - t0) / TICK_TIME); // NOLINT(bugprone-integer-division, clang-diagnostic-implicit-int-float-conversion)				
+				Draw(static_cast<unsigned int>(percentWithinTick));
 			}
 		}
 		std::cout << "Game done" << std::endl;
 		return true;
 	}
 
-	bool GameStructure::InitializeGameSubSystems(int screenWidth, int screenHeight, string windowTitle, string resourceFilePath)
+	bool GameStructure::InitializeGameSubSystems(int screenWidth, int screenHeight, const string& windowTitle, const string resourceFilePath)
 	{
 		const auto settingsInitialized = SettingsManager::Get()->Load("game/settings.xml");
 		const auto beVerbose = SettingsManager::Get()->GetBool("global","verbose");
@@ -116,18 +115,18 @@ namespace gamelib
 		if (screenWidth == 0) { screenWidth = SettingsManager::Get()->GetInt("global", "screen_width"); }
 		if (screenHeight == 0) { screenHeight = SettingsManager::Get()->GetInt("global", "screen_height"); }
 		
-		// Perform the initialiation
+		// Perform the initialization
 		return LogThis("GameStructure::initialize()", beVerbose, [&]()
 		{
 			if (SettingsManager::Get()->GetBool("global", "isNetworkGame"))
 			{
-				const auto networkManagerInitialized = LogOnFailure(NetworkManager::Get()->Initialize(), "Could not initialize network manager");
+				LogOnFailure(NetworkManager::Get()->Initialize(), "Could not initialize network manager");
 			}
 
-			auto title = SettingsManager::Get()->GetBool("global", "isNetworkGame")
-				? NetworkManager::Get()->IsGameServer()
-				? "Mazer 2D (Multiplayer - Server)" : "Mazer 2D (Multiplayer - Client)"
-				: "Mazer 2D - Single Player Mode";
+			const auto title = SettingsManager::Get()->GetBool("global", "isNetworkGame")
+				                   ? NetworkManager::Get()->IsGameServer()
+					                     ? "Mazer 2D (Multiplayer - Server)" : "Mazer 2D (Multiplayer - Client)"
+				                   : "Mazer 2D - Single Player Mode";
 
 			// Final check to see if all subsystems are initialised ok
 			if (IsFailedOrFalse(LogOnFailure(InitializeSDL(screenWidth, screenHeight, title), "Could not initialize SDL, aborting.")) ||
@@ -140,7 +139,7 @@ namespace gamelib
 		}, true, true);
 	}
 
-	void GameStructure::Update(unsigned long deltaMs)
+	void GameStructure::Update(const unsigned long deltaMs) const
 	{
 		ReadKeyboard();
 		ReadNetwork();
@@ -150,14 +149,14 @@ namespace gamelib
 		EventManager::Get()->DispatchEventToSubscriber(make_shared<UpdateProcessesEvent>(), deltaMs);
 	}
 
-	void GameStructure::Draw(unsigned long percent_within_tick)
+	void GameStructure::Draw(unsigned long percent_within_tick) const
 	{		
 		// Time-sensitive, skip queue. Draws the current scene
-		EventManager::Get()->DispatchEventToSubscriber(std::shared_ptr<Event>(new Event(EventType::DrawCurrentScene)), 0UL);
+		EventManager::Get()->DispatchEventToSubscriber(std::make_shared<Event>(EventType::DrawCurrentScene), 0UL);
 	}
 
 
-	bool GameStructure::InitializeSDL(const int screenWidth, const int screenHeight, string windowTitle)
+	bool GameStructure::InitializeSDL(const int screenWidth, const int screenHeight, const string& windowTitle)
 	{
 		return LogOnFailure(SDLGraphicsManager::Get()->Initialize(screenWidth, screenHeight, windowTitle.c_str()), "Failed to initialize SDL graphics manager");
 	}
@@ -186,11 +185,12 @@ namespace gamelib
 	}
 
 	void GameStructure::ReadKeyboard() const { _getControllerInputFunction(); }
-	void GameStructure::ReadNetwork() const { NetworkManager::Get()->Listen(); }
-	void GameStructure::HandleSpareTime(long elapsedTime) const { }
-	vector<shared_ptr<Event>> GameStructure::HandleEvent(std::shared_ptr<Event> the_event, unsigned long deltaMs) { return vector<shared_ptr<Event>>(); }
+	void GameStructure::ReadNetwork() { NetworkManager::Get()->Listen(); }
+	void GameStructure::HandleSpareTime(long elapsedTime) { }
+	vector<shared_ptr<Event>> GameStructure::HandleEvent(std::shared_ptr<Event> the_event, unsigned long deltaMs) { return
+		{}; }
 	string GameStructure::GetSubscriberName() { return "Game"; }
-	long GameStructure::GetTimeNowMs() { return timeGetTime(); }
+	long GameStructure::GetTimeNowMs() { return static_cast<long>(timeGetTime()); }
 	GameStructure::~GameStructure() { UnloadGameSubsystems(); }
 }
 

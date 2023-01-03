@@ -2,11 +2,11 @@
 namespace gamelib
 {
 	template <class T>
-	class coordinate
+	class Coordinate
 	{
 	public:
-		coordinate(T x, T y);
-		coordinate();
+		Coordinate(T x, T y);
+		Coordinate();
 		T GetX() const;
 		T GetY() const;
 
@@ -18,31 +18,31 @@ namespace gamelib
 	};
 
 	template <typename T> 
-	coordinate<T>::coordinate(T x, T y)  : x(x), y(y) { }
+	Coordinate<T>::Coordinate(T x, T y)  : x(x), y(y) { }
 
 	template <typename T>
-	coordinate<T>::coordinate() { x = y = 0; }
+	Coordinate<T>::Coordinate() { x = y = 0; }
 
 	template <typename T> 
-	T coordinate<T>::GetY() const
+	T Coordinate<T>::GetY() const
 	{
 		return this->y;
 	}
 
 	template <typename T> 
-	T coordinate<T>::GetX() const
+	T Coordinate<T>::GetX() const
 	{
 		return this->x;
 	}
 
 	template <typename T> 
-	void coordinate<T>::SetX(T value)
+	void Coordinate<T>::SetX(T value)
 	{
 		this->x = value;
 	}
 
 	template <typename T> 
-	void coordinate<T>::SetY(T value)
+	void Coordinate<T>::SetY(T value)
 	{
 		this->y = value;
 	}

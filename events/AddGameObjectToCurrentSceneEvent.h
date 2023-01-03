@@ -17,19 +17,17 @@ namespace gamelib
 		/// <summary>
 		/// Create event
 		/// </summary>
-		/// <param name="game_object"></param>
-		/// <param name="event_id"></param>
-		AddGameObjectToCurrentSceneEvent(std::shared_ptr<GameObject> gameObject);
+		explicit AddGameObjectToCurrentSceneEvent(const std::shared_ptr<GameObject>& gameObject);
 
 		/// <summary>
 		/// Set game Object
 		/// </summary>
-		void SetGameObject(std::shared_ptr<GameObject> gameObject);
+		void SetGameObject(const std::shared_ptr<GameObject>& gameObject);
 
 		/// <summary>
 		/// Get game Object
 		/// </summary>
-		std::shared_ptr<GameObject> GetGameObject() const;
+		[[nodiscard]] std::shared_ptr<GameObject> GetGameObject() const;
 
 		/// <summary>
 		/// To string

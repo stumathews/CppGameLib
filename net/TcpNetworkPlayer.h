@@ -1,11 +1,10 @@
 #pragma once
 #include "NetworkPlayer.h"
-#include <string>
 #include <WinSock2.h>
 
 namespace gamelib
 {
-	class TcpNetworkPlayer : public gamelib::NetworkPlayer
+	class TcpNetworkPlayer : public NetworkPlayer
 	{
 	public:
 		TcpNetworkPlayer()
@@ -14,23 +13,23 @@ namespace gamelib
 			this->isConnected = false;
 		}
 
-		TcpNetworkPlayer(SOCKET socket)
+		TcpNetworkPlayer(const SOCKET socket)
 		{			
 			this->socket = socket;
 			this->isConnected = true;
-		}			
+		}
 
-		SOCKET GetSocket()
+		[[nodiscard]] SOCKET GetSocket() const
 		{
 			return this->socket;
 		}
 
-		void SetIsConnected(bool yesNo)
+		void SetIsConnected(const bool yesNo)
 		{
 			this->isConnected = yesNo;
 		}
 
-		bool IsConnected()
+		[[nodiscard]] bool IsConnected() const
 		{
 			return this->isConnected;
 		}

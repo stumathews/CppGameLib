@@ -1,19 +1,18 @@
-#pragma once
 #include "ColourKey.h"
 
 namespace gamelib
 {
-	ColourKey::ColourKey() : Red(0), Green(0), Blue(0) 
+	ColourKey::ColourKey() : Red(0), Blue(0), Green(0)
 	{
 		isSet = false;
 	}
 
-	bool ColourKey::IsSet()
+	bool ColourKey::IsSet() const
 	{
 		return isSet;
 	}
 
-	ColourKey::ColourKey(int red, int green, int blue) : Red(red), Green(green), Blue(blue) 
+	ColourKey::ColourKey(const int red, const int green, const int blue) : Red(red), Blue(blue), Green(green)
 	{
 		isSet = true;
 	}

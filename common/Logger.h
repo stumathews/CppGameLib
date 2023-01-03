@@ -4,14 +4,14 @@
 
 namespace gamelib
 {
-	typedef std::function<void(std::string)> logging_func;
+	typedef std::function<void(std::string)> LoggingFunc;
+
 	class Logger
 	{			
 	public:
 		/// <summary>
 		/// Create Logger
 		/// </summary>
-		/// <param name="func"></param>
 		static Logger* Get();
 		Logger(const Logger& other) = delete;
 		Logger& operator=(const Logger& other) = delete;
@@ -20,14 +20,14 @@ namespace gamelib
 		/// Log message to logger
 		/// </summary>
 		/// <param name="message">Message to log</param>
-		/// <param name="be_verbose">Log to file</param>
-		/// <param name="log_stdout">Log to std out</param>
-		void LogThis(const std::string& message, const bool be_verbose = false, const bool log_stdout = true) const;
+		/// <param name="beVerbose">Log to file</param>
+		/// <param name="logStdout">Log to std out</param>
+		void LogThis(const std::string& message, bool beVerbose = false, bool logStdout = true) const;
 	protected:
 		static Logger* Instance;
 	private:
-		logging_func func;	
-		void static LogToStdOut(const std::string message);
-		Logger(logging_func func = nullptr);
+		LoggingFunc func;	
+		void static LogToStdOut(const std::string& message);
+		explicit Logger(LoggingFunc func = nullptr);
 	};
 }

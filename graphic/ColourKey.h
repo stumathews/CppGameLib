@@ -8,7 +8,7 @@ namespace gamelib
 		ColourKey();
 		ColourKey(int red, int green, int blue);
 		int Red, Blue, Green;
-		bool IsSet();
+		[[nodiscard]] bool IsSet() const;
 		friend bool operator==(const ColourKey& lhs, const ColourKey& rhs);
 	private:
 		bool isSet;

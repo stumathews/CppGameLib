@@ -13,7 +13,9 @@ const std::function<coordinate<int>(Room, Player)> centerPlayerFunc = [](const R
 */
 namespace gamelib
 {
+	// ReSharper disable once CppInconsistentNaming
 	class FSMState;
+	// ReSharper disable once CppInconsistentNaming
 	class FSMTransition
 	{
 	public:

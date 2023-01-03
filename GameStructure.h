@@ -17,36 +17,33 @@ namespace gamelib
 		/// <summary>
 		/// Create a game structure
 		/// </summary>
-		/// <param name="gameWorld">gameWorld data</param>
-		/// <param name="get_input_func">Controller/Player Input function</param>
-		GameStructure(std::function<void()> getControllerInputFunction);
+		explicit GameStructure(std::function<void()> getControllerInputFunction);
 
-		// What we do when we unload the Gamestructure
-		~GameStructure();
-		
-		bool InitializeGameSubSystems(int screenWidth, int screenHeight, std::string windowTitle, std::string resourceFilePath);
+		// What we do when we unload the Game structure
+		~GameStructure() override;
+
+		static bool InitializeGameSubSystems(int screenWidth, int screenHeight, const std::string& windowTitle, std::string resourceFilePath);
 
 		/// <summary>
 		/// releases resources incl. resource admin and other game subsystems
 		/// </summary>
-		bool UnloadGameSubsystems();
+		static bool UnloadGameSubsystems();
 
 		/// <summary>
 		/// Do the Game Loop
 		/// </summary>
 		/// <returns></returns>
-		bool DoGameLoop(GameWorldData* gameWorldData);
+		bool DoGameLoop(const GameWorldData* gameWorldData) const;
 		
 		/// <summary>
 		/// Draw the game 
 		/// </summary>
-		/// <param name=""></param>
-		void Draw(unsigned long);
+		void Draw(unsigned long) const;
 
 		/// <summary>
 		/// Update the game
 		/// </summary>
-		void Update(unsigned long deltaMs);
+		void Update(unsigned long deltaMs) const;
 		
 		/// <summary>
 		/// Handle any game Structure events
@@ -64,14 +61,15 @@ namespace gamelib
 		/// <summary>
 		/// Initialize SDL
 		/// </summary>
-		bool InitializeSDL(int screen_width, int screen_height, std::string windowTitle);
+		// ReSharper disable once CppInconsistentNaming
+		static bool InitializeSDL(int screenWidth, int screenHeight, const std::string& windowTitle);
 
 		/// <summary>
 		/// Read keyboard/controller input
 		/// </summary>
 		void ReadKeyboard() const;
 
-		void ReadNetwork() const;
+		static void ReadNetwork();
 
 		/// <summary>
 		/// Gte the Time now in MS
@@ -81,7 +79,7 @@ namespace gamelib
 		/// <summary>
 		/// Spare time (Not drawing and not updating)
 		/// </summary>
-		void HandleSpareTime(long) const;
+		static void HandleSpareTime(long);
 
 		/// <summary>
 		/// Input function (get physical player/controller input)

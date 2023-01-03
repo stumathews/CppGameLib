@@ -5,7 +5,6 @@
 #include <common/Logger.h>
 #include <WinSock2.h>
 #include <events/EventSubscriber.h>
-#include <net/MessageHeader.h>
 
 
 namespace gamelib
@@ -16,24 +15,24 @@ namespace gamelib
 	class EventFactory;
 	class IGameServerConnection;
 
-	class GameServer : public gamelib::EventSubscriber
+	class GameServer final : public EventSubscriber
 	{
 	public:
-		GameServer(std::string address, std::string port);
+		GameServer(const std::string& address, const std::string& port);
 
 		void Initialize();
 
-		~GameServer();
+		~GameServer() override;
 
 		/// <summary>
 		/// Checks to see if there is any data waiting to be read or written.
 		/// </summary>
-		void Listen();
+		void Listen() const;
 
 		/// <summary>
 		/// Check if there is any data waiting to be ready from any of the connected player sockets
 		/// </summary>
-		void CheckForPlayerTraffic();
+		void CheckForPlayerTraffic() const;
 
 		std::string address;
 		std::string port;
@@ -49,14 +48,14 @@ namespace gamelib
 		std::string nickname;
 
 		// Inherited via EventSubscriber
-		virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs) override;
 
-		virtual std::string GetSubscriberName() override;
+		std::string GetSubscriberName() override;
 
-		SerializationManager* serializationManager;
-		EventManager* _eventManager;
-		Networking* networking;
-		EventFactory* _eventFactory;
+		SerializationManager* serializationManager{};
+		EventManager* _eventManager{};
+		Networking* networking{};
+		EventFactory* _eventFactory{};
 		bool isTcp;
 
 	};

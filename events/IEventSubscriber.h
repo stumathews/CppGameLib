@@ -12,6 +12,7 @@ namespace gamelib
 	class IEventSubscriber
 	{
 		public:
+		virtual ~IEventSubscriber() = default;
 
 		/// <summary>
 		/// All subscribers can recieve events

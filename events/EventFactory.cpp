@@ -1,12 +1,11 @@
 #include "EventFactory.h"
 #include <json/JsonEventSerializationManager.h>
 #include <memory>
-#include <exceptions/EngineException.h>
 #include <events/StartNetworkLevelEvent.h>
 #include <net/NetworkPlayer.h>
 #include <events/NetworkPlayerJoinedEvent.h>
 #include <events/IEventSubscriber.h>
-#include <events\AddGameObjectToCurrentSceneEvent.h>
+#include <events/AddGameObjectToCurrentSceneEvent.h>
 
 namespace gamelib
 {
@@ -15,14 +14,14 @@ namespace gamelib
 		if (Instance == nullptr)
 		{
 			Instance = new EventFactory();
-			Instance->Initialize();
+			Initialize();
 		}
 		return Instance;
 	}
 
 	EventFactory::EventFactory()
 	{
-		this->eventSerializationManager = std::shared_ptr<JsonEventSerializationManager>(new JsonEventSerializationManager());
+		this->eventSerializationManager = std::make_shared<JsonEventSerializationManager>();
 	}
 
 	bool EventFactory::Initialize()
@@ -38,47 +37,51 @@ namespace gamelib
 		Instance = nullptr;
 	}
 
-	std::shared_ptr<Event> EventFactory::CreateGenericEvent(EventType type)
+	std::shared_ptr<Event> EventFactory::CreateGenericEvent(EventType type) const
 	{
-		return std::make_shared<gamelib::Event>(type);
+		return std::make_shared<Event>(type);
 	}
 
-	std::shared_ptr<PlayerMovedEvent> EventFactory::CreatePlayerMovedEvent(gamelib::Direction direction, std::string target)
+	std::shared_ptr<PlayerMovedEvent> EventFactory::CreatePlayerMovedEvent(const Direction direction, const std::string
+	                                                                       & target) const
 	{
-		return std::shared_ptr<PlayerMovedEvent>(new PlayerMovedEvent(direction));
+		return std::make_shared<PlayerMovedEvent>(direction);
 	}
 
-	std::shared_ptr<PlayerMovedEvent> EventFactory::CreatePlayerMovedEvent(std::string serializedMessage)
+	std::shared_ptr<PlayerMovedEvent> EventFactory::CreatePlayerMovedEvent(const std::string& serializedMessage) const
 	{
 		return eventSerializationManager->DeserializePlayerMovedEvent(serializedMessage);
 	}
 
 	
-	std::shared_ptr<NetworkTrafficRecievedEvent> EventFactory::CreateNetworkTrafficReceivedEvent(std::string message, std::string identifier, int bytesReceived)
+	std::shared_ptr<NetworkTrafficReceivedEvent> EventFactory::CreateNetworkTrafficReceivedEvent(const std::string&
+		message, const std::string& identifier, const int bytesReceived) const
 	{
-		auto event = std::shared_ptr<gamelib::NetworkTrafficRecievedEvent>(new NetworkTrafficRecievedEvent(gamelib::EventType::NetworkTrafficReceived));
+		auto event = std::make_shared<NetworkTrafficReceivedEvent>(
+			EventType::NetworkTrafficReceived);
 		event->Message = message;
 		event->Identifier = identifier;
-		event->bytesReceived = bytesReceived;
+		event->BytesReceived = bytesReceived;
 		return event;
 	}
-	std::shared_ptr<SceneChangedEvent> EventFactory::CreateLevelEvent(int level)
+	std::shared_ptr<SceneChangedEvent> EventFactory::CreateLevelEvent(const int level) const
 	{
-		return std::shared_ptr<SceneChangedEvent>(new SceneChangedEvent(level));
+		return std::make_shared<SceneChangedEvent>(level);
 	}
 
-	std::shared_ptr<StartNetworkLevelEvent> EventFactory::CreateStartNetworkLevelEvent(int level)
+	std::shared_ptr<StartNetworkLevelEvent> EventFactory::CreateStartNetworkLevelEvent(const int level) const
 	{
-		return std::shared_ptr<StartNetworkLevelEvent>(new StartNetworkLevelEvent(level));
+		return std::make_shared<StartNetworkLevelEvent>(level);
 	}
 
-	std::shared_ptr<NetworkPlayerJoinedEvent> EventFactory::CreateNetworkPlayerJoinedEvent(NetworkPlayer player)
+	std::shared_ptr<Event> EventFactory::CreateNetworkPlayerJoinedEvent(const NetworkPlayer& player) const
 	{
-		return std::shared_ptr<NetworkPlayerJoinedEvent>(new NetworkPlayerJoinedEvent(player));
+		return std::make_shared<NetworkPlayerJoinedEvent>(player);
 	}
 
-	std::shared_ptr<AddGameObjectToCurrentSceneEvent> EventFactory::CreateAddToSceneEvent(std::shared_ptr<GameObject> obj)
+	std::shared_ptr<AddGameObjectToCurrentSceneEvent> EventFactory::CreateAddToSceneEvent(const std::shared_ptr<GameObject>
+		& obj) const
 	{
-		return std::shared_ptr<AddGameObjectToCurrentSceneEvent>(new AddGameObjectToCurrentSceneEvent(obj));
+		return std::make_shared<AddGameObjectToCurrentSceneEvent>(obj);
 	}
 }

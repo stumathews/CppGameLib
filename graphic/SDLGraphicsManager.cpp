@@ -9,8 +9,8 @@
 #include <SDL_ttf.h>
 #include "common/Common.h"
 #include "events/EventManager.h"
-#include "scene/SceneManager.h"
 #include "common/aliases.h"
+#include "util/SettingsManager.h"
 
 
 using namespace std;
@@ -32,15 +32,14 @@ namespace gamelib
 
 	SDLGraphicsManager* SDLGraphicsManager::Instance = nullptr;
 
-	SDLGraphicsManager::SDLGraphicsManager() 
-	{ }
+	SDLGraphicsManager::SDLGraphicsManager() = default;
 
 	/// <summary>
 	/// Handle any events we've subscribed to
 	/// </summary>
 	vector<shared_ptr<Event>> SDLGraphicsManager::HandleEvent(const std::shared_ptr<Event> event, unsigned long deltaMs)
 	{ 
-		return vector<shared_ptr<Event>>();	
+		return {};	
 	}	
 
 	/// <summary>
@@ -108,22 +107,21 @@ namespace gamelib
 		}
 
 		// Initialize SDL Image extension/library
-		const int imgFlags = IMG_INIT_PNG;
+		constexpr int imgFlags = IMG_INIT_PNG;
 		if(!(IMG_Init(imgFlags) & imgFlags ))
 		{
-			THROW(12, string("SDL_image could not initialize:") + const_cast<char*>(SDL_GetError()), "SDLGraphicsManager");
-			return false;
+			THROW(12, string("SDL_image could not initialize:") + const_cast<char*>(SDL_GetError()), "SDLGraphicsManager")
 		}
 
 		// Create the Window
-		window = CreateSDLWindow(static_cast<int>(width), static_cast<int>(height), windowTitle);	
-		windowSurface = SDL_GetWindowSurface(window);
-		windowRenderer = GetSDLRendererFromWindow(window);
+		Window = CreateSDLWindow(static_cast<int>(width), static_cast<int>(height), windowTitle);	
+		WindowSurface = SDL_GetWindowSurface(Window);
+		WindowRenderer = GetSDLRendererFromWindow(Window);
 		screenHeight = height;
 		screenWidth = width;
 
 		// Set drawing colour to Grey background
-		SDL_SetRenderDrawColor(windowRenderer, 192,192,192, 0);
+		SDL_SetRenderDrawColor(WindowRenderer, 192,192,192, 0);
 
 		// Setup the Audio 
 		if(Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0 )
@@ -148,27 +146,27 @@ namespace gamelib
 	/// <summary>
 	/// Clear the output and draw objects on it
 	/// </summary>
-	void SDLGraphicsManager::ClearAndDraw(std::function<void(SDL_Renderer* renderer)> &drawObjectsFn) const
+	void SDLGraphicsManager::ClearAndDraw(const std::function<void(SDL_Renderer* renderer)> &drawObjectsFn) const
 	{
 		// Backup current render color
-		SDL_Color oldColour = {0};
-		SDL_GetRenderDrawColor(windowRenderer, &oldColour.r, &oldColour.g, &oldColour.b, &oldColour.a);
+		SDL_Color oldColour = {0, 0, 0, 0};
+		SDL_GetRenderDrawColor(WindowRenderer, &oldColour.r, &oldColour.g, &oldColour.b, &oldColour.a);
 		
 		// Clear
-		SDL_RenderClear(windowRenderer);
+		SDL_RenderClear(WindowRenderer);
 			// Draw everything
-			drawObjectsFn(windowRenderer);
+			drawObjectsFn(WindowRenderer);
 		
 		// Set draw colour
-		SDL_SetRenderDrawColor(windowRenderer, oldColour.r, oldColour.g, oldColour.b, oldColour.a); // nb: restore whatever the render routine set as the draw color to
+		SDL_SetRenderDrawColor(WindowRenderer, oldColour.r, oldColour.g, oldColour.b, oldColour.a); // nb: restore whatever the render routine set as the draw color to
 		
 		// Show what we've drawn
-		SDL_RenderPresent(windowRenderer);
+		SDL_RenderPresent(WindowRenderer);
 	}
 
 	void SDLGraphicsManager::ShowOnly() const
 	{
-		SDL_RenderPresent(windowRenderer);
+		SDL_RenderPresent(WindowRenderer);
 	}
 
 	/// <summary>
@@ -176,8 +174,8 @@ namespace gamelib
 	/// </summary>
 	SDLGraphicsManager::~SDLGraphicsManager()
 	{
-		SDL_DestroyRenderer(windowRenderer);
-		SDL_DestroyWindow(window);
+		SDL_DestroyRenderer(WindowRenderer);
+		SDL_DestroyWindow(Window);
 	    IMG_Quit();
 	    SDL_Quit();
 		Instance = nullptr;

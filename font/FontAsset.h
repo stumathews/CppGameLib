@@ -14,13 +14,13 @@ namespace gamelib
 		/// <summary>
 		/// Create Font details
 		/// </summary>
-		FontAsset(int uid, std::string name, std::string path, std::string type, int scene);
+		FontAsset(int inUid, const std::string& inName, const std::string& inPath, const std::string& inType, int inScene);
 
 		/// <summary>
 		/// Get font data
 		/// </summary>
 		/// <returns></returns>
-		TTF_Font* GetFont() const;
+		[[nodiscard]] TTF_Font* GetFont() const;
 
 		/// <summary>
 		/// Load font into memory

@@ -1,41 +1,40 @@
 #include "GameObject.h"
 #include <memory>
 #include <SDL_mixer.h>
-#include "audio/AudioAsset.h"
-#include "common/constants.h"
 #include "events/EventManager.h"
 #include "events/ControllerMoveEvent.h"
 #include "graphic/SDLGraphicsManager.h"
-#include "resource/ResourceManager.h"
-#include "GameObjectMover.h"
 
 
 namespace gamelib
 {	
 	using namespace std;
 
-	GameObject::GameObject(bool IsVisible) { GameObject::LoadSettings(); SetDefaults(IsVisible, 0, 0); }
-	GameObject::GameObject(const int x, const int y, bool IsVisible ) { GameObject::LoadSettings(); SetDefaults(IsVisible, x, y); }
-	GameObject::GameObject(std::string name, std::string type, gamelib::coordinate<int> coordinate, bool IsVisible) { GameObject::LoadSettings(); SetDefaults(IsVisible, coordinate.GetX(), coordinate.GetY()); }
+	GameObject::GameObject(const bool isVisible) { GameObject::LoadSettings(); SetDefaults(isVisible, 0, 0); }
+	GameObject::GameObject(const int x, const int y, const bool IsVisible ) { GameObject::LoadSettings(); SetDefaults(IsVisible, x, y); }
+	GameObject::GameObject(std::string name, std::string type, const gamelib::Coordinate<int> coordinate, const bool isVisible) { GameObject::LoadSettings(); SetDefaults(isVisible, coordinate.GetX(), coordinate.GetY()); }
 	
-	void GameObject::SubscribeToEvent(EventType type) { EventManager::Get()->SubscribeToEvent(type, this); }
-	void GameObject::RaiseEvent(const shared_ptr<Event>& the_event) { EventManager::Get()->RaiseEvent(the_event, this); }
+	void GameObject::SubscribeToEvent(const EventType type) { EventManager::Get()->SubscribeToEvent(type, this); }
+	void GameObject::RaiseEvent(const shared_ptr<Event>& theEvent) { EventManager::Get()->RaiseEvent(theEvent, this); }
 	void GameObject::Draw(SDL_Renderer* renderer) { }	
 	void GameObject::LoadSettings() {}
-	void GameObject::UpdateBounds(unsigned int _width, unsigned int height) { Bounds = CalculateBounds(Position, _width, height); }
-	void GameObject::SetTag(const string newTag) { tag = newTag; }
+	void GameObject::UpdateBounds(const unsigned int inParentWidth, const unsigned int inParentHeight)
+	{
+		Bounds = CalculateBounds(Position, inParentWidth, inParentHeight);
+	}
+	void GameObject::SetTag(const string& newTag) { tag = newTag; }
 
 	string GameObject::GetName() { return Name; }
 	string GameObject::GetSubscriberName() { return GetName(); }
 	string GameObject::GetTag() const { return this->tag; }
 
-	vector<shared_ptr<Event>> GameObject::HandleEvent(const std::shared_ptr<Event> the_event, unsigned long deltaMs) { return vector<shared_ptr<Event>>(); }
+	vector<shared_ptr<Event>> GameObject::HandleEvent(const std::shared_ptr<Event> theEvent, unsigned long deltaMs) { return {}; }
 
 	int GameObject::GetSubscriberId() { return Id; }
 
-	void GameObject::SetDefaults(bool newIsVisible, int x, int y)
+	void GameObject::SetDefaults(const bool isVisible, const int x, const int y)
 	{
-		IsVisible = newIsVisible;
+		IsVisible = isVisible;
 		
 		Position.SetX(x);
 		Position.SetY(y);

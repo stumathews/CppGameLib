@@ -3,13 +3,13 @@
 namespace gamelib
 {
 
-	void NetworkPlayer::SetNickName(const std::string nick)
+	void NetworkPlayer::SetNickName(const std::string& nick)
 	{
-		NickName = nick;
+		nickName = nick;
 	}
 
 	std::string NetworkPlayer::GetNickName()
 	{
-		return NickName;
+		return nickName;
 	}
 }

@@ -6,10 +6,14 @@
 
 namespace gamelib
 {
+	// ReSharper disable once CppInconsistentNaming
 	class FSMState
 	{
 	public:
-		FSMState(std::function<void()> onEnter = nullptr, std::function<void()> onUpdate = nullptr, std::function<void()> onExit = nullptr, std::string name = "<noname>")
+		virtual ~FSMState() = default;
+
+		explicit FSMState(const std::function<void()>& onEnter = nullptr, std::function<void()> onUpdate = nullptr, std::function<void()> onExit = nullptr,
+		                  const std::string& name = "<noname>")
 		{
 			if (onEnter == nullptr)
 			{
@@ -42,9 +46,9 @@ namespace gamelib
 		void virtual OnUpdate();
 		void virtual OnExit();
 		std::list<FSMTransition> Transitions;
-		void SetOnEnter(std::function<void()> onEnter);
-		void SetOnExit(std::function<void()> onExit);
-		void SetOnUpdate(std::function<void()> onUpdate);
+		void SetOnEnter(const std::function<void()>& onEnter);
+		void SetOnExit(const std::function<void()>& onExit);
+		void SetOnUpdate(const std::function<void()>& onUpdate);
 		std::string GetName();
 	private:
 

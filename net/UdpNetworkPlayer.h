@@ -6,15 +6,15 @@
 
 namespace gamelib
 {
-	class UdpNetworkPlayer : public gamelib::NetworkPlayer
+	class UdpNetworkPlayer : public NetworkPlayer
 	{
 	public:
-		UdpNetworkPlayer(PeerInfo peerInfo, std::string nickName)
+		UdpNetworkPlayer(const PeerInfo peerInfo, const std::string& nickName)
 		{
-			this->peerInfo = peerInfo;
+			this->PeerInfo = peerInfo;
 			SetNickName(nickName);
 		}
 
-		PeerInfo peerInfo;		
+		PeerInfo PeerInfo;		
 	};
 }

@@ -52,8 +52,8 @@ TEST_F(SceneManagerTests, get_scene_layers)
 	EXPECT_STREQ(layer->Name().c_str(), "player0");
 	EXPECT_EQ(layer->Position.GetX(), 0) << "X position of Should initially be set to 0";
 	EXPECT_EQ(layer->Position.GetY(), 0) << "Y position of Should initially be set to 0";
-	EXPECT_TRUE(layer->visible) << "Layer not visible";
-	EXPECT_EQ(layer->zorder, 0) << "Z-order is wrong";	
+	EXPECT_TRUE(layer->Visible) << "Layer not visible";
+	EXPECT_EQ(layer->Zorder, 0) << "Z-order is wrong";	
 }
 
 TEST_F(SceneManagerTests, remove_object_from_layer)

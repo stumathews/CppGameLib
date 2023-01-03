@@ -10,6 +10,7 @@ namespace gamelib
 	class IEventSerializationManager	 
 	{
 	public:
+		virtual ~IEventSerializationManager() = default;
 		virtual std::shared_ptr<PlayerMovedEvent> DeserializePlayerMovedEvent(std::string serializedMessage) = 0;
 		virtual std::string SerializePlayerMovedEvent(std::shared_ptr<PlayerMovedEvent> object, std::string target) = 0;
 		virtual std::string CreateRequestPlayerDetailsMessage() = 0;

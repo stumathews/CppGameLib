@@ -52,7 +52,7 @@ namespace gamelib
 		/// Initialize Winsock
 		/// </summary>
 		/// <returns></returns>
-		bool InitializeWinSock();
+		static bool InitializeWinSock();
 
 		// Cannot copy an NetworkManager
 		Networking(Networking const&) = delete;
@@ -72,7 +72,7 @@ namespace gamelib
 	 * \return void 
 	 *
 	 */
-	 void netError(int status, int err, std::string error);
+		static void netError(int status, int err, std::string error);
 
 	/** \brief Read and wait for len bytes on socket
 	 *
@@ -82,9 +82,9 @@ namespace gamelib
 	 * \return int number of bytes read, or -1 on error 
 	 *
 	 */
-	 int netReadn(SOCKET s, char* buf, size_t len );
+		static int netReadn(SOCKET s, char* buf, size_t len );
 
-	 int netSendVRec(SOCKET fd, const char* data, int dataLength);
+		static int netSendVRec(SOCKET fd, const char* data, int dataLength);
 
 	/** \brief Read variable records (expects first data read to be size of remaining data)
 	 *
@@ -94,9 +94,9 @@ namespace gamelib
 	 * \return int number of bytes read, or -1 on error 
 	 *
 	 */
-	 int netReadVRec(SOCKET s, char* buf, size_t len );
-	 int netReadcrlf(SOCKET, char *, size_t );
-	 int netReadLine(SOCKET, char *, size_t );
+		static int netReadVRec(SOCKET s, char* buf, size_t len );
+		static int netReadcrlf(SOCKET, char *, size_t );
+		static int netReadLine(SOCKET, char *, size_t );
 
 	/** \brief Set up for tcp server: get tcp socket, bound to hname:sname and returns socket.
 	 *
@@ -148,7 +148,7 @@ namespace gamelib
 	 *
 	 */
 	 void netSetAddress(const char* hname, const char* sname, struct sockaddr_in* sap, const char* protocol);
-	 int inet_aton(const char* cp, in_addr* pin);
+		static int inet_aton(const char* cp, in_addr* pin);
 	};
 
 }

@@ -2,28 +2,28 @@
 using namespace std;
 namespace gamelib
 {
-	unsigned int ProcessManager::UpdateProcesses(unsigned long deltaMs)
+	unsigned int ProcessManager::UpdateProcesses(const unsigned long deltaMs)
 	{
 		unsigned short int successCount = 0;
 		unsigned short int failCount = 0;
 
-		list<shared_ptr<Process>>::iterator it = processes.begin();
+		auto it = processes.begin();
 		while (it != processes.end())
 		{
-			shared_ptr<Process> currProcess = (*it);
-			list<shared_ptr<Process>>::iterator thisIt = it;
+			const shared_ptr<Process> currentProcess = (*it);
+			const auto thisIt = it;
 			++it;
-			if (currProcess->GetState() == Process::Uninitialized) { currProcess->OnInit(); }
-			if (currProcess->GetState() == Process::Running) { currProcess->OnUpdate(deltaMs); }
+			if (currentProcess->GetState() == Process::Uninitialized) { currentProcess->OnInit(); }
+			if (currentProcess->GetState() == Process::Running) { currentProcess->OnUpdate(deltaMs); }
 
-			if (currProcess->IsDead())
+			if (currentProcess->IsDead())
 			{
-				switch (currProcess->GetState())
+				switch (currentProcess->GetState())
 				{
 					case Process::Succeeded:
 					{
-						currProcess->OnSuccess();
-						shared_ptr<Process> child = currProcess->GetChild();
+						currentProcess->OnSuccess();
+						shared_ptr<Process> child = currentProcess->GetChild();
 						if (child)
 						{
 							AttachProcess(child);
@@ -36,7 +36,7 @@ namespace gamelib
 					}
 					case Process::Failed:
 					{
-						currProcess->OnFail();
+						currentProcess->OnFail();
 						++failCount;
 						break;
 					}

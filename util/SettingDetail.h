@@ -6,12 +6,12 @@ namespace gamelib
 	class SettingDetail
 	{
 	public:
-		std::string name, value, type;
+		std::string Name, Value, Type;
 		SettingDetail(std::string name, std::string value, std::string type);
 		SettingDetail();
-		int ToInt() const;
-		bool ToBool() const;
-		std::string ToString() const;
-		long ToLong() const;
+		[[nodiscard]] int ToInt() const;
+		[[nodiscard]] bool ToBool() const;
+		[[nodiscard]] std::string ToString() const;
+		[[nodiscard]] long ToLong() const;
 	};
 }

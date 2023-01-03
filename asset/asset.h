@@ -27,7 +27,7 @@ namespace gamelib
 		/// <summary>
 		/// A generic asset
 		/// </summary>
-		Asset(const int uid, const std::string& name, const std::string& path, const std::string& type, const int scene);
+		Asset(int uid, std::string name, std::string path, std::string type, int scene);
 		Asset(const Asset& other) = delete;
 
 		virtual ~Asset() = default;

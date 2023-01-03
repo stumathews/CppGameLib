@@ -36,9 +36,6 @@
     <ClInclude Include="scene\Layer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scene\SceneItem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="font\FontAsset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -177,9 +174,6 @@
     <ClInclude Include="SpriteAsset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameObjectMover.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="util\SettingDetail.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -231,7 +225,7 @@
     <ClInclude Include="net\PeerInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="events\NetworkTrafficRecievedEvent.h">
+    <ClInclude Include="events\NetworkTrafficReceivedEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="json\json11.h">
@@ -309,9 +303,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="tinyxml2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="scene\SceneItem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="font\FontAsset.cpp">
@@ -437,9 +428,6 @@
     <ClCompile Include="SpriteAsset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameObjectMover.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="util\SettingDetail.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -485,7 +473,7 @@
     <ClCompile Include="net\PeerInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="events\NetworkTrafficRecievedEvent.cpp">
+    <ClCompile Include="events\NetworkTrafficReceivedEvent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="json\json11.cpp">

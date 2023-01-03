@@ -5,8 +5,6 @@
 
 namespace gamelib
 {
-	
-	
 	typedef std::map<std::string, SettingDetail>  settings;
 
 	class SettingsManager
@@ -15,14 +13,14 @@ namespace gamelib
 		static SettingsManager* Get();
 		~SettingsManager();
 		bool Reload();
-		bool Load(std::string filename_path = "settings.xml");
-		bool GetBool(std::string section, std::string name);
-		int GetInt(std::string section, std::string name);
-		std::string GetString(std::string section, std::string name);
-		long GetLong(std::string section, std::string name);
-		int Count() const;
-		bool AddSetting(std::string section, std::string key, SettingDetail);
-		SettingDetail GetSetting(std::string section, std::string name);
+		bool Load(const std::string& filenamePath = "settings.xml");
+		bool GetBool(const std::string& section, const std::string& name);
+		int GetInt(const std::string& section, const std::string& name);
+		std::string GetString(const std::string& section, const std::string& name);
+		long GetLong(const std::string& section, const std::string& name);
+		[[nodiscard]] int Count() const;
+		bool AddSetting(const std::string& section, const std::string& key, const SettingDetail&);
+		SettingDetail GetSetting(const std::string& section, const std::string& name);
 	protected:
 		SettingsManager();
 		static SettingsManager* Instance;

@@ -6,23 +6,23 @@ class Line
 public:
 	Line()
 	{
-		this->x1 = 0;
-		this->y1 = 0;
-		this->x2 = 0;
-		this->y2 = 0;
+		this->X1 = 0;
+		this->Y1 = 0;
+		this->X2 = 0;
+		this->Y2 = 0;
 	}
-	Line(int x1, int y1, int x2, int y2)
+	Line(const int x1, const int y1, const int x2, const int y2)
 	{
-		this->x1 = x1;
-		this->y1 = y1;
-		this->x2 = x2;
-		this->y2 = y2;
+		this->X1 = x1;
+		this->Y1 = y1;
+		this->X2 = x2;
+		this->Y2 = y2;
 	}
 
-	int x1;
-	int y1; 
-	int x2;
-	int y2;
+	int X1;
+	int Y1; 
+	int X2;
+	int Y2;
 };
 }
 

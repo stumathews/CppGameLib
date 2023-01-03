@@ -49,7 +49,7 @@ namespace gamelib
 
 	
 
-	void Networking::netError(int status, int err, std::string error)
+	void Networking::netError(const int status, int err, const std::string error)
     {
 		wchar_t *wideMessage = NULL;
 		FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
@@ -69,7 +69,7 @@ namespace gamelib
 		LocalFree(wideMessage);
     }
 
-    int Networking::netReadn(SOCKET fd, char* bp, size_t len)
+    int Networking::netReadn(const SOCKET fd, char* bp, const size_t len)
     {
 		int cnt;
 		int rc;
@@ -92,7 +92,7 @@ namespace gamelib
 		return len;
 	}
 
-	int Networking::netSendVRec(SOCKET fd, const char* data, int dataLength)
+	int Networking::netSendVRec(const SOCKET fd, const char* data, const int dataLength)
 	{
 		int length = htonl(dataLength);
 
@@ -105,7 +105,7 @@ namespace gamelib
 		return sendResult;
 	}
 
-    int Networking::netReadVRec(SOCKET fd, char* bp, size_t len)
+    int Networking::netReadVRec(const SOCKET fd, char* bp, size_t len)
     {
 		u_int32_t reclen;
 		int rc;
@@ -143,7 +143,7 @@ namespace gamelib
 			return rc < 0 ? -1 : 0;
 		return rc;
 	}
-    int Networking::netReadcrlf(SOCKET s, char* buf, size_t len)
+    int Networking::netReadcrlf(const SOCKET s, char* buf, size_t len)
 	{
 		char *bufx = buf;
 		int rc;
@@ -179,7 +179,7 @@ namespace gamelib
 		return -1;
 	}
 
-    int Networking::netReadLine(SOCKET fd, char* bufptr, size_t len)
+    int Networking::netReadLine(const SOCKET fd, char* bufptr, size_t len)
     {
 		char *bufx = bufptr;
 		static char *bp;
@@ -219,7 +219,7 @@ namespace gamelib
     SOCKET Networking::netTcpServer(const char* hname, const char* sname)
     {
 		// This will hold the address that the server will use to listen on
-		struct sockaddr_in local;
+		struct sockaddr_in local{};
 		// This is the socket the server will obtain and bind it to the address in the sockaddr_in structure
 		SOCKET s;
 		const int on = 1;
@@ -258,7 +258,7 @@ namespace gamelib
 	}
     SOCKET Networking::netTcpClient(const char* hname, const char* sname)
     {
-		struct sockaddr_in peer;
+		struct sockaddr_in peer{};
 		SOCKET s;
 
 		netSetAddress( hname, sname, &peer, "tcp" );
@@ -280,7 +280,7 @@ namespace gamelib
     SOCKET Networking::netUdpServer(const char* hname, const char* sname)
     {
 		SOCKET s;
-		struct sockaddr_in local;
+		struct sockaddr_in local{};
 
 		netSetAddress( hname, sname, &local, "udp" );
 		s = socket( AF_INET, SOCK_DGRAM, 0 );
@@ -304,7 +304,7 @@ namespace gamelib
 
 	SOCKET Networking::netConnectedUdpClient(const char* hname, const char* sname)
     {    
-		struct sockaddr_in sap;
+		struct sockaddr_in sap{};
 	    SOCKET s = netUdpClient(hname, sname, &sap);
 		if (connect(s, (struct sockaddr * )&sap, sizeof(sap)))		
 		{

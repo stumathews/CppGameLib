@@ -6,24 +6,25 @@ namespace gamelib
 	class Connection
 	{
 	public:
-		Connection(std::string host, std::string port);
-		bool IsConnected()
+		Connection(const std::string& host, const std::string& port);
+
+		[[nodiscard]] bool IsConnected() const
 		{
 			return isConnected;
 		}
 
-		void Connect()
+		static void Connect()
 		{
 
 		}
 
-		char* Read()
+		static char* Read()
 		{
-			const char* nothing = "nothing";
-			return (char*) nothing;
+			const auto nothing = "nothing";
+			return const_cast<char*>(nothing);
 		}
 	private:
-		bool isConnected;
+		bool isConnected{};
 		std::string host, port;
 	};
 }

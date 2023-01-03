@@ -4,7 +4,7 @@
 
 namespace gamelib
 {	
-	class ControllerMoveEvent : public Event
+	class ControllerMoveEvent final : public Event
 	{
 	public:
 		explicit ControllerMoveEvent(Direction dir);

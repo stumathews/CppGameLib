@@ -5,7 +5,8 @@ namespace gamelib
 	class IGameServerConnection
 	{
 	public:
-		
+		virtual ~IGameServerConnection() = default;
+
 		// Perform initialization
 		virtual void Initialize() = 0;
 

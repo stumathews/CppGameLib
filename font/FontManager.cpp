@@ -22,7 +22,7 @@ namespace gamelib
 
 	FontManager* FontManager::Instance = nullptr;
 
-	shared_ptr<Asset> FontManager::CreateAsset(tinyxml2::XMLElement* element) const
+	shared_ptr<Asset> FontManager::CreateAsset(const tinyxml2::XMLElement* assetXmlElement) const
 	{
 		int uuid;
 		const char* type;
@@ -30,15 +30,15 @@ namespace gamelib
 		const char* name;
 		int scene;
 
-		element->QueryIntAttribute("uid", &uuid);
-		element->QueryStringAttribute("type", &type);
-		element->QueryStringAttribute("filename", &path);
-		element->QueryStringAttribute("name", &name);
-		element->QueryIntAttribute("scene", &scene);
+		assetXmlElement->QueryIntAttribute("uid", &uuid);
+		assetXmlElement->QueryStringAttribute("type", &type);
+		assetXmlElement->QueryStringAttribute("filename", &path);
+		assetXmlElement->QueryStringAttribute("name", &name);
+		assetXmlElement->QueryIntAttribute("scene", &scene);
 
 		// Read anything specific to audio in the element here...
 
-		auto font = shared_ptr<FontAsset>(new FontAsset(uuid, name, path, type, scene));
+		auto font = std::make_shared<FontAsset>(uuid, name, path, type, scene);
 
 		return font;
 	}
@@ -47,7 +47,7 @@ namespace gamelib
 	{
 		if (asset->assetType != Asset::AssetType::Font)
 		{
-			THROW(97, "Cannot cast a generic asset that is not an font asset to an font asset", "Font Manager");
+			THROW(97, "Cannot cast a generic asset that is not an font asset to an font asset", "Font Manager")
 		}
 
 		return AsAsset<FontAsset>(asset);

@@ -15,7 +15,7 @@ namespace gamelib
 		None
 	};
 
-	inline const char* ToString(Direction direction)
+	inline const char* ToString(const Direction direction)
 	{
 		switch (direction)
 		{
@@ -24,33 +24,29 @@ namespace gamelib
 			case Direction::Left: return "Left";
 			case Direction::Right: return "Right";
 			case Direction::None: return "None";
-			default:      
-				return "[Unknown Direction]";
 		}
+		return nullptr;
 	}
 
-	
-	inline const Direction FromDirectionString(std::string direction)
+
+	inline Direction FromDirectionString(const std::string& direction)
 	{
 		if(direction == ToString(Direction::Up))
 		{
 			return Direction::Up;
 		}
-		else if (direction == ToString(Direction::Down))
+		if (direction == ToString(Direction::Down))
 		{
 			return Direction::Down;
 		}
-		else if (direction == ToString(Direction::Left))
+		if (direction == ToString(Direction::Left))
 		{
 			return Direction::Left;
 		}
-		else if (direction == ToString(Direction::Right))
+		if (direction == ToString(Direction::Right))
 		{
 			return Direction::Right;
 		}
-		else
-		{
-			return Direction::None;
-		}	
+		return Direction::None;
 	}
 }

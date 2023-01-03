@@ -16,13 +16,13 @@ namespace gamelib
 		/// <summary>
 		/// Creates an Audio Asset
 		/// </summary>
-		std::shared_ptr<Asset> CreateAsset(tinyxml2::XMLElement * assetXmlElement, ResourceManager& resourceManager) const;
+		static std::shared_ptr<Asset> CreateAsset(const tinyxml2::XMLElement * assetXmlElement, ResourceManager& resourceManager);
 		
 		/// <summary>
 		/// Play specific music asset
 		/// </summary>
 		/// <param name="music"></param>
-		void Play(Mix_Music* music);
+		static void Play(Mix_Music* music);
 
 		/// <summary>
 		/// Plays sound effect

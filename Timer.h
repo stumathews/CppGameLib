@@ -12,7 +12,7 @@ namespace gamelib
 
 		void Start(DWORD durationMs, DWORD startTimeMs = 0);
 
-		DWORD GetTimeMs();
+		static DWORD GetTimeMs();
 
 		void Reset();
 
@@ -21,9 +21,9 @@ namespace gamelib
 		bool IsElapsed;
 		bool IsStopped;
 
-		DWORD startTimeMs;
-		DWORD elapsedTimeMs;
-		DWORD timerDurationMs;
+		DWORD StartTimeMs;
+		DWORD ElapsedTimeMs;
+		DWORD TimerDurationMs;
 	};
 }
 

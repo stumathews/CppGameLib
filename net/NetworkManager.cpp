@@ -12,7 +12,7 @@ namespace gamelib
 		maxPlayers = SettingsManager::Get()->GetInt("networking", "maxPlayers");
 	}
 
-	bool NetworkManager::IsGameServer()
+	bool NetworkManager::IsGameServer() const
 	{
 		return isGameServer;
 	}
@@ -21,7 +21,7 @@ namespace gamelib
 	{
 		Networking::Get()->InitializeWinSock();
 		
-		Server = std::shared_ptr<gamelib::GameServer>(new gamelib::GameServer(gameServerAddress, gameServerPort));
+		Server = std::make_shared<GameServer>(gameServerAddress, gameServerPort);
 
 		if(isGameServer)
 		{			
@@ -29,7 +29,7 @@ namespace gamelib
 		}
 		else
 		{
-			Client = std::shared_ptr<gamelib::GameClient>(new gamelib::GameClient());
+			Client = std::make_shared<GameClient>();
 			Client->Initialize();
 			Client->Connect(Server);
 		}
@@ -63,7 +63,7 @@ namespace gamelib
 		}
 	}
 
-	void NetworkManager::Listen()
+	void NetworkManager::Listen() const
 	{
 		if (SettingsManager::Get()->GetBool("global", "isNetworkGame"))
 		{

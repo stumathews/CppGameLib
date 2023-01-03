@@ -8,9 +8,7 @@
 #include <vector>
 #include <memory>
 #include "asset/asset.h"
-#include "objects/GameObject.h"
 #include "common/Logger.h"
-#include "exceptions/EngineException.h"
 #include "Logging/ErrorLogManager.h"
 
 namespace gamelib
@@ -21,7 +19,7 @@ namespace gamelib
 		return std::static_pointer_cast<R>(assetInfo);
 	}
 	
-	inline bool IsSuccess(const bool condition, const std::string message)
+	inline bool IsSuccess(const bool condition, const std::string& message)
 	{
 		const auto is = condition == true;
 		if (is == true)
@@ -32,7 +30,7 @@ namespace gamelib
 		return is;
 	}
 
-	inline bool IsFailedOrFalse(bool condition, std::string message = "", bool ignore = false)
+	inline bool IsFailedOrFalse(const bool condition, const std::string& message = "", const bool ignore = false)
 	{
 		const auto isFalse = condition == false;
 		if (isFalse == true)
@@ -43,7 +41,7 @@ namespace gamelib
 		return ignore == true ? !ignore : isFalse;
 	}
 	
-	inline void LogMessage(const std::string &message, const bool be_verbose = false, bool isFatal = false)
+	inline void LogMessage(const std::string &message, const bool be_verbose = false, const bool isFatal = false)
 	{
 		Logger::Get()->LogThis(message, be_verbose);
 		if(isFatal)
@@ -55,7 +53,7 @@ namespace gamelib
 		}
 	}
 		
-	inline bool LogThis(const std::string &message, bool _verbose, const std::function<bool()>& action,  bool print_finished = true, bool run_if = true)
+	inline bool LogThis(const std::string &message, const bool _verbose, const std::function<bool()>& action,  bool print_finished = true, const bool run_if = true)
 	{
 		LogMessage(message, _verbose);
 		bool result;
@@ -77,7 +75,7 @@ namespace gamelib
 		return static_cast<typename std::underlying_type<ENUM>::type>(value);
 	}
 
-	inline bool LogOnFailure(bool condition, std::string message)
+	inline bool LogOnFailure(const bool condition, const std::string& message)
 	{
 		if(condition == false){
 			

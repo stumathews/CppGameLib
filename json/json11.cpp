@@ -55,7 +55,7 @@ static void dump(NullStruct, string &out) {
     out += "null";
 }
 
-static void dump(double value, string &out) {
+static void dump(const double value, string &out) {
     if (std::isfinite(value)) {
         char buf[32];
         snprintf(buf, sizeof buf, "%.17g", value);
@@ -65,13 +65,13 @@ static void dump(double value, string &out) {
     }
 }
 
-static void dump(int value, string &out) {
+static void dump(const int value, string &out) {
     char buf[32];
     snprintf(buf, sizeof buf, "%d", value);
     out += buf;
 }
 
-static void dump(bool value, string &out) {
+static void dump(const bool value, string &out) {
     out += value ? "true" : "false";
 }
 
@@ -155,7 +155,7 @@ protected:
     explicit Value(T &&value)      : m_value(move(value)) {}
 
     // Get type tag
-    Json::Type type() const override {
+    [[nodiscard]] Json::Type type() const override {
         return tag;
     }
 
@@ -172,38 +172,38 @@ protected:
 };
 
 class JsonDouble final : public Value<Json::NUMBER, double> {
-    double number_value() const override { return m_value; }
-    int int_value() const override { return static_cast<int>(m_value); }
+	[[nodiscard]] double number_value() const override { return m_value; }
+	[[nodiscard]] int int_value() const override { return static_cast<int>(m_value); }
     bool equals(const JsonValue * other) const override { return m_value == other->number_value(); }
     bool less(const JsonValue * other)   const override { return m_value <  other->number_value(); }
 public:
-    explicit JsonDouble(double value) : Value(value) {}
+    explicit JsonDouble(const double value) : Value(value) {}
 };
 
 class JsonInt final : public Value<Json::NUMBER, int> {
-    double number_value() const override { return m_value; }
-    int int_value() const override { return m_value; }
+	[[nodiscard]] double number_value() const override { return m_value; }
+	[[nodiscard]] int int_value() const override { return m_value; }
     bool equals(const JsonValue * other) const override { return m_value == other->number_value(); }
     bool less(const JsonValue * other)   const override { return m_value <  other->number_value(); }
 public:
-    explicit JsonInt(int value) : Value(value) {}
+    explicit JsonInt(const int value) : Value(value) {}
 };
 
 class JsonBoolean final : public Value<Json::BOOL, bool> {
-    bool bool_value() const override { return m_value; }
+	[[nodiscard]] bool bool_value() const override { return m_value; }
 public:
-    explicit JsonBoolean(bool value) : Value(value) {}
+    explicit JsonBoolean(const bool value) : Value(value) {}
 };
 
 class JsonString final : public Value<Json::STRING, string> {
-    const string &string_value() const override { return m_value; }
+	[[nodiscard]] const string &string_value() const override { return m_value; }
 public:
     explicit JsonString(const string &value) : Value(value) {}
     explicit JsonString(string &&value)      : Value(move(value)) {}
 };
 
 class JsonArray final : public Value<Json::ARRAY, Json::array> {
-    const Json::array &array_items() const override { return m_value; }
+	[[nodiscard]] const Json::array &array_items() const override { return m_value; }
     const Json & operator[](size_t i) const override;
 public:
     explicit JsonArray(const Json::array &value) : Value(value) {}
@@ -211,7 +211,7 @@ public:
 };
 
 class JsonObject final : public Value<Json::OBJECT, Json::object> {
-    const Json::object &object_items() const override { return m_value; }
+	[[nodiscard]] const Json::object &object_items() const override { return m_value; }
     const Json & operator[](const string &key) const override;
 public:
     explicit JsonObject(const Json::object &value) : Value(value) {}
@@ -255,14 +255,14 @@ Json::Json() noexcept                  : m_ptr(statics().null) {}
 Json::Json(std::nullptr_t) noexcept    : m_ptr(statics().null) {}
 Json::Json(double value)               : m_ptr(make_shared<JsonDouble>(value)) {}
 Json::Json(int value)                  : m_ptr(make_shared<JsonInt>(value)) {}
-Json::Json(bool value)                 : m_ptr(value ? statics().t : statics().f) {}
+Json::Json(const bool value)                 : m_ptr(value ? statics().t : statics().f) {}
 Json::Json(const string &value)        : m_ptr(make_shared<JsonString>(value)) {}
 Json::Json(string &&value)             : m_ptr(make_shared<JsonString>(move(value))) {}
 Json::Json(const char * value)         : m_ptr(make_shared<JsonString>(value)) {}
-Json::Json(const Json::array &values)  : m_ptr(make_shared<JsonArray>(values)) {}
-Json::Json(Json::array &&values)       : m_ptr(make_shared<JsonArray>(move(values))) {}
-Json::Json(const Json::object &values) : m_ptr(make_shared<JsonObject>(values)) {}
-Json::Json(Json::object &&values)      : m_ptr(make_shared<JsonObject>(move(values))) {}
+Json::Json(const array&values)  : m_ptr(make_shared<JsonArray>(values)) {}
+Json::Json(array&&values)       : m_ptr(make_shared<JsonArray>(move(values))) {}
+Json::Json(const object&values) : m_ptr(make_shared<JsonObject>(values)) {}
+Json::Json(object&&values)      : m_ptr(make_shared<JsonObject>(move(values))) {}
 
 /* * * * * * * * * * * * * * * * * * * *
  * Accessors
@@ -275,7 +275,7 @@ bool Json::bool_value()                           const { return m_ptr->bool_val
 const string & Json::string_value()               const { return m_ptr->string_value(); }
 const vector<Json> & Json::array_items()          const { return m_ptr->array_items();  }
 const map<string, Json> & Json::object_items()    const { return m_ptr->object_items(); }
-const Json & Json::operator[] (size_t i)          const { return (*m_ptr)[i];           }
+const Json & Json::operator[] (const size_t i)          const { return (*m_ptr)[i];           }
 const Json & Json::operator[] (const string &key) const { return (*m_ptr)[key];         }
 
 double                    JsonValue::number_value()              const { return 0; }
@@ -288,12 +288,12 @@ const Json &              JsonValue::operator[] (size_t)         const { return 
 const Json &              JsonValue::operator[] (const string &) const { return static_null(); }
 
 const Json & JsonObject::operator[] (const string &key) const {
-    auto iter = m_value.find(key);
+	const auto iter = m_value.find(key);
     return (iter == m_value.end()) ? static_null() : iter->second;
 }
-const Json & JsonArray::operator[] (size_t i) const {
+const Json & JsonArray::operator[] (const size_t i) const {
     if (i >= m_value.size()) return static_null();
-    else return m_value[i];
+    return m_value[i];
 }
 
 /* * * * * * * * * * * * * * * * * * * *
@@ -326,7 +326,7 @@ bool Json::operator< (const Json &other) const {
  *
  * Format char c suitable for printing in an error message.
  */
-static inline string esc(char c) {
+static inline string esc(const char c) {
     char buf[12];
     if (static_cast<uint8_t>(c) >= 0x20 && static_cast<uint8_t>(c) <= 0x7f) {
         snprintf(buf, sizeof buf, "'%c' (%d)", c, c);
@@ -336,7 +336,7 @@ static inline string esc(char c) {
     return string(buf);
 }
 
-static inline bool in_range(long x, long lower, long upper) {
+static inline bool in_range(const long x, const long lower, const long upper) {
     return (x >= lower && x <= upper);
 }
 
@@ -424,7 +424,7 @@ struct JsonParser final {
      */
     void consume_garbage() {
       consume_whitespace();
-      if(strategy == JsonParse::COMMENTS) {
+      if(strategy == COMMENTS) {
         bool comment_found = false;
         do {
           comment_found = consume_comment();
@@ -453,7 +453,7 @@ struct JsonParser final {
      *
      * Encode pt as UTF-8 and add it to out.
      */
-    void encode_utf8(long pt, string & out) {
+    static void encode_utf8(const long pt, string & out) {
         if (pt < 0)
             return;
 
@@ -524,7 +524,7 @@ struct JsonParser final {
                         return fail("bad \\u escape: " + esc, "");
                 }
 
-                long codepoint = strtol(esc.data(), nullptr, 16);
+                const long codepoint = strtol(esc.data(), nullptr, 16);
 
                 // JSON specifies that characters outside the BMP shall be encoded as a pair
                 // of 4-hex-digit \u escapes encoding their surrogate pair components. Check
@@ -572,7 +572,7 @@ struct JsonParser final {
      * Parse a double.
      */
     Json parse_number() {
-        size_t start_pos = i;
+	    const size_t start_pos = i;
 
         if (str[i] == '-')
             i++;
@@ -633,23 +633,22 @@ struct JsonParser final {
         if (str.compare(i, expected.length(), expected) == 0) {
             i += expected.length();
             return res;
-        } else {
-            return fail("parse error: expected " + expected + ", got " + str.substr(i, expected.length()));
         }
+        return fail("parse error: expected " + expected + ", got " + str.substr(i, expected.length()));
     }
 
     /* parse_json()
      *
      * Parse a JSON object.
      */
-    Json parse_json(int depth) {
+    Json parse_json(const int depth) {
         if (depth > max_depth) {
             return fail("exceeded maximum nesting depth");
         }
 
         char ch = get_next_token();
         if (failed)
-            return Json();
+            return {};
 
         if (ch == '-' || (ch >= '0' && ch <= '9')) {
             i--;
@@ -680,7 +679,7 @@ struct JsonParser final {
 
                 string key = parse_string();
                 if (failed)
-                    return Json();
+                    return {};
 
                 ch = get_next_token();
                 if (ch != ':')
@@ -688,7 +687,7 @@ struct JsonParser final {
 
                 data[std::move(key)] = parse_json(depth + 1);
                 if (failed)
-                    return Json();
+                    return {};
 
                 ch = get_next_token();
                 if (ch == '}')
@@ -711,7 +710,7 @@ struct JsonParser final {
                 i--;
                 data.push_back(parse_json(depth + 1));
                 if (failed)
-                    return Json();
+                    return {};
 
                 ch = get_next_token();
                 if (ch == ']')
@@ -730,14 +729,14 @@ struct JsonParser final {
 };
 }//namespace {
 
-Json Json::parse(const string &in, string &err, JsonParse strategy) {
+Json Json::parse(const string &in, string &err, const JsonParse strategy) {
     JsonParser parser { in, 0, err, false, strategy };
     Json result = parser.parse_json(0);
 
     // Check for any trailing garbage
     parser.consume_garbage();
     if (parser.failed)
-        return Json();
+        return {};
     if (parser.i != in.size())
         return parser.fail("unexpected trailing " + esc(in[parser.i]));
 
@@ -748,7 +747,7 @@ Json Json::parse(const string &in, string &err, JsonParse strategy) {
 vector<Json> Json::parse_multi(const string &in,
                                std::string::size_type &parser_stop_pos,
                                string &err,
-                               JsonParse strategy) {
+                               const JsonParse strategy) {
     JsonParser parser { in, 0, err, false, strategy };
     parser_stop_pos = 0;
     vector<Json> json_vec;

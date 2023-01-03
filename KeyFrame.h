@@ -6,9 +6,9 @@ namespace gamelib
 	{
 	public:
 		KeyFrame(int x, int y, int w, int h, std::string group);
-		int x, y, w, h;
-		std::string group;
-		bool HasGroup();
+		int X, Y, W, H;
+		std::string Group;
+		[[nodiscard]] bool HasGroup() const;
 	};
 }
 

@@ -5,13 +5,13 @@ using namespace std;
 
 namespace gamelib
 {
-	Logger::Logger(logging_func func) : func(func) {}
+	Logger::Logger(LoggingFunc func) : func(std::move(func)) {}
 
-	Logger* gamelib::Logger::Get()
+	Logger* Logger::Get()
 	{
 		if (Instance == nullptr)
 		{
-			Instance = new Logger( [=](std::string message)
+			Instance = new Logger( [=](const std::string& message)
 			{
 				ErrorLogManager::GetErrorLogManager()->LogMessage(message);	
 				LogToStdOut(message);
@@ -20,14 +20,14 @@ namespace gamelib
 		return Instance;
 	}
 
-	Logger* gamelib::Logger::Instance = nullptr;
+	Logger* Logger::Instance = nullptr;
 
-	void Logger::LogThis(const string& message, const bool be_verbose, const bool logToStdout) const
+	void Logger::LogThis(const string& message, const bool beVerbose, const bool logStdout) const
 	{
 		bool fallbackToStdOut = func == nullptr;
 
 		// Verbose logging goes to specific function, writes to file usually
-		if (be_verbose)
+		if (beVerbose)
 		{
 			if (!fallbackToStdOut)
 			{
@@ -44,7 +44,7 @@ namespace gamelib
 		}
 
 		// Explicitly asked to write to std out
-		if (logToStdout && !fallbackToStdOut)
+		if (logStdout && !fallbackToStdOut)
 		{
 			LogToStdOut(message);
 		}
@@ -53,7 +53,7 @@ namespace gamelib
 
 	}
 
-	void Logger::LogToStdOut(const string message) 	{
+	void Logger::LogToStdOut(const string& message) 	{
 		cout << message << endl;
 	}
 

@@ -2,7 +2,7 @@
 
 
 
-gamelib::Connection::Connection(std::string host, std::string port)
+gamelib::Connection::Connection(const std::string& host, const std::string& port)
 {
 	this->host = host;
 	this->port = port;

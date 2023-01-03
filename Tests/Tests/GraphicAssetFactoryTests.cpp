@@ -85,11 +85,11 @@ TEST(GraphicAssetFactoryTests, ParseSprite)
     EXPECT_EQ(_sprite->KeyFrames.size(), 11);
     EXPECT_EQ(_sprite->GetColourKey(), ColourKey(255,255,255)) << "Invalid colour key";
     EXPECT_TRUE(_sprite->KeyFrames[4].HasGroup());
-    EXPECT_EQ(_sprite->KeyFrames[4].group, "one");
+    EXPECT_EQ(_sprite->KeyFrames[4].Group, "one");
     EXPECT_TRUE(_sprite->KeyFrames[5].HasGroup());
-    EXPECT_EQ(_sprite->KeyFrames[5].group, "one");
+    EXPECT_EQ(_sprite->KeyFrames[5].Group, "one");
     EXPECT_TRUE(_sprite->KeyFrames[10].HasGroup());
-    EXPECT_EQ(_sprite->KeyFrames[10].group, "one");    
+    EXPECT_EQ(_sprite->KeyFrames[10].Group, "one");    
     EXPECT_FALSE(_sprite->KeyFrames[0].HasGroup());
 }
 

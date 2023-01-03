@@ -12,9 +12,9 @@ namespace gamelib
 	/// <summary>
 	/// Create Graphic Asset
 	/// </summary>
-	GraphicAsset::GraphicAsset(const int uid, const std::string name, const std::string& path, const std::string& type, 
+	GraphicAsset::GraphicAsset(const int inUid, const std::string& inName, const std::string& inPath, const std::string& inType, 
 		const int level, const ABCDRectangle& dimensions)
-		: Asset(uid, name, path, type, level), Dimensions(dimensions)
+		: Asset(inUid, inName, inPath, inType, level), Dimensions(dimensions)
 	{
 		hasColourKey = false;
 		viewPort = { dimensions.GetAx(), dimensions.GetAy(), dimensions.GetWidth(), dimensions.GetHeight() };
@@ -35,11 +35,11 @@ namespace gamelib
 		{				
 			if (HasColourKey())
 			{
-				SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, ColourKey.Red, ColourKey.Green, ColourKey.Blue));
+				SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, static_cast<Uint8>(ColourKey.Red), static_cast<Uint8>(ColourKey.Green), static_cast<Uint8>(ColourKey.Blue)));
 			}
 
 			// Create texture from surface pixels
-			texture = SDL_CreateTextureFromSurface(SDLGraphicsManager::Get()->windowRenderer, loadedSurface );
+			texture = SDL_CreateTextureFromSurface(SDLGraphicsManager::Get()->WindowRenderer, loadedSurface );
 
 			
 			
@@ -64,7 +64,7 @@ namespace gamelib
 	/// <returns>true if successfully unloaded asset, false otherwise</returns>
 	bool GraphicAsset::Unload()
 	{	
-		auto isSuccess = false;
+		bool isSuccess;
 		try
 		{
 			// Free texture in memory
@@ -105,12 +105,12 @@ namespace gamelib
 		hasColourKey = true;
 	}
 
-	ColourKey GraphicAsset::GetColourKey()
+	ColourKey GraphicAsset::GetColourKey() const
 	{
 		return ColourKey;
 	}
 
-	bool GraphicAsset::HasColourKey()
+	bool GraphicAsset::HasColourKey() const
 	{
 		return hasColourKey;
 	}
@@ -121,6 +121,6 @@ namespace gamelib
 		
 		Logger::Get()->LogThis(string("Unloading asset: " + this->path));
 
-		Unload();
+		GraphicAsset::Unload();
 	}
 }

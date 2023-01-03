@@ -13,26 +13,26 @@ namespace gamelib
 				static SerializationManager* Instance;
 	private:
 		std::shared_ptr<IEventSerializationManager> eventSerialization;
-		std::string CreatePlayerMovedEventMessage(std::shared_ptr<Event> event, std::string target);
-		std::string CreateControllerMoveEventMessage(std::shared_ptr<Event> evt, std::string target);
-		std::string CreateStartNetworkLevelMessage(std::shared_ptr<Event> evt, std::string target);
+				[[nodiscard]] std::string CreatePlayerMovedEventMessage(const std::shared_ptr<Event>& event, const std::string& target) const;
+				[[nodiscard]] std::string CreateControllerMoveEventMessage(const std::shared_ptr<Event>& evt, const std::string& target) const;
+				[[nodiscard]] std::string CreateStartNetworkLevelMessage(const std::shared_ptr<Event>& evt, const std::string& target) const;
 		public:
 			static SerializationManager* Get();
 			SerializationManager();
 			~SerializationManager();
-			MessageHeader GetMessageHeader(std::string serializedMessage);
+				[[nodiscard]] MessageHeader GetMessageHeader(const std::string& serializedMessage) const;
 
-			std::shared_ptr<Event> Deserialize(MessageHeader messageHeader, std::string serializedMessage);		
-			std::string Serialize(std::shared_ptr<Event> evt, std::string target);
+				[[nodiscard]] std::shared_ptr<Event> Deserialize(const MessageHeader& messageHeader, const std::string& serializedMessage) const;
+				[[nodiscard]] std::string Serialize(const std::shared_ptr<Event>& evt, const std::string& target) const;
 
-			std::string CreateUnknownEventMessage(std::shared_ptr<Event> evt, std::string target);
-			std::string CreateRequestPlayerDetailsMessage();
-			std::string CreateRequestPlayerDetailsMessageResponse(std::string target);
-			std::string CreatePongMessage();
+				[[nodiscard]] std::string CreateUnknownEventMessage(const std::shared_ptr<Event>& evt, const std::string& target) const;
+				[[nodiscard]] std::string CreateRequestPlayerDetailsMessage() const;
+				static std::string CreateRequestPlayerDetailsMessageResponse(std::string target);
+				[[nodiscard]] std::string CreatePongMessage() const;
 
-			std::string CreatePingMessage();
+				[[nodiscard]] std::string CreatePingMessage() const;
 
-			std::string UpdateTarget(std::string target, std::string serialisedMessage);
+				[[nodiscard]] std::string UpdateTarget(const std::string& target, const std::string& serialisedMessage) const;
 
 			bool Initialize();
 

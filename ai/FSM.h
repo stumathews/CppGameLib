@@ -2,6 +2,7 @@
 #include "FSMState.h"
 namespace gamelib
 {
+	// ReSharper disable once CppInconsistentNaming
 	class FSM
 	{
 	public:

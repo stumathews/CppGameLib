@@ -5,8 +5,6 @@ using namespace std;
 
 namespace gamelib
 {
-	
-
 	bool SettingsManager::Reload()
 	{
 		return Load(filePath);
@@ -33,9 +31,9 @@ namespace gamelib
 
 	SettingsManager* SettingsManager::Instance = nullptr;
 
-	bool SettingsManager::Load(string filePath)
+	bool SettingsManager::Load(const string& inFilePath)
 	{
-		this->filePath = filePath;
+		this->filePath = inFilePath;
 		settings.clear(); // effectively this is reloading the settings from scratch each time
 		
 		tinyxml2::XMLDocument doc;
@@ -64,15 +62,15 @@ namespace gamelib
 		 */
 
 		
-		if(doc.LoadFile(filePath.c_str()) == tinyxml2::XML_SUCCESS)
+		if(doc.LoadFile(inFilePath.c_str()) == tinyxml2::XML_SUCCESS)
 		{
-			// Loopt through settings section
+			// Loop through settings section
 			for(auto section = doc.FirstChildElement(SETTINGS_SECTION)->FirstChild(); section; section = section->NextSibling())
 			{	
 				if(section->ToComment())
 					continue;
 
-				// Loopt through each setting section eg. 'global' or 'player' etc.
+				// Loop through each setting section eg. 'global' or 'player' etc.
 				const auto* section_name = section->Value();
 				for(auto* setting = section->FirstChild(); setting; setting = setting->NextSibling())
 				{
@@ -107,40 +105,40 @@ namespace gamelib
 		return true;
 	}
 
-	bool SettingsManager::AddSetting(std::string section, std::string key, SettingDetail details)
+	bool SettingsManager::AddSetting(const std::string& section, const std::string& key, const SettingDetail& details)
 	{
 		settings[section][key] = details;
 		return true;
 	}
 
-	SettingDetail SettingsManager::GetSetting(std::string section, std::string name)
+	SettingDetail SettingsManager::GetSetting(const std::string& section, const std::string& name)
 	{
 		return settings[section][name];
 	}
 	
-	bool SettingsManager::GetBool(std::string section, std::string name)
+	bool SettingsManager::GetBool(const std::string& section, const std::string& name)
 	{
 		return settings.at(section)[name].ToBool();		
 	}
 	
-	int SettingsManager::GetInt(std::string section, std::string name)
+	int SettingsManager::GetInt(const std::string& section, const std::string& name)
 	{
 		try
 		{
 			return settings[section][name].ToInt();
 		}
-		catch (exception& e)
+		catch (exception&)
 		{
-			THROW(12, "Could not find setting [" + section + "][" + name + "]", "Settings");
+			THROW(12, "Could not find setting [" + section + "][" + name + "]", "Settings")
 		}
 	}
 
-	string SettingsManager::GetString(std::string section, std::string name)
+	string SettingsManager::GetString(const std::string& section, const std::string& name)
 	{
 		return settings[section][name].ToString();
 	}
 
-	long SettingsManager::GetLong(std::string section, std::string name)
+	long SettingsManager::GetLong(const std::string& section, const std::string& name)
 	{
 		return settings[section][name].ToLong();
 	}
@@ -151,7 +149,7 @@ namespace gamelib
 		for(auto iterator = begin(settings); iterator != end(settings); ++iterator)
 		{
 			auto section_settings = (*iterator).second;
-			for(auto setting_iter = begin(section_settings); setting_iter != end(section_settings); ++setting_iter)
+			for(auto settingIter = begin(section_settings); settingIter != end(section_settings); ++settingIter)
 				count++;
 		}
 		return count;

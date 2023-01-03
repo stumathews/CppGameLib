@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 #include <string>
 #include <SDL_mixer.h>
 #include "asset/asset.h"
@@ -24,27 +23,27 @@ namespace gamelib
 		/// <summary>
 		/// Create an audio asset
 		/// </summary>
-		AudioAsset(int uid, std::string name, const std::string path, const std::string type, int scene, ResourceManager& resourceAdmin);
+		AudioAsset(int inUid, const std::string& inName, const std::string& inPath, const std::string& inType, int inScene, ResourceManager& resourceAdmin);
 
 		/// <summary>
 		/// Sound effect data 
 		/// </summary>
-		Mix_Chunk *soundEffect = nullptr;	
+		Mix_Chunk *SoundEffect = nullptr;	
 
 		/// <summary>
 		/// Music data 
 		/// </summary>
-		Mix_Music* music = nullptr;
+		Mix_Music* Music = nullptr;
 
 		/// <summary>
 		/// Gets Sound effect data 
 		/// </summary>
-		Mix_Chunk* AsSoundEffect() const;
+		[[nodiscard]] Mix_Chunk* AsSoundEffect() const;
 
 		/// <summary>
 		/// Get Music data
 		/// </summary>
-		Mix_Music* AsMusic() const;
+		[[nodiscard]] Mix_Music* AsMusic() const;
 
 		/// <summary>
 		/// Load audio into memory

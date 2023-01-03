@@ -10,13 +10,13 @@ namespace gamelib
 	/// <summary>
 	/// Object Can Draw on itself
 	/// </summary>
-	class DrawableGameObject : public gamelib::GameObject
+	class DrawableGameObject : public GameObject
 	{
 	public:
 		DrawableGameObject() = default;
-		DrawableGameObject(const bool is_visible);
-		DrawableGameObject(const int x, const int y, const bool is_visible);
-		DrawableGameObject(std::string name, std::string type, gamelib::coordinate<int> coordinate, const bool is_visible);
+		DrawableGameObject(bool is_visible);
+		DrawableGameObject(int x, int y, bool is_visible);
+		DrawableGameObject(const std::string& name, const std::string& type, Coordinate<int> coordinate, bool is_visible);
 
 		/// <summary>
 		/// Draw Graphic
@@ -28,7 +28,7 @@ namespace gamelib
 		/// Has Graphic
 		/// </summary>
 		/// <returns></returns>
-		bool HasGraphic() const;
+		[[nodiscard]] bool HasGraphic() const;
 
 		/// <summary>
 		/// Set defaults
@@ -36,13 +36,13 @@ namespace gamelib
 		/// <param name="isVisible"></param>
 		/// <param name="x"></param>
 		/// <param name="y"></param>
-		void SetDefaults(std::string inName, std::string inType, bool IsVisible, int x, int y);
+		void SetDefaults(const std::string& inName, const std::string& inType, bool IsVisible, int x, int y);
 
 		/// <summary>
 		/// Get Graphic
 		/// </summary>
 		/// <returns></returns>
-		std::shared_ptr<GraphicAsset> GetGraphic() const;
+		[[nodiscard]] std::shared_ptr<GraphicAsset> GetGraphic() const;
 
 		/// <summary>
 		/// Draw A filled rectangle
@@ -50,7 +50,7 @@ namespace gamelib
 		/// <param name="renderer">Renderer</param>
 		/// <param name="dimensions">rectangular dimensions</param>
 		/// <param name="colour">colour</param>
-		void DrawFilledRect(SDL_Renderer* renderer, SDL_Rect* dimensions, SDL_Color colour);
+		static void DrawFilledRect(SDL_Renderer* renderer, const SDL_Rect* dimensions, SDL_Color colour);
 
 		/// <summary>
 		/// Set colour key
@@ -58,13 +58,13 @@ namespace gamelib
 		/// <param name="r"></param>
 		/// <param name="g"></param>
 		/// <param name="b"></param>
-		void SetColourKey(const Uint8 r, const Uint8 g, const Uint8 b);
+		void SetColourKey(Uint8 r, Uint8 g, Uint8 b);
 
 		/// <summary>
 		/// Set Graphic
 		/// </summary>
 		/// <param name="graphic"></param>
-		void SetGraphic(std::shared_ptr<GraphicAsset> Graphic);
+		void SetGraphic(const std::shared_ptr<GraphicAsset>& graphic);
 
 		/// <summary>
 		/// Draw
@@ -76,13 +76,13 @@ namespace gamelib
 		/// Get colour key
 		/// </summary>
 		/// <returns></returns>
-		SDL_Color GetColourKey();
+		[[nodiscard]] SDL_Color GetColourKey() const;
 				
 		/// <summary>
 		/// Has COlour key
 		/// </summary>
 		/// <returns></returns>
-		bool HasColourKey();
+		[[nodiscard]] bool HasColourKey() const;
 
 		/// <summary>
 		/// If supports colour key
@@ -91,18 +91,18 @@ namespace gamelib
 		/// <returns></returns>
 		bool SupportsColourKey(bool yesNo);
 
-	private:
-
-		// Game Object Graphic
-		std::shared_ptr<GraphicAsset> Graphic; // can be shared by other actors
-
 		/// <summary>
 		/// Each object may have a colour key enabled
 		/// </summary>
-		bool IsColorKeyEnabled;
+		bool IsColorKeyEnabled {};
+
+	private:
+
+		// Game Object Graphic
+		std::shared_ptr<GraphicAsset> graphic; // can be shared by other actors	
 
 		// Game Object colour
-		SDL_Color ColourKey;
+		SDL_Color colourKey{};
 	};
 }
 

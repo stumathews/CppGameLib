@@ -5,7 +5,7 @@ using namespace std;
 
 namespace gamelib
 {
-	void DrawableGameObject::DrawFilledRect(SDL_Renderer* renderer, SDL_Rect* region, SDL_Color colour)
+	void DrawableGameObject::DrawFilledRect(SDL_Renderer* renderer, const SDL_Rect* region, const SDL_Color colour)
 	{
 		SDL_SetRenderDrawColor(renderer, colour.r, colour.g, colour.b, colour.a);
 		SDL_RenderDrawRect(renderer, region);
@@ -36,9 +36,9 @@ namespace gamelib
 	/// </summary>
 	void DrawableGameObject::SetColourKey(const Uint8 r, const Uint8 g, const Uint8 b)
 	{
-		ColourKey.r = r;
-		ColourKey.g = g;
-		ColourKey.b = b;
+		colourKey.r = r;
+		colourKey.g = g;
+		colourKey.b = b;
 
 		SupportsColourKey(true);
 	}
@@ -46,7 +46,7 @@ namespace gamelib
 	/// <summary>
 	/// Set defaults
 	/// </summary>
-	void DrawableGameObject::SetDefaults(std::string inName, std::string inType, bool NewIsVisible, int x, int y)
+	void DrawableGameObject::SetDefaults(const std::string& inName, const std::string& inType, const bool NewIsVisible, const int x, const int y)
 	{
 		IsVisible = NewIsVisible;
 		Position.SetX(x);
@@ -56,19 +56,19 @@ namespace gamelib
 		Name = inName;
 		Type = inType;
 		IsColorKeyEnabled = false;
-		ColourKey = {};
-		Graphic = nullptr;
+		colourKey = {};
+		graphic = nullptr;
 	}
 
-	SDL_Color DrawableGameObject::GetColourKey() { return ColourKey; }
+	SDL_Color DrawableGameObject::GetColourKey() const { return colourKey; }
 
 	/// <summary>
 	/// Determines if the colour key is enabled for this drawable object
 	/// </summary>
 	/// <returns></returns>
-	bool DrawableGameObject::HasColourKey() { return IsColorKeyEnabled; }
+	bool DrawableGameObject::HasColourKey() const { return IsColorKeyEnabled; }
 
-	bool DrawableGameObject::SupportsColourKey(bool yesNo)
+	bool DrawableGameObject::SupportsColourKey(const bool yesNo)
 	{
 		IsColorKeyEnabled = yesNo;
 		return IsColorKeyEnabled;
@@ -77,10 +77,9 @@ namespace gamelib
 	/// <summary>
 	/// Set the graphic
 	/// </summary>
-	/// <param name="graphic"></param>
-	void DrawableGameObject::SetGraphic(shared_ptr<GraphicAsset> Graphic)
+	void DrawableGameObject::SetGraphic(const shared_ptr<GraphicAsset>& graphic)
 	{
-		this->Graphic = Graphic;
+		this->graphic = graphic;
 	}
 
 	/// <summary>
@@ -91,20 +90,20 @@ namespace gamelib
 	{
 		if (HasGraphic())
 		{
-			const auto Graphic = GetGraphic();
+			const auto graphic = GetGraphic();
 
-			if (Graphic->type == "graphic")
+			if (graphic->type == "graphic")
 			{
 				// Draw graphic at the game object's current location
-				SDL_Rect drawLocation =
+				const SDL_Rect drawLocation =
 				{
 					Position.GetX(), Position.GetY(),
-					Graphic->GetViewPort().w,
-					Graphic->GetViewPort().h
+					graphic->GetViewPort().w,
+					graphic->GetViewPort().h
 				};
 
 				// Copy the texture (restricted by viewport) to the drawLocation on the screen
-				SDL_RenderCopy(renderer, Graphic->GetTexture(), &Graphic->GetViewPort(), &drawLocation);
+				SDL_RenderCopy(renderer, graphic->GetTexture(), &graphic->GetViewPort(), &drawLocation);
 			}
 			else
 			{
@@ -119,7 +118,7 @@ namespace gamelib
 	/// <returns></returns>
 	std::shared_ptr<GraphicAsset> DrawableGameObject::GetGraphic() const
 	{
-		return Graphic;
+		return graphic;
 	}
 
 	DrawableGameObject::DrawableGameObject(const bool is_visible)
@@ -135,7 +134,8 @@ namespace gamelib
 	}
 
 
-	DrawableGameObject::DrawableGameObject(std::string name, std::string type, gamelib::coordinate<int> coordinate, const bool is_visible)
+	DrawableGameObject::DrawableGameObject(const std::string& name, const std::string& type, const Coordinate<int>
+	                                       coordinate, const bool is_visible)
 		: GameObject(name, type, coordinate, is_visible)
 	{
 		SetDefaults(name, type, is_visible, coordinate.GetX(), coordinate.GetY());
@@ -147,6 +147,6 @@ namespace gamelib
 	/// <returns></returns>
 	bool DrawableGameObject::HasGraphic() const
 	{
-		return Graphic != nullptr;
+		return graphic != nullptr;
 	}
 }

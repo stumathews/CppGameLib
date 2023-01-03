@@ -10,11 +10,11 @@ class ErrorLogManager
 {
 public:
 	static ErrorLogManager* GetErrorLogManager();	
-	void Create(std::string fileName);
+	void Create(const std::string& fileName);
 	void Flush();
 	void Close();
-	void LogException(gamelib::EngineException e);
-	void LogMessage(std::string message);
+	void LogException(const gamelib::EngineException& e);
+	void LogMessage(const std::string& message);
 	std::stringstream Buffer;
 	
 protected:
@@ -22,7 +22,7 @@ protected:
 	static ErrorLogManager* Instance;
 	
 	std::ofstream logFile;
-	std::string GetTimeString();
+	static std::string GetTimeString();
 
 };
 

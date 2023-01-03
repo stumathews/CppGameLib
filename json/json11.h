@@ -123,29 +123,29 @@ public:
     Json(void *) = delete;
 
     // Accessors
-    Type type() const;
+    [[nodiscard]] Type type() const;
 
-    bool is_null()   const { return type() == NUL; }
-    bool is_number() const { return type() == NUMBER; }
-    bool is_bool()   const { return type() == BOOL; }
-    bool is_string() const { return type() == STRING; }
-    bool is_array()  const { return type() == ARRAY; }
-    bool is_object() const { return type() == OBJECT; }
+    [[nodiscard]] bool is_null()   const { return type() == NUL; }
+    [[nodiscard]] bool is_number() const { return type() == NUMBER; }
+    [[nodiscard]] bool is_bool()   const { return type() == BOOL; }
+    [[nodiscard]] bool is_string() const { return type() == STRING; }
+    [[nodiscard]] bool is_array()  const { return type() == ARRAY; }
+    [[nodiscard]] bool is_object() const { return type() == OBJECT; }
 
     // Return the enclosed value if this is a number, 0 otherwise. Note that json11 does not
     // distinguish between integer and non-integer numbers - number_value() and int_value()
     // can both be applied to a NUMBER-typed object.
-    double number_value() const;
-    int int_value() const;
+    [[nodiscard]] double number_value() const;
+    [[nodiscard]] int int_value() const;
 
     // Return the enclosed value if this is a boolean, false otherwise.
-    bool bool_value() const;
+    [[nodiscard]] bool bool_value() const;
     // Return the enclosed string if this is a string, "" otherwise.
-    const std::string &string_value() const;
+    [[nodiscard]] const std::string &string_value() const;
     // Return the enclosed std::vector if this is an array, or an empty vector otherwise.
-    const array &array_items() const;
+    [[nodiscard]] const array &array_items() const;
     // Return the enclosed std::map if this is an object, or an empty map otherwise.
-    const object &object_items() const;
+    [[nodiscard]] const object &object_items() const;
 
     // Return a reference to arr[i] if this is an array, Json() otherwise.
     const Json & operator[](size_t i) const;
@@ -154,7 +154,8 @@ public:
 
     // Serialize.
     void dump(std::string &out) const;
-    std::string dump() const {
+
+    [[nodiscard]] std::string dump() const {
         std::string out;
         dump(out);
         return out;
@@ -163,28 +164,27 @@ public:
     // Parse. If parse fails, return Json() and assign an error message to err.
     static Json parse(const std::string & in,
                       std::string & err,
-                      JsonParse strategy = JsonParse::STANDARD);
+                      JsonParse strategy = STANDARD);
     static Json parse(const char * in,
                       std::string & err,
-                      JsonParse strategy = JsonParse::STANDARD) {
+                      const JsonParse strategy = STANDARD) {
         if (in) {
             return parse(std::string(in), err, strategy);
-        } else {
-            err = "null input";
-            return nullptr;
         }
+        err = "null input";
+        return nullptr;
     }
     // Parse multiple objects, concatenated or separated by whitespace
     static std::vector<Json> parse_multi(
         const std::string & in,
         std::string::size_type & parser_stop_pos,
         std::string & err,
-        JsonParse strategy = JsonParse::STANDARD);
+        JsonParse strategy = STANDARD);
 
-    static inline std::vector<Json> parse_multi(
+    static std::vector<Json> parse_multi(
         const std::string & in,
         std::string & err,
-        JsonParse strategy = JsonParse::STANDARD) {
+        const JsonParse strategy = STANDARD) {
         std::string::size_type parser_stop_pos;
         return parse_multi(in, parser_stop_pos, err, strategy);
     }
@@ -214,17 +214,17 @@ protected:
     friend class Json;
     friend class JsonInt;
     friend class JsonDouble;
-    virtual Json::Type type() const = 0;
+    [[nodiscard]] virtual Json::Type type() const = 0;
     virtual bool equals(const JsonValue * other) const = 0;
     virtual bool less(const JsonValue * other) const = 0;
     virtual void dump(std::string &out) const = 0;
-    virtual double number_value() const;
-    virtual int int_value() const;
-    virtual bool bool_value() const;
-    virtual const std::string &string_value() const;
-    virtual const Json::array &array_items() const;
+    [[nodiscard]] virtual double number_value() const;
+    [[nodiscard]] virtual int int_value() const;
+    [[nodiscard]] virtual bool bool_value() const;
+    [[nodiscard]] virtual const std::string &string_value() const;
+    [[nodiscard]] virtual const Json::array &array_items() const;
     virtual const Json &operator[](size_t i) const;
-    virtual const Json::object &object_items() const;
+    [[nodiscard]] virtual const Json::object &object_items() const;
     virtual const Json &operator[](const std::string &key) const;
     virtual ~JsonValue() {}
 };

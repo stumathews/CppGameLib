@@ -13,18 +13,18 @@ namespace gamelib
 		RemoveSubscription
 	};
 
-	class GameObjectEvent : public Event
+	class GameObjectEvent final : public Event
 	{
 	public:
 		GameObjectEvent(std::shared_ptr<GameObject> gameObject, GameObjectEventContext context);
 
 		EventType GetGameObjectType() override;
 		std::string ToString() override;
-		GameObjectEventContext context;
-		std::shared_ptr<GameObject> gameObject;
+		GameObjectEventContext Context;
+		std::shared_ptr<GameObject> GameObject;
 	};
 
-	inline const char* ToString(GameObjectEventContext context)
+	inline const char* ToString(const GameObjectEventContext context)
 	{
 		switch (context)
 		{

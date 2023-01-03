@@ -1,30 +1,30 @@
 #include "Timer.h"
 
-void gamelib::Timer::Update(float deltaMs)
+void gamelib::Timer::Update(const float deltaMs)
 {
-	if(timerDurationMs == 0 || IsStopped) 
+	if(TimerDurationMs == 0 || IsStopped) 
 		return;
 
-	elapsedTimeMs += deltaMs;
-	IsElapsed = elapsedTimeMs > timerDurationMs ? true : false;
+	ElapsedTimeMs += deltaMs;
+	IsElapsed = ElapsedTimeMs > TimerDurationMs ? true : false;
 }
 
-void gamelib::Timer::AddTime(float timeMs)
+void gamelib::Timer::AddTime(const float timeMs)
 {
-	elapsedTimeMs = (elapsedTimeMs - timeMs <= 0) ? 0 : elapsedTimeMs - timeMs;
+	ElapsedTimeMs = (ElapsedTimeMs - timeMs <= 0) ? 0 : ElapsedTimeMs - timeMs;
 }
 
-void gamelib::Timer::Start(DWORD durationMs, DWORD startTimeMs)
+void gamelib::Timer::Start(const DWORD durationMs, const DWORD startTimeMs)
 {
 	if (startTimeMs == 0)
 	{
 		Reset();
 	}
 
-	timerDurationMs = durationMs;
+	TimerDurationMs = durationMs;
 
 	IsStopped = IsElapsed = false;
-	elapsedTimeMs = 0;
+	ElapsedTimeMs = 0;
 }
 
 
@@ -35,8 +35,8 @@ DWORD gamelib::Timer::GetTimeMs()
 
 void gamelib::Timer::Reset()
 {
-	startTimeMs = GetTimeMs();
-	elapsedTimeMs = 0;
+	StartTimeMs = GetTimeMs();
+	ElapsedTimeMs = 0;
 	IsStopped = IsElapsed = false;
 }
 

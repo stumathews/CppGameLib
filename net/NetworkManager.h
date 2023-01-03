@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include "NetworkEvent.h"
 #include "Connection.h"
 #include <memory>
 #include <net/GameClient.h>
@@ -24,7 +23,7 @@ namespace gamelib
 	public:
 		static NetworkManager* Get();
 		NetworkManager();
-		bool IsGameServer();
+			[[nodiscard]] bool IsGameServer() const;
 		bool Initialize();
 
 		// Cannot copy an NetworkManager
@@ -36,7 +35,7 @@ namespace gamelib
 		void operator=(NetworkManager const&) = delete;
 
 		// Listen for network traffic destined for this this game server or this client
-		void Listen();
+		void Listen() const;
 		void PingGameServer() const;
 
 		std::shared_ptr<GameClient> Client = nullptr;

@@ -4,15 +4,15 @@
 #include "scene/ABCDRectangle.h"
 namespace gamelib
 {
-	class SpriteAsset : public GraphicAsset
+	class SpriteAsset final : public GraphicAsset
 	{
 	public:
 		SpriteAsset(
-			const int uid, 
-			const std::string& name, 
-			const std::string& path, 
-			const std::string& type,
-			const int scene, 
+			int inUid, 
+			const std::string& inName, 
+			const std::string& inPath, 
+			const std::string& inType,
+			int inScene, 
 			const ABCDRectangle& dimensions);
 		float FrameDurationMs;
 		std::vector<KeyFrame> KeyFrames;

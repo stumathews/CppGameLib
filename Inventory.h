@@ -19,15 +19,15 @@ namespace gamelib
 		/// Find Component
 		/// </summary>
 		/// <param name="name">name to find</param>
-		std::shared_ptr<Component> FindComponent(std::string name);
+		std::shared_ptr<Component> FindComponent(const std::string& name);
 
 		/// <summary>
 		/// Check if has Component
 		/// </summary>
 		/// <param name="name">name of component</param>
-		bool HasComponent(std::string name);
+		bool HasComponent(const std::string& name);
 
-		size_t Count();
+		[[nodiscard]] size_t Count() const;
 	private:
 
 		// list of components

@@ -4,7 +4,6 @@
 #include "GameObject.h"
 #include "common/aliases.h"
 #include "asset/Asset.h"
-#include <graphic/ColourKey.h>
 #include <objects/AnimatedSprite.h>
 
 namespace gamelib
@@ -29,35 +28,40 @@ namespace gamelib
 		/// </summary>
 		/// <param name="scene_object_xml">Raw Object XML element</param>
 		/// <returns>GameObject</returns>
-		std::shared_ptr<GameObject> BuildGameObject(tinyxml2::XMLElement* scene_object_xml) const;
+		std::shared_ptr<GameObject> BuildGameObject(const tinyxml2::XMLElement* scene_object_xml) const;
 
-		std::shared_ptr<gamelib::AnimatedSprite> BuildGraphic(std::string name, std::string type, std::shared_ptr<gamelib::Asset> asset, const gamelib::coordinate<int>& position, bool IsVisible) const;
-		std::shared_ptr<gamelib::AnimatedSprite> BuildSprite(std::string name, std::string type, std::shared_ptr<gamelib::Asset> asset, const gamelib::coordinate<int>& position, bool IsVisible) const;
-		std::shared_ptr<gamelib::StaticSprite> BuildStaticSprite(std::string name, std::string type, std::shared_ptr<gamelib::Asset> asset, const gamelib::coordinate<int>& position);
+		[[nodiscard]] std::shared_ptr<AnimatedSprite> BuildGraphic(const std::string& name, const std::string& type, std::shared_ptr<
+			                                                           Asset> asset, const Coordinate<int>& position, bool IsVisible) const;
+		[[nodiscard]] std::shared_ptr<AnimatedSprite> BuildSprite(const std::string& name, const std::string& type, std::shared_ptr<
+			                                                          Asset> asset, const Coordinate<int>& position, bool IsVisible) const;
+		[[nodiscard]] std::shared_ptr<StaticSprite> BuildStaticSprite(const std::string& name, const std::string& type,
+		                                                              const std::shared_ptr<Asset>& asset, const Coordinate<int>& position) const;
 
 	private:
 		static GameObjectFactory& instance;
 
-		void SetupCommonSprite(std::shared_ptr<gamelib::AnimatedSprite>& _sprite, std::shared_ptr<gamelib::Asset>& asset, std::shared_ptr<gamelib::GraphicAsset>& graphicAsset, bool IsVisible) const;
+		static void SetupCommonSprite(const std::shared_ptr<AnimatedSprite>& _sprite, const std::shared_ptr<Asset>& asset, const std::shared_ptr<
+			                              GraphicAsset>& graphicAsset, bool IsVisible);
 
 		// Parsing object attribute handlers
-		void OnBlueParse(gamelib::uint& blue, std::string& detail_value) const;
-		void OnGreenParse(gamelib::uint& green, std::string& detail_value) const;
-		void OnRedParse(gamelib::uint& red, std::string& detail_value) const;
-		void OnColourKeyParse(bool& color_key_enabled, std::string& detail_value) const;
-		void OnPosYParse(gamelib::uint& y, std::string& detail_value) const;
-		void OnVisibleParse(bool& visible, std::string& detail_value) const;
-		void OnPosXParse(gamelib::uint& x, std::string& detail_value) const;
-		void OnNameParse(std::string& x, std::string& detail_value) const;
-		void OnTypeParse(std::string& x, std::string& detail_value) const;
-		void GetAssetForResourceIdParse(std::string& detail_value, std::shared_ptr<gamelib::Asset>& resource) const;
+		void OnBlueParse(uint& blue, const std::string& detailValue) const;
+		void OnGreenParse(uint& green, std::string& detail_value) const;
+		void OnRedParse(uint& red, std::string& detail_value) const;
+		static void OnColourKeyParse(bool& color_key_enabled, std::string& detail_value);
+		void OnPosYParse(uint& y, std::string& detail_value) const;
+		static void OnVisibleParse(bool& visible, std::string& detail_value);
+		void OnPosXParse(uint& x, std::string& detail_value) const;
+		static void OnNameParse(std::string& x, std::string& detail_value);
+		static void OnTypeParse(std::string& x, std::string& detail_value);
+		static void GetAssetForResourceIdParse(std::string& detail_value, std::shared_ptr<Asset>& resource);
 
-		std::shared_ptr<gamelib::GameObject> InitializeGameObject(std::string& name, std::string& type, gamelib::coordinate<int> position, bool IsVisible, std::shared_ptr<gamelib::Asset> asset) const;
+		[[nodiscard]] std::shared_ptr<GameObject> InitializeGameObject(const std::string& name, const std::string& type, Coordinate<int> position, bool IsVisible,
+		                                                               const std::shared_ptr<Asset>& asset) const;
 
 		// Private constructor 
 		GameObjectFactory() = default;
 
 		// Error handling
-		void ThrowCouldNotFindAssetException(std::shared_ptr<gamelib::Asset>& asset, std::string& detail_value) const;
+		static void ThrowCouldNotFindAssetException(std::shared_ptr<Asset>& asset, std::string& detail_value);
 	};
 }

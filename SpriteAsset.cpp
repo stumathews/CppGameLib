@@ -1,10 +1,11 @@
 #include "SpriteAsset.h"
 namespace gamelib
 {
-	SpriteAsset::SpriteAsset(const int uid, const std::string& name, const std::string& path, const std::string& type, const int scene, const ABCDRectangle& dimensions)
-		: GraphicAsset(uid, name, path, type, scene, dimensions)
+	SpriteAsset::SpriteAsset(const int inUid, const std::string& inName, const std::string& inPath,
+	                         const std::string& inType, const int inScene, const ABCDRectangle& dimensions)
+		: GraphicAsset(inUid, inName, inPath, inType, inScene, dimensions)
 	{
-		assetType = Asset::AssetType::Sprite;
+		assetType = AssetType::Sprite;
 		FrameDurationMs = 0;
 		
 	}

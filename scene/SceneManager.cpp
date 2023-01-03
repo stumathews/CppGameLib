@@ -10,7 +10,7 @@
 #include "events/SceneChangedEvent.h"
 #include "events/SceneLoadedEvent.h"
 #include "objects/GameObjectFactory.h"
-#include <events/UpdateAllGameObjectsEvent.h>
+#include "util/SettingsManager.h"
 
 using namespace std;
 
@@ -24,27 +24,27 @@ namespace gamelib
 	SceneManager* SceneManager::Get() { if (Instance == nullptr) { Instance = new SceneManager(); } return Instance; }
 	SceneManager::~SceneManager() { Instance = nullptr; }
 		
-	void SceneManager::AddGameObjectToScene(const shared_ptr<gamelib::Event> event) { layers.back()->Objects.push_back(GetGameObjectFrom(event)); }
+	void SceneManager::AddGameObjectToScene(const shared_ptr<Event>& event) const { layers.back()->Objects.push_back(GetGameObjectFrom(event)); }
 	void SceneManager::SortLayers() 
 	{ 
-		layers.sort([=](const shared_ptr<Layer> rhs, const shared_ptr<Layer> lhs) { return lhs->zorder < rhs->zorder; });
+		layers.sort([=](const shared_ptr<Layer>& rhs, const shared_ptr<Layer>& lhs) { return lhs->Zorder < rhs->Zorder; });
 	}
 	void SceneManager::Update() { }
-	void SceneManager::SetSceneFolder(string sceneFolder) { this->sceneFolder = sceneFolder; }
-	void SceneManager::OnVisibleParse(shared_ptr<Layer> layer, const string& value) { layer->visible = (value == "true") ? true : false; }
-	void SceneManager::OnPosYParse(shared_ptr<Layer> layer, const string& value) { layer->Position.SetY(static_cast<int>(atoi(value.c_str()))); }
-	void SceneManager::OnPosXParse(shared_ptr<Layer> layer, const string& value) { layer->Position.SetX(static_cast<int>(atoi(value.c_str()))); }
-	void SceneManager::OnNameParse(shared_ptr<Layer> layer, const string& value) { layer->SetName(value); }
-	void SceneManager::OnSceneLoaded(std::shared_ptr<Event> event) { LogMessage("Scene " + to_string(dynamic_pointer_cast<SceneChangedEvent>(event)->scene_id) + " loaded."); }
-	bool SceneManager::CompareLayerOrder(const shared_ptr<Layer> rhs, const shared_ptr<Layer> lhs) { return lhs->zorder < rhs->zorder; }
+	void SceneManager::SetSceneFolder(const string& inSceneFolder) { this->sceneFolder = inSceneFolder; }
+	void SceneManager::OnVisibleParse(const shared_ptr<Layer>& layer, const string& value) { layer->Visible = (value == "true") ? true : false; }
+	void SceneManager::OnPosYParse(const shared_ptr<Layer>& layer, const string& value) { layer->Position.SetY(static_cast<int>(atoi(value.c_str()))); }
+	void SceneManager::OnPosXParse(const shared_ptr<Layer>& layer, const string& value) { layer->Position.SetX(static_cast<int>(atoi(value.c_str()))); }
+	void SceneManager::OnNameParse(const shared_ptr<Layer>& layer, const string& value) { layer->SetName(value); }
+	void SceneManager::OnSceneLoaded(const std::shared_ptr<Event>& event) const { LogMessage("Scene " + to_string(dynamic_pointer_cast<SceneChangedEvent>(event)->SceneId) + " loaded."); }
+	bool SceneManager::CompareLayerOrder(const shared_ptr<Layer>& rhs, const shared_ptr<Layer>& lhs) { return lhs->Zorder < rhs->Zorder; }
 	list<shared_ptr<Layer>> SceneManager::GetLayers() const { return layers; }
 	string SceneManager::GetSubscriberName() { return "SceneManager"; }
 
-	bool SceneManager::Initialize(string sceneFolder)
+	bool SceneManager::Initialize(const string inSceneFolder)
 	{
 		isInitialized = LogThis("SceneManager::initialize()", SettingsManager::Get()->GetBool("global", "verbose"), [&]()
 		{
-			SetSceneFolder(sceneFolder);
+			SetSceneFolder(inSceneFolder);
 
 			EventManager::Get()->SubscribeToEvent(EventType::LevelChangedEventType, this);
 			EventManager::Get()->SubscribeToEvent(EventType::AddGameObjectToCurrentScene, this);
@@ -58,11 +58,13 @@ namespace gamelib
 		return isInitialized;
 	}
 
-	vector<shared_ptr<Event>> SceneManager::HandleEvent(const shared_ptr<Event> event, unsigned long deltaMs)
+	vector<shared_ptr<Event>> SceneManager::HandleEvent(const shared_ptr<Event> event, const unsigned long deltaMs)
 	{
 		vector<shared_ptr<Event>> secondaryEvents;
 
-		switch(event->type)
+		// ReSharper disable once CppDefaultCaseNotHandledInSwitchStatement
+		// ReSharper disable once CppIncompleteSwitchStatement
+		switch(event->Type)  // NOLINT(clang-diagnostic-switch)
 		{
 			case EventType::DrawCurrentScene: DrawScene(); break;
 			case EventType::LevelChangedEventType: LoadNewScene(event); break;
@@ -76,33 +78,34 @@ namespace gamelib
 		return secondaryEvents;
 	}
 
-	void SceneManager::UpdateAllObjects(unsigned long deltaMs)
+	void SceneManager::UpdateAllObjects(const unsigned long deltaMs) const
 	{
 		for (auto& object : GetAllObjects()) 
 		{
-			if (auto ptr = object.lock()) { ptr->Update(deltaMs); }
+			if (const auto ptr = object.lock()) { ptr->Update(static_cast<float>(deltaMs)); }
 		}
 	}
 
-	void SceneManager::OnGameObjectEventReceived(shared_ptr<gamelib::Event> event)
+	void SceneManager::OnGameObjectEventReceived(const shared_ptr<Event>& event)
 	{
 		const auto gameObjectEvent = dynamic_pointer_cast<GameObjectEvent>(event);
 
-		if (gameObjectEvent->context == GameObjectEventContext::Remove)
+		if (gameObjectEvent->Context == GameObjectEventContext::Remove)
 		{
-			if (gameObjectEvent->gameObject) { RemoveGameObjectFromLayers(gameObjectEvent->gameObject->Id); }
+			if (gameObjectEvent->GameObject) { RemoveGameObjectFromLayers(gameObjectEvent->GameObject->Id); }
 		}
 	}
 
 	void SceneManager::RemoveGameObjectFromLayers(int GameObjectId)
 	{
 		// Remove from each layer, the occurnace of the object denoted by gameObjectId
-		for_each(begin(layers), end(layers), [&GameObjectId](shared_ptr<Layer> layer)
+		for_each(begin(layers), end(layers), [&GameObjectId](const shared_ptr<Layer>& layer)
 		{
 			// Look for game object that match incomming id
-			auto result = remove_if(begin(layer->Objects), end(layer->Objects), [=](weak_ptr<GameObject> gameObject)
+			auto result = remove_if(begin(layer->Objects), end(layer->Objects), [=](const weak_ptr<GameObject>&
+			                        gameObject)
 			{
-				if (auto ptr = gameObject.lock()) { return ptr->Id == GameObjectId; }
+				if (const auto ptr = gameObject.lock()) { return ptr->Id == GameObjectId; }
 				return false;
 			});			
 		});
@@ -111,7 +114,7 @@ namespace gamelib
 	void SceneManager::LoadNewScene(const shared_ptr<Event>& event)
 	{
 		string sceneFileName;		
-		const auto scene = dynamic_pointer_cast<SceneChangedEvent>(event)->scene_id;
+		const auto scene = dynamic_pointer_cast<SceneChangedEvent>(event)->SceneId;
 
 		switch(scene)
 		{
@@ -130,7 +133,7 @@ namespace gamelib
 		} 
 		catch(exception &e)
 		{
-			THROW(13, string("Cloud not load scene file: ") + string(e.what()), GetSubscriberName());
+			THROW(13, string("Cloud not load scene file: ") + string(e.what()), GetSubscriberName())
 		}		
 	}
 
@@ -138,7 +141,7 @@ namespace gamelib
 
 	shared_ptr<Layer> SceneManager::AddLayer(const string& name)
 	{
-		shared_ptr<Layer> layer = shared_ptr<Layer>(new Layer());
+		shared_ptr<Layer> layer = std::make_shared<Layer>();
 		layer->SetName(name);
 		layers.push_back(layer);
 
@@ -152,29 +155,32 @@ namespace gamelib
 			if (layer->Name() == name) { return layer; }
 		}
 		
-		THROW(12, string("layer not found:" + name), GetSubscriberName());
+		THROW(12, string("layer not found:" + name), GetSubscriberName())
 	}
 
 	void SceneManager::RemoveLayer(const string& name) 
 	{
-		remove_if(begin(layers), end(layers), [&name](shared_ptr<Layer> layer) { return layer->Name()._Equal(name);  });
+		remove_if(begin(layers), end(layers), [&name](const shared_ptr<Layer>& layer)  // NOLINT(bugprone-unused-return-value, clang-diagnostic-unused-result)
+		{
+			return layer->Name()._Equal(name);
+		});
 	}
 
-	void SceneManager::DrawScene()
+	void SceneManager::DrawScene() const
 	{
-		auto renderAllObjectsFn = static_cast<render_func>([&](SDL_Renderer* windowRenderer)
+		const auto renderAllObjectsFn = static_cast<RenderFunc>([&](SDL_Renderer* windowRenderer)
 		{
 			// Draw all objects in the layer
-			for (const auto& Layer : GetLayers())
+			for (const auto& layer : GetLayers())
 			{
 				// Only draw visible layers
-				if (Layer->visible)
+				if (layer->Visible)
 				{
 					// Draw objects within the layer
-					for (const auto& gameObject : Layer->Objects)
+					for (const auto& gameObject : layer->Objects)
 					{
 						// If it is active
-						if (auto ptr = gameObject.lock())
+						if (const auto ptr = gameObject.lock())
 						{
 							// draw yourself!
 							ptr->Draw(windowRenderer);
@@ -187,12 +193,12 @@ namespace gamelib
 		SDLGraphicsManager::Get()->ClearAndDraw(renderAllObjectsFn);
 	}
 
-	std::vector <std::weak_ptr<gamelib::GameObject>> SceneManager::GetAllObjects()
+	std::vector <std::weak_ptr<GameObject>> SceneManager::GetAllObjects() const
 	{
-		std::vector<std::weak_ptr<gamelib::GameObject>> gameObjects;
-		for (const auto& Layer : GetLayers())
+		std::vector<std::weak_ptr<GameObject>> gameObjects;
+		for (const auto& layer : GetLayers())
 		{
-			for (const auto& gameObject : Layer->Objects)
+			for (const auto& gameObject : layer->Objects)
 			{
 				gameObjects.push_back(gameObject);				
 			}			
@@ -226,8 +232,8 @@ namespace gamelib
 		if(doc.ErrorID() == 0) 	
 		{
 			auto* scene = doc.FirstChildElement("scene");
-			auto scene_id = scene->ToElement()->Attribute("id");
 			
+
 			if(scene) // <scene id="2">
 			{
 				for(auto layerNode = scene->FirstChild(); layerNode; layerNode = layerNode->NextSibling()) //  <layer ...>
@@ -236,8 +242,8 @@ namespace gamelib
 					if(layerElement) 
 					{
 						// build up a layer object from scene file
-						shared_ptr<Layer> currentLayer = shared_ptr<Layer>(new Layer());
-						currentLayer->zorder = layers.size();					
+						shared_ptr<Layer> currentLayer = std::make_shared<Layer>();
+						currentLayer->Zorder = layers.size();					
 
 						// Loop through layer attributes
 						for(auto layerAttributes = layerElement->FirstAttribute(); layerAttributes; layerAttributes = layerAttributes->Next()) // // <layer name="layer0" posx="0" posy="0" visible="true"
@@ -290,9 +296,10 @@ namespace gamelib
 		return false;
 	}
 
-	std::shared_ptr<GameObject> SceneManager::GetGameObjectFrom(std::shared_ptr<gamelib::Event> event)
+	std::shared_ptr<GameObject> SceneManager::GetGameObjectFrom(const std::shared_ptr<Event>& event) const
 	{
-		if (event->type != EventType::AddGameObjectToCurrentScene) { 	THROW(1, "Cannot extract game object from event", "SceneManager"); }
+		if (event->Type != EventType::AddGameObjectToCurrentScene) { 	THROW(1, "Cannot extract game object from event", "SceneManager")
+		}
 
 		return dynamic_pointer_cast<AddGameObjectToCurrentSceneEvent>(event)->GetGameObject();
 	}

@@ -191,7 +191,6 @@
     <ClInclude Include="ai\FSM.h" />
     <ClInclude Include="ai\FSMState.h" />
     <ClInclude Include="ai\FSMTransition.h" />
-    <ClInclude Include="GameObjectMover.h" />
     <ClInclude Include="graphic\ColourKey.h" />
     <ClInclude Include="graphic\GraphicAssetFactory.h" />
     <ClInclude Include="Inventory.h" />
@@ -234,7 +233,7 @@
     <ClInclude Include="objects\AnimatedSprite.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="net\PeerInfo.h" />
-    <ClInclude Include="events\NetworkTrafficRecievedEvent.h" />
+    <ClInclude Include="events\NetworkTrafficReceivedEvent.h" />
     <ClInclude Include="processes\Action.h" />
     <ClInclude Include="processes\DelayProcess.h" />
     <ClInclude Include="processes\Process.h" />
@@ -242,7 +241,6 @@
     <ClInclude Include="resource\ResourceManager.h" />
     <ClInclude Include="scene\Layer.h" />
     <ClInclude Include="scene\ABCDRectangle.h" />
-    <ClInclude Include="scene\SceneItem.h" />
     <ClInclude Include="scene\SceneManager.h" />
     <ClInclude Include="SerializationManager.h" />
     <ClInclude Include="SpriteAsset.h" />
@@ -277,7 +275,6 @@
     <ClCompile Include="common\Logger.cpp" />
     <ClCompile Include="cppgamelib.cpp" />
     <ClCompile Include="ai\FSM.cpp" />
-    <ClCompile Include="GameObjectMover.cpp" />
     <ClCompile Include="graphic\ColourKey.cpp" />
     <ClCompile Include="graphic\GraphicAssetFactory.cpp" />
     <ClCompile Include="Inventory.cpp" />
@@ -318,12 +315,11 @@
     <ClCompile Include="objects\AnimatedSprite.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="net\PeerInfo.cpp" />
-    <ClCompile Include="events\NetworkTrafficRecievedEvent.cpp" />
+    <ClCompile Include="events\NetworkTrafficReceivedEvent.cpp" />
     <ClCompile Include="processes\ProcessManager.cpp" />
     <ClCompile Include="resource\ResourceManager.cpp" />
     <ClCompile Include="scene\ABCDRectangle.cpp" />
     <ClCompile Include="scene\Layer.cpp" />
-    <ClCompile Include="scene\SceneItem.cpp" />
     <ClCompile Include="scene\SceneManager.cpp" />
     <ClCompile Include="SerializationManager.cpp" />
     <ClCompile Include="SpriteAsset.cpp" />

@@ -3,12 +3,12 @@
 namespace gamelib
 {
 	ABCDRectangle::ABCDRectangle(const SDL_Rect rect) : ABCDRectangle(rect.x, rect.y, rect.w, rect.h) {}		
-	ABCDRectangle::ABCDRectangle(int x, int y, int w, int h) : x(x), y(y), w(w), h(h) {}
+	ABCDRectangle::ABCDRectangle(const int x, const int y, const int w, const int h) : x(x), y(y), w(w), h(h) {}
 
-	void ABCDRectangle::SetX(int x) { this->x = x; }
-	void ABCDRectangle::SetY(int y) { this->y = y; }
-	void ABCDRectangle::SetHeight(int h) { this->h = h; }
-	void ABCDRectangle::SetWidth(int w) { this->w = w; }
+	void ABCDRectangle::SetX(const int x) { this->x = x; }  // NOLINT(clang-diagnostic-shadow)
+	void ABCDRectangle::SetY(const int y) { this->y = y; }  // NOLINT(clang-diagnostic-shadow)
+	void ABCDRectangle::SetHeight(const int h) { this->h = h; }  // NOLINT(clang-diagnostic-shadow)
+	void ABCDRectangle::SetWidth(const int w) { this->w = w; }  // NOLINT(clang-diagnostic-shadow)
 
 	int ABCDRectangle::GetAx() const { return this->x; }
 	int ABCDRectangle::GetAy() const { return this->y; }
@@ -30,12 +30,12 @@ namespace gamelib
 			   a.GetCy() > b.GetAy();
 	}
 
-	void ABCDRectangle::reinitialize(int x, int y, int w, int h) { SetX(x); SetY(y); SetWidth(w); SetHeight(h); }
+	void ABCDRectangle::Reinitialize(const int x, const int y, const int w, const int h) { SetX(x); SetY(y); SetWidth(w); SetHeight(h); }  // NOLINT(clang-diagnostic-shadow)
 
-	coordinate<int> ABCDRectangle::GetCenter()
+	Coordinate<int> ABCDRectangle::GetCenter() const
 	{
-		int mid_x = GetAx() + GetWidth()/2;
-		int mid_y = GetAy() + GetHeight()/2;
-		return coordinate<int>(mid_x, mid_y);
+		const int midX = GetAx() + GetWidth()/2;
+		const int midY = GetAy() + GetHeight()/2;
+		return {midX, midY};
 	}
 }

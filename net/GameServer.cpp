@@ -1,24 +1,22 @@
 #include "GameServer.h"
 #include <events/EventManager.h>
 #include <net/PeerInfo.h>
-#include <events/NetworkTrafficRecievedEvent.h>
 #include <net/Networking.h>
 #include <json/json11.h>
-#include <events/PlayerMovedEvent.h>
 #include <events/EventFactory.h>
 #include <SerializationManager.h>
-#include <net/MessageHeader.h>
 #include <net/IGameServerConnection.h>
 #include <net/TcpGameServerConnection.h>
 #include <net/UdpGameServerConnection.h>
-#include <events/StartNetworkLevelEvent.h>
+
+#include "util/SettingsManager.h"
 
 using namespace json11;
 
 
 namespace gamelib
 {
-	GameServer::GameServer(std::string address, std::string port)
+	GameServer::GameServer(const std::string& address, const std::string& port)
 	{
 		this->address = address;
 		this->port = port;			
@@ -39,8 +37,10 @@ namespace gamelib
 		Logger::Get()->LogThis(this->isTcp ? "Using TCP" : "Using UDP");
 
 		// Create a new server socket connection, either TCP or UDP depending on game configuration
-		gameServerConnection = this->isTcp ? std::dynamic_pointer_cast<IGameServerConnection>(std::shared_ptr<TcpGameServerConnection>(new TcpGameServerConnection(address, port)))
-										   : std::dynamic_pointer_cast<IGameServerConnection>(std::shared_ptr<UdpGameServerConnection>(new UdpGameServerConnection(address, port)));
+		gameServerConnection = this->isTcp ? std::dynamic_pointer_cast<IGameServerConnection>(
+				                       std::make_shared<TcpGameServerConnection>(address, port))
+										   : std::dynamic_pointer_cast<IGameServerConnection>(
+											   std::make_shared<UdpGameServerConnection>(address, port));
 		
 		gameServerConnection->Initialize();
 		gameServerConnection->Create();
@@ -55,21 +55,21 @@ namespace gamelib
 		_eventManager->SubscribeToEvent(EventType::StartNetworkLevel, this);
 	}
 	
-	void GameServer::Listen()
+	void GameServer::Listen() const
 	{		
 		gameServerConnection->Listen();
 	}
 		
-	void GameServer::CheckForPlayerTraffic()
+	void GameServer::CheckForPlayerTraffic() const
 	{
 		gameServerConnection->CheckForPlayerTraffic();		
 	}
 
-	std::vector<std::shared_ptr<Event>> GameServer::HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs)
+	std::vector<std::shared_ptr<Event>> GameServer::HandleEvent(const std::shared_ptr<Event> evt, unsigned long deltaMs)
 	{
 		gameServerConnection->SendEventToAllPlayers(serializationManager->Serialize(evt, nickname)); 
 
-		return std::vector<std::shared_ptr<Event>>();
+		return {};
 	}
 
 	std::string GameServer::GetSubscriberName()
@@ -77,8 +77,5 @@ namespace gamelib
 		return "Game Server";
 	}
 		
-	GameServer::~GameServer()
-	{
-		
-	}
+	GameServer::~GameServer() = default;
 }

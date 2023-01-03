@@ -14,16 +14,16 @@ namespace gamelib
 	class EventManager;
 	class SerializationManager;
 	class EventFactory;
-	class TcpGameServerConnection : public IGameServerConnection,  public gamelib::EventSubscriber
+
+	class TcpGameServerConnection final : public IGameServerConnection,  public EventSubscriber
 	{
 	public:
 
-		TcpGameServerConnection(std::string host, std::string port);
-		~TcpGameServerConnection();
-		// Inherited via IGameServerConnection
-		virtual void Initialize() override;
+		TcpGameServerConnection(const std::string& host, const std::string& port);
+		~TcpGameServerConnection() override;
+		void Initialize() override;
 	private:
-		SOCKET listeningSocket;
+		SOCKET listeningSocket{};
 		std::string host, port;
 
 		SerializationManager* serializationManager;
@@ -33,30 +33,31 @@ namespace gamelib
 
 
 		// Inherited via IGameServerConnection
-		virtual void CheckForPlayerTraffic() override;
-		void ProcessPingMessage(const size_t& playerId);
-		void SendToConnectedPlayersExceptToSender(const std::string& senderNickname, std::string serializedMessage, const size_t& playerId);
-		void RaiseNetworkTrafficReceievedEvent(char buffer[512], const size_t& i, int bytesReceived);
-		void ParseReceivedPlayerPayload(const size_t& playerId, char* inPayload, int payloadLength);
-		void ProcessRequestPlayerDetailsMessage(int playerId, gamelib::MessageHeader& messageHeader);
+		void CheckForPlayerTraffic() override;
+		void ProcessPingMessage(const size_t& playerId) const;
+		void SendToConnectedPlayersExceptToSender(const std::string& senderNickname, const std::string&
+		                                          serializedMessage, const size_t& playerId) const;
+		void RaiseNetworkTrafficReceivedEvent(char buffer[512], const size_t& i, int bytesReceived) const;
+		void ParseReceivedPlayerPayload(const size_t& playerId, const char* inPayload, int payloadLength);
+		void ProcessRequestPlayerDetailsMessage(int playerId, const MessageHeader& messageHeader);
 		void SendEventToAllPlayers(std::string serializedEvent) override;
-		fd_set readfds;
+		fd_set readfds{};
 
 		// Inherited via IGameServerConnection
-		virtual void Listen() override;
+		void Listen() override;
 		void CheckForNewTcpPlayers();
 		/// <summary>
 		/// How long to wait for network data the arrive {0,0} means non-blocking
 		/// </summary>
-		struct timeval timeout;
-		std::vector<gamelib::TcpNetworkPlayer> Players;
+		timeval timeout{};
+		std::vector<TcpNetworkPlayer> Players;
 
 		// Inherited via EventSubscriber
-		virtual std::vector<std::shared_ptr<gamelib::Event>> HandleEvent(std::shared_ptr<gamelib::Event> evt, unsigned long deltaMs) override;
-		virtual std::string GetSubscriberName() override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs) override;
+		std::string GetSubscriberName() override;
 
 		// Inherited via IGameServerConnection
-		virtual void Create() override;
+		void Create() override;
 	};
 }
 

@@ -72,7 +72,7 @@ TEST_F(EventManagerTests, ProcessEvent)
 	EventManager::Get()->ProcessAllEvents();
 
 	EXPECT_EQ(0, EventManager::Get()->count_ready());
-	EXPECT_TRUE(the_event->processed) << "The event was not marked as processed";
+	EXPECT_TRUE(the_event->Processed) << "The event was not marked as processed";
 }
 
 TEST_F(EventManagerTests, SubscribeToEvent)
@@ -97,7 +97,7 @@ TEST_F(EventManagerTests, DispatchEventDirectlyToSubscriber)
 	EventManager::Get()->DispatchEventToSubscriber(the_event, 0UL);
 	EXPECT_EQ(EventManager::Get()->count_ready(), 0) << "Direct dispatch of event to subscriber should not show up in event queues";
 	EXPECT_TRUE(subscriber.handle_event_received) << "subscriber was not directly notified";
-	EXPECT_TRUE(the_event->processed) << "The event was not marked as processed";
+	EXPECT_TRUE(the_event->Processed) << "The event was not marked as processed";
 }
 
 TEST_F(EventManagerTests, ClearSubscribersTest)

@@ -2,7 +2,6 @@
 
 #include <map>
 #include <SDL.h>
-#include "Component.h"
 #include "events/EventManager.h"
 #include "Inventory.h"
 #include <string>
@@ -25,31 +24,31 @@ namespace gamelib
 	{
 	public:
 
-		GameObject(bool is_visible);
+		GameObject(bool isVisible);
 		GameObject() = default;
-		GameObject(int x, int y, bool is_visible);
-		GameObject(std::string name, std::string type, gamelib::coordinate<int> coordinate, bool IsVisible);
+		GameObject(int x, int y, bool isVisible);
+		GameObject(std::string name, std::string type, gamelib::Coordinate<int> coordinate, bool isVisible);
 							
 		void SubscribeToEvent(EventType type);
-		void RaiseEvent(const std::shared_ptr<Event>& the_event);
-		void SetTag(std::string tag);
+		void RaiseEvent(const std::shared_ptr<Event>& theEvent);
+		void SetTag(const std::string& tag);
 		void UpdateBounds(unsigned int inParentWidth, unsigned int inParentHeight);
 		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> event, unsigned long deltaMs) override;
 		std::string GetSubscriberName() override;
-		std::string GetTag() const;
+		[[nodiscard]] std::string GetTag() const;
 		virtual int GetSubscriberId() override;
 		virtual GameObjectType GetGameObjectType() = 0;
 		virtual std::string GetName();
 		virtual void LoadSettings();
 		virtual void Update(float deltaMs) = 0;
 		virtual void Draw(SDL_Renderer* renderer) = 0;
-		SDL_Rect CalculateBounds(coordinate<int> Position, int _width, int height) { return { Position.GetX(), Position.GetY(), _width, height }; }
+		static SDL_Rect CalculateBounds(const Coordinate<int> position, const int width, const int height) { return { position.GetX(), position.GetY(), width, height }; }
 
-		bool IsVisible;
+		bool IsVisible{};
 		bool IsActive = true;
-		SDL_Rect Bounds;
-		int Id;	
-		gamelib::coordinate<int> Position;
+		SDL_Rect Bounds{};
+		int Id{};	
+		gamelib::Coordinate<int> Position;
 		Inventory Components;
 		std::map<std::string, std::string> stringProperties;
 		std::string Name;

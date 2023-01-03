@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 #include "Event.h"
 #include "ControllerMoveEvent.h"
 namespace gamelib
@@ -8,13 +7,13 @@ namespace gamelib
 	class PlayerMovedEvent final : public Event
 	{
 	public:
-		explicit PlayerMovedEvent(Direction direction) :
-			Event(EventType::PlayerMovedEventType), direction(direction)
+		explicit PlayerMovedEvent(const Direction direction) :
+			Event(EventType::PlayerMovedEventType), Direction(direction)
 		{
 		}
 
 		std::string ToString() override;
-		const Direction direction;
+		const Direction Direction;
 	};
 }
 

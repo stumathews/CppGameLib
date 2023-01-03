@@ -2,12 +2,12 @@
 #include "Event.h"
 namespace gamelib
 {
-	class SceneLoadedEvent : public Event
+	class SceneLoadedEvent final : public Event
 	{
 	public:
-		SceneLoadedEvent(int scene_id);
+		explicit SceneLoadedEvent(int sceneId);
 		std::string ToString() override;
-		int scene_id_;
+		int SceneId;
 	};
 }
 

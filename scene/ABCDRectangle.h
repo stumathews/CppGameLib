@@ -24,30 +24,30 @@ namespace gamelib
 	{
 	public:
 		ABCDRectangle() = default;
-		ABCDRectangle(const SDL_Rect rect);
+		ABCDRectangle(SDL_Rect rect);
 		ABCDRectangle(int x, int y, int w, int h);
-		
-		int GetAx() const;
-		int GetAy() const;
-		int GetBx() const;
-		int GetBy() const;
-		int GetCx() const;
-		int GetCy() const;
-		int GetDx() const;
-		int GetDy() const;
+
+		[[nodiscard]] int GetAx() const;
+		[[nodiscard]] int GetAy() const;
+		[[nodiscard]] int GetBx() const;
+		[[nodiscard]] int GetBy() const;
+		[[nodiscard]] int GetCx() const;
+		[[nodiscard]] int GetCy() const;
+		[[nodiscard]] int GetDx() const;
+		[[nodiscard]] int GetDy() const;
 
 		void SetX(int x);
 		void SetY(int y);
 		void SetHeight(int h);
 		void SetWidth(int w);
-		void reinitialize(int x, int y, int w, int h);
+		void Reinitialize(int x, int y, int w, int h);
 
-		int GetHeight() const;
-		int GetWidth() const;
+		[[nodiscard]] int GetHeight() const;
+		[[nodiscard]] int GetWidth() const;
 
-		bool Intersects(const ABCDRectangle& a, const ABCDRectangle& b);
+		static bool Intersects(const ABCDRectangle& a, const ABCDRectangle& b);
 
-		coordinate<int> GetCenter();
+		[[nodiscard]] Coordinate<int> GetCenter() const;
 	private:
 		int x,y,w,h;
 	};

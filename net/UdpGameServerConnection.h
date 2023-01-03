@@ -14,46 +14,48 @@ namespace gamelib
 	class EventManager;
 	class SerializationManager;
 	class EventFactory;
-	class UdpGameServerConnection : public IGameServerConnection, public gamelib::EventSubscriber
+
+	class UdpGameServerConnection final : public IGameServerConnection, public EventSubscriber
 	{
 	public:
-		UdpGameServerConnection(std::string host, std::string port);
+		UdpGameServerConnection(const std::string& host, const std::string& port);
 		// Inherited via IGameServerConnection
-		virtual void Initialize() override;
+		void Initialize() override;
 	private:
-		SOCKET listeningSocket;
+		SOCKET listeningSocket{};
 		std::string host, port;
 
 		SerializationManager* serializationManager;
-		EventManager* _eventManager;
+		EventManager* eventManager;
 		Networking* networking;
-		EventFactory* _eventFactory;
+		EventFactory* eventFactory;
 
 		// Inherited via IGameServerConnection
-		virtual void CheckForPlayerTraffic() override;
-		void RaiseNetworkTrafficReceievedEvent(char buffer[512], int bytesReceived, PeerInfo fromClient);
-		void SendToConnectedPlayersExceptToSender(const std::string& senderNickname, std::string serializedMessage);
-		struct timeval timeout;
-		fd_set readfds;
+		void CheckForPlayerTraffic() override;
+		void RaiseNetworkTrafficReceivedEvent(char buffer[512], int bytesReceived, PeerInfo fromClient) const;
+		void SendToConnectedPlayersExceptToSender(const std::string& senderNickname, const std::string&
+		                                          serializedMessage) const;
+		timeval timeout{};
+		fd_set readfds{};
 
 		// Inherited via IGameServerConnection
-		virtual void Listen() override;
+		void Listen() override;
 
 		// Inherited via IGameServerConnection
-		void ProcessPingMessage(PeerInfo fromClient);
-		void ProcessRequestPlayerDetailsMessage(gamelib::MessageHeader& messageHeader, PeerInfo fromClient);
-		void ParseReceivedPlayerPayload(char* inPayload, int payloadLength, PeerInfo fromClient);
-		std::vector<UdpNetworkPlayer> Players;
+		void ProcessPingMessage(PeerInfo fromClient) const;
+		void ProcessRequestPlayerDetailsMessage(const MessageHeader& messageHeader, const PeerInfo fromClient);
+		void ParseReceivedPlayerPayload(const char* inPayload, int payloadLength, PeerInfo fromClient);
+		std::vector<UdpNetworkPlayer> players;
 
 		// Inherited via IGameServerConnection
-		virtual void SendEventToAllPlayers(std::string serializedEvent) override;
+		void SendEventToAllPlayers(std::string serializedEvent) override;
 
 		// Inherited via EventSubscriber
-		virtual std::vector<std::shared_ptr<gamelib::Event>> HandleEvent(std::shared_ptr<gamelib::Event> evt, unsigned long deltaMs) override;
-		virtual std::string GetSubscriberName() override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs) override;
+		std::string GetSubscriberName() override;
 
 		// Inherited via IGameServerConnection
-		virtual void Create() override;
+		void Create() override;
 	};
 }
 

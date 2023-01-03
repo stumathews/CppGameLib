@@ -3,10 +3,11 @@ using namespace std;
 
 namespace gamelib
 {
-	KeyFrame::KeyFrame(int x, int y, int w, int h, string group) : x(x), y(y), w(w), h(h), group(group) {}
-	bool KeyFrame::HasGroup()
+	KeyFrame::KeyFrame(const int x, const int y, const int w, const int h, string group) : X(x), Y(y), W(w), H(h), Group(
+		std::move(group)) {}
+	bool KeyFrame::HasGroup() const
 	{
-		return group.length();
+		return Group.length();
 	}
 
 }

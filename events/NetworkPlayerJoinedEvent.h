@@ -4,14 +4,14 @@
 
 namespace gamelib
 {
-	class NetworkPlayerJoinedEvent : public Event
+	class NetworkPlayerJoinedEvent final : public Event
 	{	
 	public:
-		explicit NetworkPlayerJoinedEvent(NetworkPlayer player) : Event(EventType::NetworkPlayerJoined)
+		explicit NetworkPlayerJoinedEvent(const NetworkPlayer& player) : Event(EventType::NetworkPlayerJoined)
 		{
-			this->player = player;
+			this->Player = player;
 		}
 
-		NetworkPlayer player;
+		NetworkPlayer Player;
 	};
 }

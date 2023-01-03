@@ -1,6 +1,5 @@
 #pragma once
 #include <memory>
-#include <vector>
 #include "GameObject.h"
 
 namespace gamelib
@@ -23,7 +22,7 @@ namespace gamelib
 		/// </summary>
 		bool CanDraw = true;
 
-		std::weak_ptr<gamelib::GameObject> player;
+		std::weak_ptr<GameObject> player;
 	};
 }
 

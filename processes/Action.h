@@ -4,11 +4,11 @@
 
 namespace gamelib
 {
-	class Action : public Process
+	class Action final : public Process
 	{
 	public:
-		Action(std::function<void()> action) : action(action) {};
-		virtual void OnUpdate(unsigned long deltaMs) override { action(); Succeed(); }
+		explicit Action(std::function<void()> action) : Process(), action(std::move(action)){}
+		void OnUpdate(unsigned long deltaMs) override { action(); Succeed(); }
 	private:
 		std::function<void()> action;
 	};

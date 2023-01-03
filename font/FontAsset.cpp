@@ -7,7 +7,8 @@ namespace gamelib
 	/// <summary>
 	/// Create Font asset details
 	/// </summary>
-	FontAsset::FontAsset(const int uid, string name, string path, string type, int scene) : Asset(uid, name, path, type, scene)
+	FontAsset::FontAsset(const int inUid, const string& inName, const string& inPath, const string& inType,
+	                     const int inScene) : Asset(inUid, inName, inPath, inType, inScene)
 	{
 		assetType = AssetType::Font;
 	}

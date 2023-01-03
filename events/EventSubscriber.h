@@ -4,7 +4,7 @@ namespace gamelib
 {
 	class EventSubscriber : public IEventSubscriber
 	{
-		virtual int GetSubscriberId() override;
+		int GetSubscriberId() override;
 	};
 }
 

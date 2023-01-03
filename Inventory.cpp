@@ -16,7 +16,7 @@ namespace gamelib
 	/// Number of components
 	/// </summary>
 	/// <returns></returns>
-	size_t Inventory::Count()
+	size_t Inventory::Count() const
 	{
 		return components.size();
 	}
@@ -26,7 +26,7 @@ namespace gamelib
 	/// </summary>
 	/// <param name="name"></param>
 	/// <returns></returns>
-	shared_ptr<Component> Inventory::FindComponent(string name)
+	shared_ptr<Component> Inventory::FindComponent(const string& name)
 	{
 		return components.at(name);
 	}
@@ -36,7 +36,7 @@ namespace gamelib
 	/// </summary>
 	/// <param name="name"></param>
 	/// <returns></returns>
-	bool Inventory::HasComponent(string name)
+	bool Inventory::HasComponent(const string& name)
 	{
 		return components.find(name) != components.end();
 	}

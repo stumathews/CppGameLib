@@ -12,23 +12,23 @@ namespace gamelib
 
 		if (InitialState == nullptr)
 		{
-			THROW(12, "No valid initial state could be determined", "Finite State Machine");
+			THROW(12, "No valid initial state could be determined", "Finite State Machine")
 		}
 
 		// Look if we need to transition from active/current state
-		for (auto& transition : ActiveState->Transitions)
+		for (auto& [IsValid, GetNextState, OnTransition] : ActiveState->Transitions)
 		{
 			// Look for a condition that means we need to transition
-			if (transition.IsValid())
+			if (IsValid())
 			{
 				// Finish up on current state
 				ActiveState->OnExit();
 
 				// Indicate that this transition is transitioning
-				transition.OnTransition();
+				OnTransition();
 
 				// Set the next active state to the transitioning state
-				ActiveState = transition.GetNextState();		
+				ActiveState = GetNextState();		
 
 				// Enter the newly transitioned to state i.e the new active state
 				ActiveState->OnEnter();

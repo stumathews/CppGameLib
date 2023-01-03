@@ -40,7 +40,7 @@ namespace gamelib
 			[[nodiscard]] std::shared_ptr<SceneChangedEvent> CreateLevelEvent(int level) const;
 			[[nodiscard]] std::shared_ptr<StartNetworkLevelEvent> CreateStartNetworkLevelEvent(int level) const;
 			[[nodiscard]] std::shared_ptr<Event> CreateNetworkPlayerJoinedEvent(const NetworkPlayer& player) const;
-			[[nodiscard]] std::shared_ptr<AddGameObjectToCurrentSceneEvent> CreateAddToSceneEvent(const std::shared_ptr<GameObject>& obj) const;
+			[[nodiscard]] static std::shared_ptr<AddGameObjectToCurrentSceneEvent> CreateAddToSceneEvent(const std::shared_ptr<GameObject>& obj);
 			[[nodiscard]] std::shared_ptr<Event> CreateGenericEvent(EventType type) const;
 	};
 }

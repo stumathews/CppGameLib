@@ -79,8 +79,7 @@ namespace gamelib
 		return std::make_shared<NetworkPlayerJoinedEvent>(player);
 	}
 
-	std::shared_ptr<AddGameObjectToCurrentSceneEvent> EventFactory::CreateAddToSceneEvent(const std::shared_ptr<GameObject>
-		& obj) const
+	std::shared_ptr<AddGameObjectToCurrentSceneEvent> EventFactory::CreateAddToSceneEvent(const std::shared_ptr<GameObject> & obj)
 	{
 		return std::make_shared<AddGameObjectToCurrentSceneEvent>(obj);
 	}

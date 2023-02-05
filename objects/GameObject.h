@@ -32,7 +32,7 @@ namespace gamelib
 		void SubscribeToEvent(EventType type);
 		void RaiseEvent(const std::shared_ptr<Event>& theEvent);
 		void SetTag(const std::string& tag);
-		void UpdateBounds(unsigned int inParentWidth, unsigned int inParentHeight);
+		void UpdateBounds(unsigned int width, unsigned int height);
 		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> event, unsigned long deltaMs) override;
 		std::string GetSubscriberName() override;
 		[[nodiscard]] std::string GetTag() const;

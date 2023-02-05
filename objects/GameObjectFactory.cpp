@@ -72,17 +72,19 @@ namespace gamelib
 		}
 	}
 
-	shared_ptr<AnimatedSprite> GameObjectFactory::BuildGraphic(const string& name, const string& type, const std::shared_ptr<
-		                                                           Asset> asset, const Coordinate<int>& position, const bool IsVisible) const
+	shared_ptr<StaticSprite> GameObjectFactory::BuildGraphic(const string& name, const string& type, const std::shared_ptr<Asset>
+	                                                         & asset, const Coordinate<int>& position, const bool IsVisible) const
 	{
-		auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
-		auto _sprite = std::make_shared<AnimatedSprite>(name, type, position, 100, IsVisible, graphicAsset->Dimensions);
+		
+		const auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
 
-		SetupCommonSprite(_sprite, asset, graphicAsset, IsVisible);
+		// graphic assets have dimensions, so we will need it as a graphic asset
+		const auto spriteAsset = make_shared<SpriteAsset>(graphicAsset->uid, graphicAsset->name,
+		                                                  graphicAsset->path, graphicAsset->type,
+		                                                  graphicAsset->scene, graphicAsset->Dimensions);
 
-		_sprite->AdjustViewportToCurrentDimensions();
+		return Get().BuildStaticSprite(name, type, spriteAsset, position);
 
-		return _sprite;
 	}
 
 	std::shared_ptr<StaticSprite> GameObjectFactory::BuildStaticSprite(const std::string& name, const std::string& type, const std::shared_ptr<
@@ -92,12 +94,11 @@ namespace gamelib
 		return StaticSprite::Create(position, dynamic_pointer_cast<SpriteAsset>(asset));
 	}
 
-	shared_ptr<AnimatedSprite> GameObjectFactory::BuildSprite(const string& name, const string& type, const std::shared_ptr<
-		                                                          Asset> asset, const Coordinate<int>& position, const bool IsVisible) const
+	shared_ptr<AnimatedSprite> GameObjectFactory::BuildSprite(const string& name, const string& type, const std::shared_ptr<Asset> asset, const Coordinate<int>& position, const bool IsVisible) const
 	{
 		const auto spriteAsset = dynamic_pointer_cast<SpriteAsset>(asset);
-		auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
-		auto _sprite = std::make_shared<AnimatedSprite>(name, type, position, 100, IsVisible, spriteAsset->Dimensions);
+		const auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
+		auto _sprite = std::make_shared<AnimatedSprite>(name, type, position, 100, IsVisible, spriteAsset);
 		SetupCommonSprite(_sprite, asset, graphicAsset, IsVisible);
 
 		_sprite->KeyFrames = spriteAsset->KeyFrames;

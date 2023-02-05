@@ -18,9 +18,9 @@ namespace gamelib
 	void GameObject::RaiseEvent(const shared_ptr<Event>& theEvent) { EventManager::Get()->RaiseEvent(theEvent, this); }
 	void GameObject::Draw(SDL_Renderer* renderer) { }	
 	void GameObject::LoadSettings() {}
-	void GameObject::UpdateBounds(const unsigned int inParentWidth, const unsigned int inParentHeight)
+	void GameObject::UpdateBounds(const unsigned int width, const unsigned int height)
 	{
-		Bounds = CalculateBounds(Position, inParentWidth, inParentHeight);
+		Bounds = CalculateBounds(Position, static_cast<int>(width), static_cast<int>(height));
 	}
 	void GameObject::SetTag(const string& newTag) { tag = newTag; }
 

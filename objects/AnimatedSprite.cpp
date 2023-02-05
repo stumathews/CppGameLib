@@ -11,20 +11,19 @@ using namespace std;
 namespace gamelib
 {
 	AnimatedSprite::AnimatedSprite(const std::string& name, const std::string& type, const Coordinate<int> position,
-	                               const float frameDuration, const bool isVisible, const ABCDRectangle dimensions) 
+	                               const float frameDuration, const bool isVisible, const shared_ptr<SpriteAsset> spriteAsset) 
 		: DrawableGameObject(name, type, position, isVisible)
-	{ 
+	{
+		Asset = spriteAsset;
 		frameDurationMs = frameDuration;
 		currentFrameNumber = startFrameNumber = deltaTime = 0;
-		Dimensions = dimensions;
+		Dimensions = spriteAsset->Dimensions;
 		LoadSettings();
 	}
 
-	shared_ptr<AnimatedSprite> AnimatedSprite::Create(const Coordinate<int> position, const std::shared_ptr<SpriteAsset>
-	                                                  & asset)
+	shared_ptr<AnimatedSprite> AnimatedSprite::Create(const Coordinate<int> position, const std::shared_ptr<SpriteAsset>& asset)
 	{
-		auto _sprite = std::make_shared<AnimatedSprite>("", "", position, asset->FrameDurationMs, true,
-		                                                asset->Dimensions);
+		auto _sprite = std::make_shared<AnimatedSprite>("", "", position, asset->FrameDurationMs, true, asset);
 		
 		_sprite->SetGraphic(asset);
 		_sprite->KeyFrames = asset->KeyFrames;

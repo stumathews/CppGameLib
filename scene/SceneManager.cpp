@@ -298,16 +298,15 @@ namespace gamelib
 
 	std::shared_ptr<GameObject> SceneManager::GetGameObjectFrom(const std::shared_ptr<Event>& event) const
 	{
-		if (event->Type != EventType::AddGameObjectToCurrentScene) { 	THROW(1, "Cannot extract game object from event", "SceneManager")
-		}
+		if (event->Type != EventType::AddGameObjectToCurrentScene) { THROW(1, "Cannot extract game object from event", "SceneManager") }
 
 		return dynamic_pointer_cast<AddGameObjectToCurrentSceneEvent>(event)->GetGameObject();
 	}
 
-	void SceneManager::StartScene(int scene_id)
+	void SceneManager::StartScene(int sceneId)
 	{
 		// This triggers usually the ResourceManager that loads the resources in for the scene (see ResourceManager::process_events etc..)
-		EventManager::Get()->RaiseEvent(make_shared<SceneChangedEvent>(scene_id), this);
+		EventManager::Get()->RaiseEvent(make_shared<SceneChangedEvent>(sceneId), this);
 	}
 
 	SceneManager* SceneManager::Instance = nullptr;

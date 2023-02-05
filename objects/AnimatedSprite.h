@@ -14,10 +14,9 @@ namespace gamelib
 	class AnimatedSprite final : public DrawableGameObject
 	{	
 	public:
-		AnimatedSprite(const std::string& name, const std::string& type, Coordinate<int> position, float frameDuration, bool isVisible, ABCDRectangle dimensions);
+		AnimatedSprite(const std::string& name, const std::string& type, Coordinate<int> position, float frameDuration, bool isVisible, std::shared_ptr<SpriteAsset> spriteAsset);
 		AnimatedSprite() = default;
-		static std::shared_ptr<AnimatedSprite> Create(Coordinate<int> position, const std::shared_ptr<SpriteAsset>
-		                                              & asset);
+		static std::shared_ptr<AnimatedSprite> Create(Coordinate<int> position, const std::shared_ptr<SpriteAsset>& asset);
 		static void Initialize(const std::shared_ptr<AnimatedSprite>& animatedSprite);
 		/// <summary>
 		/// Set game object type
@@ -43,6 +42,7 @@ namespace gamelib
 		ABCDRectangle Dimensions{};
 		std::vector<KeyFrame> KeyFrames;
 		void SetAnimationFrameGroup(const std::string& group);
+		std::shared_ptr<SpriteAsset> Asset;
 						
 	private:
 		std::string animationFrameGroup;

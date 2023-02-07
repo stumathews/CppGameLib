@@ -11,8 +11,8 @@ namespace gamelib
 	using namespace std;
 
 	GameObject::GameObject(const bool isVisible) { GameObject::LoadSettings(); SetDefaults(isVisible, 0, 0); }
-	GameObject::GameObject(const int x, const int y, const bool IsVisible ) { GameObject::LoadSettings(); SetDefaults(IsVisible, x, y); }
-	GameObject::GameObject(std::string name, std::string type, const gamelib::Coordinate<int> coordinate, const bool isVisible) { GameObject::LoadSettings(); SetDefaults(isVisible, coordinate.GetX(), coordinate.GetY()); }
+	GameObject::GameObject(const int x, const int y, const bool isVisible ) { GameObject::LoadSettings(); SetDefaults(isVisible, x, y); }
+	GameObject::GameObject(const Coordinate<int> coordinate, const bool isVisible) { GameObject::LoadSettings(); SetDefaults(isVisible, coordinate.GetX(), coordinate.GetY()); }
 	
 	void GameObject::SubscribeToEvent(const EventType type) { EventManager::Get()->SubscribeToEvent(type, this); }
 	void GameObject::RaiseEvent(const shared_ptr<Event>& theEvent) { EventManager::Get()->RaiseEvent(theEvent, this); }
@@ -21,6 +21,10 @@ namespace gamelib
 	void GameObject::UpdateBounds(const unsigned int width, const unsigned int height)
 	{
 		Bounds = CalculateBounds(Position, static_cast<int>(width), static_cast<int>(height));
+	}
+	void GameObject::UpdateBounds(const ABCDRectangle dimensions)
+	{
+		Bounds = CalculateBounds(Position, dimensions);
 	}
 	void GameObject::SetTag(const string& newTag) { tag = newTag; }
 

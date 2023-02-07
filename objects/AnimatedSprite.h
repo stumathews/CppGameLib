@@ -1,4 +1,5 @@
 #pragma once
+#include "Direction.h"
 #include "GameObject.h"
 #include "KeyFrame.h"
 #include "scene/ABCDRectangle.h"
@@ -25,6 +26,7 @@ namespace gamelib
 		void Draw(SDL_Renderer* renderer) override;	
 		void LoadSettings() override;
 		void MoveSprite(int x, int y);
+		void MoveSprite(Coordinate<int> position);
 		void Update(float deltaMs) override;
 		void Update(unsigned long deltaMs, const std::string& animationGroup);
 		void AdvanceCurrentFrameNumber();
@@ -42,6 +44,7 @@ namespace gamelib
 		ABCDRectangle Dimensions{};
 		std::vector<KeyFrame> KeyFrames;
 		void SetAnimationFrameGroup(const std::string& group);
+		static std::string GetStdDirectionAnimationFrameGroup(Direction facingDirection);
 		std::shared_ptr<SpriteAsset> Asset;
 						
 	private:

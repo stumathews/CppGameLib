@@ -5,11 +5,11 @@ using namespace std;
 
 namespace gamelib
 {
-	void DrawableGameObject::DrawFilledRect(SDL_Renderer* renderer, const SDL_Rect* region, const SDL_Color colour)
+	void DrawableGameObject::DrawFilledRect(SDL_Renderer* renderer, const SDL_Rect* dimensions, const SDL_Color colour)
 	{
 		SDL_SetRenderDrawColor(renderer, colour.r, colour.g, colour.b, colour.a);
-		SDL_RenderDrawRect(renderer, region);
-		SDL_RenderFillRect(renderer, region);
+		SDL_RenderDrawRect(renderer, dimensions);
+		SDL_RenderFillRect(renderer, dimensions);
 	}
 
 	/// <summary>
@@ -121,24 +121,24 @@ namespace gamelib
 		return graphic;
 	}
 
-	DrawableGameObject::DrawableGameObject(const bool is_visible)
-		: GameObject(is_visible)
+	DrawableGameObject::DrawableGameObject(const bool isVisible)
+		: GameObject(isVisible)
 	{
 		SetDefaults("unknown", "unknown", IsVisible, 0, 0);
 	}
 
-	DrawableGameObject::DrawableGameObject(const int x, const int y, const bool is_visible)
-		: GameObject(x, y, is_visible)
+	DrawableGameObject::DrawableGameObject(const int x, const int y, const bool isVisible)
+		: GameObject(x, y, isVisible)
 	{
 		SetDefaults("unknown", "unknown", IsVisible, x, y);
 	}
 
 
 	DrawableGameObject::DrawableGameObject(const std::string& name, const std::string& type, const Coordinate<int>
-	                                       coordinate, const bool is_visible)
-		: GameObject(name, type, coordinate, is_visible)
+	                                       coordinate, const bool isVisible)
+		: GameObject(coordinate, isVisible)
 	{
-		SetDefaults(name, type, is_visible, coordinate.GetX(), coordinate.GetY());
+		SetDefaults(name, type, isVisible, coordinate.GetX(), coordinate.GetY());
 	}
 
 	/// <summary>

@@ -14,9 +14,9 @@ namespace gamelib
 	{
 	public:
 		DrawableGameObject() = default;
-		DrawableGameObject(bool is_visible);
-		DrawableGameObject(int x, int y, bool is_visible);
-		DrawableGameObject(const std::string& name, const std::string& type, Coordinate<int> coordinate, bool is_visible);
+		DrawableGameObject(bool isVisible);
+		DrawableGameObject(int x, int y, bool isVisible);
+		DrawableGameObject(const std::string& name, const std::string& type, Coordinate<int> coordinate, bool isVisible);
 
 		/// <summary>
 		/// Draw Graphic
@@ -33,10 +33,12 @@ namespace gamelib
 		/// <summary>
 		/// Set defaults
 		/// </summary>
+		/// <param name="inName"></param>
+		/// <param name="inType"></param>
 		/// <param name="isVisible"></param>
 		/// <param name="x"></param>
 		/// <param name="y"></param>
-		void SetDefaults(const std::string& inName, const std::string& inType, bool IsVisible, int x, int y);
+		void SetDefaults(const std::string& inName, const std::string& inType, bool isVisible, int x, int y);
 
 		/// <summary>
 		/// Get Graphic
@@ -79,7 +81,7 @@ namespace gamelib
 		[[nodiscard]] SDL_Color GetColourKey() const;
 				
 		/// <summary>
-		/// Has COlour key
+		/// Has Colour key
 		/// </summary>
 		/// <returns></returns>
 		[[nodiscard]] bool HasColourKey() const;

@@ -94,12 +94,13 @@ namespace gamelib
 		return StaticSprite::Create(position, dynamic_pointer_cast<SpriteAsset>(asset));
 	}
 
-	shared_ptr<AnimatedSprite> GameObjectFactory::BuildSprite(const string& name, const string& type, const std::shared_ptr<Asset> asset, const Coordinate<int>& position, const bool IsVisible) const
+	shared_ptr<AnimatedSprite> GameObjectFactory::BuildSprite(const string& name, const string& type, const std::shared_ptr<Asset>
+	                                                          & asset, const Coordinate<int>& position, const bool isVisible) const
 	{
 		const auto spriteAsset = dynamic_pointer_cast<SpriteAsset>(asset);
 		const auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
-		auto _sprite = std::make_shared<AnimatedSprite>(name, type, position, 100, IsVisible, spriteAsset);
-		SetupCommonSprite(_sprite, asset, graphicAsset, IsVisible);
+		auto _sprite = std::make_shared<AnimatedSprite>(name, type, position, 100, isVisible, spriteAsset);
+		SetupCommonSprite(_sprite, asset, graphicAsset, isVisible);
 
 		_sprite->KeyFrames = spriteAsset->KeyFrames;
 		_sprite->PlayAnimation();	

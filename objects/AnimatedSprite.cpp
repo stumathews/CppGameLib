@@ -4,6 +4,8 @@
 #include "resource/ResourceManager.h"
 #include <SpriteAsset.h>
 
+#include "Direction.h"
+#include "exceptions/EngineException.h"
 #include "util/SettingsManager.h"
 
 using namespace std;
@@ -39,6 +41,7 @@ namespace gamelib
 		SetAnimationFrameGroup(animationGroup);
 		Update(static_cast<float>(deltaMs));
 	}
+
 
 	void AnimatedSprite::Update(float deltaMs)
 	{
@@ -85,6 +88,7 @@ namespace gamelib
 	void AnimatedSprite::Draw(SDL_Renderer* renderer) { DrawableGameObject::Draw(renderer); }
 	void AnimatedSprite::LoadSettings() { debug = SettingsManager::Get()->GetBool("sprite", "debug"); }
 	void AnimatedSprite::MoveSprite(const int x, const int y) { Position.SetX(x); Position.SetY(y); }
+	void AnimatedSprite::MoveSprite(const Coordinate<int> position) { Position = position; }
 	bool AnimatedSprite::IsCurrentFrameInAnimationGroup() const { return KeyFrames[currentFrameNumber].Group == animationFrameGroup; }
 	void AnimatedSprite::PlayAnimation() { stopped = false; }
 	void AnimatedSprite::DisableAnimation() { stopped = true; }
@@ -92,6 +96,19 @@ namespace gamelib
 	std::string AnimatedSprite::GetName() { return "AnimatedSprite"; }
 	void AnimatedSprite::AddKeyFrame(const KeyFrame& keyFrame) { KeyFrames.push_back(keyFrame); }
 	void AnimatedSprite::SetAnimationFrameGroup(const std::string& group) { animationFrameGroup = group; }
+
+	std::string AnimatedSprite::GetStdDirectionAnimationFrameGroup(const Direction facingDirection)
+	{
+		switch (facingDirection)
+		{
+			case Direction::Up: return "up";
+			case Direction::Right: return "right";
+			case Direction::Down: return "down";
+			case Direction::Left: return "left";
+			case Direction::None: THROW(0, "Invalid Direction", "Player")
+			default: THROW(0, "Invalid Direction", "Player")  // NOLINT(clang-diagnostic-covered-switch-default)
+		}
+	}
 
 	/// <summary>
 	/// Set animation frame number. This is the keyframe which will be drawn

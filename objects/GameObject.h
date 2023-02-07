@@ -5,6 +5,8 @@
 #include "events/EventManager.h"
 #include "Inventory.h"
 #include <string>
+
+#include "scene/ABCDRectangle.h"
 #include "util/Tuple.h"
 
 namespace gamelib
@@ -27,12 +29,13 @@ namespace gamelib
 		GameObject(bool isVisible);
 		GameObject() = default;
 		GameObject(int x, int y, bool isVisible);
-		GameObject(std::string name, std::string type, gamelib::Coordinate<int> coordinate, bool isVisible);
+		GameObject(Coordinate<int> coordinate, bool isVisible);
 							
 		void SubscribeToEvent(EventType type);
 		void RaiseEvent(const std::shared_ptr<Event>& theEvent);
 		void SetTag(const std::string& tag);
 		void UpdateBounds(unsigned int width, unsigned int height);
+		void UpdateBounds(ABCDRectangle dimensions);
 		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> event, unsigned long deltaMs) override;
 		std::string GetSubscriberName() override;
 		[[nodiscard]] std::string GetTag() const;
@@ -43,14 +46,15 @@ namespace gamelib
 		virtual void Update(float deltaMs) = 0;
 		virtual void Draw(SDL_Renderer* renderer) = 0;
 		static SDL_Rect CalculateBounds(const Coordinate<int> position, const int width, const int height) { return { position.GetX(), position.GetY(), width, height }; }
+		static SDL_Rect CalculateBounds(const Coordinate<int> position, const ABCDRectangle dimensions) { return { position.GetX(), position.GetY(), dimensions.GetWidth(), dimensions.GetHeight() }; }
 
 		bool IsVisible{};
 		bool IsActive = true;
 		SDL_Rect Bounds{};
-		int Id{};	
-		gamelib::Coordinate<int> Position;
+		int Id{};
+		Coordinate<int> Position;
 		Inventory Components;
-		std::map<std::string, std::string> stringProperties;
+		std::map<std::string, std::string> StringProperties;
 		std::string Name;
 		std::string Type;
 

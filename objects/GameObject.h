@@ -25,8 +25,7 @@ namespace gamelib
 	class GameObject : public IEventSubscriber
 	{
 	public:
-
-		GameObject(bool isVisible);
+		explicit GameObject(bool isVisible);
 		GameObject() = default;
 		GameObject(int x, int y, bool isVisible);
 		GameObject(Coordinate<int> coordinate, bool isVisible);
@@ -43,7 +42,7 @@ namespace gamelib
 		virtual GameObjectType GetGameObjectType() = 0;
 		virtual std::string GetName();
 		virtual void LoadSettings();
-		virtual void Update(float deltaMs) = 0;
+		virtual void Update(const unsigned long deltaMs) = 0;
 		virtual void Draw(SDL_Renderer* renderer) = 0;
 		static SDL_Rect CalculateBounds(const Coordinate<int> position, const int width, const int height) { return { position.GetX(), position.GetY(), width, height }; }
 		static SDL_Rect CalculateBounds(const Coordinate<int> position, const ABCDRectangle dimensions) { return { position.GetX(), position.GetY(), dimensions.GetWidth(), dimensions.GetHeight() }; }
@@ -67,7 +66,7 @@ namespace gamelib
 		static int lastGameObjectId;
 
 		// Initialize game objects defaults
-		void SetDefaults(bool IsVisible, int x, int y);
+		void SetDefaults(bool isVisible, int x, int y);
 	};
 }
 

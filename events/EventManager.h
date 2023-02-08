@@ -31,7 +31,7 @@ namespace gamelib
 		void DispatchEventToSubscriber(const std::shared_ptr<Event>& event, const std::string& target);
 		// Goes through all the events on the primary and secondary queues and passes them to their respective event handlers
 		// Primary queue is incremented with event when an event is raised via the RaiseEvent() function. This can be one at any time.
-		// secondary queue is composed automatically of events that occured while processing the primary queue. 
+		// secondary queue is composed automatically of events that happened while processing the primary queue. 
 		void ProcessAllEvents(unsigned long deltaMs = 0UL);
 				
 		bool Initialize();

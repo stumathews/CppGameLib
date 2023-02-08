@@ -39,11 +39,11 @@ namespace gamelib
 	void AnimatedSprite::Update(const unsigned long deltaMs, const string& animationGroup)
 	{
 		SetAnimationFrameGroup(animationGroup);
-		Update(static_cast<float>(deltaMs));
+		Update(deltaMs);
 	}
 
 
-	void AnimatedSprite::Update(float deltaMs)
+	void AnimatedSprite::Update(const unsigned long deltaMs)
 	{
 		const unsigned long durationSinceLastFrameMs = timeGetTime() - deltaTime;
 		

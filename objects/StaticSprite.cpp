@@ -18,7 +18,7 @@ namespace gamelib
 
 		// Here we actually set te graphic that the sprite actually uses to show itself
 		_sprite->SetGraphic(spriteAsset);
-		_sprite->KeyFrames = spriteAsset->KeyFrames;
+		_sprite->keyFrames = spriteAsset->KeyFrames;
 		_sprite->SetFrame(0);
 		return _sprite;
 	}
@@ -37,26 +37,26 @@ namespace gamelib
 
 	void StaticSprite::AdvanceFrame()
 	{
-		currentFrame = currentFrame < GetNumKeyFrames() - 1 ? currentFrame + 1 : 0;
+		currentFrame = static_cast<uint>(currentFrame) < GetNumKeyFrames() - 1 ? currentFrame + 1 : 0;
 		SetFrame(currentFrame);
 	}
 
-	void StaticSprite::SetFrame(const uint FrameNumber) const
+	void StaticSprite::SetFrame(const uint frameNumber) const
 	{
 		if (!HasGraphic())
 			return;
 
 		// Get the rectangle that defines the viewport
-		auto& viewPort = GetGraphic()->GetViewPort();
+		auto& [x, y, w, h] = GetGraphic()->GetViewPort();
 
 		// Is this a static sprite or a dynamic moving sprite?
-		if (KeyFrames.size() > 0)
+		if (!keyFrames.empty())
 		{
 			// Dynamic: Adjust it to refer to the position of the frame in the picture
-			viewPort.x = KeyFrames[FrameNumber].X;
-			viewPort.y = KeyFrames[FrameNumber].Y;
-			viewPort.w = KeyFrames[FrameNumber].W;
-			viewPort.h = KeyFrames[FrameNumber].H;
+			x = keyFrames[frameNumber].X;
+			y = keyFrames[frameNumber].Y;
+			w = keyFrames[frameNumber].W;
+			h = keyFrames[frameNumber].H;
 		}
 	}
 

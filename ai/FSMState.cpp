@@ -7,40 +7,42 @@ namespace gamelib
 	void FSMState::OnEnter() 
 	{
 		// Run passed in lambda if its provided
-		if (OnEnterFn != nullptr)
+		if (onEnterFn != nullptr)
 		{
-			OnEnterFn();
+			onEnterFn();
 		}
 	}
+
 	void FSMState::OnUpdate() 
 	{
 		// Run passed in lambda if its provided
-		if (OnUpdateFn != nullptr)
+		if (onUpdateFn != nullptr)
 		{
-			OnUpdateFn();
+			onUpdateFn();
 		}
 	}
+
 	void FSMState::OnExit() 
 	{
 		// Run passed in lambda if its provided
-		if (OnExitFn != nullptr)
+		if (onExitFn != nullptr)
 		{
-			OnExitFn();
+			onExitFn();
 		}
-	};
+	}
 
 	void FSMState::SetOnEnter(const std::function<void()>& onEnter)
 	{
-		OnEnterFn = onEnter;
+		onEnterFn = onEnter;
 	}
 
 	void FSMState::SetOnExit(const std::function<void()>& onExit)
 	{
-		OnExitFn = onExit;
+		onExitFn = onExit;
 	}
 	void FSMState::SetOnUpdate(const std::function<void()>& onUpdate)
 	{
-		OnUpdateFn = onUpdate;
+		onUpdateFn = onUpdate;
 	}
 
 	string FSMState::GetName()

@@ -26,19 +26,19 @@ namespace gamelib
 	{
 		Bounds = CalculateBounds(Position, dimensions);
 	}
-	void GameObject::SetTag(const string& newTag) { tag = newTag; }
+	void GameObject::SetTag(const string& tag) { this->tag = tag; }
 
 	string GameObject::GetName() { return Name; }
 	string GameObject::GetSubscriberName() { return GetName(); }
 	string GameObject::GetTag() const { return this->tag; }
 
-	vector<shared_ptr<Event>> GameObject::HandleEvent(const std::shared_ptr<Event> theEvent, unsigned long deltaMs) { return {}; }
+	vector<shared_ptr<Event>> GameObject::HandleEvent(const std::shared_ptr<Event> event, unsigned long deltaMs) { return {}; }
 
 	int GameObject::GetSubscriberId() { return Id; }
 
 	void GameObject::SetDefaults(const bool isVisible, const int x, const int y)
 	{
-		IsVisible = isVisible;
+		this->IsVisible = isVisible;
 		
 		Position.SetX(x);
 		Position.SetY(y);

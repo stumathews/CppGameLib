@@ -21,7 +21,7 @@ namespace gamelib
         std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> event, unsigned long deltaMs) override;
 
         GameObjectType GetGameObjectType() override;
-        void Update(float deltaMs) override {};
+        void Update(const unsigned long deltaMs) override {}
 
         /// <summary>
         /// Create sprite
@@ -40,11 +40,11 @@ namespace gamelib
         /// Ordered set of key frames
         /// </summary>
         void LoadSettings() override;
-        void SetFrame(uint FrameNumber) const;
+        void SetFrame(uint frameNumber) const;
 
         [[nodiscard]] uint GetNumKeyFrames() const
         {
-            return KeyFrames.size();
+            return keyFrames.size();
         }
 
 
@@ -52,7 +52,7 @@ namespace gamelib
     private:
         // Create a static sprite
         StaticSprite(Coordinate<int> position, const std::shared_ptr<SpriteAsset>& spriteAsset, bool isVisible);
-        std::vector<KeyFrame> KeyFrames;
+        std::vector<KeyFrame> keyFrames;
         std::shared_ptr<SpriteAsset> asset;
         int currentFrame{};
     };

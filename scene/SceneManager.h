@@ -23,18 +23,18 @@ namespace gamelib
 		SceneManager& operator=(SceneManager &&) = delete;
 
 		void SetSceneFolder(const std::string& inSceneFolder);
-		bool Initialize(std::string inSceneFolder = "game/");
+		bool Initialize(std::string sceneFolder = "game/");
 		void StartScene(int sceneId);
 		[[nodiscard]] std::list<std::shared_ptr<Layer>> GetLayers() const;
 
 	protected:
-		static SceneManager* Instance;
+		static SceneManager* instance;
 
 	private:
 		SceneManager();
 		void DrawScene() const;
 		void AddGameObjectToScene(const std::shared_ptr<Event>& event) const;
-		void LoadNewScene(const std::shared_ptr<Event> &the_event);
+		void LoadNewScene(const std::shared_ptr<Event> &event);
 		void OnSceneLoaded(const std::shared_ptr<Event>& event) const;
 		static void OnVisibleParse(const std::shared_ptr<Layer>& layer, const std::string& value);
 		static void OnPosYParse(const std::shared_ptr<Layer>& layer, const std::string& value);
@@ -47,7 +47,7 @@ namespace gamelib
 		std::shared_ptr<Layer> AddLayer(const std::string &name);
 		std::shared_ptr<Layer> FindLayer(const std::string &name);
 		[[nodiscard]] std::shared_ptr<GameObject> GetGameObjectFrom(const std::shared_ptr<Event>& event) const;
-		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> the_event, unsigned long deltaMs) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> event, unsigned long deltaMs) override;
 		[[nodiscard]] std::vector <std::weak_ptr<GameObject>> GetAllObjects() const;
 		void UpdateAllObjects(unsigned long deltaMs) const;
 		std::string GetSubscriberName() override;

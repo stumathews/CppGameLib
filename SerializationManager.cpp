@@ -14,24 +14,24 @@ namespace gamelib
 {
 	SerializationManager* SerializationManager::Get()
 	{
-		if (Instance == nullptr)
+		if (instance == nullptr)
 		{
-			Instance = new SerializationManager();
-			Instance->Initialize();
+			instance = new SerializationManager();
+			instance->Initialize();
 		}
-		return Instance;
+		return instance;
 	}
 
 	SerializationManager::SerializationManager()
 	{
 	}
 	
-	SerializationManager* SerializationManager::Instance = nullptr;
+	SerializationManager* SerializationManager::instance = nullptr;
 
 	
 	SerializationManager::~SerializationManager()
 	{		
-		Instance = nullptr;
+		instance = nullptr;
 	}
 
 	MessageHeader SerializationManager::GetMessageHeader(const std::string& serializedMessage) const
@@ -83,10 +83,10 @@ namespace gamelib
 		return event;
 	}
 
-	std::string SerializationManager::CreatePlayerMovedEventMessage(const std::shared_ptr<Event>& evt, const std::string
+	std::string SerializationManager::CreatePlayerMovedEventMessage(const std::shared_ptr<Event>& event, const std::string
 	                                                                & target) const
 	{
-		const auto playerMovedEvent = std::dynamic_pointer_cast<PlayerMovedEvent>(evt);
+		const auto playerMovedEvent = std::dynamic_pointer_cast<PlayerMovedEvent>(event);
 		return eventSerialization->SerializePlayerMovedEvent(playerMovedEvent, target);
 	}
 

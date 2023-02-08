@@ -13,23 +13,23 @@ namespace gamelib
 {
 	GameObjectFactory& GameObjectFactory::Get() { static GameObjectFactory instance; return instance; }
 
-	shared_ptr<GameObject> GameObjectFactory::BuildGameObject(const XMLElement * objectElement) const
+	shared_ptr<GameObject> GameObjectFactory::BuildGameObject(const XMLElement * sceneObjectXml) const
 	{
 		uint redValue = 0, greenValue = 0, blueValue = 0;
 		uint x = 0, y = 0;
 		string name;
 		const string type;
-		auto IsVisible = false;
+		auto isVisible = false;
 		shared_ptr<Asset> asset;		
 
-		for(const auto* attribute = objectElement->FirstAttribute(); attribute; attribute = attribute->Next()) 
+		for(const auto* attribute = sceneObjectXml->FirstAttribute(); attribute; attribute = attribute->Next()) 
 		{
 			string attributeName = attribute->Name();
 			string attributeValue = attribute->Value();		
 						
 			if (attributeName == "resourceId") { GetAssetForResourceIdParse(attributeValue, /*out*/ asset); continue; }
 			if (attributeName == "posx") { OnPosXParse(x, attributeValue); continue; }
-			if (attributeName == "visible") { OnVisibleParse(IsVisible, attributeValue); continue; }
+			if (attributeName == "visible") { OnVisibleParse(isVisible, attributeValue); continue; }
 			if (attributeName == "posy") { OnPosYParse(y, attributeValue); continue; }
 			if (attributeName == "r") { OnRedParse(redValue, attributeValue); continue; }
 			if (attributeName == "g") { OnGreenParse(greenValue, attributeValue); continue; }
@@ -38,7 +38,7 @@ namespace gamelib
 			if (attributeName == "type") { OnTypeParse(name, attributeValue); continue; }
 		}
 				
-		return InitializeGameObject(name, type, Coordinate<int>(static_cast<int>(x), static_cast<int>(y)), IsVisible, asset);		
+		return InitializeGameObject(name, type, Coordinate<int>(static_cast<int>(x), static_cast<int>(y)), isVisible, asset);		
 	}
 
 
@@ -47,10 +47,10 @@ namespace gamelib
 
 		const auto* const resourceIdString = detail_value.c_str();
 		const int resourceId = static_cast<int>(atoi(resourceIdString));
-		auto asset = ResourceManager::Get()->GetAssetInfo(resourceId);
+		const auto asset = ResourceManager::Get()->GetAssetInfo(resourceId);
 		if (asset == nullptr) 
 		{
-			throw exception("Resouce manager could not determine the asset");
+			throw exception("Resource manager could not determine the asset");
 		}
 		ThrowCouldNotFindAssetException(asset, detail_value);
 
@@ -73,7 +73,7 @@ namespace gamelib
 	}
 
 	shared_ptr<StaticSprite> GameObjectFactory::BuildGraphic(const string& name, const string& type, const std::shared_ptr<Asset>
-	                                                         & asset, const Coordinate<int>& position, const bool IsVisible) const
+	                                                         & asset, const Coordinate<int>& position, const bool isVisible) const
 	{
 		
 		const auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
@@ -99,46 +99,46 @@ namespace gamelib
 	{
 		const auto spriteAsset = dynamic_pointer_cast<SpriteAsset>(asset);
 		const auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
-		auto _sprite = std::make_shared<AnimatedSprite>(name, type, position, 100, isVisible, spriteAsset);
-		SetupCommonSprite(_sprite, asset, graphicAsset, isVisible);
+		auto sprite = std::make_shared<AnimatedSprite>(name, type, position, 100, isVisible, spriteAsset);
+		SetupCommonSprite(sprite, asset, graphicAsset, isVisible);
 
-		_sprite->KeyFrames = spriteAsset->KeyFrames;
-		_sprite->PlayAnimation();	
+		sprite->KeyFrames = spriteAsset->KeyFrames;
+		sprite->PlayAnimation();	
 
-		return _sprite;
+		return sprite;
 	}
 
-	void GameObjectFactory::SetupCommonSprite(const std::shared_ptr<AnimatedSprite>& _sprite, const std::shared_ptr<Asset>& asset, const std::shared_ptr<
-		                                          GraphicAsset>& graphicAsset, const bool IsVisible)
+	void GameObjectFactory::SetupCommonSprite(const std::shared_ptr<AnimatedSprite>& sprite, const std::shared_ptr<Asset>& asset, const std::shared_ptr<
+		                                          GraphicAsset>& graphicAsset, const bool isVisible)
 	{
-		_sprite->SetTag(asset->name);
-		_sprite->SetGraphic(graphicAsset);
-		_sprite->LoadSettings();
-		_sprite->SupportsColourKey(graphicAsset->GetColourKey().IsSet());
-		_sprite->IsVisible = IsVisible;
+		sprite->SetTag(asset->name);
+		sprite->SetGraphic(graphicAsset);
+		sprite->LoadSettings();
+		sprite->SupportsColourKey(graphicAsset->GetColourKey().IsSet());
+		sprite->IsVisible = isVisible;
 
 		// Tell the render what colour it should consider as transparent i.e ignore drawing
-		if (_sprite->HasColourKey())
+		if (sprite->HasColourKey())
 		{
-			_sprite->SetColourKey(graphicAsset->GetColourKey().Red, graphicAsset->GetColourKey().Green,
+			sprite->SetColourKey(graphicAsset->GetColourKey().Red, graphicAsset->GetColourKey().Green,
 			                      graphicAsset->GetColourKey().Blue);
 		}
 	}
 
 	void GameObjectFactory::OnBlueParse(uint& blue, const std::string& detailValue) const { blue = stoi(detailValue); }
-	void GameObjectFactory::OnGreenParse(uint& green, std::string& detail_value) const { green = stoi(detail_value); }
-	void GameObjectFactory::OnRedParse(uint& red, std::string& detail_value) const { red = stoi(detail_value); }
-	void GameObjectFactory::OnColourKeyParse(bool& color_key_enabled, std::string& detail_value) { color_key_enabled = detail_value._Equal("true") ? true : false; }
-	void GameObjectFactory::OnPosYParse(uint& y, std::string& detail_value) const { y = stoi(detail_value); }
-	void GameObjectFactory::OnVisibleParse(bool& visible, std::string& detail_value) { visible = detail_value._Equal("true") ? true : false; }
-	void GameObjectFactory::OnPosXParse(uint& x, std::string& detail_value) const { x = stoi(detail_value); }
-	void GameObjectFactory::OnNameParse(string& x, std::string& detail_value) { x = detail_value; }
-	void GameObjectFactory::OnTypeParse(string& x, std::string& detail_value) { x = detail_value; }
+	void GameObjectFactory::OnGreenParse(uint& green, const std::string& detailValue) const { green = stoi(detailValue); }
+	void GameObjectFactory::OnRedParse(uint& red, const std::string& detailValue) const { red = stoi(detailValue); }
+	void GameObjectFactory::OnColourKeyParse(bool& color_key_enabled, const std::string& detailValue) { color_key_enabled = detailValue._Equal("true") ? true : false; }
+	void GameObjectFactory::OnPosYParse(uint& y, const std::string& detailValue) const { y = stoi(detailValue); }
+	void GameObjectFactory::OnVisibleParse(bool& visible, const std::string& detailValue) { visible = detailValue._Equal("true") ? true : false; }
+	void GameObjectFactory::OnPosXParse(uint& x, const std::string& detailValue) const { x = stoi(detailValue); }
+	void GameObjectFactory::OnNameParse(string& x, const std::string& detailValue) { x = detailValue; }
+	void GameObjectFactory::OnTypeParse(string& x, const std::string& detailValue) { x = detailValue; }
 
-	void GameObjectFactory::ThrowCouldNotFindAssetException(std::shared_ptr<Asset>& asset, std::string& detail_value)
+	void GameObjectFactory::ThrowCouldNotFindAssetException(const std::shared_ptr<Asset>& asset, const std::string& detailValue)
 	{
 		if (!asset->type._Equal("graphic")) { throw exception(("Cannot load non graphic resource: " + asset->name + " type=" + asset->type).c_str()); }
-		if (asset == nullptr) { throw exception(("Could not load resource meta data for resource id:" + detail_value).c_str()); }
+		if (asset == nullptr) { throw exception(("Could not load resource meta data for resource id:" + detailValue).c_str()); }
 	}	
 }
 

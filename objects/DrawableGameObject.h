@@ -14,7 +14,7 @@ namespace gamelib
 	{
 	public:
 		DrawableGameObject() = default;
-		DrawableGameObject(bool isVisible);
+		explicit DrawableGameObject(bool isVisible);
 		DrawableGameObject(int x, int y, bool isVisible);
 		DrawableGameObject(const std::string& name, const std::string& type, Coordinate<int> coordinate, bool isVisible);
 

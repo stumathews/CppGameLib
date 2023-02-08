@@ -27,7 +27,7 @@ namespace gamelib
 		void LoadSettings() override;
 		void MoveSprite(int x, int y);
 		void MoveSprite(Coordinate<int> position);
-		void Update(float deltaMs) override;
+		void Update(const unsigned long deltaMs) override;
 		void Update(unsigned long deltaMs, const std::string& animationGroup);
 		void AdvanceCurrentFrameNumber();
 		void SkipUnsupportedAnimationGroupFrames();

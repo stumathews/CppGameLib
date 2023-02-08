@@ -21,8 +21,8 @@ namespace gamelib
 	/// <remarks>A scene is a collection of objects. A scene is loaded from a file</remarks>
 	/// </summary>
 	SceneManager::SceneManager() { }
-	SceneManager* SceneManager::Get() { if (Instance == nullptr) { Instance = new SceneManager(); } return Instance; }
-	SceneManager::~SceneManager() { Instance = nullptr; }
+	SceneManager* SceneManager::Get() { if (instance == nullptr) { instance = new SceneManager(); } return instance; }
+	SceneManager::~SceneManager() { instance = nullptr; }
 		
 	void SceneManager::AddGameObjectToScene(const shared_ptr<Event>& event) const { layers.back()->Objects.push_back(GetGameObjectFrom(event)); }
 	void SceneManager::SortLayers() 
@@ -40,11 +40,11 @@ namespace gamelib
 	list<shared_ptr<Layer>> SceneManager::GetLayers() const { return layers; }
 	string SceneManager::GetSubscriberName() { return "SceneManager"; }
 
-	bool SceneManager::Initialize(const string inSceneFolder)
+	bool SceneManager::Initialize(const string sceneFolder)
 	{
 		isInitialized = LogThis("SceneManager::initialize()", SettingsManager::Get()->GetBool("global", "verbose"), [&]()
 		{
-			SetSceneFolder(inSceneFolder);
+			SetSceneFolder(sceneFolder);
 
 			EventManager::Get()->SubscribeToEvent(EventType::LevelChangedEventType, this);
 			EventManager::Get()->SubscribeToEvent(EventType::AddGameObjectToCurrentScene, this);
@@ -82,7 +82,7 @@ namespace gamelib
 	{
 		for (auto& object : GetAllObjects()) 
 		{
-			if (const auto ptr = object.lock()) { ptr->Update(static_cast<float>(deltaMs)); }
+			if (const auto ptr = object.lock()) { ptr->Update(deltaMs); }
 		}
 	}
 
@@ -96,16 +96,16 @@ namespace gamelib
 		}
 	}
 
-	void SceneManager::RemoveGameObjectFromLayers(int GameObjectId)
+	void SceneManager::RemoveGameObjectFromLayers(int gameObjectId)
 	{
-		// Remove from each layer, the occurnace of the object denoted by gameObjectId
-		for_each(begin(layers), end(layers), [&GameObjectId](const shared_ptr<Layer>& layer)
+		// Remove from each layer, the object denoted by gameObjectId
+		for_each(begin(layers), end(layers), [&gameObjectId](const shared_ptr<Layer>& layer)
 		{
-			// Look for game object that match incomming id
+			// Look for game object that match incoming id
 			auto result = remove_if(begin(layer->Objects), end(layer->Objects), [=](const weak_ptr<GameObject>&
 			                        gameObject)
 			{
-				if (const auto ptr = gameObject.lock()) { return ptr->Id == GameObjectId; }
+				if (const auto ptr = gameObject.lock()) { return ptr->Id == gameObjectId; }
 				return false;
 			});			
 		});
@@ -309,5 +309,5 @@ namespace gamelib
 		EventManager::Get()->RaiseEvent(make_shared<SceneChangedEvent>(sceneId), this);
 	}
 
-	SceneManager* SceneManager::Instance = nullptr;
+	SceneManager* SceneManager::instance = nullptr;
 }

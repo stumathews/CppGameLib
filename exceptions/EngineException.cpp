@@ -3,8 +3,8 @@
 using namespace std;
 namespace gamelib
 {
-	EngineException::EngineException(int errorNumber, const std::string& message, const std::string& subsystem,
-	                                 const std::string& srcFileName, int lineNumber)
+	EngineException::EngineException(const int errorNumber, const std::string& message, const std::string& subsystem,
+	                                 const std::string& srcFileName, const int lineNumber)
 		: exception(message.c_str()), errorDescription(message), srcFileName(srcFileName),
 		  subsystem(subsystem)
 	{

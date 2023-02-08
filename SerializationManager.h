@@ -10,7 +10,7 @@ namespace gamelib
 	class SerializationManager
 	{
 		protected:
-				static SerializationManager* Instance;
+				static SerializationManager* instance;
 	private:
 		std::shared_ptr<IEventSerializationManager> eventSerialization;
 				[[nodiscard]] std::string CreatePlayerMovedEventMessage(const std::shared_ptr<Event>& event, const std::string& target) const;

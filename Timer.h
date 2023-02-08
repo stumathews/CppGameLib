@@ -6,9 +6,9 @@ namespace gamelib
 	{
 	public:
 		
-		void Update(float deltaMs);
+		void Update(unsigned long deltaMs);
 
-		void AddTime(float timeMs);
+		void AddTime(unsigned long timeMs);
 
 		void Start(DWORD durationMs, DWORD startTimeMs = 0);
 

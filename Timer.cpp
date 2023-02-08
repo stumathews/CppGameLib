@@ -1,6 +1,6 @@
 #include "Timer.h"
 
-void gamelib::Timer::Update(const float deltaMs)
+void gamelib::Timer::Update(const unsigned long deltaMs)
 {
 	if(TimerDurationMs == 0 || IsStopped) 
 		return;
@@ -9,7 +9,7 @@ void gamelib::Timer::Update(const float deltaMs)
 	IsElapsed = ElapsedTimeMs > TimerDurationMs ? true : false;
 }
 
-void gamelib::Timer::AddTime(const float timeMs)
+void gamelib::Timer::AddTime(const unsigned long timeMs)
 {
 	ElapsedTimeMs = (ElapsedTimeMs - timeMs <= 0) ? 0 : ElapsedTimeMs - timeMs;
 }

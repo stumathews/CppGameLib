@@ -26,13 +26,13 @@ namespace gamelib
 		/// <summary>
 		/// Build a game object
 		/// </summary>
-		/// <param name="scene_object_xml">Raw Object XML element</param>
+		/// <param name="sceneObjectXml">Raw Object XML element</param>
 		/// <returns>GameObject</returns>
-		std::shared_ptr<GameObject> BuildGameObject(const tinyxml2::XMLElement* scene_object_xml) const;
+		std::shared_ptr<GameObject> BuildGameObject(const tinyxml2::XMLElement* sceneObjectXml) const;
 
 		[[nodiscard]] std::shared_ptr<StaticSprite> BuildGraphic(const std::string& name, const std::string& type,
 		                                                         const std::shared_ptr<
-			                                                           Asset>& asset, const Coordinate<int>& position, bool IsVisible) const;
+			                                                           Asset>& asset, const Coordinate<int>& position, bool isVisible) const;
 		[[nodiscard]] std::shared_ptr<AnimatedSprite> BuildSprite(const std::string& name, const std::string& type,
 		                                                          const std::shared_ptr<
 			                                                          Asset>& asset, const Coordinate<int>& position, bool isVisible) const;
@@ -42,19 +42,19 @@ namespace gamelib
 	private:
 		static GameObjectFactory& instance;
 
-		static void SetupCommonSprite(const std::shared_ptr<AnimatedSprite>& _sprite, const std::shared_ptr<Asset>& asset, const std::shared_ptr<
-			                              GraphicAsset>& graphicAsset, bool IsVisible);
+		static void SetupCommonSprite(const std::shared_ptr<AnimatedSprite>& sprite, const std::shared_ptr<Asset>& asset, const std::shared_ptr<
+			                              GraphicAsset>& graphicAsset, bool isVisible);
 
 		// Parsing object attribute handlers
 		void OnBlueParse(uint& blue, const std::string& detailValue) const;
-		void OnGreenParse(uint& green, std::string& detail_value) const;
-		void OnRedParse(uint& red, std::string& detail_value) const;
-		static void OnColourKeyParse(bool& color_key_enabled, std::string& detail_value);
-		void OnPosYParse(uint& y, std::string& detail_value) const;
-		static void OnVisibleParse(bool& visible, std::string& detail_value);
-		void OnPosXParse(uint& x, std::string& detail_value) const;
-		static void OnNameParse(std::string& x, std::string& detail_value);
-		static void OnTypeParse(std::string& x, std::string& detail_value);
+		void OnGreenParse(uint& green, const std::string& detailValue) const;
+		void OnRedParse(uint& red, const std::string& detailValue) const;
+		static void OnColourKeyParse(bool& color_key_enabled, const std::string& detailValue);
+		void OnPosYParse(uint& y, const std::string& detailValue) const;
+		static void OnVisibleParse(bool& visible, const std::string& detailValue);
+		void OnPosXParse(uint& x, const std::string& detailValue) const;
+		static void OnNameParse(std::string& x, const std::string& detailValue);
+		static void OnTypeParse(std::string& x, const std::string& detailValue);
 		static void GetAssetForResourceIdParse(std::string& detail_value, std::shared_ptr<Asset>& resource);
 
 		[[nodiscard]] std::shared_ptr<GameObject> InitializeGameObject(const std::string& name, const std::string& type, Coordinate<int> position, bool IsVisible,
@@ -64,6 +64,6 @@ namespace gamelib
 		GameObjectFactory() = default;
 
 		// Error handling
-		static void ThrowCouldNotFindAssetException(std::shared_ptr<Asset>& asset, std::string& detail_value);
+		static void ThrowCouldNotFindAssetException(const std::shared_ptr<Asset>& asset, const std::string& detailValue);
 	};
 }

@@ -17,11 +17,11 @@ namespace gamelib
 		{
 			if (onEnter == nullptr)
 			{
-				OnEnterFn = []() {};
+				onEnterFn = []() {};
 			}
 			else
 			{
-				OnEnterFn = onEnter;
+				onEnterFn = onEnter;
 			}
 			
 			if (onExit == nullptr)
@@ -30,7 +30,7 @@ namespace gamelib
 			}
 			else
 			{
-				OnExitFn = onExit;
+				onExitFn = onExit;
 			}
 
 			if (onUpdate == nullptr)
@@ -39,7 +39,7 @@ namespace gamelib
 			}
 			else
 			{
-				OnUpdateFn = onUpdate;
+				onUpdateFn = onUpdate;
 			}
 		}
 		void virtual OnEnter();
@@ -52,9 +52,9 @@ namespace gamelib
 		std::string GetName();
 	private:
 
-		std::function<void()> OnEnterFn;
-		std::function<void()> OnUpdateFn;
-		std::function<void()> OnExitFn;		
+		std::function<void()> onEnterFn;
+		std::function<void()> onUpdateFn;
+		std::function<void()> onExitFn;		
 		std::string name;
 	};
 }

@@ -162,6 +162,7 @@ namespace gamelib
 	/// Handles events that the event manager subscribes to itself
 	/// </summary>
 	/// <param name="evt"></param>
+	/// <param name="deltaMs"></param>
 	/// <returns></returns>
 	std::vector<std::shared_ptr<Event>> EventManager::HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs)
 	{

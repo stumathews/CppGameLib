@@ -12,7 +12,8 @@ namespace gamelib
 	public:
 		virtual ~FSMState() = default;
 
-		explicit FSMState(const std::function<void()>& onEnter = nullptr, std::function<void()> onUpdate = nullptr, std::function<void()> onExit = nullptr,
+		explicit FSMState(const std::function<void()>& onEnter = nullptr, std::function<void(unsigned long deltaMs)>
+		                   onUpdate = nullptr, std::function<void()> onExit = nullptr,
 		                  const std::string& name = "<noname>")
 		{
 			if (onEnter == nullptr)
@@ -35,7 +36,7 @@ namespace gamelib
 
 			if (onUpdate == nullptr)
 			{
-				onUpdate = []() {};
+				onUpdate = [](unsigned long deltaMs) {};
 			}
 			else
 			{
@@ -43,17 +44,17 @@ namespace gamelib
 			}
 		}
 		void virtual OnEnter();
-		void virtual OnUpdate();
+		void virtual OnUpdate(unsigned long deltaMs);
 		void virtual OnExit();
 		std::list<FSMTransition> Transitions;
 		void SetOnEnter(const std::function<void()>& onEnter);
 		void SetOnExit(const std::function<void()>& onExit);
-		void SetOnUpdate(const std::function<void()>& onUpdate);
+		void SetOnUpdate(const std::function<void(unsigned long deltaMs)>& onUpdate);
 		std::string GetName();
 	private:
 
 		std::function<void()> onEnterFn;
-		std::function<void()> onUpdateFn;
+		std::function<void(unsigned long deltaMs)> onUpdateFn;
 		std::function<void()> onExitFn;		
 		std::string name;
 	};

@@ -3,7 +3,7 @@
 
 namespace gamelib
 {
-	void FSM::Update()
+	void FSM::Update(unsigned long deltaMs)
 	{
 		if (ActiveState == nullptr)
 		{
@@ -38,6 +38,6 @@ namespace gamelib
 		}
 
 		// Do some more stuff in the current/active state
-		ActiveState->OnUpdate();
+		ActiveState->OnUpdate(deltaMs);
 	}
 }

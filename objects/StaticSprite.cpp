@@ -37,27 +37,15 @@ namespace gamelib
 
 	void StaticSprite::AdvanceFrame()
 	{
-		currentFrame = static_cast<uint>(currentFrame) < GetNumKeyFrames() - 1 ? currentFrame + 1 : 0;
-		SetFrame(currentFrame);
+		frameNumber = static_cast<uint>(frameNumber) < GetNumKeyFrames() - 1 ? frameNumber + 1 : 0;
+		SetFrame(frameNumber);
 	}
 
-	void StaticSprite::SetFrame(const uint frameNumber) const
+	void StaticSprite::SetFrame(const uint number)
 	{
 		if (!HasGraphic())
 			return;
-
-		// Get the rectangle that defines the viewport
-		auto& [x, y, w, h] = GetGraphic()->GetViewPort();
-
-		// Is this a static sprite or a dynamic moving sprite?
-		if (!keyFrames.empty())
-		{
-			// Dynamic: Adjust it to refer to the position of the frame in the picture
-			x = keyFrames[frameNumber].X;
-			y = keyFrames[frameNumber].Y;
-			w = keyFrames[frameNumber].W;
-			h = keyFrames[frameNumber].H;
-		}
+		frameNumber = static_cast<int>(number);
 	}
 
 	GameObjectType StaticSprite::GetGameObjectType()
@@ -71,7 +59,26 @@ namespace gamelib
 
 	void StaticSprite::Draw(SDL_Renderer* renderer)
 	{
-		DrawableGameObject::Draw(renderer);
+		if (HasGraphic())
+		{
+			const auto graphicAsset = GetGraphic();
+
+			if (graphicAsset->type == "graphic")
+			{
+				const auto& frame = keyFrames[frameNumber];
+				
+				const SDL_Rect srcLocation = { frame.X, frame.Y, frame.W, frame.H };
+				const SDL_Rect drawLocation = { Position.GetX(), Position.GetY(), frame.W, frame.H };
+
+				// Copy the texture (restricted by viewport) to the drawLocation on the screen
+				SDL_RenderCopy(renderer, graphicAsset->GetTexture(), &srcLocation, &drawLocation);
+				
+			}
+			else
+			{
+				// Log error here
+			}
+		}
 	}
 }
 

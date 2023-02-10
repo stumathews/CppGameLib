@@ -6,7 +6,7 @@ namespace gamelib
 	class FSM
 	{
 	public:
-		void Update();
+		void Update(unsigned long deltaMs);
 		std::list<FSMState> States;
 		FSMState* InitialState = nullptr;
 		FSMState* ActiveState = nullptr;

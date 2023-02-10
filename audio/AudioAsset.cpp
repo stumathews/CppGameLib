@@ -63,7 +63,7 @@ namespace gamelib
 			THROW(99, string("Unknown audio asset sub type") + type, "Audio Asset")
 		}
 		
-		isLoadedInMemory = true;
+		IsLoadedInMemory = true;
 	}
 
 	/// <summary>
@@ -75,7 +75,7 @@ namespace gamelib
 		{
 			Mix_FreeChunk(SoundEffect);
 			SoundEffect = nullptr;
-			isLoadedInMemory = false;
+			IsLoadedInMemory = false;
 		}
 		else 
 		{
@@ -83,7 +83,7 @@ namespace gamelib
 			{
 				Mix_FreeMusic( Music );
 				Music = nullptr;
-				isLoadedInMemory = false;
+				IsLoadedInMemory = false;
 			}
 		}
 		return true;

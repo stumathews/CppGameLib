@@ -11,11 +11,11 @@ using namespace gamelib;
 class StateOne : public FSMState
 {
 public:
-	StateOne(std::function<void()> onEnter = nullptr, std::function<void()> onUpdate = nullptr, std::function<void()> onExit = nullptr)
+	StateOne(std::function<void()> onEnter = nullptr, std::function<void(unsigned long deltaMs)> onUpdate = nullptr, std::function<void()> onExit = nullptr)
 		: FSMState(onEnter, onUpdate, onExit) {}
 
 	int updateTicks = 0;
-	void OnUpdate() override
+	void OnUpdate(unsigned long deltaMs) override
 	{
 		updateTicks++;
 	}
@@ -24,11 +24,11 @@ public:
 class StateTwo : public FSMState
 {
 public:
-	StateTwo(std::function<void()> onEnter = nullptr, std::function<void()> onUpdate = nullptr, std::function<void()> onExit = nullptr)
+	StateTwo(std::function<void()> onEnter = nullptr, std::function<void(unsigned long deltaMs)> onUpdate = nullptr, std::function<void()> onExit = nullptr)
 		: FSMState(onEnter, onUpdate, onExit) {}
 
 	int updateTicks = 0;
-	void OnUpdate() override
+	void OnUpdate(unsigned long deltaMs) override
 	{
 		updateTicks++;
 	}
@@ -126,7 +126,7 @@ TEST_F(FSMTests, Basic)
 	EXPECT_EQ(finiteStateMachine.States.size(), 2);
 		
 	// Update the FSM
-	finiteStateMachine.Update();
+	finiteStateMachine.Update(0);
 		
 	// Should increment update tick of initial state
 	EXPECT_EQ(stateOne.updateTicks, 1);
@@ -135,8 +135,8 @@ TEST_F(FSMTests, Basic)
 	EXPECT_EQ(stateTwo.updateTicks, 0);
 
 	// Two more ticks for update state
-	finiteStateMachine.Update(); 
-	finiteStateMachine.Update();
+	finiteStateMachine.Update(0); 
+	finiteStateMachine.Update(0);
 
 	// Should show up as incrments to current state
 	EXPECT_EQ(stateOne.updateTicks, 3);
@@ -154,7 +154,7 @@ TEST_F(FSMTests, TestBasicTransition)
 	EXPECT_EQ(finiteStateMachine.States.size(), 2);
 
 	// Update the FSM
-	finiteStateMachine.Update();
+	finiteStateMachine.Update(0);
 
 	// Should increment update tick of active state
 	EXPECT_EQ(stateOne.updateTicks, 1);
@@ -163,8 +163,8 @@ TEST_F(FSMTests, TestBasicTransition)
 	EXPECT_EQ(stateTwo.updateTicks, 0);
 
 	TransitionToTwo();
-	finiteStateMachine.Update();
-	finiteStateMachine.Update();
+	finiteStateMachine.Update(0);
+	finiteStateMachine.Update(0);
 
 	EXPECT_TRUE(transitioningToTwo);
 	EXPECT_FALSE(transitioningToOne);
@@ -177,8 +177,8 @@ TEST_F(FSMTests, TestBasicTransition)
 
 	// Transition back to one
 	TransitionToOne();
-	finiteStateMachine.Update();
-	finiteStateMachine.Update();
+	finiteStateMachine.Update(0);
+	finiteStateMachine.Update(0);
 
 	EXPECT_TRUE(transitioningToOne);
 	EXPECT_FALSE(transitioningToTwo);
@@ -189,9 +189,9 @@ TEST_F(FSMTests, TestBasicTransition)
 
 	// Transition back to two
 	TransitionToTwo();
-	finiteStateMachine.Update();
-	finiteStateMachine.Update();
-	finiteStateMachine.Update();
+	finiteStateMachine.Update(0);
+	finiteStateMachine.Update(0);
+	finiteStateMachine.Update(0);
 	EXPECT_EQ(stateTwo.updateTicks, 5);
 	EXPECT_TRUE(transitioningToTwo);
 	EXPECT_FALSE(transitioningToOne);
@@ -201,7 +201,7 @@ TEST_F(FSMTests, TestOnEntryExit)
 {
 	TransitionToTwo();
 
-	finiteStateMachine.Update();
+	finiteStateMachine.Update(0);
 
 	EXPECT_TRUE(stateOneExited);
 	EXPECT_TRUE(stateTwoEntered);	
@@ -216,7 +216,7 @@ TEST_F(FSMTests, InlineStates)
 	bool stateThreeWasTransitionedTo = false;
 
 	// Create an inline state
-	FSMState stateThree([&] { stateThreeEntered = true; }, [&] { stateThreeUpdateCount++; }, [&] { stateThreeExited = true;	});
+	FSMState stateThree([&] { stateThreeEntered = true; }, [&](unsigned long deltaMs) { stateThreeUpdateCount++; }, [&] { stateThreeExited = true;	});
 	
 	// Add it to our state machine
 	finiteStateMachine.States.push_back(stateThree);
@@ -233,14 +233,14 @@ TEST_F(FSMTests, InlineStates)
 	// Transition to 2
 	TransitionToTwo();
 
-	finiteStateMachine.Update();
+	finiteStateMachine.Update(0);
 
 	// Transition to 3
 	doTransitionToOne = false;
 	doTransitionToTwo = false;
 	transitionToThree = true;
 
-	finiteStateMachine.Update();
+	finiteStateMachine.Update(0);
 
 	// Expected that state three was transitioned to
 	EXPECT_EQ(stateThreeUpdateCount, 1);	

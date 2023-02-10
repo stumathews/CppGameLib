@@ -43,7 +43,7 @@ namespace gamelib
 		/// Get Observable area of the graphic
 		/// </summary>
 		/// <returns></returns>
-		SDL_Rect& GetViewPort();
+		[[nodiscard]] const SDL_Rect& GetViewPort() const;
 		
 		/// <summary>
 		/// Gets the graphic's texture
@@ -51,10 +51,6 @@ namespace gamelib
 		/// <returns></returns>
 		[[nodiscard]] SDL_Texture* GetTexture() const;
 				
-		std::list<KeyFrame> KeyFrames;
-
-		Inventory properties;
-
 		ABCDRectangle Dimensions;
 
 		void SetColourKey(int red, int green, int blue);
@@ -67,7 +63,7 @@ namespace gamelib
 	
 		bool hasColourKey;
 
-		ColourKey ColourKey;
+		ColourKey colourKey;
 
 		/// <summary>
 		/// The binary data that will represent the resource once its loaded.

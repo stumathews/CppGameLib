@@ -35,7 +35,7 @@ TEST_F(AudioManagerTests, to_resource)
 	const auto resource = audioAdmin->ToAudioAsset(audioAssetPtr);
 	
 	EXPECT_STREQ(resource->name.c_str(), resourceName.c_str()) << "Resource name is invalid";
-	EXPECT_EQ(resource->isLoadedInMemory, false) << "is loaded flag is invalid";
+	EXPECT_EQ(resource->IsLoadedInMemory, false) << "is loaded flag is invalid";
 	EXPECT_STREQ(resource->path.c_str(), resourcePath.c_str()) << "resource path is invalid";
 	EXPECT_EQ(resource->scene, resourceScene) << "Resource scene is invalid";
 }

@@ -13,12 +13,12 @@ namespace gamelib
 		}
 	}
 
-	void FSMState::OnUpdate() 
+	void FSMState::OnUpdate(unsigned long deltaMs) 
 	{
 		// Run passed in lambda if its provided
 		if (onUpdateFn != nullptr)
 		{
-			onUpdateFn();
+			onUpdateFn(deltaMs);
 		}
 	}
 
@@ -40,7 +40,7 @@ namespace gamelib
 	{
 		onExitFn = onExit;
 	}
-	void FSMState::SetOnUpdate(const std::function<void()>& onUpdate)
+	void FSMState::SetOnUpdate(const std::function<void(unsigned long deltaMs)>& onUpdate)
 	{
 		onUpdateFn = onUpdate;
 	}

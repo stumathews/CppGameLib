@@ -173,6 +173,7 @@
     <ClInclude Include="Hotspot.h" />
     <ClInclude Include="json\JsonEventSerializationManager.h" />
     <ClInclude Include="json\json11.h" />
+    <ClInclude Include="movement\IGameMoveStrategy.h" />
     <ClInclude Include="movement\IMovement.h" />
     <ClInclude Include="net\IGameServerConnection.h" />
     <ClInclude Include="net\MessageHeader.h" />
@@ -204,6 +205,7 @@
     <ClInclude Include="net\NetworkEvent.h" />
     <ClInclude Include="net\NetworkManager.h" />
     <ClInclude Include="net\UdpNetworkPlayer.h" />
+    <ClInclude Include="objects\Npc.h" />
     <ClInclude Include="objects\StaticSprite.h" />
     <ClInclude Include="objects\MultipleInheritableEnableSharedFromThis.h" />
     <ClInclude Include="objects\DrawableGameObject.h" />
@@ -289,6 +291,7 @@
     <ClCompile Include="net\Networking.cpp" />
     <ClCompile Include="net\NetworkManager.cpp" />
     <ClCompile Include="net\UdpNetworkPlayer.cpp" />
+    <ClCompile Include="objects\Npc.cpp" />
     <ClCompile Include="objects\StaticSprite.cpp" />
     <ClCompile Include="objects\MultipleInheritableEnableSharedFromThis.cpp" />
     <ClCompile Include="objects\DrawableGameObject.cpp" />

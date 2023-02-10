@@ -35,7 +35,6 @@ TEST(GraphicAssetFactoryTests, ParseStaticSprite)
     EXPECT_EQ(graphicAsset->type, string("graphic"));
     EXPECT_EQ(graphicAsset->path, string("Assets/Platformer/Base pack/Player/p1_walk/p1_walk.png"));
     EXPECT_EQ(graphicAsset->assetType, gamelib::Asset::AssetType::Graphic);
-    EXPECT_EQ(graphicAsset->KeyFrames.size(), 0);
 
 }
 

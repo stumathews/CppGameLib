@@ -6,7 +6,7 @@ namespace gamelib
 {
 	Asset::Asset(const int uid, string name, string path, string type, const int scene)
 		: uid(uid), name(std::move(name)), path(std::move(path)), type(std::move(type)),
-		  assetType(AssetType::Undefined), scene(scene), isLoadedInMemory(false)
+		  assetType(AssetType::Undefined), scene(scene), IsLoadedInMemory(false)
 	{
 		// constructor initializes member only
 	}

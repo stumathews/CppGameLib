@@ -11,7 +11,7 @@ class Movement final : public gamelib::IMovement
 {
 public:
 
-	Movement(const gamelib::Direction inDirection, const int pixelsToMove) : totalTargetMovePixels(pixelsToMove),
+	Movement(const gamelib::Direction inDirection, const int pixelsToMove = 1) : totalTargetMovePixels(pixelsToMove),
 	                                                                         direction(inDirection) { }
 	gamelib::Direction GetDirection() override { return direction; }
 	unsigned short GetPixelsToMove() override { return static_cast<unsigned short>(totalTargetMovePixels); }

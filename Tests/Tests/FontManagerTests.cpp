@@ -39,7 +39,7 @@ TEST_F(FontManagerTests, to_resource)
 
 	// Ensure that...
 	EXPECT_STREQ(resource->name.c_str(), resource_name.c_str()) << "Resource name is invalid";
-	EXPECT_EQ(resource->isLoadedInMemory, false) << "is loaded flag is invalid";
+	EXPECT_EQ(resource->IsLoadedInMemory, false) << "is loaded flag is invalid";
 	EXPECT_STREQ(resource->path.c_str(), resource_path.c_str()) << "resource path is invalid";
 	EXPECT_EQ(resource->scene, resource_scene) << "Resource scene is invalid";
 }

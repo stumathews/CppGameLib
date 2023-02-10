@@ -90,20 +90,20 @@ namespace gamelib
 	{
 		if (HasGraphic())
 		{
-			const auto graphic = GetGraphic();
+			const auto graphicAsset = GetGraphic();
 
-			if (graphic->type == "graphic")
+			if (graphicAsset->type == "graphic")
 			{
 				// Draw graphic at the game object's current location
 				const SDL_Rect drawLocation =
 				{
 					Position.GetX(), Position.GetY(),
-					graphic->GetViewPort().w,
-					graphic->GetViewPort().h
+					graphicAsset->GetViewPort().w,
+					graphicAsset->GetViewPort().h
 				};
 
 				// Copy the texture (restricted by viewport) to the drawLocation on the screen
-				SDL_RenderCopy(renderer, graphic->GetTexture(), &graphic->GetViewPort(), &drawLocation);
+				SDL_RenderCopy(renderer, graphicAsset->GetTexture(), &graphicAsset->GetViewPort(), &drawLocation);
 			}
 			else
 			{

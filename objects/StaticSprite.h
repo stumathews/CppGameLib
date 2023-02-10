@@ -40,7 +40,7 @@ namespace gamelib
         /// Ordered set of key frames
         /// </summary>
         void LoadSettings() override;
-        void SetFrame(uint frameNumber) const;
+        void SetFrame(uint frameNumber);
 
         [[nodiscard]] uint GetNumKeyFrames() const
         {
@@ -54,6 +54,6 @@ namespace gamelib
         StaticSprite(Coordinate<int> position, const std::shared_ptr<SpriteAsset>& spriteAsset, bool isVisible);
         std::vector<KeyFrame> keyFrames;
         std::shared_ptr<SpriteAsset> asset;
-        int currentFrame{};
+        int frameNumber{};
     };
 }

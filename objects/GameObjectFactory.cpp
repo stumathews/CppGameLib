@@ -99,7 +99,7 @@ namespace gamelib
 	{
 		const auto spriteAsset = dynamic_pointer_cast<SpriteAsset>(asset);
 		const auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
-		auto sprite = std::make_shared<AnimatedSprite>(name, type, position, 100, isVisible, spriteAsset);
+		auto sprite = AnimatedSprite::Create(position, spriteAsset);
 		SetupCommonSprite(sprite, asset, graphicAsset, isVisible);
 
 		sprite->KeyFrames = spriteAsset->KeyFrames;

@@ -65,7 +65,7 @@ namespace gamelib
 		/// <summary>
 		/// If Assset is in memory currently
 		/// </summary>
-		bool isLoadedInMemory;
+		bool IsLoadedInMemory;
 		
 		/// <summary>
 		/// All resources can be allowed to load themselves

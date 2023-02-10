@@ -64,7 +64,7 @@ namespace gamelib
 			for(const auto& asset : level_resources.second)
 			{
 				const auto always_load_resource = asset->scene == 0;
-				if((asset->scene == level || always_load_resource) && !asset->isLoadedInMemory)
+				if((asset->scene == level || always_load_resource) && !asset->IsLoadedInMemory)
 				{				
 					asset->Load();
 					
@@ -73,7 +73,7 @@ namespace gamelib
 					countLoadedResources++;
 					countUnloadedResources--;
 				} 
-				else if(asset->isLoadedInMemory && asset->scene != level && !always_load_resource )
+				else if(asset->IsLoadedInMemory && asset->scene != level && !always_load_resource )
 				{
 					asset->Unload();
 						

@@ -29,18 +29,16 @@ namespace gamelib
 		Unload();
 			  
 		// Load image at specified path
-		const auto loadedSurface = IMG_Load(path.c_str());
-		
-		if(loadedSurface)
+
+		if(const auto loadedSurface = IMG_Load(path.c_str()))
 		{				
 			if (HasColourKey())
 			{
-				SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, static_cast<Uint8>(ColourKey.Red), static_cast<Uint8>(ColourKey.Green), static_cast<Uint8>(ColourKey.Blue)));
+				SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, static_cast<Uint8>(colourKey.Red), static_cast<Uint8>(colourKey.Green), static_cast<Uint8>(colourKey.Blue)));
 			}
 
 			// Create texture from surface pixels
-			texture = SDL_CreateTextureFromSurface(SDLGraphicsManager::Get()->WindowRenderer, loadedSurface );
-
+			texture = SDL_CreateTextureFromSurface(SDLGraphicsManager::Get()->WindowRenderer, loadedSurface);
 			
 			
 			// Get rid of old loaded surface (we have the texture pixels)
@@ -49,7 +47,7 @@ namespace gamelib
 			// Mark the asset as having been loaded
 			if (texture)
 			{
-				isLoadedInMemory = true;
+				IsLoadedInMemory = true;
 			}
 		}
 		else
@@ -72,7 +70,7 @@ namespace gamelib
 
 			// make it clear that these are not used now
 			texture = nullptr;
-			isLoadedInMemory = false;
+			IsLoadedInMemory = false;
 			
 			isSuccess = true;
 		} 
@@ -89,7 +87,7 @@ namespace gamelib
 	/// Get Observable area of the graphic
 	/// </summary>
 	/// <returns></returns>
-	SDL_Rect& GraphicAsset::GetViewPort()
+	const SDL_Rect& GraphicAsset::GetViewPort() const
 	{
 		return viewPort;
 	}
@@ -101,13 +99,13 @@ namespace gamelib
 
 	void GraphicAsset::SetColourKey(int red, int green, int blue)
 	{
-		ColourKey = { red, green, blue };
+		colourKey = { red, green, blue };
 		hasColourKey = true;
 	}
 
 	ColourKey GraphicAsset::GetColourKey() const
 	{
-		return ColourKey;
+		return colourKey;
 	}
 
 	bool GraphicAsset::HasColourKey() const

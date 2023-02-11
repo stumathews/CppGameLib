@@ -1,4 +1,5 @@
 #pragma once
+#include <random>
 #include <string>
 
 namespace gamelib 
@@ -26,6 +27,24 @@ namespace gamelib
 			case Direction::None: return "None";
 		}
 		return nullptr;
+	}
+
+	inline Direction GetRandomDirection()
+	{
+		std::vector directions =  
+			{
+				Direction::Left,
+				Direction::Right,
+				Direction::Up,
+				Direction::Down
+			};
+
+
+		std::vector<Direction> directionToSample;
+			std::sample(begin(directions), end(directions), std::back_inserter(directionToSample), 1,
+			            std::mt19937{std::random_device{}()});
+
+			return directionToSample.front();
 	}
 
 

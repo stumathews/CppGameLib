@@ -18,8 +18,6 @@
 #include <net/NetworkManager.h>
 #include "Logging/ErrorLogManager.h"
 #include <events/UpdateProcessesEvent.h>
-
-#include "events/Events.h"
 #include "util/SettingsManager.h"
 
 using namespace std;

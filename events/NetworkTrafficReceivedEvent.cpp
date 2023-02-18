@@ -1,6 +1,5 @@
 #include "NetworkTrafficReceivedEvent.h"
 
-#include "Events.h"
 
 namespace gamelib
 {

@@ -78,7 +78,7 @@
     <ClInclude Include="events\Event.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="events\Events.h">
+    <ClInclude Include="events\EventNumbers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="events\PlayerMovedEvent.h">
@@ -298,6 +298,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="events\EventId.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -531,6 +534,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="events\EventId.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectionUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

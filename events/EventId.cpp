@@ -1,11 +1,11 @@
 #include "EventId.h"
 
-EventId::EventId(const int id, std::string name): Id(id), Name(std::move(name))
+EventId::EventId(const int pid, std::string name, const int sid): PrimaryId(pid), SecondaryId(sid), Name(std::move(name))
 {}
 
 bool EventId::operator==(const EventId& other) const
 {
-	return other.Id == Id && other.Name == Name;
+	return other.PrimaryId == PrimaryId && other.SecondaryId == SecondaryId;
 }
 
 bool EventId::operator!=(const EventId& other) const
@@ -15,5 +15,5 @@ bool EventId::operator!=(const EventId& other) const
 
 bool EventId::operator<(EventId const & other) const
 {
-	return std::tie(Id, Name) < std::tie(other.Id, other.Name);
+	return std::tie(PrimaryId, SecondaryId) < std::tie(other.PrimaryId, other.SecondaryId);
 }

@@ -48,9 +48,9 @@ namespace gamelib
 	{
 		// TODO: Update the list of events that can be sent over the network
 
-		if(evt->Id.Id == PlayerMovedEventTypeEventId.Id) { return CreatePlayerMovedEventMessage(evt, target);}
-		if(evt->Id.Id == ControllerMoveEventId.Id) { return CreateControllerMoveEventMessage(evt, target);}
-		if(evt->Id.Id == StartNetworkLevelEventId.Id) { return CreateStartNetworkLevelMessage(evt, target);}
+		if(evt->Id.PrimaryId == PlayerMovedEventTypeEventId.PrimaryId) { return CreatePlayerMovedEventMessage(evt, target);}
+		if(evt->Id.PrimaryId == ControllerMoveEventId.PrimaryId) { return CreateControllerMoveEventMessage(evt, target);}
+		if(evt->Id.PrimaryId == StartNetworkLevelEventId.PrimaryId) { return CreateStartNetworkLevelMessage(evt, target);}
 		return CreateUnknownEventMessage(evt, target);
 		
 	}

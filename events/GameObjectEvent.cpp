@@ -1,6 +1,5 @@
 #include "GameObjectEvent.h"
 
-#include "Events.h"
 using namespace std;
 
 namespace gamelib

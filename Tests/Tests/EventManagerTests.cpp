@@ -4,9 +4,6 @@
 #include "events/EventManager.h"
 #include <events/EventSubscriber.h>
 #include <objects/MultipleInheritableEnableSharedFromThis.h>
-
-#include "events/Events.h"
-
 using namespace std;
 using namespace gamelib;
 

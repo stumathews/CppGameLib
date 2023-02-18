@@ -52,8 +52,8 @@ namespace gamelib
 		SDL_Rect Bounds{};
 		int Id{};
 		Coordinate<int> Position;
-		Inventory Components;
 		std::map<std::string, std::string> StringProperties;
+		std::map<std::string, int> IntProperties;
 		std::string Name;
 		std::string Type;
 

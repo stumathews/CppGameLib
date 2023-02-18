@@ -1,5 +1,4 @@
 #include "AddGameObjectToCurrentSceneEvent.h"
-#include "Events.h"
 
 namespace gamelib
 {

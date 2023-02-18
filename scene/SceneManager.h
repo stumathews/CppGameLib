@@ -8,7 +8,7 @@
 #include "objects/GameWorldData.h"
 #include <common/Logger.h>
 
-#include "events/Events.h"
+#include "events/EventNumbers.h"
 
 namespace gamelib
 {

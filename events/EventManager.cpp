@@ -8,8 +8,6 @@
 #include <util/SettingsManager.h>
 #include <sstream>
 #include <string>
-
-#include "Events.h"
 #include "UpdateAllGameObjectsEvent.h"
 
 using namespace std;
@@ -68,7 +66,7 @@ namespace gamelib
 			std::stringstream log;
 			log << "EventManager: " << you->GetSubscriberName() << " raised to event " << event->Id.Name;
 
-			if (event->Id.Id != UpdateAllGameObjectsEventTypeEventId.Id) { Logger::Get()->LogThis(log.str()); }
+			if (event->Id.PrimaryId != UpdateAllGameObjectsEventTypeEventId.PrimaryId) { Logger::Get()->LogThis(log.str()); }
 		}
 	}
 

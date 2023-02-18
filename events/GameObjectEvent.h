@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "Events.h"
+#include "EventNumbers.h"
 #include "events/Event.h"
 
 namespace gamelib

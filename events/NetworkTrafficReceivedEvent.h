@@ -1,8 +1,7 @@
 #pragma once
 #include "events/Event.h"
 #include <string>
-
-#include "Events.h"
+#include "EventNumbers.h"
 
 namespace gamelib
 {

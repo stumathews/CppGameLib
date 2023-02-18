@@ -1,7 +1,6 @@
 ﻿#include "pch.h"
 #include "events/AddGameObjectToCurrentSceneEvent.h"
 #include "events/EventManager.h"
-#include "events/Events.h"
 #include "events/SceneChangedEvent.h"
 #include "graphic/SDLGraphicsManager.h"
 #include "objects/GameObject.h"

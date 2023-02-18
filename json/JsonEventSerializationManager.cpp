@@ -2,7 +2,8 @@
 #include <events/PlayerMovedEvent.h>
 #include <events/ControllerMoveEvent.h>
 #include <events/StartNetworkLevelEvent.h>
-#include "events/Events.h"
+
+#include "DirectionUtils.h"
 #include "events/NetworkTrafficReceivedEvent.h"
 
 using namespace json11;
@@ -13,7 +14,7 @@ namespace gamelib
 		const Json payload = Json::object
 		{
 			{ "messageType", object->Id.Name },
-			{ "direction", ToString(object->Direction) },
+			{ "direction", DirectionUtils::ToString(object->Direction) },
 			{ "nickname", target }
 		};
 
@@ -25,7 +26,7 @@ namespace gamelib
         std::string error;
         const auto payload = Json::parse(serializedMessage.c_str(), error);
         const auto& direction = payload["direction"].string_value();
-        return std::make_shared<PlayerMovedEvent>(FromDirectionString(direction));
+        return std::make_shared<PlayerMovedEvent>(DirectionUtils::FromDirectionString(direction));
     }	
 
 	std::shared_ptr<StartNetworkLevelEvent> JsonEventSerializationManager::DeserializeStartNetworkLevel(const std::string serializedMessage)
@@ -42,7 +43,7 @@ namespace gamelib
 	    const Json payload = Json::object
 		{
 			{ "messageType", object->Id.Name },
-			{ "direction", ToString(object->Direction) },
+			{ "direction", DirectionUtils::ToString(object->Direction) },
 			{ "nickname", target }
 		};
 
@@ -105,7 +106,7 @@ namespace gamelib
 		{
 			{ "messageType", "pong" },
 			{ "isHappy", true },
-			{ "eventType", NetworkTrafficReceivedEventId.Id },
+			{ "eventType", NetworkTrafficReceivedEventId.PrimaryId },
 			{ "names", Json::array{ "Stuart", "Jenny", "bruce" } },
 			{ "ages", Json::array{ 1, 2, 3 } },
 			{ "fish", Json::object{ { "yo", "sushi" } } }
@@ -119,7 +120,7 @@ namespace gamelib
 		const Json payload = Json::object{
 			{ "messageType", "ping" },
 			{ "isHappy", false },
-			{ "eventType", NetworkTrafficReceivedEventId.Id },
+			{ "eventType", NetworkTrafficReceivedEventId.PrimaryId },
 			{ "names", Json::array{ "Stuart", "Jenny", "bruce" } },
 			{ "ages", Json::array{ 1, 2, 3 } },
 			{ "fish", Json::object{ { "yo", "sushi" } } }

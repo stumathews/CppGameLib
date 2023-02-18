@@ -64,18 +64,18 @@ namespace gamelib
 		vector<shared_ptr<Event>> secondaryEvents;
 
 		// ReSharper disable once CppDefaultCaseNotHandledInSwitchStatement
-		if(event->Id.Id == DrawCurrentSceneEventId.Id)
+		if(event->Id.PrimaryId == DrawCurrentSceneEventId.PrimaryId)
 		{
 			DrawScene();
 		}
-		if(event->Id.Id == LevelChangedEventTypeEventId.Id) { LoadNewScene(event); }
-		if(event->Id.Id == UpdateAllGameObjectsEventTypeEventId.Id)
+		if(event->Id.PrimaryId == LevelChangedEventTypeEventId.PrimaryId) { LoadNewScene(event); }
+		if(event->Id.PrimaryId == UpdateAllGameObjectsEventTypeEventId.PrimaryId)
 		{
 			UpdateAllObjects(deltaMs);
 		}
-		if(event->Id.Id == AddGameObjectToCurrentSceneEventId.Id) { AddGameObjectToScene(event);}
-		if(event->Id.Id == GameObjectTypeEventId.Id) { OnGameObjectEventReceived(event); }
-		if(event->Id.Id == SceneLoadedEventId.Id) { OnSceneLoaded(event);}
+		if(event->Id.PrimaryId == AddGameObjectToCurrentSceneEventId.PrimaryId) { AddGameObjectToScene(event);}
+		if(event->Id.PrimaryId == GameObjectTypeEventId.PrimaryId) { OnGameObjectEventReceived(event); }
+		if(event->Id.PrimaryId == SceneLoadedEventId.PrimaryId) { OnSceneLoaded(event);}
 		
 		// We dont generate any events yet;
 		return secondaryEvents;
@@ -301,7 +301,7 @@ namespace gamelib
 
 	std::shared_ptr<GameObject> SceneManager::GetGameObjectFrom(const std::shared_ptr<Event>& event) const
 	{
-		if (event->Id.Id != AddGameObjectToCurrentSceneEventId.Id) { THROW(1, "Cannot extract game object from event", "SceneManager") }
+		if (event->Id.PrimaryId != AddGameObjectToCurrentSceneEventId.PrimaryId) { THROW(1, "Cannot extract game object from event", "SceneManager") }
 
 		return dynamic_pointer_cast<AddGameObjectToCurrentSceneEvent>(event)->GetGameObject();
 	}

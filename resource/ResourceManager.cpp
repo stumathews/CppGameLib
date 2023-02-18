@@ -40,7 +40,7 @@ namespace gamelib
 	/// <returns></returns>
 	vector<shared_ptr<Event>> ResourceManager::HandleEvent(const shared_ptr<Event> event, unsigned long deltaMs)
 	{
-		if(event->Id.Id == LevelChangedEventTypeEventId.Id)
+		if(event->Id.PrimaryId == LevelChangedEventTypeEventId.PrimaryId)
 		{
 			LogThis("Detected level change. Loading level assets...", debug, [&]()
 			{

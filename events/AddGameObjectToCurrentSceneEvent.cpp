@@ -1,8 +1,9 @@
 #include "AddGameObjectToCurrentSceneEvent.h"
+#include "Events.h"
 
 namespace gamelib
 {
-	AddGameObjectToCurrentSceneEvent::AddGameObjectToCurrentSceneEvent(const std::shared_ptr<GameObject>& gameObject): Event(EventType::AddGameObjectToCurrentScene)
+	AddGameObjectToCurrentSceneEvent::AddGameObjectToCurrentSceneEvent(const std::shared_ptr<GameObject>& gameObject): Event(AddGameObjectToCurrentSceneEventId)
 	{
 		SetGameObject(gameObject);
 	}

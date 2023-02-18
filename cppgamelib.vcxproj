@@ -166,6 +166,7 @@
     <ClInclude Include="asset\asset.h" />
     <ClInclude Include="audio\AudioManager.h" />
     <ClInclude Include="audio\AudioAsset.h" />
+    <ClInclude Include="events\EventId.h" />
     <ClInclude Include="events\EventFactory.h" />
     <ClInclude Include="events\IEventSerializationManager.h" />
     <ClInclude Include="events\NetworkPlayerJoinedEvent.h" />
@@ -263,6 +264,7 @@
     <ClCompile Include="asset\Asset.cpp" />
     <ClCompile Include="audio\AudioManager.cpp" />
     <ClCompile Include="audio\AudioAsset.cpp" />
+    <ClCompile Include="events\EventId.cpp" />
     <ClCompile Include="events\EventFactory.cpp" />
     <ClCompile Include="events\IEventSerializationManager.cpp" />
     <ClCompile Include="Hotspot.cpp" />

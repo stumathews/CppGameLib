@@ -2,6 +2,8 @@
 #include <events/PlayerMovedEvent.h>
 #include <events/ControllerMoveEvent.h>
 #include <events/StartNetworkLevelEvent.h>
+#include "events/Events.h"
+#include "events/NetworkTrafficReceivedEvent.h"
 
 using namespace json11;
 namespace gamelib
@@ -10,7 +12,7 @@ namespace gamelib
 	{
 		const Json payload = Json::object
 		{
-			{ "messageType", ToString(object->Type) },
+			{ "messageType", object->Id.Name },
 			{ "direction", ToString(object->Direction) },
 			{ "nickname", target }
 		};
@@ -39,7 +41,7 @@ namespace gamelib
     {
 	    const Json payload = Json::object
 		{
-			{ "messageType", ToString(object->Type) },
+			{ "messageType", object->Id.Name },
 			{ "direction", ToString(object->Direction) },
 			{ "nickname", target }
 		};
@@ -64,7 +66,7 @@ namespace gamelib
 	{
 		const Json payload = Json::object
 		{
-			{ "messageType", ToString(evt->Type) },
+			{ "messageType", evt->Id.Name },
 			{ "level", evt->Level },
 			{ "nickname", target }
 		};
@@ -103,7 +105,7 @@ namespace gamelib
 		{
 			{ "messageType", "pong" },
 			{ "isHappy", true },
-			{ "eventType", static_cast<int>(EventType::NetworkTrafficReceived) },
+			{ "eventType", NetworkTrafficReceivedEventId.Id },
 			{ "names", Json::array{ "Stuart", "Jenny", "bruce" } },
 			{ "ages", Json::array{ 1, 2, 3 } },
 			{ "fish", Json::object{ { "yo", "sushi" } } }
@@ -117,7 +119,7 @@ namespace gamelib
 		const Json payload = Json::object{
 			{ "messageType", "ping" },
 			{ "isHappy", false },
-			{ "eventType", static_cast<int>(EventType::NetworkTrafficReceived) },
+			{ "eventType", NetworkTrafficReceivedEventId.Id },
 			{ "names", Json::array{ "Stuart", "Jenny", "bruce" } },
 			{ "ages", Json::array{ 1, 2, 3 } },
 			{ "fish", Json::object{ { "yo", "sushi" } } }

@@ -9,6 +9,7 @@
 #include <net/TcpGameServerConnection.h>
 #include <net/UdpGameServerConnection.h>
 
+#include "events/StartNetworkLevelEvent.h"
 #include "util/SettingsManager.h"
 
 using namespace json11;
@@ -49,10 +50,9 @@ namespace gamelib
 		nickname  = SettingsManager::Get()->GetString("networking", "nickname");
 
 		// We're interested in some of the our own game's events
-		_eventManager->SubscribeToEvent(EventType::PlayerMovedEventType, this);
-		_eventManager->SubscribeToEvent(EventType::ControllerMoveEvent, this);
-		_eventManager->SubscribeToEvent(EventType::Fire, this);	
-		_eventManager->SubscribeToEvent(EventType::StartNetworkLevel, this);
+		_eventManager->SubscribeToEvent(PlayerMovedEventTypeEventId, this);
+		_eventManager->SubscribeToEvent(ControllerMoveEventId, this);
+		_eventManager->SubscribeToEvent(StartNetworkLevelEventId, this);
 	}
 	
 	void GameServer::Listen() const

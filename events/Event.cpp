@@ -4,17 +4,11 @@
 
 namespace gamelib
 {
-	Event::Event(const EventType type): Type(type)
-	{
-		Id = lastEventId++;
-	}
-
-	EventType Event::GetGameObjectType() { return Type; }
-	std::string Event::ToString() { return gamelib::ToString(Type); }
+	std::string Event::ToString() { return Id.Name; }
 
 	Event::~Event() = default;
 
-	std::string operator+(const std::string& str, const EventType type) { return str + std::to_string(ToInteger(type)); }
+	std::string operator+(const std::string& str, const EventId id) { return str + id.Name; }
 
 	int Event::lastEventId = 0;
 }

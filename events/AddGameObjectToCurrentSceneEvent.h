@@ -2,11 +2,13 @@
 
 #include <memory>
 #include "Event.h"
+#include "Events.h"
 
 namespace gamelib
 {
 	class GameObject;
 
+	const static EventId AddGameObjectToCurrentSceneEventId(AddGameObjectToCurrentScene, "AddGameObjectToCurrentSceneEventId");
 	/// <summary>
 	/// Add a Game Object to scene event
 	/// </summary>

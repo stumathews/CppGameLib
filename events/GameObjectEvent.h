@@ -2,7 +2,9 @@
 
 #include <memory>
 
+#include "Events.h"
 #include "events/Event.h"
+
 namespace gamelib
 {
 	class GameObject;
@@ -12,16 +14,15 @@ namespace gamelib
 		Remove,
 		RemoveSubscription
 	};
+	
+	const static EventId GameObjectTypeEventId(GameObjectTypeEvent, "GameObjectTypeEvent");
 
 	class GameObjectEvent final : public Event
 	{
 	public:
 		GameObjectEvent(std::shared_ptr<GameObject> gameObject, GameObjectEventContext context);
-
-		EventType GetGameObjectType() override;
-		std::string ToString() override;
 		GameObjectEventContext Context;
-		std::shared_ptr<GameObject> GameObject;
+		std::shared_ptr<GameObject> Object;
 	};
 
 	inline const char* ToString(const GameObjectEventContext context)

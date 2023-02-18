@@ -9,6 +9,7 @@
 #include "events/EventManager.h"
 #include "events/SceneChangedEvent.h"
 #include "events/SceneLoadedEvent.h"
+#include "events/UpdateAllGameObjectsEvent.h"
 #include "objects/GameObjectFactory.h"
 #include "util/SettingsManager.h"
 
@@ -46,12 +47,12 @@ namespace gamelib
 		{
 			SetSceneFolder(sceneFolder);
 
-			EventManager::Get()->SubscribeToEvent(EventType::LevelChangedEventType, this);
-			EventManager::Get()->SubscribeToEvent(EventType::AddGameObjectToCurrentScene, this);
-			EventManager::Get()->SubscribeToEvent(EventType::GenerateNewLevel, this);
-			EventManager::Get()->SubscribeToEvent(EventType::GameObject, this);
-			EventManager::Get()->SubscribeToEvent(EventType::DrawCurrentScene, this);
-			EventManager::Get()->SubscribeToEvent(EventType::UpdateAllGameObjectsEventType, this);
+			EventManager::Get()->SubscribeToEvent(LevelChangedEventTypeEventId, this);
+			EventManager::Get()->SubscribeToEvent(AddGameObjectToCurrentSceneEventId, this);
+			EventManager::Get()->SubscribeToEvent(GenerateNewLevelEventId, this);
+			EventManager::Get()->SubscribeToEvent(GameObjectTypeEventId, this);
+			EventManager::Get()->SubscribeToEvent(DrawCurrentSceneEventId, this);
+			EventManager::Get()->SubscribeToEvent(UpdateAllGameObjectsEventTypeEventId, this);
 
 			return true;
 		}, true, true);
@@ -63,16 +64,18 @@ namespace gamelib
 		vector<shared_ptr<Event>> secondaryEvents;
 
 		// ReSharper disable once CppDefaultCaseNotHandledInSwitchStatement
-		// ReSharper disable once CppIncompleteSwitchStatement
-		switch(event->Type)  // NOLINT(clang-diagnostic-switch)
+		if(event->Id.Id == DrawCurrentSceneEventId.Id)
 		{
-			case EventType::DrawCurrentScene: DrawScene(); break;
-			case EventType::LevelChangedEventType: LoadNewScene(event); break;
-			case EventType::UpdateAllGameObjectsEventType: 	UpdateAllObjects(deltaMs); break;
-			case EventType::AddGameObjectToCurrentScene: AddGameObjectToScene(event); break;
-			case EventType::GameObject: OnGameObjectEventReceived(event); break;
-			case EventType::SceneLoaded: OnSceneLoaded(event); break;
+			DrawScene();
 		}
+		if(event->Id.Id == LevelChangedEventTypeEventId.Id) { LoadNewScene(event); }
+		if(event->Id.Id == UpdateAllGameObjectsEventTypeEventId.Id)
+		{
+			UpdateAllObjects(deltaMs);
+		}
+		if(event->Id.Id == AddGameObjectToCurrentSceneEventId.Id) { AddGameObjectToScene(event);}
+		if(event->Id.Id == GameObjectTypeEventId.Id) { OnGameObjectEventReceived(event); }
+		if(event->Id.Id == SceneLoadedEventId.Id) { OnSceneLoaded(event);}
 		
 		// We dont generate any events yet;
 		return secondaryEvents;
@@ -92,7 +95,7 @@ namespace gamelib
 
 		if (gameObjectEvent->Context == GameObjectEventContext::Remove)
 		{
-			if (gameObjectEvent->GameObject) { RemoveGameObjectFromLayers(gameObjectEvent->GameObject->Id); }
+			if (gameObjectEvent->Object) { RemoveGameObjectFromLayers(gameObjectEvent->Object->Id); }
 		}
 	}
 
@@ -298,7 +301,7 @@ namespace gamelib
 
 	std::shared_ptr<GameObject> SceneManager::GetGameObjectFrom(const std::shared_ptr<Event>& event) const
 	{
-		if (event->Type != EventType::AddGameObjectToCurrentScene) { THROW(1, "Cannot extract game object from event", "SceneManager") }
+		if (event->Id.Id != AddGameObjectToCurrentSceneEventId.Id) { THROW(1, "Cannot extract game object from event", "SceneManager") }
 
 		return dynamic_pointer_cast<AddGameObjectToCurrentSceneEvent>(event)->GetGameObject();
 	}

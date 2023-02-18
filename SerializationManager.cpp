@@ -22,10 +22,8 @@ namespace gamelib
 		return instance;
 	}
 
-	SerializationManager::SerializationManager()
-	{
-	}
-	
+	SerializationManager::SerializationManager() = default;
+
 	SerializationManager* SerializationManager::instance = nullptr;
 
 	
@@ -50,17 +48,11 @@ namespace gamelib
 	{
 		// TODO: Update the list of events that can be sent over the network
 
-		switch(evt->Type)  // NOLINT(clang-diagnostic-switch-enum)
-		{
-			case EventType::PlayerMovedEventType:
-				return CreatePlayerMovedEventMessage(evt, target);
-			case EventType::ControllerMoveEvent:
-				return CreateControllerMoveEventMessage(evt, target);
-			case EventType::StartNetworkLevel:
-				return CreateStartNetworkLevelMessage(evt, target);
-			default:
-				return CreateUnknownEventMessage(evt, target);
-		}
+		if(evt->Id.Id == PlayerMovedEventTypeEventId.Id) { return CreatePlayerMovedEventMessage(evt, target);}
+		if(evt->Id.Id == ControllerMoveEventId.Id) { return CreateControllerMoveEventMessage(evt, target);}
+		if(evt->Id.Id == StartNetworkLevelEventId.Id) { return CreateStartNetworkLevelMessage(evt, target);}
+		return CreateUnknownEventMessage(evt, target);
+		
 	}
 
 	std::shared_ptr<Event> SerializationManager::Deserialize(const MessageHeader& messageHeader, const std::string&
@@ -69,15 +61,15 @@ namespace gamelib
 		std::shared_ptr<Event> event = nullptr;
 
 		// TODO: Update the list of messages (serialised events) that we can be consumed by the network clients, i.e deserialized
-
-		// ReSharper disable once CppDefaultCaseNotHandledInSwitchStatement
-		// ReSharper disable once CppIncompleteSwitchStatement
-		switch(FromString(messageHeader.MessageType))  // NOLINT(clang-diagnostic-switch)
+		
+		if(messageHeader.MessageType == StartNetworkLevelEventId.Name)
 		{
-		case EventType::PlayerMovedEventType:
-			return std::dynamic_pointer_cast<Event>(eventSerialization->DeserializePlayerMovedEvent(serializedMessage));
-		case EventType::StartNetworkLevel:
 			return std::dynamic_pointer_cast<Event>(eventSerialization->DeserializeStartNetworkLevel(serializedMessage));
+		}
+
+		if(messageHeader.MessageType == PlayerMovedEventTypeEventId.Name)
+		{
+			return std::dynamic_pointer_cast<Event>(eventSerialization->DeserializePlayerMovedEvent(serializedMessage));
 		}
 		
 		return event;

@@ -1,5 +1,7 @@
 #include "UpdateAllGameObjectsEvent.h"
 
+#include "Events.h"
+
 using namespace std;
 namespace gamelib
 {
@@ -8,7 +10,7 @@ namespace gamelib
 	/// Logic Update Event initializer
 	/// </summary>
 	UpdateAllGameObjectsEvent::UpdateAllGameObjectsEvent() 
-		: Event(EventType::UpdateAllGameObjectsEventType){}
+		: Event(UpdateAllGameObjectsEventTypeEventId){}
 
 	/// <summary>
 	/// Provide a string representation of event

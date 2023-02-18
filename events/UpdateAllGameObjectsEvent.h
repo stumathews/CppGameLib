@@ -1,8 +1,11 @@
 #pragma once
 #include "Event.h"
+#include "Events.h"
 
 namespace gamelib
 {
+	const static EventId UpdateAllGameObjectsEventTypeEventId(UpdateAllGameObjectsEventType, "UpdateAllGameObjectsEventType");
+
 	/// <summary>
 	/// An event that informs the receiver to do a logic update, without actually coupling to the receiver
 	/// </summary>

@@ -16,6 +16,6 @@ namespace gamelib
 		/// Move the player according to the calculated movement
 		/// </summary>
 		/// <returns>true if movement could be performed, false otherwise</returns>
-		virtual bool MoveGameObject(std::shared_ptr<gamelib::IMovement> movement) = 0;
+		virtual bool MoveGameObject(std::shared_ptr<IMovement> movement) = 0;
 	};
 }

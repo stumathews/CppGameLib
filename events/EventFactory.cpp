@@ -37,9 +37,9 @@ namespace gamelib
 		Instance = nullptr;
 	}
 
-	std::shared_ptr<Event> EventFactory::CreateGenericEvent(EventType type) const
+	std::shared_ptr<Event> EventFactory::CreateGenericEvent(const EventId& id) const
 	{
-		return std::make_shared<Event>(type);
+		return std::make_shared<Event>(id);
 	}
 
 	std::shared_ptr<PlayerMovedEvent> EventFactory::CreatePlayerMovedEvent(const Direction direction, const std::string
@@ -57,8 +57,7 @@ namespace gamelib
 	std::shared_ptr<NetworkTrafficReceivedEvent> EventFactory::CreateNetworkTrafficReceivedEvent(const std::string&
 		message, const std::string& identifier, const int bytesReceived) const
 	{
-		auto event = std::make_shared<NetworkTrafficReceivedEvent>(
-			EventType::NetworkTrafficReceived);
+		auto event = std::make_shared<NetworkTrafficReceivedEvent>();
 		event->Message = message;
 		event->Identifier = identifier;
 		event->BytesReceived = bytesReceived;

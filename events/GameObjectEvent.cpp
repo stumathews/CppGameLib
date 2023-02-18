@@ -1,19 +1,13 @@
 #include "GameObjectEvent.h"
+
+#include "Events.h"
 using namespace std;
 
 namespace gamelib
 {
 
-	GameObjectEvent::GameObjectEvent(shared_ptr<gamelib::GameObject> gameObject, const GameObjectEventContext context)
-		: Event(EventType::GameObject), Context(context), GameObject(std::move(gameObject))
+	GameObjectEvent::GameObjectEvent(shared_ptr<GameObject> gameObject, const GameObjectEventContext context)
+		: Event(GameObjectTypeEventId), Context(context), Object(std::move(gameObject))
 	{
-	}
-
-	EventType GameObjectEvent::GetGameObjectType() 
-	{
-		return EventType::GameObject;
-	}
-	std::string GameObjectEvent::ToString() { 
-		return "GameObjectEvent";
 	}
 }

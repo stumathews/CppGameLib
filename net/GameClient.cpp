@@ -7,6 +7,7 @@
 #include <events/EventFactory.h>
 #include <SerializationManager.h>
 
+#include "events/StartNetworkLevelEvent.h"
 #include "util/SettingsManager.h"
 
 using namespace json11;
@@ -50,9 +51,8 @@ namespace gamelib
 	void GameClient::SubscribeToGameEvents()
 	{
 		// We subscribe to some of our own events and send them to the game server...
-		_eventManager->SubscribeToEvent(EventType::PlayerMovedEventType, this);
-		_eventManager->SubscribeToEvent(EventType::ControllerMoveEvent, this);
-		_eventManager->SubscribeToEvent(EventType::Fire, this);
+		_eventManager->SubscribeToEvent(PlayerMovedEventTypeEventId, this);
+		_eventManager->SubscribeToEvent(ControllerMoveEventId, this);
 	}
 
 	void GameClient::Connect(const std::shared_ptr<GameServer>& inGameServer)
@@ -161,7 +161,7 @@ namespace gamelib
 		const auto event = serializationManager->Deserialize(msgHeader, buffer);
 		
 		// Some events are known not to have a specific subscriber target
-		const bool noTarget = messageType == ToString(EventType::StartNetworkLevel);
+		const bool noTarget = messageType == StartNetworkLevelEventId.Name;
 
 		if(event)
 		{			

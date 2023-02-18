@@ -19,6 +19,7 @@
 #include "Logging/ErrorLogManager.h"
 #include <events/UpdateProcessesEvent.h>
 
+#include "events/Events.h"
 #include "util/SettingsManager.h"
 
 using namespace std;
@@ -152,7 +153,7 @@ namespace gamelib
 	void GameStructure::Draw(unsigned long percent_within_tick) const
 	{		
 		// Time-sensitive, skip queue. Draws the current scene
-		EventManager::Get()->DispatchEventToSubscriber(std::make_shared<Event>(EventType::DrawCurrentScene), 0UL);
+		EventManager::Get()->DispatchEventToSubscriber(std::make_shared<Event>(DrawCurrentSceneEventId), 0UL);
 	}
 
 

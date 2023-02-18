@@ -297,6 +297,9 @@
     <ClInclude Include="movement\IGameMoveStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="events\EventId.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -525,6 +528,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="objects\Npc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="events\EventId.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

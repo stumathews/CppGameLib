@@ -30,7 +30,7 @@ namespace gamelib
 		GameObject(int x, int y, bool isVisible);
 		GameObject(Coordinate<int> coordinate, bool isVisible);
 							
-		void SubscribeToEvent(EventType type);
+		void SubscribeToEvent(const EventId& eventId);
 		void RaiseEvent(const std::shared_ptr<Event>& theEvent);
 		void SetTag(const std::string& tag);
 		void UpdateBounds(unsigned int width, unsigned int height);

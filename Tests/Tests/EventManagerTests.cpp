@@ -5,6 +5,8 @@
 #include <events/EventSubscriber.h>
 #include <objects/MultipleInheritableEnableSharedFromThis.h>
 
+#include "events/Events.h"
+
 using namespace std;
 using namespace gamelib;
 
@@ -16,7 +18,7 @@ public:
 	virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs) override
 	{
 		handle_event_received = true;
-		return std::vector<std::shared_ptr<Event>>();
+		return {};
 	}
 	virtual std::string GetSubscriberName() override
 	{
@@ -30,8 +32,8 @@ class EventManagerTests : public ::testing::Test
   
   
   dummy_subscriber subscriber;	
-  const shared_ptr<UpdateAllGameObjectsEvent> the_event = shared_ptr<UpdateAllGameObjectsEvent>(new UpdateAllGameObjectsEvent());
-  const EventType EventType = EventType::UpdateAllGameObjectsEventType;
+  const shared_ptr<UpdateAllGameObjectsEvent> the_event = std::make_shared<UpdateAllGameObjectsEvent>();
+  const EventId Id = UpdateAllGameObjectsEventTypeEventId;
 
   void SetUp() override
   {
@@ -63,7 +65,7 @@ TEST_F(EventManagerTests, InitializeTest)
 TEST_F(EventManagerTests, RaiseEvent)
 {	
 	EventManager::Get()->RaiseEvent(dynamic_pointer_cast<Event>(the_event), &subscriber);
-	EXPECT_EQ(1, EventManager::Get()->count_ready()) << "Expected 1 event to be ready for processing";
+	EXPECT_EQ(1, EventManager::Get()->CountReady()) << "Expected 1 event to be ready for processing";
 }
 
 TEST_F(EventManagerTests, ProcessEvent)
@@ -71,21 +73,21 @@ TEST_F(EventManagerTests, ProcessEvent)
 	EventManager::Get()->RaiseEvent(dynamic_pointer_cast<Event>(the_event), &subscriber);
 	EventManager::Get()->ProcessAllEvents();
 
-	EXPECT_EQ(0, EventManager::Get()->count_ready());
+	EXPECT_EQ(0, EventManager::Get()->CountReady());
 	EXPECT_TRUE(the_event->Processed) << "The event was not marked as processed";
 }
 
 TEST_F(EventManagerTests, SubscribeToEvent)
 {
 	// When subscribing to an event, a processed event should notify the subscriber of that event
-	EventManager::Get()->SubscribeToEvent(EventType, &subscriber);
+	EventManager::Get()->SubscribeToEvent(Id, &subscriber);
 	EventManager::Get()->RaiseEvent(dynamic_pointer_cast<Event>(the_event), &subscriber);
 	EventManager::Get()->ProcessAllEvents();
 
-	EXPECT_EQ(0, EventManager::Get()->count_ready()) << "Expected there to be no events waiting to be dispatched after processing all events";
+	EXPECT_EQ(0, EventManager::Get()->CountReady()) << "Expected there to be no events waiting to be dispatched after processing all events";
 	EXPECT_TRUE(subscriber.handle_event_received) << "Subscriber was not notified after processing events";
 
-	auto& all_event_subscribers = EventManager::Get()->GetSubscriptions()[EventType];
+	auto& all_event_subscribers = EventManager::Get()->GetSubscriptions()[Id];
 	
 	EXPECT_EQ(1, all_event_subscribers.size()) << "Expect 1 subscriber to exist";
 	//EXPECT_STREQ(all_event_subscribers[0].lock()->GetSubscriberName().c_str(), subscriber->GetSubscriberName().c_str()) << "Our subscriber was not the subscription w eexepcted";
@@ -93,16 +95,16 @@ TEST_F(EventManagerTests, SubscribeToEvent)
 
 TEST_F(EventManagerTests, DispatchEventDirectlyToSubscriber)
 {
-	EventManager::Get()->SubscribeToEvent(EventType, &subscriber);
+	EventManager::Get()->SubscribeToEvent(Id, &subscriber);
 	EventManager::Get()->DispatchEventToSubscriber(the_event, 0UL);
-	EXPECT_EQ(EventManager::Get()->count_ready(), 0) << "Direct dispatch of event to subscriber should not show up in event queues";
+	EXPECT_EQ(EventManager::Get()->CountReady(), 0) << "Direct dispatch of event to subscriber should not show up in event queues";
 	EXPECT_TRUE(subscriber.handle_event_received) << "subscriber was not directly notified";
 	EXPECT_TRUE(the_event->Processed) << "The event was not marked as processed";
 }
 
 TEST_F(EventManagerTests, ClearSubscribersTest)
 {
-	EventManager::Get()->SubscribeToEvent(EventType, &subscriber);
+	EventManager::Get()->SubscribeToEvent(Id, &subscriber);
 	EventManager::Get()->RaiseEvent(dynamic_pointer_cast<Event>(the_event), &subscriber);
 	EventManager::Get()->ProcessAllEvents();
 

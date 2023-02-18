@@ -1,12 +1,14 @@
 #pragma once
+#include "Event.h"
 #include "Events.h"
 
 namespace gamelib
 {
+	const static EventId LevelChangedEventTypeEventId(LevelChangedEventType, "LevelChangedEventType");	
 	class SceneChangedEvent final : public Event
 	{
 	public:
-		explicit SceneChangedEvent(const int level) : Event(EventType::LevelChangedEventType)
+		explicit SceneChangedEvent(const int level) : Event(LevelChangedEventTypeEventId)
 		{
 			SceneId = level;
 		}

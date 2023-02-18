@@ -28,7 +28,7 @@ namespace gamelib
 		debug = SettingsManager::Get()->GetBool("global", "verbose");
 		return LogThis("ResourceManager::initialize()", debug, [&]()
 		{			
-			EventManager::Get()->SubscribeToEvent(EventType::LevelChangedEventType, this ); // we will load the resources for the level that has been loaded
+			EventManager::Get()->SubscribeToEvent(LevelChangedEventTypeEventId, this ); // we will load the resources for the level that has been loaded
 			return true;
 		}, true, true);
 	}
@@ -40,7 +40,7 @@ namespace gamelib
 	/// <returns></returns>
 	vector<shared_ptr<Event>> ResourceManager::HandleEvent(const shared_ptr<Event> event, unsigned long deltaMs)
 	{
-		if(event->Type == EventType::LevelChangedEventType)
+		if(event->Id.Id == LevelChangedEventTypeEventId.Id)
 		{
 			LogThis("Detected level change. Loading level assets...", debug, [&]()
 			{

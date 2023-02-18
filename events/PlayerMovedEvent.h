@@ -1,14 +1,17 @@
 #pragma once
 #include "Event.h"
 #include "ControllerMoveEvent.h"
+#include "Events.h"
+
 namespace gamelib
 {
 	class GameObject;
+	const static EventId PlayerMovedEventTypeEventId(PlayerMovedEventType, "PlayerMovedEventType");
 	class PlayerMovedEvent final : public Event
 	{
 	public:
 		explicit PlayerMovedEvent(const Direction direction) :
-			Event(EventType::PlayerMovedEventType), Direction(direction)
+			Event(PlayerMovedEventTypeEventId), Direction(direction)
 		{
 		}
 

@@ -8,9 +8,13 @@
 #include "objects/GameWorldData.h"
 #include <common/Logger.h>
 
+#include "events/Events.h"
+
 namespace gamelib
 {
 	class GameWorldData;
+	const static EventId DrawCurrentSceneEventId(DrawCurrentScene, "DrawCurrentScene");	
+	const static EventId GenerateNewLevelEventId(GenerateNewLevel, "GenerateNewLevel");
 
 	class SceneManager final : public EventSubscriber
 	{		

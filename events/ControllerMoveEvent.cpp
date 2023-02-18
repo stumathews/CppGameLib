@@ -1,9 +1,11 @@
 #include "ControllerMoveEvent.h"
 
+#include "Events.h"
+
 using namespace std;
 namespace gamelib
 {
-	ControllerMoveEvent::ControllerMoveEvent(const gamelib::Direction dir): Event(EventType::ControllerMoveEvent)
+	ControllerMoveEvent::ControllerMoveEvent(const gamelib::Direction dir): Event(ControllerMoveEventId)
 	{
 		Direction = dir;
 	}

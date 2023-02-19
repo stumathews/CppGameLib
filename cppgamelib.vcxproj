@@ -172,6 +172,8 @@
     <ClInclude Include="events\IEventSerializationManager.h" />
     <ClInclude Include="events\NetworkPlayerJoinedEvent.h" />
     <ClInclude Include="events\StartNetworkLevelEvent.h" />
+    <ClInclude Include="geometry\Side.h" />
+    <ClInclude Include="geometry\SideUtils.h" />
     <ClInclude Include="Hotspot.h" />
     <ClInclude Include="json\JsonEventSerializationManager.h" />
     <ClInclude Include="json\json11.h" />

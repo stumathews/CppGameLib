@@ -303,6 +303,12 @@
     <ClInclude Include="DirectionUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="geometry\SideUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry\Side.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">

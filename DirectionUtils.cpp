@@ -34,6 +34,21 @@ gamelib::Direction gamelib::DirectionUtils::GetRandomDirection()
 	return directionToSample.front();
 }
 
+gamelib::Direction gamelib::DirectionUtils::GetOppositeDirectionTo(Direction direction)
+{
+	
+	switch(direction)
+	{
+		case Direction::Up: return Direction::Down ;
+		case Direction::Down: return Direction::Up;
+		case Direction::Left: return Direction::Right;
+		case Direction::Right: return Direction::Left;
+		case Direction::None: return Direction::None;
+		default: return Direction::Down;
+	}
+
+}
+
 gamelib::Direction gamelib::DirectionUtils::FromDirectionString(const std::string& direction)
 {
 	if(direction == ToString(Direction::Up))

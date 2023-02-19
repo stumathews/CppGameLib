@@ -32,7 +32,7 @@ namespace gamelib
 		FSM stateMachine;
 		Direction currentMovingDirection;
 		Direction currentFacingDirection;
-		FSMState invalidState;
+		FSMState HitWallState;
 		FSMState upState;
 		FSMState downState;
 		FSMState leftState;

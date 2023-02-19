@@ -7,6 +7,8 @@ namespace gamelib
 	public:
 		Coordinate(T x, T y);
 		Coordinate();
+		bool operator== (const Coordinate& other) const;
+		bool operator!=(const Coordinate& other) const;
 		T GetX() const;
 		T GetY() const;
 
@@ -22,6 +24,18 @@ namespace gamelib
 
 	template <typename T>
 	Coordinate<T>::Coordinate() { x = y = 0; }
+
+	template <class T>
+	bool Coordinate<T>::operator==(const Coordinate& other) const
+	{		
+		return x == other.x && y == other.y;
+	}
+
+	template <class T>
+	bool Coordinate<T>::operator!=(const Coordinate& other) const
+	{
+		return !(other == *this);
+	}
 
 	template <typename T> 
 	T Coordinate<T>::GetY() const

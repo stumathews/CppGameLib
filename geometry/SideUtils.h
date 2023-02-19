@@ -30,5 +30,16 @@ namespace gamelib
 			case Direction::Right: return Side::Left;
 			}
 		}
+
+		static Side GetSideForDirection(const Direction direction)
+		{
+			switch(direction)
+			{
+			case Direction::Up: return Side::Top;
+			case Direction::Down: return Side::Bottom;
+			case Direction::Left: return Side::Left;
+			case Direction::Right: return Side::Right;
+			}
+		}
 	};
 }

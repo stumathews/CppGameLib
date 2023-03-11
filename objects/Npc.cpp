@@ -20,6 +20,16 @@ void gamelib::Npc::Draw(SDL_Renderer* renderer)
 	Sprite->Draw(renderer);
 }
 
+gamelib::GameObjectType gamelib::Npc::GetGameObjectType()
+{
+	return GameObjectType::GameDefined;
+}
+
+gamelib::Direction gamelib::Npc::GetDirection() const
+{
+	return currentFacingDirection;
+}
+
 void gamelib::Npc::SwapCurrentDirection()
 {
 	if(currentFacingDirection == Direction::Up) { SetNpcDirection(Direction::Down);}

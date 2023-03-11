@@ -44,6 +44,7 @@ namespace gamelib
 
 		[[nodiscard]] int GetHeight() const;
 		[[nodiscard]] int GetWidth() const;
+		bool operator==(const ABCDRectangle& other) const;
 
 		static bool Intersects(const ABCDRectangle& a, const ABCDRectangle& b);
 

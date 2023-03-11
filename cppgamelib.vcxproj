@@ -174,6 +174,8 @@
     <ClInclude Include="events\StartNetworkLevelEvent.h" />
     <ClInclude Include="geometry\Side.h" />
     <ClInclude Include="geometry\SideUtils.h" />
+    <ClInclude Include="graphic\DrawableFrameRate.h" />
+    <ClInclude Include="graphic\DrawableText.h" />
     <ClInclude Include="Hotspot.h" />
     <ClInclude Include="json\JsonEventSerializationManager.h" />
     <ClInclude Include="json\json11.h" />
@@ -271,6 +273,8 @@
     <ClCompile Include="events\EventId.cpp" />
     <ClCompile Include="events\EventFactory.cpp" />
     <ClCompile Include="events\IEventSerializationManager.cpp" />
+    <ClCompile Include="graphic\DrawableFrameRate.cpp" />
+    <ClCompile Include="graphic\DrawableText.cpp" />
     <ClCompile Include="Hotspot.cpp" />
     <ClCompile Include="json\JsonEventSerializationManager.cpp" />
     <ClCompile Include="json\json11.cpp" />

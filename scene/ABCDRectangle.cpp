@@ -19,6 +19,12 @@ namespace gamelib
 	int ABCDRectangle::GetDx() const { return GetAx(); }
 	int ABCDRectangle::GetDy() const { return GetAy() + h; }	
 	int ABCDRectangle::GetWidth() const { return w; }
+
+	bool ABCDRectangle::operator==(const ABCDRectangle& other) const
+	{
+		return other.x == x && other.y == y && other.w == w && other.h == h;
+	}
+
 	int ABCDRectangle::GetHeight() const { return h; }
 
 	bool ABCDRectangle::Intersects(const ABCDRectangle& a, const ABCDRectangle& b)

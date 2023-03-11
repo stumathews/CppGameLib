@@ -5,9 +5,9 @@
 #include "events/EventManager.h"
 #include "Inventory.h"
 #include <string>
-
 #include "scene/ABCDRectangle.h"
 #include "util/Tuple.h"
+#include <list>
 
 namespace gamelib
 {
@@ -31,6 +31,8 @@ namespace gamelib
 		GameObject(Coordinate<int> coordinate, bool isVisible);
 							
 		void SubscribeToEvent(const EventId& eventId);
+		void UnsubscribeSubscribeToEvent(const EventId& eventId);
+		bool SubscribesTo(const EventId& eventId);
 		void RaiseEvent(const std::shared_ptr<Event>& theEvent);
 		void SetTag(const std::string& tag);
 		void UpdateBounds(unsigned int width, unsigned int height);
@@ -56,7 +58,7 @@ namespace gamelib
 		std::map<std::string, int> IntProperties;
 		std::string Name;
 		std::string Type;
-
+		std::list<EventId> EventSubscriptions;
 	private:	
 
 		// Game Object tag

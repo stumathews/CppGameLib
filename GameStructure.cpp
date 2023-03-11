@@ -157,7 +157,8 @@ namespace gamelib
 
 	bool GameStructure::InitializeSDL(const int screenWidth, const int screenHeight, const string& windowTitle)
 	{
-		return LogOnFailure(SDLGraphicsManager::Get()->Initialize(screenWidth, screenHeight, windowTitle.c_str()), "Failed to initialize SDL graphics manager");
+		return LogOnFailure(SDLGraphicsManager::Get()->Initialize(screenWidth, screenHeight, windowTitle.c_str()),
+		                    "Failed to initialize SDL graphics manager");
 	}
 
 	bool GameStructure::UnloadGameSubsystems()

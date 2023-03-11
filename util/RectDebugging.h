@@ -15,7 +15,7 @@ namespace gamelib
 		static void PrintInRect(SDL_Renderer* renderer, const std::string& text, const SDL_Rect* bounds, const SDL_Color color)
 		{
 			SDL_Surface * surface = TTF_RenderText_Solid(std::static_pointer_cast<FontAsset>(
-				ResourceManager::Get()->GetAssetInfo("arial.ttf"))->GetFont(), 
+				ResourceManager::Get()->GetAssetInfo("kenvector_future2.ttf"))->GetFont(), 
 				text.c_str(), 
 				color);
 

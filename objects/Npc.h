@@ -18,21 +18,24 @@ namespace gamelib
 		    std::shared_ptr<IGameObjectMoveStrategy> moveStrategy = nullptr);
 					
 		void Draw(SDL_Renderer* renderer) override;
-		GameObjectType GetGameObjectType() override { return GameObjectType::GameDefined;}
 		void SwapCurrentDirection();
 		void SetNpcDirection(Direction direction);
+		
+		GameObjectType GetGameObjectType() override;
 
 		// Fields
 		std::shared_ptr<AnimatedSprite> Sprite;
 		ABCDRectangle Dimensions{};
 		std::shared_ptr<Hotspot> Hotspot;
 
+		Direction GetDirection() const;
+
 	protected:		
 		std::shared_ptr<IGameObjectMoveStrategy> moveStrategy;
 		FSM stateMachine;
 		Direction currentMovingDirection;
 		Direction currentFacingDirection;
-		FSMState HitWallState;
+		FSMState hitWallState;
 		FSMState upState;
 		FSMState downState;
 		FSMState leftState;

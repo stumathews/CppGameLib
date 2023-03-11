@@ -14,7 +14,23 @@ namespace gamelib
 	GameObject::GameObject(const int x, const int y, const bool isVisible ) { GameObject::LoadSettings(); SetDefaults(isVisible, x, y); }
 	GameObject::GameObject(const Coordinate<int> coordinate, const bool isVisible) { GameObject::LoadSettings(); SetDefaults(isVisible, coordinate.GetX(), coordinate.GetY()); }
 	
-	void GameObject::SubscribeToEvent(const EventId& eventId) { EventManager::Get()->SubscribeToEvent(eventId, this); }
+	void GameObject::SubscribeToEvent(const EventId& eventId)
+	{
+		EventManager::Get()->SubscribeToEvent(eventId, this);
+		EventSubscriptions.push_back(eventId);
+	}
+
+	void GameObject::UnsubscribeSubscribeToEvent(const EventId& eventId)
+	{		
+		EventManager::Get()->Unsubscribe(eventId.PrimaryId);
+		EventSubscriptions.remove(eventId);
+	}
+
+	bool GameObject::SubscribesTo(const EventId& eventId)
+	{
+		return std::find(begin(EventSubscriptions), end(EventSubscriptions), eventId) != end(EventSubscriptions);
+	}
+
 	void GameObject::RaiseEvent(const shared_ptr<Event>& theEvent) { EventManager::Get()->RaiseEvent(theEvent, this); }
 	void GameObject::Draw(SDL_Renderer* renderer) { }	
 	void GameObject::LoadSettings() {}

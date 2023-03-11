@@ -14,13 +14,13 @@ namespace gamelib
 
 	std::shared_ptr<StaticSprite> StaticSprite::Create(const int x, const int y, const std::shared_ptr<SpriteAsset>& spriteAsset)
 	{
-		auto _sprite = shared_ptr<StaticSprite>(new StaticSprite(gamelib::Coordinate<int>(x, y), spriteAsset));
+		auto sprite = shared_ptr<StaticSprite>(new StaticSprite(gamelib::Coordinate<int>(x, y), spriteAsset));
 
 		// Here we actually set te graphic that the sprite actually uses to show itself
-		_sprite->SetGraphic(spriteAsset);
-		_sprite->keyFrames = spriteAsset->KeyFrames;
-		_sprite->SetFrame(0);
-		return _sprite;
+		sprite->SetGraphic(spriteAsset);
+		sprite->keyFrames = spriteAsset->KeyFrames;
+		sprite->SetFrame(0);
+		return sprite;
 	}
 
 	std::shared_ptr<StaticSprite> StaticSprite::Create(const Coordinate<int> coordinate, const std::shared_ptr<

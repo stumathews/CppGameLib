@@ -86,7 +86,7 @@ namespace gamelib
 		
 		if (renderer == nullptr)
 		{			
-			std::cout << "Renderer could not be created: " << const_cast<char*>(SDL_GetError()) << std::endl;
+			std::cout << "Renderer could not be created: " << SDL_GetError() << std::endl;
 		}
 		
 		return renderer;
@@ -102,7 +102,7 @@ namespace gamelib
 		// Initialize SDL Video and Audio subsystems
 		if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0)
 		{
-			Logger::Get()->LogThis(string("SDL could not initialize:") + const_cast<char*>(SDL_GetError()));
+			Logger::Get()->LogThis(string("SDL could not initialize:") + SDL_GetError());
 			return false;
 		}
 
@@ -110,7 +110,7 @@ namespace gamelib
 		constexpr int imgFlags = IMG_INIT_PNG;
 		if(!(IMG_Init(imgFlags) & imgFlags ))
 		{
-			THROW(12, string("SDL_image could not initialize:") + const_cast<char*>(SDL_GetError()), "SDLGraphicsManager")
+			THROW(12, string("SDL_image could not initialize:") + SDL_GetError(), "SDLGraphicsManager")
 		}
 
 		// Create the Window

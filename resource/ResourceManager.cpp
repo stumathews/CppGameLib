@@ -12,23 +12,24 @@
 #include "util/SettingsManager.h"
 
 namespace gamelib
-{	
+{
 	using namespace tinyxml2;
 	using namespace std;
-		
-	ResourceManager::ResourceManager() { debug = false; }
+
+	ResourceManager::ResourceManager(): debug(false) {  }
 	ResourceManager::~ResourceManager() { Instance = nullptr; }
 
 	/// <summary>
 	/// Initialise the resrouce manager
 	/// </summary>
 	bool ResourceManager::Initialize(const std::string& filePath)
-	{		
+	{
 		IndexResourceFile(filePath);
 		debug = SettingsManager::Get()->GetBool("global", "verbose");
 		return LogThis("ResourceManager::initialize()", debug, [&]()
-		{			
-			EventManager::Get()->SubscribeToEvent(LevelChangedEventTypeEventId, this ); // we will load the resources for the level that has been loaded
+		{
+			EventManager::Get()->SubscribeToEvent(LevelChangedEventTypeEventId, this);
+			// we will load the resources for the level that has been loaded
 			return true;
 		}, true, true);
 	}
@@ -40,7 +41,7 @@ namespace gamelib
 	/// <returns></returns>
 	vector<shared_ptr<Event>> ResourceManager::HandleEvent(const shared_ptr<Event> event, unsigned long deltaMs)
 	{
-		if(event->Id.PrimaryId == LevelChangedEventTypeEventId.PrimaryId)
+		if (event->Id.PrimaryId == LevelChangedEventTypeEventId.PrimaryId)
 		{
 			LogThis("Detected level change. Loading level assets...", debug, [&]()
 			{
@@ -58,30 +59,33 @@ namespace gamelib
 	/// <remarks>Other scene assets are unloaded</remarks>
 	/// <param name="level">Scene/Level assets to load.</param>
 	void ResourceManager::LoadSceneAssets(const int level)
-	{	
-		for(const auto& level_resources : resourcesByScene) // we need access to all resources to swap in/out resources
+	{
+		for (const auto& level_resources : resourcesByScene) // we need access to all resources to swap in/out resources
 		{
-			for(const auto& asset : level_resources.second)
+			for (const auto& asset : level_resources.second)
 			{
 				const auto always_load_resource = asset->scene == 0;
-				if((asset->scene == level || always_load_resource) && !asset->IsLoadedInMemory)
-				{				
+				if ((asset->scene == level || always_load_resource) && !asset->IsLoadedInMemory)
+				{
 					asset->Load();
-					
-					Logger::Get()->LogThis(string("scene " + to_string(asset->scene) ) +string(": ") + string(asset->name) + " asset loaded.");
-						
+
+					Logger::Get()->LogThis(
+						string("scene " + to_string(asset->scene)) + string(": ") + string(asset->name) +
+						" asset loaded.");
+
 					countLoadedResources++;
 					countUnloadedResources--;
-				} 
-				else if(asset->IsLoadedInMemory && asset->scene != level && !always_load_resource )
+				}
+				else if (asset->IsLoadedInMemory && asset->scene != level && !always_load_resource)
 				{
 					asset->Unload();
-						
-					Logger::Get()->LogThis(string("scene: " + to_string(asset->scene))  + string(asset->name) + " asset unloaded.");
+
+					Logger::Get()->LogThis(
+						string("scene: " + to_string(asset->scene)) + string(asset->name) + " asset unloaded.");
 					countUnloadedResources++;
 					countLoadedResources--;
 				}
-			}		
+			}
 		}
 	}
 
@@ -92,48 +96,48 @@ namespace gamelib
 	{
 		LogThis("Unloading all resources...", debug, [&]()
 		{
-			for(const auto &item : resourcesByName)
+			for (const auto& item : resourcesByName)
 			{
-				auto &asset_name = item.first;
-				auto &asset = item.second;
-				
+				auto& asset_name = item.first;
+				auto& asset = item.second;
+
 				asset->Unload();
-				
+
 				LogMessage("Unloaded asset '" + asset_name + string("'."));
-			}		
+			}
 			return true;
-		}, true, true);	
+		}, true, true);
 	}
-		
+
 	/// <summary>
 	/// Index the Resources.xml file	 
 	/// </summary>
 	void ResourceManager::IndexResourceFile(const string& resourceFilePath)
-	{	
+	{
 		Logger::Get()->LogThis("ResourceManager: reading resources.xml.");
-		
-		XMLDocument xmlDocument;		
-		xmlDocument.LoadFile(resourceFilePath.c_str()); 
-		
-		if(xmlDocument.ErrorID() == 0)
-		{		
+
+		XMLDocument xmlDocument;
+		xmlDocument.LoadFile(resourceFilePath.c_str());
+
+		if (xmlDocument.ErrorID() == 0)
+		{
 			auto* pAssetsNode = xmlDocument.FirstChildElement("Assets");
-				
-			if(pAssetsNode)
+
+			if (pAssetsNode)
 			{
-				for(auto child = pAssetsNode->FirstChild(); child; child = child->NextSibling())
+				for (auto child = pAssetsNode->FirstChild(); child; child = child->NextSibling())
 				{
 					auto* const element = child->ToElement();
-					if(element)
+					if (element)
 					{
 						shared_ptr<Asset> theAsset = nullptr;
 						const char* ptrAssetType;
 
-						element->QueryStringAttribute("type", &ptrAssetType);					
-						theAsset = CreateAssetFromElement(ptrAssetType, theAsset, element);						
+						element->QueryStringAttribute("type", &ptrAssetType);
+						theAsset = CreateAssetFromElement(ptrAssetType, theAsset, element);
 
 						// Store the asset reference, but dont load it
-						if(theAsset != nullptr)
+						if (theAsset != nullptr)
 						{
 							StoreAsset(theAsset);
 						}
@@ -141,7 +145,8 @@ namespace gamelib
 						{
 							const auto message = string("No asset manager defined for ") + ptrAssetType;
 							Logger::Get()->LogThis(message);
-							THROW(static_cast<int>(ResourceManager::ErrorNumbers::NoAssetManagerForType), message, this->GetSubscriberName())
+							THROW(static_cast<int>(ResourceManager::ErrorNumbers::NoAssetManagerForType), message,
+							      this->GetSubscriberName())
 						}
 					}
 				}
@@ -153,7 +158,8 @@ namespace gamelib
 		}
 		else
 		{
-			THROW(static_cast<int>(ResourceManager::ErrorNumbers::FailedToLoadResourceFile), "Failed to load resources file", this->GetSubscriberName())
+			THROW(static_cast<int>(ResourceManager::ErrorNumbers::FailedToLoadResourceFile),
+			      "Failed to load resources file", this->GetSubscriberName())
 		}
 
 		LogMessage(to_string(countResources) + string(" assets available in resource manager."));
@@ -174,7 +180,7 @@ namespace gamelib
 		{
 			asset = GraphicAssetFactory::Get()->Parse(element);
 		}
-		
+
 		// Create fx/sound/audio asset
 		else if (strcmp(type, "fx") == 0 || strcmp(type, "music") == 0)
 		{
@@ -210,13 +216,24 @@ namespace gamelib
 		// Index the asset by its id
 		resourcesById.insert(pair<int, shared_ptr<Asset>>(asset->uid, asset));
 
-		LogMessage("Discovered " + string(asset->type) + string(" asset#: ") + to_string(asset->uid) + string(" ") + string(asset->name));
+		LogMessage(
+			"Discovered " + string(asset->type) + string(" asset#: ") + to_string(asset->uid) + string(" ") + string(
+				asset->name));
 		countResources++;
 	}
 
-	string ResourceManager::GetSubscriberName()	{ return "resource manager";}
-	shared_ptr<Asset> ResourceManager::GetAssetInfo(const string& name) {return resourcesByName[name]; }
+	string ResourceManager::GetSubscriberName() { return "resource manager"; }
+	shared_ptr<Asset> ResourceManager::GetAssetInfo(const string& name) { return resourcesByName[name]; }
 	shared_ptr<Asset> ResourceManager::GetAssetInfo(const int uuid) { return resourcesById[uuid]; }
-	ResourceManager* ResourceManager::Get() { if (Instance == nullptr) { Instance = new ResourceManager(); } return Instance; }
+
+	ResourceManager* ResourceManager::Get()
+	{
+		if (Instance == nullptr)
+		{
+			Instance = new ResourceManager();
+		}
+		return Instance;
+	}
+
 	ResourceManager* ResourceManager::Instance = nullptr;
 }

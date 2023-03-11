@@ -22,18 +22,13 @@ namespace gamelib
 		Hotspot
 	};
 
-	class GameObject : public IEventSubscriber
+	class GameObject : public EventSubscriber
 	{
 	public:
 		explicit GameObject(bool isVisible);
 		GameObject() = default;
 		GameObject(int x, int y, bool isVisible);
 		GameObject(Coordinate<int> coordinate, bool isVisible);
-							
-		void SubscribeToEvent(const EventId& eventId);
-		void UnsubscribeSubscribeToEvent(const EventId& eventId);
-		bool SubscribesTo(const EventId& eventId);
-		void RaiseEvent(const std::shared_ptr<Event>& theEvent);
 		void SetTag(const std::string& tag);
 		void UpdateBounds(unsigned int width, unsigned int height);
 		void UpdateBounds(ABCDRectangle dimensions);
@@ -58,7 +53,7 @@ namespace gamelib
 		std::map<std::string, int> IntProperties;
 		std::string Name;
 		std::string Type;
-		std::list<EventId> EventSubscriptions;
+
 	private:	
 
 		// Game Object tag

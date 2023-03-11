@@ -22,7 +22,7 @@ class AudioManagerTests : public testing::Test
   shared_ptr<AudioManager> audioAdmin;
   Asset *audioAsset = nullptr;
   shared_ptr<Asset> audioAssetPtr;
-  const string resourceName = "dymmy_audio_resource";
+  const string resourceName = "dummy_audio_resource";
   const string resourcePath = "no_real_path";
   const string resourceType = "fx";
   const int resourceScene = 0;

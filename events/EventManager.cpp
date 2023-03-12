@@ -32,6 +32,8 @@ namespace gamelib
 
 	size_t EventManager::CountReady() const { return primaryEventQueue.size() + secondaryEventQueue.size(); }
 
+	std::queue<shared_ptr<Event>> EventManager::GetEvents() { return primaryEventQueue;}
+
 	void EventManager::Reset()
 	{
 		std::queue<shared_ptr<Event>> empty;

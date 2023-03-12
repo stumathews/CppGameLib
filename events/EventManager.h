@@ -39,6 +39,8 @@ namespace gamelib
 		std::string GetSubscriberName() override;
 		std::map<const EventId, std::vector<IEventSubscriber*>>& GetSubscriptions();
 		[[nodiscard]] size_t CountReady() const;
+		std::queue<std::shared_ptr<Event>> GetEvents();
+
 	protected:
 		static EventManager* instance;
 	private:

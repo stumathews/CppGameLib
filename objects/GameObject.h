@@ -14,7 +14,8 @@ namespace gamelib
 	enum class GameObjectType
 	{
 		Undefined,
-		GameDefined, // Game Object is custom made and has no special handling in the library
+		GameDefined,
+		// Game Object is custom made and has no special handling in the library
 		AnimatedSprite,
 		StaticSprite,
 		Pickup,
@@ -41,8 +42,8 @@ namespace gamelib
 		virtual void LoadSettings();
 		virtual void Update(const unsigned long deltaMs) = 0;
 		virtual void Draw(SDL_Renderer* renderer) = 0;
-		static SDL_Rect CalculateBounds(const Coordinate<int> position, const int width, const int height) { return { position.GetX(), position.GetY(), width, height }; }
-		static SDL_Rect CalculateBounds(const Coordinate<int> position, const ABCDRectangle dimensions) { return { position.GetX(), position.GetY(), dimensions.GetWidth(), dimensions.GetHeight() }; }
+		static SDL_Rect CalculateBounds(const Coordinate<int> position, const int width, const int height);
+		static SDL_Rect CalculateBounds(const Coordinate<int> position, const ABCDRectangle dimensions);
 
 		bool IsVisible{};
 		bool IsActive = true;
@@ -54,8 +55,7 @@ namespace gamelib
 		std::string Name;
 		std::string Type;
 
-	private:	
-
+	private:
 		// Game Object tag
 		std::string tag;
 
@@ -66,6 +66,3 @@ namespace gamelib
 		void SetDefaults(bool isVisible, int x, int y);
 	};
 }
-
-
-

@@ -315,6 +315,45 @@
     <ClInclude Include="graphic\DrawableFrameRate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ai\BehaviorTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\Behavior.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\Decorator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\Composite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\Sequence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\BehaviorResult.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\LastOrNextChildSelector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\Parallel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\Monitor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\FirstOrNextSelector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\InlineActionBehavior.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\Repeat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\BehaviorTreeBuilder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -555,6 +594,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="graphic\DrawableFrameRate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ai\BehaviorTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ai\ConditionalSequence.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ai\BehaviorTreeBuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

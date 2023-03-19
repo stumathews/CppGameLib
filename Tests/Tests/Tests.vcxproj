@@ -47,6 +47,8 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\2DGameDev\packages\gmock.1.11.0\lib\native\src\gtest\src\gtest_main.cc" />
     <ClCompile Include="AudioManagerTests.cpp" />
+    <ClCompile Include="BehaviorTreeBuilderTests.cpp" />
+    <ClCompile Include="BehaviorTreeTests.cpp" />
     <ClCompile Include="FontManagerTests.cpp" />
     <ClCompile Include="FSMTests.cpp" />
     <ClCompile Include="pch.cpp" />

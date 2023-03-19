@@ -163,9 +163,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ai\InlineActionBehavior.h" />
+    <ClInclude Include="ai\Behavior.h" />
+    <ClInclude Include="ai\FirstOrNextSelector.h" />
+    <ClInclude Include="ai\Decorator.h" />
+    <ClInclude Include="ai\LastOrNextChildSelector.h" />
+    <ClInclude Include="ai\Monitor.h" />
+    <ClInclude Include="ai\Parallel.h" />
+    <ClInclude Include="ai\Repeat.h" />
+    <ClInclude Include="ai\Sequence.h" />
+    <ClInclude Include="ai\BehaviorResult.h" />
+    <ClInclude Include="ai\Composite.h" />
     <ClInclude Include="asset\asset.h" />
     <ClInclude Include="audio\AudioManager.h" />
     <ClInclude Include="audio\AudioAsset.h" />
+    <ClInclude Include="ai\BehaviorTree.h" />
+    <ClInclude Include="ai\BehaviorTreeBuilder.h" />
     <ClInclude Include="DirectionUtils.h" />
     <ClInclude Include="events\EventId.h" />
     <ClInclude Include="events\EventFactory.h" />
@@ -265,10 +278,13 @@
     <ClInclude Include="util\Tuple.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ai\ConditionalSequence.h" />
     <ClCompile Include="ai\FSMState.cpp" />
     <ClCompile Include="asset\Asset.cpp" />
     <ClCompile Include="audio\AudioManager.cpp" />
     <ClCompile Include="audio\AudioAsset.cpp" />
+    <ClCompile Include="ai\BehaviorTree.cpp" />
+    <ClCompile Include="ai\BehaviorTreeBuilder.cpp" />
     <ClCompile Include="DirectionUtils.cpp" />
     <ClCompile Include="events\EventId.cpp" />
     <ClCompile Include="events\EventFactory.cpp" />

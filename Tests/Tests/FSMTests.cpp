@@ -12,7 +12,7 @@ class StateOne : public FSMState
 {
 public:
 	StateOne(std::function<void()> onEnter = nullptr, std::function<void(unsigned long deltaMs)> onUpdate = nullptr, std::function<void()> onExit = nullptr)
-		: FSMState(onEnter, onUpdate, onExit) {}
+		: FSMState("StateOne", onUpdate, onEnter, onExit) {}
 
 	int updateTicks = 0;
 	void OnUpdate(unsigned long deltaMs) override
@@ -25,7 +25,7 @@ class StateTwo : public FSMState
 {
 public:
 	StateTwo(std::function<void()> onEnter = nullptr, std::function<void(unsigned long deltaMs)> onUpdate = nullptr, std::function<void()> onExit = nullptr)
-		: FSMState(onEnter, onUpdate, onExit) {}
+		: FSMState("StateTwo", onUpdate, onEnter,onExit) {}
 
 	int updateTicks = 0;
 	void OnUpdate(unsigned long deltaMs) override
@@ -216,7 +216,7 @@ TEST_F(FSMTests, InlineStates)
 	bool stateThreeWasTransitionedTo = false;
 
 	// Create an inline state
-	FSMState stateThree([&] { stateThreeEntered = true; }, [&](unsigned long deltaMs) { stateThreeUpdateCount++; }, [&] { stateThreeExited = true;	});
+	FSMState stateThree( "StateThree", [&](unsigned long deltaMs) { stateThreeUpdateCount++; }, [&] { stateThreeEntered = true; }, [&] { stateThreeExited = true;	});
 	
 	// Add it to our state machine
 	finiteStateMachine.States.push_back(stateThree);

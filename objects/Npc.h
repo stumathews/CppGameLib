@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "ai/FSM.h"
+#include "graphic/DrawableText.h"
 #include "movement/IGameMoveStrategy.h"
 
 class RoomInfo;
@@ -18,6 +19,7 @@ namespace gamelib
 		    std::shared_ptr<IGameObjectMoveStrategy> moveStrategy = nullptr);
 					
 		void Draw(SDL_Renderer* renderer) override;
+		void Update(const unsigned long deltaMs) override;
 		void SwapCurrentDirection();
 		void SetNpcDirection(Direction direction);
 		
@@ -28,7 +30,8 @@ namespace gamelib
 		ABCDRectangle Dimensions{};
 		std::shared_ptr<Hotspot> Hotspot;
 
-		Direction GetDirection() const;
+		[[nodiscard]] Direction GetDirection() const;
+		std::shared_ptr<DrawableText> Status = nullptr;
 
 	protected:		
 		std::shared_ptr<IGameObjectMoveStrategy> moveStrategy;

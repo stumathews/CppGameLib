@@ -31,9 +31,9 @@ namespace gamelib
 
 	SettingsManager* SettingsManager::Instance = nullptr;
 
-	bool SettingsManager::Load(const string& inFilePath)
+	bool SettingsManager::Load(const string& filenamePath)
 	{
-		this->filePath = inFilePath;
+		this->filePath = filenamePath;
 		settings.clear(); // effectively this is reloading the settings from scratch each time
 		
 		tinyxml2::XMLDocument doc;
@@ -62,7 +62,7 @@ namespace gamelib
 		 */
 
 		
-		if(doc.LoadFile(inFilePath.c_str()) == tinyxml2::XML_SUCCESS)
+		if(doc.LoadFile(filenamePath.c_str()) == tinyxml2::XML_SUCCESS)
 		{
 			// Loop through settings section
 			for(auto section = doc.FirstChildElement(SETTINGS_SECTION)->FirstChild(); section; section = section->NextSibling())
@@ -120,6 +120,11 @@ namespace gamelib
 	{
 		return settings.at(section)[name].ToBool();		
 	}
+
+	bool SettingsManager::Bool(const std::string& section, const std::string& name)
+	{
+		return Get()->GetBool(section, name);
+	}
 	
 	int SettingsManager::GetInt(const std::string& section, const std::string& name)
 	{
@@ -133,9 +138,19 @@ namespace gamelib
 		}
 	}
 
+	int SettingsManager::Int(const std::string& section, const std::string& name)
+	{
+		return Get()->GetInt(section, name);
+	}
+
 	string SettingsManager::GetString(const std::string& section, const std::string& name)
 	{
 		return settings[section][name].ToString();
+	}
+
+	string SettingsManager::String(const std::string& section, const std::string& name)
+	{
+		return Get()->GetString(section, name);
 	}
 
 	long SettingsManager::GetLong(const std::string& section, const std::string& name)

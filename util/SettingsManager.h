@@ -15,7 +15,10 @@ namespace gamelib
 		bool Reload();
 		bool Load(const std::string& filenamePath = "settings.xml");
 		bool GetBool(const std::string& section, const std::string& name);
+		static bool Bool(const std::string& section, const std::string& name);		
+		static std::string String(const std::string& section, const std::string& name);
 		int GetInt(const std::string& section, const std::string& name);
+		static int Int(const std::string& section, const std::string& name);
 		std::string GetString(const std::string& section, const std::string& name);
 		long GetLong(const std::string& section, const std::string& name);
 		[[nodiscard]] int Count() const;

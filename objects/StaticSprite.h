@@ -26,15 +26,13 @@ namespace gamelib
         /// <summary>
         /// Create sprite
         /// </summary>
-        static std::shared_ptr<StaticSprite> Create(int x, int y, const std::shared_ptr<SpriteAsset>&
-                                                    spriteAsset);
+        static std::shared_ptr<StaticSprite> Create(int x, int y, const std::shared_ptr<SpriteAsset>& spriteAsset);
 
         /// <summary>
         /// Create sprite
         /// </summary>
         /// <returns></returns>
-        static std::shared_ptr<StaticSprite> Create(Coordinate<int> coordinate, const std::shared_ptr<SpriteAsset>
-                                                    & spriteAsset);
+        static std::shared_ptr<StaticSprite> Create(Coordinate<int> coordinate, const std::shared_ptr<SpriteAsset>& spriteAsset);
 
         /// <summary>
         /// Ordered set of key frames

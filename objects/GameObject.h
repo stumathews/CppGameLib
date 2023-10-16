@@ -11,6 +11,7 @@
 
 namespace gamelib
 {
+	typedef std::vector<std::shared_ptr<Event>> ListOfEvents;
 	enum class GameObjectType
 	{
 		Undefined,
@@ -33,7 +34,7 @@ namespace gamelib
 		void SetTag(const std::string& tag);
 		void UpdateBounds(unsigned int width, unsigned int height);
 		void UpdateBounds(ABCDRectangle dimensions);
-		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> event, unsigned long deltaMs) override;
+		ListOfEvents HandleEvent(std::shared_ptr<Event> event, unsigned long deltaMs) override;
 		std::string GetSubscriberName() override;
 		[[nodiscard]] std::string GetTag() const;
 		virtual int GetSubscriberId() override;

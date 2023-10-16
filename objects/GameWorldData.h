@@ -23,6 +23,10 @@ namespace gamelib
 		bool CanDraw = true;
 
 		std::weak_ptr<GameObject> player;
+
+		[[nodiscard]] bool IsSinglePlayerGame() const { return !IsNetworkGame; }
+
+		[[nodiscard]] bool IsMultiPlayerGame() const { return IsNetworkGame; }
 	};
 }
 

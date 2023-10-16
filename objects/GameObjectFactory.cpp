@@ -67,13 +67,13 @@ namespace gamelib
 		switch (asset->assetType)  // NOLINT(clang-diagnostic-switch-enum)
 		{
 			case Asset::AssetType::Sprite:  return BuildSprite(name, type, asset, position, IsVisible);
-			case Asset::AssetType::Graphic: return BuildGraphic(name, type, asset, position, IsVisible);
+			case Asset::AssetType::Graphic: return BuildGraphic(asset, position);
 			default: throw exception((string("Graphic asset not supported:") + asset->type).c_str());
 		}
 	}
 
-	shared_ptr<StaticSprite> GameObjectFactory::BuildGraphic(const string& name, const string& type, const std::shared_ptr<Asset>
-	                                                         & asset, const Coordinate<int>& position, const bool isVisible) const
+	shared_ptr<StaticSprite> GameObjectFactory::BuildGraphic(const std::shared_ptr<Asset>
+	                                                         & asset, const Coordinate<int>& position) const
 	{
 		
 		const auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
@@ -83,13 +83,11 @@ namespace gamelib
 		                                                  graphicAsset->path, graphicAsset->type,
 		                                                  graphicAsset->scene, graphicAsset->Dimensions);
 
-		return Get().BuildStaticSprite(name, type, spriteAsset, position);
+		return Get().BuildStaticSprite(spriteAsset, position);
 
 	}
 
-	std::shared_ptr<StaticSprite> GameObjectFactory::BuildStaticSprite(const std::string& name, const std::string& type, const std::shared_ptr<
-		                                                                   Asset>
-	                                                                   & asset, const Coordinate<int>& position) const
+	std::shared_ptr<StaticSprite> GameObjectFactory::BuildStaticSprite(const std::shared_ptr<Asset>& asset, const Coordinate<int>& position) const
 	{
 		return StaticSprite::Create(position, dynamic_pointer_cast<SpriteAsset>(asset));
 	}

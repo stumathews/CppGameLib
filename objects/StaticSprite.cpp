@@ -23,9 +23,7 @@ namespace gamelib
 		return sprite;
 	}
 
-	std::shared_ptr<StaticSprite> StaticSprite::Create(const Coordinate<int> coordinate, const std::shared_ptr<
-		                                                   SpriteAsset>
-	                                                   & spriteAsset)
+	std::shared_ptr<StaticSprite> StaticSprite::Create(const Coordinate<int> coordinate, const std::shared_ptr<SpriteAsset>& spriteAsset)
 	{
 		return Create(coordinate.GetX(), coordinate.GetY(), spriteAsset);
 	}

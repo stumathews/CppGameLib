@@ -30,14 +30,13 @@ namespace gamelib
 		/// <returns>GameObject</returns>
 		std::shared_ptr<GameObject> BuildGameObject(const tinyxml2::XMLElement* sceneObjectXml) const;
 
-		[[nodiscard]] std::shared_ptr<StaticSprite> BuildGraphic(const std::string& name, const std::string& type,
-		                                                         const std::shared_ptr<
-			                                                           Asset>& asset, const Coordinate<int>& position, bool isVisible) const;
+		[[nodiscard]] std::shared_ptr<StaticSprite> BuildGraphic(
+			const std::shared_ptr<Asset>& asset, const Coordinate<int>& position) const;
 		[[nodiscard]] std::shared_ptr<AnimatedSprite> BuildSprite(const std::string& name, const std::string& type,
 		                                                          const std::shared_ptr<
 			                                                          Asset>& asset, const Coordinate<int>& position, bool isVisible) const;
-		[[nodiscard]] std::shared_ptr<StaticSprite> BuildStaticSprite(const std::string& name, const std::string& type,
-		                                                              const std::shared_ptr<Asset>& asset, const Coordinate<int>& position) const;
+		[[nodiscard]] std::shared_ptr<StaticSprite> BuildStaticSprite(
+			const std::shared_ptr<Asset>& asset, const Coordinate<int>& position) const;
 
 	private:
 		static GameObjectFactory& instance;

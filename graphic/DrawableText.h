@@ -1,10 +1,11 @@
 #pragma once
+#include "Timer.h"
 #include "objects/DrawableGameObject.h"
 #include "objects/GameObject.h"
 
 namespace gamelib
 {
-	class DrawableText : public gamelib::DrawableGameObject
+	class DrawableText : public DrawableGameObject
 	{
 	public:
 		explicit DrawableText(SDL_Rect bounds, std::string text, SDL_Color color);

@@ -2,6 +2,7 @@
 
 namespace gamelib
 {
+	// These are embedded in Events as the primary Id
 	enum EventNumbers
 	{
 		Unknown = 1000,

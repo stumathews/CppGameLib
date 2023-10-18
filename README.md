@@ -36,6 +36,12 @@ Each event has a particular it to its particular `EventId` that is associated wi
 
 All objects that are IEventSubscribers can raise events with the EventManager and typically do so by calling the `RaiseEvent()` function. Also, they can use the `Subscribe()` to subscribe to an event. Internally this calls the EventManager.
 
+### Built-in Events
+
+#### GameObjectEvent
+
+xyz
+
   - Resource Managment
   - Scene Managment
   - Audio (via SDL2)

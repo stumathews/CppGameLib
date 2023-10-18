@@ -193,7 +193,7 @@ namespace gamelib
 			}
 		});
 
-		SDLGraphicsManager::Get()->ClearAndDraw(renderAllObjectsFn);
+		SdlGraphicsManager::Get()->ClearAndDraw(renderAllObjectsFn);
 	}
 
 	std::vector <std::weak_ptr<GameObject>> SceneManager::GetAllObjects() const

@@ -38,7 +38,7 @@ namespace gamelib
 			}
 
 			// Create texture from surface pixels
-			texture = SDL_CreateTextureFromSurface(SDLGraphicsManager::Get()->WindowRenderer, loadedSurface);
+			texture = SDL_CreateTextureFromSurface(SdlGraphicsManager::Get()->WindowRenderer, loadedSurface);
 			
 			
 			// Get rid of old loaded surface (we have the texture pixels)

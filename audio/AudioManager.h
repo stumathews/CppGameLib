@@ -12,6 +12,7 @@ namespace gamelib
 
 		static AudioManager* Get();
 		~AudioManager();
+		static bool Initialize();
 		AudioManager(const AudioManager& other) = delete;
 		AudioManager(const AudioManager&& other) = delete;
 		AudioManager& operator=(const AudioManager& other) = delete;

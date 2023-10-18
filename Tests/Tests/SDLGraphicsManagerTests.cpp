@@ -22,7 +22,7 @@ class SDLGraphicsManagerTests : public testing::Test
   	config = shared_ptr<SettingsManager>(SettingsManager::Get());
 	event_admin = shared_ptr<EventManager>(EventManager::Get());
 	font_admin = shared_ptr<FontManager>(FontManager::Get());
-	graphics_admin = shared_ptr<SDLGraphicsManager>(SDLGraphicsManager::Get());
+	graphics_admin = shared_ptr<SdlGraphicsManager>(SdlGraphicsManager::Get());
   	audio_admin = shared_ptr<AudioManager>(AudioManager::Get());
 	resource_admin = shared_ptr<ResourceManager>(ResourceManager::Get());
   	scene_admin = shared_ptr<SceneManager>(SceneManager::Get());
@@ -35,7 +35,7 @@ class SDLGraphicsManagerTests : public testing::Test
   shared_ptr<SettingsManager> config;
   shared_ptr<EventManager> event_admin;	
   shared_ptr<FontManager> font_admin;
-  shared_ptr<SDLGraphicsManager> graphics_admin;
+  shared_ptr<SdlGraphicsManager> graphics_admin;
   shared_ptr<AudioManager> audio_admin;
   shared_ptr<SceneManager> scene_admin;
   shared_ptr<GameWorldData> world;

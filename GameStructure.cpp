@@ -5,7 +5,6 @@
 #include "GameStructure.h"
 #include <functional>
 #include <SDL_ttf.h>
-
 #include "audio/AudioManager.h"
 #include "common/Common.h"
 #include "events/AddGameObjectToCurrentSceneEvent.h"
@@ -18,15 +17,17 @@
 #include <net/NetworkManager.h>
 #include "Logging/ErrorLogManager.h"
 #include <events/UpdateProcessesEvent.h>
+#include "font/FontManager.h"
 #include "util/SettingsManager.h"
 
 using namespace std;
 
 namespace gamelib
 {
-
-	GameStructure::GameStructure(std::function<void()> getControllerInputFunction) 
-		: _getControllerInputFunction(std::move(getControllerInputFunction)) { }
+	GameStructure::GameStructure(std::function<void()> getControllerInputFunction)
+		: _getControllerInputFunction(std::move(getControllerInputFunction))
+	{
+	}
 
 	/// <summary>
 	/// Update & Draw until the game ends
@@ -34,10 +35,10 @@ namespace gamelib
 	/// <returns></returns>
 	bool GameStructure::DoGameLoop(const GameWorldData* gameWorldData) const
 	{
-		const auto maxUpdates = SettingsManager::Get()->GetInt("global", "max_loops");
+		const auto maxUpdates = SettingsManager::Int("global", "max_loops");
 
 		// Tick/update every tick_time_ms, ie if tick_time_ms = 10, then will tick/update 10 times in one second
-		const auto TICK_TIME = SettingsManager::Get()->GetInt("global", "tick_time_ms");
+		const auto TICK_TIME = SettingsManager::Int("global", "tick_time_ms");
 
 		// A 'tick' reprents one update call(). 
 		// We want a fixed number of ticks within a real unit of time. 
@@ -53,21 +54,21 @@ namespace gamelib
 		// that a new update might be ready to be called again or if not, more drawing can be done.
 
 		// Initialize/prepare process by saying last update occured right now.
-		auto t0 = GetTimeNowMs();		
+		auto t0 = GetTimeNowMs();
 
 		while (!gameWorldData->IsGameDone) // main game loop (exact speed of loops is hardware dependaant)
 		{
 			const auto t1 = GetTimeNowMs(); // t1 is the time now, and at t0, the last update was called.
 			// t1 has been affected by the time to update and draw.
 
-			auto elapsedTime = 0;  // Elapsed time in counted as number of updates per 1 game loop (hardware dependant).
-			auto countUpdates = 0;  // Number of loops 
+			auto elapsedTime = 0; // Elapsed time in counted as number of updates per 1 game loop (hardware dependant).
+			auto countUpdates = 0; // Number of loops 
 
 			// Update() can be called every tick_time_ms which will result in a constant amount of ticks, as a ms is a ms independant on hardware.			
 			// Update() will 'tick' x times a second, depending on how long a tick is set to be, ie. tick_time_ms
 
 			// updating time!
-			
+
 			// allow for multiple successive updates if the previous a) drawing b) sparetime operations (t1) took too long (longer than
 			// 1 tick_time_ms and so we couldn't do an update, so make up for it here)
 			// This only means it executes the right number of updates within a second, not that they have the same interval between them
@@ -76,7 +77,7 @@ namespace gamelib
 				// +TICK_TIME has just occured, since last update so do another update
 				// update logic
 				Update(t1 - t0);
-				
+
 				t0 += TICK_TIME;
 
 				elapsedTime += TICK_TIME;
@@ -98,7 +99,8 @@ namespace gamelib
 			if (gameWorldData->CanDraw)
 			{
 				// How much within the new 'tick' are we?
-				const auto percentWithinTick = min(1.0f, (t1 - t0) / TICK_TIME); // NOLINT(bugprone-integer-division, clang-diagnostic-implicit-int-float-conversion)				
+				const auto percentWithinTick = min(1.0f, (t1 - t0) / TICK_TIME);
+				// NOLINT(bugprone-integer-division, clang-diagnostic-implicit-int-float-conversion)				
 				Draw(static_cast<unsigned int>(percentWithinTick));
 			}
 		}
@@ -106,34 +108,41 @@ namespace gamelib
 		return true;
 	}
 
-	bool GameStructure::InitializeGameSubSystems(int screenWidth, int screenHeight, const string& windowTitle, const string resourceFilePath)
+	bool GameStructure::Initialize(int screenWidth, int screenHeight, const string& windowTitle,
+	                                             const string resourceFilePath, const string& gameSettingsFilePath)
 	{
-		const auto settingsInitialized = SettingsManager::Get()->Load("game/settings.xml");
-		const auto beVerbose = SettingsManager::Get()->GetBool("global","verbose");
+		// Read config about the game's settings
+		const auto settingsInitialized = SettingsManager::Get()->Load(gameSettingsFilePath);
+		const auto beVerbose = SettingsManager::Bool("global", "verbose");
 
-		if (screenWidth == 0) { screenWidth = SettingsManager::Get()->GetInt("global", "screen_width"); }
-		if (screenHeight == 0) { screenHeight = SettingsManager::Get()->GetInt("global", "screen_height"); }
-		
+		if (screenWidth == 0) { screenWidth = SettingsManager::Int("global", "screen_width"); }
+		if (screenHeight == 0) { screenHeight = SettingsManager::Int("global", "screen_height"); }
+
 		// Perform the initialization
 		return LogThis("GameStructure::initialize()", beVerbose, [&]()
 		{
-			if (SettingsManager::Get()->GetBool("global", "isNetworkGame"))
+			if (SettingsManager::Bool("global", "isNetworkGame"))
 			{
 				LogOnFailure(NetworkManager::Get()->Initialize(), "Could not initialize network manager");
 			}
 
-			const auto title = SettingsManager::Get()->GetBool("global", "isNetworkGame")
+			const auto title = SettingsManager::Bool("global", "isNetworkGame")
 				                   ? NetworkManager::Get()->IsGameServer()
-					                     ? "Mazer 2D (Multiplayer - Server)" : "Mazer 2D (Multiplayer - Client)"
-				                   : "Mazer 2D - Single Player Mode";
+					                     ? windowTitle + " (Multi-player - Server)"
+					                     : windowTitle + " (Multi-player - Client)"
+				                   : windowTitle + " - Single Player Mode";
 
-			// Final check to see if all subsystems are initialised ok
-			if (IsFailedOrFalse(LogOnFailure(InitializeSDL(screenWidth, screenHeight, title), "Could not initialize SDL, aborting.")) ||
-				IsFailedOrFalse(LogOnFailure(EventManager::Get()->Initialize(), "Could not initialize event manager")) ||
-				IsFailedOrFalse(LogOnFailure(ResourceManager::Get()->Initialize(resourceFilePath), "Could not initialize resource manager")) ||
-				IsFailedOrFalse(LogOnFailure(SceneManager::Get()->Initialize(), "Could not initialize scene manager")) ||
+			// Final check to see if all subsystems are initialized ok
+			if (IsFailedOrFalse(LogOnFailure(InitializeSdl(screenWidth, screenHeight, title),
+			                                 "Could not initialize SDL, aborting.")) ||
+				IsFailedOrFalse(LogOnFailure(EventManager::Get()->Initialize(),
+				                             "Could not initialize event manager")) ||
+				IsFailedOrFalse(LogOnFailure(ResourceManager::Get()->Initialize(resourceFilePath),
+				                             "Could not initialize resource manager")) ||
+				IsFailedOrFalse(LogOnFailure(SceneManager::Get()->Initialize(),
+				                             "Could not initialize scene manager")) ||
 				IsFailedOrFalse(settingsInitialized)) { return false; }
-						
+
 			return true;
 		}, true, true);
 	}
@@ -148,35 +157,55 @@ namespace gamelib
 		EventManager::Get()->DispatchEventToSubscriber(make_shared<UpdateProcessesEvent>(), deltaMs);
 	}
 
-	void GameStructure::Draw(unsigned long percent_within_tick) const
-	{		
+	void GameStructure::Draw(unsigned long percentWithinTick) const
+	{
 		// Time-sensitive, skip queue. Draws the current scene
 		EventManager::Get()->DispatchEventToSubscriber(std::make_shared<Event>(DrawCurrentSceneEventId), 0UL);
 	}
 
 
-	bool GameStructure::InitializeSDL(const int screenWidth, const int screenHeight, const string& windowTitle)
+	bool GameStructure::InitializeSdl(const int screenWidth, const int screenHeight, const string& windowTitle)
 	{
-		return LogOnFailure(SDLGraphicsManager::Get()->Initialize(screenWidth, screenHeight, windowTitle.c_str()),
-		                    "Failed to initialize SDL graphics manager");
+		// Initialize SDL Video and Audio subsystems
+		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
+		{
+			std::stringstream message;
+			message << "SDL could not initialize:" << SDL_GetError();
+
+			Logger::Get()->LogThis(message.str());
+
+			return false;
+		}
+
+		// Initialise Graphics, Audio and Font subsystems
+		const auto graphicsSystemInitialized = SdlGraphicsManager::Get()->Initialize(
+			screenWidth, screenHeight, windowTitle.c_str());
+		const auto audioSystemInitialized = AudioManager::Initialize();
+		const auto fontSystemInitialized = FontManager::Initialize();
+
+		const auto allSystemsInitialized = graphicsSystemInitialized || audioSystemInitialized || fontSystemInitialized;
+
+		return LogOnFailure(allSystemsInitialized, "Failed to initialize SDL graphics manager");
 	}
 
-	bool GameStructure::UnloadGameSubsystems()
+	bool GameStructure::Unload()
 	{
-		try 
+		try
 		{
 			// Unload all the content currently stored in memory
 			ResourceManager::Get()->Unload();
 
 			// Finish/Finalize library usage
-			TTF_Quit();
-			IMG_Quit();
+
+			FontManager::Unload();
+			SdlGraphicsManager::Unload();
+
 			SDL_Quit();
-				
+
 			// All was well
 			return true;
 		}
-		catch(exception &e)
+		catch (exception& e)
 		{
 			// Something went wrong
 			ErrorLogManager::GetErrorLogManager()->LogMessage(e.what());
@@ -186,11 +215,28 @@ namespace gamelib
 
 	void GameStructure::ReadKeyboard() const { _getControllerInputFunction(); }
 	void GameStructure::ReadNetwork() { NetworkManager::Get()->Listen(); }
-	void GameStructure::HandleSpareTime(long elapsedTime) { }
-	vector<shared_ptr<Event>> GameStructure::HandleEvent(std::shared_ptr<Event> the_event, unsigned long deltaMs) { return
-		{}; }
-	string GameStructure::GetSubscriberName() { return "Game"; }
-	long GameStructure::GetTimeNowMs() { return static_cast<long>(timeGetTime()); }
-	GameStructure::~GameStructure() { UnloadGameSubsystems(); }
-}
 
+	void GameStructure::HandleSpareTime(long elapsedTime)
+	{
+	}
+
+	vector<shared_ptr<Event>> GameStructure::HandleEvent(std::shared_ptr<Event> the_event, unsigned long deltaMs)
+	{
+		return {};
+	}
+
+	string GameStructure::GetSubscriberName()
+	{
+		return "Game";
+	}
+
+	long GameStructure::GetTimeNowMs()
+	{
+		return static_cast<long>(timeGetTime());
+	}
+
+	GameStructure::~GameStructure()
+	{
+		Unload();
+	}
+}

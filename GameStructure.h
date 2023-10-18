@@ -18,23 +18,31 @@ namespace gamelib
 		/// Create a game structure
 		/// </summary>
 		explicit GameStructure(std::function<void()> getControllerInputFunction);
+		GameStructure(const GameStructure& other) = delete;
+		GameStructure(const GameStructure&& other) = delete;
+		GameStructure& operator=(const GameStructure& other) = delete;
+		GameStructure& operator=(const GameStructure&& other) = delete;
 
 		// What we do when we unload the Game structure
 		~GameStructure() override;
 
-		static bool InitializeGameSubSystems(int screenWidth, int screenHeight, const std::string& windowTitle, std::string resourceFilePath);
+		static bool Initialize(int screenWidth, int screenHeight, const std::string& windowTitle, const std::string resourceFilePath, const std::
+		                                     string& gameSettingsFilePath);
 
 		/// <summary>
 		/// releases resources incl. resource admin and other game subsystems
 		/// </summary>
-		static bool UnloadGameSubsystems();
+		static bool Unload();
 
 		/// <summary>
 		/// Do the Game Loop
 		/// </summary>
 		/// <returns></returns>
-		bool DoGameLoop(const GameWorldData* gameWorldData) const;
+		bool DoGameLoop(const GameWorldData* gameWorldData) const;	
 		
+
+	private:
+
 		/// <summary>
 		/// Draw the game 
 		/// </summary>
@@ -56,13 +64,11 @@ namespace gamelib
 		/// <returns></returns>
 		std::string GetSubscriberName() override;
 
-	private:		
-
 		/// <summary>
 		/// Initialize SDL
 		/// </summary>
 		// ReSharper disable once CppInconsistentNaming
-		static bool InitializeSDL(int screenWidth, int screenHeight, const std::string& windowTitle);
+		static bool InitializeSdl(int screenWidth, int screenHeight, const std::string& windowTitle);
 
 		/// <summary>
 		/// Read keyboard/controller input

@@ -92,7 +92,19 @@ namespace gamelib
 	AudioManager::~AudioManager()
 	{
 		instance = nullptr;
-	}	
+	}
+
+	bool AudioManager::Initialize()
+	{
+		// Setup the Audio 
+		if(Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0 )
+	    {
+		    const string message("SDL_mixer could not initialize! SDL_mixer Error: ");
+			LogMessage(message + Mix_GetError());
+	        return false;
+	    }
+		return true;
+	}
 
 	AudioManager* AudioManager::instance = nullptr;
 

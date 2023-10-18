@@ -73,10 +73,27 @@ This event is raised when a network player joins.
 
 This event is raised when network traffic is received. 
 
+#### AddGameObjectToCurrentSceneEvent
 
+This event is raised when an object needs to be added to the scene. This is typically subscribed to by the `SceneManager`. 
 
-  - Resource Managment
-  - Scene Managment
+#### LevelChangedEventTypeEventId
+TBD
+
+## Resource Management
+### ResourceManager
+
+The ResourceManager will read and index all the assets that are defined in the global resources file. It will also ask assets that are associated with a particular scene to load themselves when it receives the `SceneChangedEvent`. Equally in handling this event, it unloads any assets that are now not associated with the current scene. You should call `ResourceManager::IndexResourceFile()` before using or depending on this behaviour.
+
+The `ResourceManager` keeps a list of all the resources by keeping a list of `Asset`s (see Assets)
+
+The `ResourceManager` can also be consulted to return information about the assets in the resources file, as it effectively manages the resources specified therein. 
+
+`ResourceManager::GetAssetInfo()` can be used to obtain the asset associated with a specific asset Id or asset name. You can also query the number of loaded or unloaded resources (`GetCountLoadedResources()` and `GetCountUnloadedResources()` respectively ) and get the total number of resources that the resource manager knows about.
+
+## Scene Management
+### SceneManager
+
   - Audio (via SDL2)
   - Font managment (via SDL2)
   - 2D Drawing (via SDL2)

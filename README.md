@@ -113,9 +113,12 @@ The `SceneManager` typically subscribes to scene change events and events asking
 
 ## Audio
 
-Audio is managed by the `AudioManager` which uses SDL2's audio functionality to play `AudioAssets`
+Audio assets are managed by the `AudioManager` which can play `AudioAssets`.
 
-  - Font managment (via SDL2)
+## Font management
+
+Font assets are managed by the `FontManager`.
+
   - 2D Drawing (via SDL2)
   - Logging (limited)
 ## Dependencies:

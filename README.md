@@ -17,11 +17,11 @@ Typically objects in the game inherit from GameObjects so that they can subscrib
 
 ## GameStructure
 
-`GameStructure` is a crucial part of any game. This object is used to structure the game parts. It is responsible for executing the GameLoop at the desired framerate and drawing asking the `SceneManager` to draw all the objects in the scene, as well as getting the controller input through the controller input function that you provide in the constuctor.
+`GameStructure` is a crucial part of any game. This object is used to structure the game parts. It is responsible for executing the GameLoop at the desired framerate and drawing asking the `SceneManager` to draw all the objects in the scene, as well as getting the controller input through the controller input function that you provide in the constructor.
 
-It is also the place where all the subsystems are initialized (via `InitializeGameSubSystems()`) before the game is put into the game loop. 
+It is also the place where all the subsystems are initialized (via `Initialize()`) before the game is put into the game loop. 
 
-* Make sure you call InitializeGameSubSystems() before you try and run the game loop. 
+* Make sure you call Initialize() before you try and run the game loop. 
 
 ## Assets
 

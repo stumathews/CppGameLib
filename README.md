@@ -5,8 +5,6 @@ To usem you'll need to link to it - it is a shared library. (cppgamelib.lib)
 
 ![Basic Architecture](AppGameLibArchitecture.png)
 
-## Functionality
-
 ## GameObject
 
 `GameObject` is any object that can be drawn via its `Draw()` function and be updated via its `Update()` function. 
@@ -16,6 +14,14 @@ Typically objects in the game inherit from GameObjects so that they can subscrib
 * All GameObjects are event subscribers.
 * All Game Objects have a `Bounds`, `Position` might be `Visible` and can load its own Settings via `LoadSettings()`. 
 * All GameObjects have a unique ID
+
+## GameStructure
+
+`GameStructure` is a crucial part of any game. This object is used to structure the game parts. It is responsible for executing the GameLoop at the desired framerate and drawing asking the `SceneManager` to draw all the objects in the scene, as well as getting the controller input through the controller input function that you provide in the constuctor.
+
+It is also the place where all the subsystems are initialized (via `InitializeGameSubSystems()`) before the game is put into the game loop. 
+
+* Make sure you call InitializeGameSubSystems() before you try and run the game loop. 
 
 ## Assets
 
@@ -110,7 +116,7 @@ TBD
 
 The ResourceManager will read and index all the assets that are defined in the global resources file. It will also ask assets that are associated with a particular scene to load themselves when it receives the `SceneChangedEvent`. Equally in handling this event, it unloads any assets that are now not associated with the current scene. You should call `ResourceManager::IndexResourceFile()` before using or depending on this behaviour.
 
-The `ResourceManager` keeps a list of all the resources by keeping a list of `Asset`s (see Assets)
+The `ResourceManager` keeps a list of all the resources by keeping a list of `Asset`s (see Assets). It essentially tracks all resources whether they are loaded or not.
 
 The `ResourceManager` can also be consulted to return information about the assets in the resources file, as it effectively manages the resources specified therein. 
 
@@ -127,15 +133,24 @@ The `SceneManager` typically subscribes to scene change events and events asking
 
 ## Audio
 
-Audio assets are managed by the `AudioManager` which can play `AudioAssets`.
+Audio assets are managed by the `AudioManager` which can `Play()` provided `AudioAssets`.
 
 ## Font management
 
-The `FontManager` creates `FontAsset`s
+The `FontManager` creates `FontAsset`s that can be tracked in the `ResourceManager`
 
 ## Drawing
 
-All `GameObjects` can `Draw()` themselves and are typically drawn by the `SceneManager`. 
+All `GameObjects` can `Draw()` themselves by writing to the surface that is provided to them.
+
+* Typically it is the `SceneManager` that calls the `Draw()` function for each GameObject in the scene and it passes the surface that is provided by the `SDLGraphicsManager`. 
+* The surface is only shown when the `SDLGraphicsManager` shows what has been written to the surface by calling the `SDLGraphicsManager::ClearAndDraw()` which is also involved by the SceneManager when all objects in the scene has been given a chance to write to the surface.
+
+### SDLGraphicsManager
+
+The `SDLGraphicsManager` is responsible for setting up the Window and its associated drawable surface.
+
+* You should call `Initialize()` before first use of `SDLGraphicsManager::ClearAndDraw()`
 
   - Logging (limited)
 ## Dependencies:

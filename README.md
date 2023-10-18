@@ -14,10 +14,19 @@ Each asset has an associated `Uid` that distinguishes this asset from others. Ea
 
 There are a variety of built-in assets that derive from Asset and therefore have the overriding ability to Load() and Unload() themselves into/from memory.
 
-1. AudioAsset - loads/unloads and holds a reference to an audio clip that is used in a scene
-2. FontAsset - loads/unloads and holds a reference to a font that is used in a scene
-3. GraphicAsset - loads/unloads and holds a reference to an image that is used in the scene
-4. SpriteAsset - loads/unloads and holds a reference to a sprite-sheet that is used in the scene.
+### AudioAsset
+Loads/unloads and holds a reference to an audio clip that is used in a scene
+
+Currently, the asset can have an asset type of `SoundEffect` or `Music` which distinguishes between a short-player fx clip or a long-playing music clip.
+
+### FontAsset
+loads/unloads and holds a reference to a font that is used in a scene
+
+### GraphicAsset
+loads/unloads and holds a reference to an image that is used in the scene
+
+### SpriteAsset
+loads/unloads and holds a reference to a sprite-sheet that is used in the scene.
 
 ## Event management
 
@@ -28,7 +37,7 @@ When an event is subscribed to, it is stored in the EventManager's event queue a
 
 All objects that can subscribe and be notified need to inherit from `IEventSubscriber` as this is the interface that the EventManager will use to contact it.
 
-An `Event` can be subscribed to by asking the EventManager to subscribe to it and passing yourself as a reference so it can get back to you to notify when the event is raised.
+An `Event` can be subscribed to by asking the EventManager to subscribe to it's `EventId` which is a numeric identifier particular to each event and passing yourself (`IEventSubscriber`) as a reference so it can get back to you to notify when the event is raised.
 
 Each event has a particular it to its particular `EventId` that is associated with a known event type, and when they are raised the data associated with the event is also stored in the Event object that is returned to the subscriber. 
 
@@ -94,7 +103,18 @@ The `ResourceManager` can also be consulted to return information about the asse
 ## Scene Management
 ### SceneManager
 
-  - Audio (via SDL2)
+The `SceneManager` is responsible for drawing the objects that are associated with the current scene. It subscribes to the `DrawCurrentSceneEventId` event Id which is raised within the game loop and is called as often as possible between the calls to the desired update() calls each frame (to achieve the desired fixed update frame rate)
+
+The `SceneManager` also is responsible for adding items to the scene. The scene is composed of Layers and each layer can have items that can be added to that layer. The SceneManager will then traverse the layers in order to draw the scene and in so doing achieve z-order drawing, i.e. the ability to draw some object over others.
+
+The `SceneManager` typically subscribes to scene change events and events asking it to load an item into a particular layer in the scene. The `SceneManager` will also do this by reading the associated scene or level file associated with the scene and load the contents thereof into the scene.
+
+## Audio
+
+Audio is managed by the `AudioManager` which uses SDL2's audio functionality.
+
+`AudioAsset` is an `Asset` that knows how to load itself into and out of memory.
+
   - Font managment (via SDL2)
   - 2D Drawing (via SDL2)
   - Logging (limited)

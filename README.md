@@ -38,9 +38,42 @@ All objects that are IEventSubscribers can raise events with the EventManager an
 
 ### Built-in Events
 
+#### PlayerMovedEvent
+
+This Event is raised when the code that registers a up/down/left/right controller press is detected. Typically this is subscribed to by the `Player` so that the player can move itself.
+
 #### GameObjectEvent
 
-xyz
+This Event is always associated with a particular `GameObject` and serves as a convenient way to raise events about them. The specific thing that the event relates to is encoded in the Event's `Context` member which is of type `GameObjectEventContext` and currently specifies two contexts:
+
+1. Remove
+2. RemoveSubscription
+
+#### SceneChangedEvent
+
+This Event is raised when a particular scene is being changed, typically in response to a new level starting where a scene can be interpreted as a level. The event carries with it the `SceneId` that was changed to. This is used by the `ResourceManager` to unload resources that are not for that scene and load resources that are.
+
+#### SceneLoadedEvent 
+
+This event is raised when the scene is completely loaded, i.e the resources for that scene have all been loaded into memory and theoretically, that scene can be presented/drawn.
+
+#### StartNetworkLevelEvent
+
+This event is raised when its time to start a level in a networked game. The idea is that the event is propagated to all players who have joined a network game. It contains which level they should all load.
+
+#### UpdateAllGameObjectsEvent
+
+This event is raised in the game loop when objects so can update themselves. 
+
+#### NetworkPlayerJoinedEventId
+
+This event is raised when a network player joins.
+
+#### NetworkTrafficReceivedEvent
+
+This event is raised when network traffic is received. 
+
+
 
   - Resource Managment
   - Scene Managment

@@ -6,6 +6,17 @@ To usem you'll need to link to it - it is a shared library. (cppgamelib.lib)
 ![Basic Architecture](AppGameLibArchitecture.png)
 
 ## Functionality
+
+## GameObject
+
+`GameObject` is any object that can be drawn via its `Draw()` function and be updated via its `Update()` function. 
+
+All GameObjects are event subscribers.
+
+All Game Objects have a `Bounds`, `Position` might be `Visible` and can load its own Settings via `LoadSettings()`. 
+
+Typically objects in the game inherit from GameObjects so that they can subscribe to events, draw and update as well as have a position and space (bounds) on screen.
+
 ## Assets
 
 The `Asset` class is an object that holds a path to an asset file, like an image file or sound file and then is able to load that asset into memory. 
@@ -22,13 +33,16 @@ Currently, the asset can have an asset type of `SoundEffect` or `Music` which di
 The `AudioManager` can construct these.
 
 ### FontAsset
-loads/unloads and holds a reference to a font that is used in a scene
+
+Loads/unloads and holds a reference to a font that is used in a scene.
 
 ### GraphicAsset
-loads/unloads and holds a reference to an image that is used in the scene
+
+Loads/unloads and holds a reference to an image that is used in the scene
 
 ### SpriteAsset
-loads/unloads and holds a reference to a sprite-sheet that is used in the scene.
+
+Loads/unloads and holds a reference to a sprite-sheet that is used in the scene.
 
 ## Event management
 
@@ -117,9 +131,12 @@ Audio assets are managed by the `AudioManager` which can play `AudioAssets`.
 
 ## Font management
 
-Font assets are managed by the `FontManager`.
+The `FontManager` creates `FontAsset`s
 
-  - 2D Drawing (via SDL2)
+## Drawing
+
+All `GameObjects` can `Draw()` themselves and are typically drawn by the `SceneManager`. 
+
   - Logging (limited)
 ## Dependencies:
  ### Include

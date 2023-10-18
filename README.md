@@ -8,7 +8,10 @@ To usem you'll need to link to it - it is a shared library. (cppgamelib.lib)
 ## Functionality
 ## Assets
 
-The `Asset` class is an object that holds a path to an asset file, like an image file or sound file and then is able to load that asset into memory. Each asset has an associated `Uid` that distinguishes this asset from others. Each asset can be either of type (Graphic, Sprite, Audio, Font) and additionally can be associated with a particular scene via the `SceneId`
+The `Asset` class is an object that holds a path to an asset file, like an image file or sound file and then is able to load that asset into memory. 
+
+Each asset has an associated `Uid` that distinguishes this asset from others. Each asset can be either of type (Graphic, Sprite, Audio, Font) and additionally can be associated with a particular scene via the `SceneId`
+
 There are a variety of built-in assets that derive from Asset and therefore have the overriding ability to Load() and Unload() themselves into/from memory.
 
 1. AudioAsset - loads/unloads and holds a reference to an audio clip that is used in a scene

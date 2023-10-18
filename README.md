@@ -155,7 +155,10 @@ The `SDLGraphicsManager` is responsible for setting up the Window and its associ
 
 * You should call `Initialize()` before first use of `SDLGraphicsManager::ClearAndDraw()`
 
-  - Logging (limited)
+### Logging and Error Managment
+
+TBD
+
 ## Dependencies:
  ### Include
  C:\SDL\SDL2\include 
@@ -164,7 +167,7 @@ The `SDLGraphicsManager` is responsible for setting up the Window and its associ
  C:\SDL\SDL2_ttf-2.0.15\include 
  C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include
  ### Link
- C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86  
+ C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86  (might not be needed)
  C:\SDL\SDL2\lib\x86 
  ### libs
  SDL2.lib

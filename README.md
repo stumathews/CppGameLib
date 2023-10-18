@@ -19,7 +19,16 @@ There are a variety of built-in assets that derive from Asset and therefore have
 3. GraphicAsset - loads/unloads and holds a reference to an image that is used in the scene
 4. SpriteAsset - loads/unloads and holds a reference to a sprite-sheet that is used in the scene.
 
-  - Event managment
+## Event management
+
+The `EventManager` is the central component of the event management system. It is a Singleton which allows supported objects (`IEventSubscriber`) to subscribe and raise `Events`. 
+
+When an event is subscribed to, it is stored in the EventManager's event queue and when an Event is raised that matches the subscribed event, the object that subscribed to the event gets notified. 
+
+All objects that can subscribe and be notified need to inherit from `IEventSubscriber` as this is the interface that the EventManager will use to contact it.
+
+An `Event` can be subscribed to by asking the EventManager to subscribe to it. Each event has a particular it to its particular `EventId` that is associated with a known event type, and when they are raised the data associated with the event is also stored in the Event object that is returned to the subscriber. 
+
   - Resource Managment
   - Scene Managment
   - Audio (via SDL2)

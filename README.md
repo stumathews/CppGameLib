@@ -4,16 +4,6 @@ This is a game library for C++ for creating simple 2D games.
 * To use you'll need to link to cppgamelib.lib
 * It depends on SDL2
 
-## Introduction
-
-Basic way to build a game:
-
-* Create a `GameStructure` and provide it with a controller input function.
-* Create GameObjects and set up event subscriptions.
-* Add GameObejst to the scene via the `SceneManager`
-* Ensure you subscribe to at least the `DrawCurrentScene` and `UpdateAllGameObjectsEventType` EventIds to be able to get drawn and update yourself
-* Call the `GameStructure.DoGameLoop()` and your game objects should start drawing/updating themselves etc. 
-
 ### Dependencies:
  #### Include
  * C:\SDL\SDL2\include 
@@ -33,6 +23,17 @@ Basic way to build a game:
  * d3d10.lib (not needed yet)
  * d3dx10.lib (not needed yet)
  * SDL2_ttf.lib
+
+
+## Introduction
+
+Basic way to build a game:
+
+* Create a `GameStructure` and provide it with a controller input function.
+* Create GameObjects and set up event subscriptions.
+* Add GameObejst to the scene via the `SceneManager`
+* Ensure you subscribe to at least the `DrawCurrentScene` and `UpdateAllGameObjectsEventType` EventIds to be able to get drawn and update yourself
+* Call the `GameStructure.DoGameLoop()` and your game objects should start drawing/updating themselves etc.
 
 A Basic view of how the library would be used to structure a game:
 

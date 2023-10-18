@@ -12,29 +12,22 @@ namespace gamelib
 
 		static AudioManager* Get();
 		~AudioManager();
+		AudioManager(const AudioManager& other) = delete;
+		AudioManager(const AudioManager&& other) = delete;
+		AudioManager& operator=(const AudioManager& other) = delete;
+		AudioManager& operator=(const AudioManager&& other) = delete;
 
-		/// <summary>
-		/// Creates an Audio Asset
-		/// </summary>
-		static std::shared_ptr<Asset> CreateAsset(const tinyxml2::XMLElement * assetXmlElement, ResourceManager& resourceManager);
+
+		// Creates an Audio Asset
+		static std::shared_ptr<Asset> CreateAsset(const tinyxml2::XMLElement * assetXmlElement, ResourceManager& resourceManager);		
 		
-		/// <summary>
-		/// Play specific music asset
-		/// </summary>
-		/// <param name="music"></param>
-		static void Play(Mix_Music* music);
-
-		/// <summary>
-		/// Plays sound effect
-		/// </summary>
-		static void Play(Mix_Chunk* soundEffect);
-
-		/// <summary>
-		/// Cast base class to Specific Audio Asset
-		/// </summary>
+		static void Play(const std::shared_ptr<AudioAsset>& asset);
+		static void Play(const std::shared_ptr<Asset>& asset);
 		static std::shared_ptr<AudioAsset> ToAudioAsset(const std::shared_ptr<Asset>& asset);
 	protected:
-		static AudioManager* Instance;
+		static AudioManager* instance;
+		static void PlaySdlMusic(Mix_Music* music);
+		static void PlaySdlSound(Mix_Chunk* soundEffect);
 	private:
 		AudioManager() = default;
 		

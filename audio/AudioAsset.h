@@ -23,7 +23,7 @@ namespace gamelib
 		/// <summary>
 		/// Create an audio asset
 		/// </summary>
-		AudioAsset(int inUid, const std::string& inName, const std::string& inPath, const std::string& inType, int inScene, ResourceManager& resourceAdmin);
+		AudioAsset(int inUid, const std::string& inName, const std::string& inPath, const std::string& inAudioAssetType, int inScene, ResourceManager& resourceAdmin);
 
 		/// <summary>
 		/// Sound effect data 

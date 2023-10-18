@@ -23,33 +23,6 @@ It is also the place where all the subsystems are initialized (via `Initialize()
 
 * Make sure you call Initialize() before you try and run the game loop. 
 
-## Assets
-
-The `Asset` class is an object that holds a path to an asset file, like an image file or sound file and then is able to load that asset into memory. 
-
-Each asset has an associated `Uid` that distinguishes this asset from others. Each asset can be either of type (Graphic, Sprite, Audio, Font) and additionally can be associated with a particular scene via the `SceneId`
-
-There are a variety of built-in assets that derive from Asset and therefore have the overriding ability to Load() and Unload() themselves into/from memory.
-
-### AudioAsset
-Loads/unloads and holds a reference to an audio clip that is used in a scene
-
-Currently, the asset can have an asset type of `SoundEffect` or `Music` which distinguishes between a short-player fx clip or a long-playing music clip.
-
-The `AudioManager` can construct these.
-
-### FontAsset
-
-Loads/unloads and holds a reference to a font that is used in a scene.
-
-### GraphicAsset
-
-Loads/unloads and holds a reference to an image that is used in the scene
-
-### SpriteAsset
-
-Loads/unloads and holds a reference to a sprite-sheet that is used in the scene.
-
 ## Event management
 
 ### EventManager
@@ -131,11 +104,38 @@ The `SceneManager` also is responsible for adding items to the scene. The scene 
 
 The `SceneManager` typically subscribes to scene change events and events asking it to load an item into a particular layer in the scene. The `SceneManager` will also do this by reading the associated scene or level file associated with the scene and load the contents thereof into the scene.
 
-## Audio
+## Assets
+
+The `Asset` class is an object that holds a path to an asset file, like an image file or sound file and then is able to load that asset into memory. 
+
+Each asset has an associated `Uid` that distinguishes this asset from others. Each asset can be either of type (Graphic, Sprite, Audio, Font) and additionally can be associated with a particular scene via the `SceneId`
+
+There are a variety of built-in assets that derive from Asset and therefore have the overriding ability to Load() and Unload() themselves into/from memory.
+
+### AudioAsset
+Loads/unloads and holds a reference to an audio clip that is used in a scene
+
+Currently, the asset can have an asset type of `SoundEffect` or `Music` which distinguishes between a short-player fx clip or a long-playing music clip.
+
+The `AudioManager` can construct these.
+
+### FontAsset
+
+Loads/unloads and holds a reference to a font that is used in a scene.
+
+### GraphicAsset
+
+Loads/unloads and holds a reference to an image that is used in the scene
+
+### SpriteAsset
+
+Loads/unloads and holds a reference to a sprite-sheet that is used in the scene.
+
+## Audio Management
 
 Audio assets are managed by the `AudioManager` which can `Play()` provided `AudioAssets`.
 
-## Font management
+## Font Management
 
 The `FontManager` creates `FontAsset`s that can be tracked in the `ResourceManager`
 

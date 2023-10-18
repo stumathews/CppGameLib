@@ -19,6 +19,8 @@ Loads/unloads and holds a reference to an audio clip that is used in a scene
 
 Currently, the asset can have an asset type of `SoundEffect` or `Music` which distinguishes between a short-player fx clip or a long-playing music clip.
 
+The `AudioManager` can construct these.
+
 ### FontAsset
 loads/unloads and holds a reference to a font that is used in a scene
 
@@ -111,9 +113,7 @@ The `SceneManager` typically subscribes to scene change events and events asking
 
 ## Audio
 
-Audio is managed by the `AudioManager` which uses SDL2's audio functionality.
-
-`AudioAsset` is an `Asset` that knows how to load itself into and out of memory.
+Audio is managed by the `AudioManager` which uses SDL2's audio functionality to play `AudioAssets`
 
   - Font managment (via SDL2)
   - 2D Drawing (via SDL2)

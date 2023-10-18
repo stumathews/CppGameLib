@@ -21,6 +21,7 @@ There are a variety of built-in assets that derive from Asset and therefore have
 
 ## Event management
 
+### EventManager
 The `EventManager` is the central component of the event management system. It is a Singleton which allows supported objects (`IEventSubscriber`) to subscribe and raise `Events`. 
 
 When an event is subscribed to, it is stored in the EventManager's event queue and when an Event is raised that matches the subscribed event, the object that subscribed to the event gets notified. 

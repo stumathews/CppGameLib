@@ -27,7 +27,13 @@ When an event is subscribed to, it is stored in the EventManager's event queue a
 
 All objects that can subscribe and be notified need to inherit from `IEventSubscriber` as this is the interface that the EventManager will use to contact it.
 
-An `Event` can be subscribed to by asking the EventManager to subscribe to it. Each event has a particular it to its particular `EventId` that is associated with a known event type, and when they are raised the data associated with the event is also stored in the Event object that is returned to the subscriber. 
+An `Event` can be subscribed to by asking the EventManager to subscribe to it and passing yourself as a reference so it can get back to you to notify when the event is raised.
+
+Each event has a particular it to its particular `EventId` that is associated with a known event type, and when they are raised the data associated with the event is also stored in the Event object that is returned to the subscriber. 
+
+### IEventSubscriber
+
+All objects that are IEventSubscribers can raise events with the EventManager and typically do so by calling the `RaiseEvent()` function. Also, they can use the `Subscribe()` to subscribe to an event. Internally this calls the EventManager.
 
   - Resource Managment
   - Scene Managment

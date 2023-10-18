@@ -9,13 +9,11 @@ To usem you'll need to link to it - it is a shared library. (cppgamelib.lib)
 
 ## GameObject
 
-`GameObject` is any object that can be drawn via its `Draw()` function and be updated via its `Update()` function. 
-
-All GameObjects are event subscribers.
-
-All Game Objects have a `Bounds`, `Position` might be `Visible` and can load its own Settings via `LoadSettings()`. 
-
-Typically objects in the game inherit from GameObjects so that they can subscribe to events, draw and update as well as have a position and space (bounds) on screen.
+* `GameObject` is any object that can be drawn via its `Draw()` function and be updated via its `Update()` function. 
+* All GameObjects are event subscribers.
+* All Game Objects have a `Bounds`, `Position` might be `Visible` and can load its own Settings via `LoadSettings()`. 
+* Typically objects in the game inherit from GameObjects so that they can subscribe to events, draw and update as well as have a position and space (bounds) on screen.
+* All GameObjects have a unique ID
 
 ## Assets
 

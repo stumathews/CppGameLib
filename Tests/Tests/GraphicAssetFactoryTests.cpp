@@ -27,14 +27,14 @@ TEST(GraphicAssetFactoryTests, ParseStaticSprite)
     auto asset = GraphicAssetFactory::Get()->Parse(node);
     auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
     // Ensure...
-    EXPECT_EQ(graphicAsset->uid, 9);
-    EXPECT_EQ(graphicAsset->scene, 3);
+    EXPECT_EQ(graphicAsset->Uid, 9);
+    EXPECT_EQ(graphicAsset->SceneId, 3);
     EXPECT_EQ(graphicAsset->Dimensions.GetWidth(), 64);
     EXPECT_EQ(graphicAsset->Dimensions.GetHeight(), 65);
-    EXPECT_EQ(graphicAsset->name, string("p1.png"));
+    EXPECT_EQ(graphicAsset->Name, string("p1.png"));
     EXPECT_EQ(graphicAsset->type, string("graphic"));
-    EXPECT_EQ(graphicAsset->path, string("Assets/Platformer/Base pack/Player/p1_walk/p1_walk.png"));
-    EXPECT_EQ(graphicAsset->assetType, gamelib::Asset::AssetType::Graphic);
+    EXPECT_EQ(graphicAsset->FilePath, string("Assets/Platformer/Base pack/Player/p1_walk/p1_walk.png"));
+    EXPECT_EQ(graphicAsset->AssetType, gamelib::Asset::AssetType::Graphic);
 
 }
 
@@ -73,14 +73,14 @@ TEST(GraphicAssetFactoryTests, ParseSprite)
     auto asset = GraphicAssetFactory::Get()->Parse(node);
     auto _sprite = dynamic_pointer_cast<SpriteAsset>(asset);
     // Ensure...
-    EXPECT_EQ(_sprite->uid, 9);
-    EXPECT_EQ(_sprite->scene, 3);
+    EXPECT_EQ(_sprite->Uid, 9);
+    EXPECT_EQ(_sprite->SceneId, 3);
     EXPECT_EQ(_sprite->Dimensions.GetWidth(), 64);
     EXPECT_EQ(_sprite->Dimensions.GetHeight(), 65);
-    EXPECT_EQ(_sprite->name, string("p1.png"));
+    EXPECT_EQ(_sprite->Name, string("p1.png"));
     EXPECT_EQ(_sprite->type, string("graphic"));
-    EXPECT_EQ(_sprite->path, string("Assets/Platformer/Base pack/Player/p1_walk/p1_walk.png"));
-    EXPECT_EQ(_sprite->assetType, gamelib::Asset::AssetType::Sprite);
+    EXPECT_EQ(_sprite->FilePath, string("Assets/Platformer/Base pack/Player/p1_walk/p1_walk.png"));
+    EXPECT_EQ(_sprite->AssetType, gamelib::Asset::AssetType::Sprite);
     EXPECT_EQ(_sprite->KeyFrames.size(), 11);
     EXPECT_EQ(_sprite->GetColourKey(), ColourKey(255,255,255)) << "Invalid colour key";
     EXPECT_TRUE(_sprite->KeyFrames[4].HasGroup());

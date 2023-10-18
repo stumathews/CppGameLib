@@ -31,11 +31,11 @@ class ResourceManagerTests : public testing::Test
 
   void test_asset_against_baseline(shared_ptr<Asset> asset) const
   {
-	EXPECT_EQ(asset->uid, exp_uid) << "uid is incorrect";
-	EXPECT_EQ(asset->scene, exp_scene) << "Scene was incorrect";
-	EXPECT_STREQ(asset->name.c_str(), exp_name.c_str()) << "Name was incorrect";	
+	EXPECT_EQ(asset->Uid, exp_uid) << "uid is incorrect";
+	EXPECT_EQ(asset->SceneId, exp_scene) << "Scene was incorrect";
+	EXPECT_STREQ(asset->Name.c_str(), exp_name.c_str()) << "Name was incorrect";	
 	EXPECT_STREQ(asset->type.c_str(), exp_type.c_str()) << "Type was incorrect";
-	EXPECT_STREQ(asset->path.c_str(), exp_filename.c_str()) << "Path was was incorrect";
+	EXPECT_STREQ(asset->FilePath.c_str(), exp_filename.c_str()) << "Path was was incorrect";
   }
 	
 };

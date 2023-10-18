@@ -9,11 +9,8 @@ namespace gamelib
 	/// </summary>
 	class Asset
 	{
-	public:	
+	public:
 
-		/// <summary>
-		/// Describes the type of asset
-		/// </summary>
 		enum class AssetType
 		{
 			Undefined,
@@ -22,49 +19,22 @@ namespace gamelib
 			Audio,
 			Font,
 		};
-
-				
-		/// <summary>
-		/// A generic asset
-		/// </summary>
+		
 		Asset(int uid, std::string name, std::string path, std::string type, int scene);
-		Asset(const Asset& other) = delete;
+		Asset(const Asset& other) = delete; // copy constructor
+		Asset& operator=(const Asset& other) = delete; // assignment operator
+		Asset(const Asset&& other) = delete; // move constructor
+		Asset& operator=(const Asset&& other) = delete; // move assignment operator
 
 		virtual ~Asset() = default;
-
-		/// <summary>
-		/// Asset UID
-		/// </summary>
-		const int uid;
-
-		/// <summary>
-		/// Asset Name
-		/// </summary>
-		const std::string name;
-
-		/// <summary>
-		/// Asset Path
-		/// </summary>
-		const std::string path;
-
-		/// <summary>
-		/// Asset type
-		/// </summary>
+				
+		const int Uid;
+		const std::string Name;
+		const std::string FilePath;
 		const std::string type;
+		AssetType AssetType;		
 
-		/// <summary>
-		/// Asset type
-		/// </summary>
-		AssetType assetType;		
-
-		/// <summary>
-		/// Asset scene/scope
-		/// </summary>
-		const int scene;
-
-		/// <summary>
-		/// If Assset is in memory currently
-		/// </summary>
+		const int SceneId;
 		bool IsLoadedInMemory;
 		
 		/// <summary>
@@ -79,7 +49,7 @@ namespace gamelib
 		virtual bool Unload() = 0;
 
 		/// <summary>
-		/// Properties
+		/// An asset can have misc properties attached to it
 		/// </summary>
 		std::map<std::string, std::string> Properties;
 

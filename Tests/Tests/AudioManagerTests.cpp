@@ -34,8 +34,8 @@ TEST_F(AudioManagerTests, to_resource)
 	// When casting a Asset* to a AudioAsset...
 	const auto resource = audioAdmin->ToAudioAsset(audioAssetPtr);
 	
-	EXPECT_STREQ(resource->name.c_str(), resourceName.c_str()) << "Resource name is invalid";
+	EXPECT_STREQ(resource->Name.c_str(), resourceName.c_str()) << "Resource name is invalid";
 	EXPECT_EQ(resource->IsLoadedInMemory, false) << "is loaded flag is invalid";
-	EXPECT_STREQ(resource->path.c_str(), resourcePath.c_str()) << "resource path is invalid";
-	EXPECT_EQ(resource->scene, resourceScene) << "Resource scene is invalid";
+	EXPECT_STREQ(resource->FilePath.c_str(), resourcePath.c_str()) << "resource path is invalid";
+	EXPECT_EQ(resource->SceneId, resourceScene) << "Resource scene is invalid";
 }

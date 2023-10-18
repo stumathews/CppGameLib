@@ -64,24 +64,24 @@ namespace gamelib
 		{
 			for (const auto& asset : level_resources.second)
 			{
-				const auto always_load_resource = asset->scene == 0;
-				if ((asset->scene == level || always_load_resource) && !asset->IsLoadedInMemory)
+				const auto always_load_resource = asset->SceneId == 0;
+				if ((asset->SceneId == level || always_load_resource) && !asset->IsLoadedInMemory)
 				{
 					asset->Load();
 
 					Logger::Get()->LogThis(
-						string("scene " + to_string(asset->scene)) + string(": ") + string(asset->name) +
+						string("scene " + to_string(asset->SceneId)) + string(": ") + string(asset->Name) +
 						" asset loaded.");
 
 					countLoadedResources++;
 					countUnloadedResources--;
 				}
-				else if (asset->IsLoadedInMemory && asset->scene != level && !always_load_resource)
+				else if (asset->IsLoadedInMemory && asset->SceneId != level && !always_load_resource)
 				{
 					asset->Unload();
 
 					Logger::Get()->LogThis(
-						string("scene: " + to_string(asset->scene)) + string(asset->name) + " asset unloaded.");
+						string("scene: " + to_string(asset->SceneId)) + string(asset->Name) + " asset unloaded.");
 					countUnloadedResources++;
 					countLoadedResources--;
 				}
@@ -208,17 +208,17 @@ namespace gamelib
 	void ResourceManager::StoreAsset(const shared_ptr<Asset>& asset)
 	{
 		// assets are explicitly associated with a scene that it will work in
-		resourcesByScene[asset->scene].push_back(asset);
+		resourcesByScene[asset->SceneId].push_back(asset);
 
 		// Index asset by its name
-		resourcesByName.insert(pair<string, shared_ptr<Asset>>(asset->name, asset));
+		resourcesByName.insert(pair<string, shared_ptr<Asset>>(asset->Name, asset));
 
 		// Index the asset by its id
-		resourcesById.insert(pair<int, shared_ptr<Asset>>(asset->uid, asset));
+		resourcesById.insert(pair<int, shared_ptr<Asset>>(asset->Uid, asset));
 
 		LogMessage(
-			"Discovered " + string(asset->type) + string(" asset#: ") + to_string(asset->uid) + string(" ") + string(
-				asset->name));
+			"Discovered " + string(asset->type) + string(" asset#: ") + to_string(asset->Uid) + string(" ") + string(
+				asset->Name));
 		countResources++;
 	}
 

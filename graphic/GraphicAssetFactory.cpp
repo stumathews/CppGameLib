@@ -71,14 +71,14 @@ namespace gamelib
                 if (assetChildName == "sprite")
                 {
                     // Yes, is a sprite, process it
-                    _sprite = std::make_shared<SpriteAsset>(graphicAsset->uid, graphicAsset->name, graphicAsset->path,
-                                                            graphicAsset->type, graphicAsset->scene, dimensions);
+                    _sprite = std::make_shared<SpriteAsset>(graphicAsset->Uid, graphicAsset->Name, graphicAsset->FilePath,
+                                                            graphicAsset->type, graphicAsset->SceneId, dimensions);
                     
                     ParseSprite(pAssetChild, _sprite);
 
                     // Upcast to Asset
                     graphicAsset = _sprite;
-                    graphicAsset->assetType = Asset::AssetType::Sprite;
+                    graphicAsset->AssetType = Asset::AssetType::Sprite;
                 }
 
                 if (assetChildName == "colorkey")

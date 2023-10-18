@@ -45,7 +45,7 @@ namespace gamelib
 
 	shared_ptr<FontAsset> FontManager::ToFontAsset(const shared_ptr<Asset>& asset)
 	{
-		if (asset->assetType != Asset::AssetType::Font)
+		if (asset->AssetType != Asset::AssetType::Font)
 		{
 			THROW(97, "Cannot cast a generic asset that is not an font asset to an font asset", "Font Manager")
 		}

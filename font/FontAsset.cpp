@@ -10,7 +10,7 @@ namespace gamelib
 	FontAsset::FontAsset(const int inUid, const string& inName, const string& inPath, const string& inType,
 	                     const int inScene) : Asset(inUid, inName, inPath, inType, inScene)
 	{
-		assetType = AssetType::Font;
+		AssetType = AssetType::Font;
 	}
 
 	/// <summary>
@@ -26,7 +26,7 @@ namespace gamelib
 	/// </summary>
 	void FontAsset::Load()
 	{
-		font =  TTF_OpenFont(path.c_str(), 28);
+		font =  TTF_OpenFont(FilePath.c_str(), 28);
 	}
 
 	/// <summary>

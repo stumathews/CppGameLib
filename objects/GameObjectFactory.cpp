@@ -64,7 +64,7 @@ namespace gamelib
 	{
 		if (asset == nullptr) { throw exception("cannot initialize game object with out an associated asset"); }
 		
-		switch (asset->assetType)  // NOLINT(clang-diagnostic-switch-enum)
+		switch (asset->AssetType)  // NOLINT(clang-diagnostic-switch-enum)
 		{
 			case Asset::AssetType::Sprite:  return BuildSprite(name, type, asset, position, IsVisible);
 			case Asset::AssetType::Graphic: return BuildGraphic(asset, position);
@@ -79,9 +79,9 @@ namespace gamelib
 		const auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
 
 		// graphic assets have dimensions, so we will need it as a graphic asset
-		const auto spriteAsset = make_shared<SpriteAsset>(graphicAsset->uid, graphicAsset->name,
-		                                                  graphicAsset->path, graphicAsset->type,
-		                                                  graphicAsset->scene, graphicAsset->Dimensions);
+		const auto spriteAsset = make_shared<SpriteAsset>(graphicAsset->Uid, graphicAsset->Name,
+		                                                  graphicAsset->FilePath, graphicAsset->type,
+		                                                  graphicAsset->SceneId, graphicAsset->Dimensions);
 
 		return Get().BuildStaticSprite(spriteAsset, position);
 
@@ -109,7 +109,7 @@ namespace gamelib
 	void GameObjectFactory::SetupCommonSprite(const std::shared_ptr<AnimatedSprite>& sprite, const std::shared_ptr<Asset>& asset, const std::shared_ptr<
 		                                          GraphicAsset>& graphicAsset, const bool isVisible)
 	{
-		sprite->SetTag(asset->name);
+		sprite->SetTag(asset->Name);
 		sprite->SetGraphic(graphicAsset);
 		sprite->LoadSettings();
 		sprite->SupportsColourKey(graphicAsset->GetColourKey().IsSet());
@@ -135,7 +135,7 @@ namespace gamelib
 
 	void GameObjectFactory::ThrowCouldNotFindAssetException(const std::shared_ptr<Asset>& asset, const std::string& detailValue)
 	{
-		if (!asset->type._Equal("graphic")) { throw exception(("Cannot load non graphic resource: " + asset->name + " type=" + asset->type).c_str()); }
+		if (!asset->type._Equal("graphic")) { throw exception(("Cannot load non graphic resource: " + asset->Name + " type=" + asset->type).c_str()); }
 		if (asset == nullptr) { throw exception(("Could not load resource meta data for resource id:" + detailValue).c_str()); }
 	}	
 }

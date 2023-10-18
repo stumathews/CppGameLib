@@ -37,7 +37,7 @@ namespace gamelib
 		[[nodiscard]] BehaviorResult GetStatus() const { return status; }
 		[[nodiscard]] bool IsRunning() const { return status == BehaviorResult::Running;}
 		void Abort() { OnTerminate(); status = BehaviorResult::Aborted; }
-		void Reset() { status = BehaviorResult::Invalid; };
+		void Reset() { status = BehaviorResult::Invalid; }
 
 	private:
 		BehaviorResult status;

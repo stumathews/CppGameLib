@@ -18,7 +18,7 @@ namespace gamelib
 	{
 		hasColourKey = false;
 		viewPort = { dimensions.GetAx(), dimensions.GetAy(), dimensions.GetWidth(), dimensions.GetHeight() };
-		assetType = AssetType::Graphic;
+		AssetType = AssetType::Graphic;
 	}
 	
 	/// <summary>
@@ -30,7 +30,7 @@ namespace gamelib
 			  
 		// Load image at specified path
 
-		if(const auto loadedSurface = IMG_Load(path.c_str()))
+		if(const auto loadedSurface = IMG_Load(FilePath.c_str()))
 		{				
 			if (HasColourKey())
 			{
@@ -52,7 +52,7 @@ namespace gamelib
 		}
 		else
 		{
-			Logger::Get()->LogThis(std::string("Unable to load image:") + path + std::string(" Error:") + IMG_GetError());
+			Logger::Get()->LogThis(std::string("Unable to load image:") + FilePath + std::string(" Error:") + IMG_GetError());
 		}
 	}
 
@@ -76,7 +76,7 @@ namespace gamelib
 		} 
 		catch (...)
 		{
-			Logger::Get()->LogThis(string("Unable to Unload asset: " + this->name) + string(", path:" + this->path));
+			Logger::Get()->LogThis(string("Unable to Unload asset: " + this->Name) + string(", path:" + this->FilePath));
 			isSuccess = false;
 		}
 
@@ -117,7 +117,7 @@ namespace gamelib
 	{
 		// Unload the asset if if not longer be used/referenced anywhere/more
 		
-		Logger::Get()->LogThis(string("Unloading asset: " + this->path));
+		Logger::Get()->LogThis(string("Unloading asset: " + this->FilePath));
 
 		GraphicAsset::Unload();
 	}

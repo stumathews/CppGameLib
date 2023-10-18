@@ -4,6 +4,26 @@ This is a game library for C++ for creating simple 2D games.
 * To use you'll need to link to cppgamelib.lib
 * It depends on SDL2
 
+## Dependencies:
+ ### Include
+ * C:\SDL\SDL2\include 
+ * C:\SDL\SDL2_image-2.0.4\include 
+ * C:\SDL\SDL2_mixer-devel-2.0.4-VC\SDL2_mixer-2.0.4\include 
+ * C:\SDL\SDL2_ttf-2.0.15\include 
+ * C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include (not needed yet)
+ ### Link
+ * C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86  (not needed yet)
+ * C:\SDL\SDL2\lib\x86 
+ ### libs
+ * SDL2.lib
+ * SDL2main.lib
+ * SDL2_image.lib
+ * Winmm.lib
+ * SDL2_mixer.lib
+ * d3d10.lib (not needed yet)
+ * d3dx10.lib (not needed yet)
+ * SDL2_ttf.lib
+
 A Basic view of how the library would be used to structure a game:
 
 ![Basic Architecture](AppGameLibArchitecture.png)
@@ -159,22 +179,4 @@ The `SDLGraphicsManager` is responsible for setting up the Window and its associ
 
 TBD
 
-## Dependencies:
- ### Include
- C:\SDL\SDL2\include 
- C:\SDL\SDL2_image-2.0.4\include 
- C:\SDL\SDL2_mixer-devel-2.0.4-VC\SDL2_mixer-2.0.4\include 
- C:\SDL\SDL2_ttf-2.0.15\include 
- C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include
- ### Link
- C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86  (might not be needed)
- C:\SDL\SDL2\lib\x86 
- ### libs
- SDL2.lib
- SDL2main.lib
- SDL2_image.lib
- Winmm.lib
- SDL2_mixer.lib
- d3d10.lib
- d3dx10.lib 
- SDL2_ttf.lib
+

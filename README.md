@@ -178,6 +178,26 @@ The `SDLGraphicsManager` is responsible for setting up the Window and its associ
 
 * You should call `Initialize()` before first use of `SDLGraphicsManager::ClearAndDraw()`
 
+### DrawableText
+
+`DrawableText` is a game object that draws a string of text.
+
+### DrawableFrameRate
+
+The `DrawableFrameRate` is a game object that shows the current framerate.
+
+### GraphicAsset
+
+A `GraphicAsset` is an asset that knows how to load a graphic into memory.
+
+### GraphicAssetFactory
+
+A `GraphicAssetFactory` creates `GraphicAsset` from serialized XML 
+
+### ColourKey
+
+A `ColourKey` is a colour that is considered invisible when drawing a graphic that has the colour key colour in it.
+
 ### Logging and Error Management
 
 TBD

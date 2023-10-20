@@ -87,7 +87,36 @@ It currently has 5 fixed behavioural states that are controlled by a `FiniteStat
 
 The exact behaviour of the NPC can be specified by the derived class, which is what the `Enemy` class does.
 
-#### Static Sprite
+#### Direction
+
+An enumeration of Directions:
+
+```cpp
+enum class Direction 
+{ 
+	Up, 
+	Down,
+	Left, 
+	Right,
+	None
+};
+```
+
+#### Hotspot
+
+A `Hotspot` is a `DrawableGameObject` that has a position within its parent. 
+
+Note: A hotspot should move with its parent's position. Currently, this is a pain because we have to do this manually, i.e when the parent changes, we need to calculate the position of the hotspot by passing in the parents co-ordinates. This will be improved when we have a dedicated scene graph where relationships between parents and children will easily allows this to happen automatically.
+
+#### Inventory
+
+An `Inventory` is a collection of `Components`. This would typically be associated with a Player or NPC.
+
+You can search for a component, remove a component and check if a component exists in the `Inventory`.
+
+#### Timer
+
+A `Timer` is a countdown timer that elapses when the timer has been run for the duration of the timer. It allows you to check if an event that started when the timer started has now been happening for a specific amount of time.  
 
 ## GameStructure
 
@@ -177,6 +206,33 @@ The `SceneManager` is responsible for drawing the objects that are associated wi
 The `SceneManager` also is responsible for adding items to the scene. The scene is composed of Layers and each layer can have items that can be added to that layer. The SceneManager will then traverse the layers in order to draw the scene and in so doing achieve z-order drawing, i.e. the ability to draw some object over others.
 
 The `SceneManager` typically subscribes to scene change events and events asking it to load an item into a particular layer in the scene. The `SceneManager` will also do this by reading the associated scene or level file associated with the scene and load the contents thereof into the scene.
+
+### Layer
+
+A layer is named a collection of `GameObject`s that are in that layer. A layer has a z-order which dictates the order in which the GameObjects in the layer are drawn by the `SceneManager`.
+
+### ABCDRectangle
+
+An `ABCDRectable` is a model of the geometry of a rectangle. 
+
+```cpp
+/*
+ An ABCD Rectangle looks like this;
+
+	A----B
+	|    |
+	|    |
+	D----C
+
+Each point A, B, C, D has and x,y coordinate
+
+	A(ax,ay)----B(bx,by)
+	|                  |
+	|                  |
+	D(dx,dy)----C(cx,cy)
+
+*/
+```
 
 ## Assets
 

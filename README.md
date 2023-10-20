@@ -216,13 +216,9 @@ The `LastOrNextSelector` node a can be added to a `Behavior Tree` which will con
 
 The `Sequence` node is a behaviour that executes each child node in the sequence. You can add child nodes that will execute in sequence
 
-#### Condition
+#### Behavior
 
-The `Condition` node is a behaviour that will only execute its child nodes if the condition is met. This can be interpreted as a conditional sequence.
-
-#### Action
-
-The `Action` node is a behaviour that will execute when it is reached. An action can be a child of a sequence or condition
+The `Behavior` node is an action that will execute when it is reached. A behavior can be a child of a sequence or condition
 
 #### BehaviorTreeBuilder
 

@@ -41,6 +41,34 @@ Typically objects in the game inherit from GameObjects so that they can subscrib
 * All Game Objects have a `Bounds`, `Position` might be `Visible` and can load its own Settings via `LoadSettings()`. 
 * All GameObjects have a unique ID
 
+### Miscellaneous Objects
+
+#### AnimatedSprite
+
+An `AnimatedSprite` is a Drawable Game Object that draws a time-based keyframe animation, using the supplied `SpriteAsset`. It is used by `NPC`.  
+
+#### StaticSprite
+
+An `StaticSprite` is a sprite that does not support a time-based keyframe animation, but one in which the keyframes can be manually set.
+
+#### Component
+
+A `Component` is a named item that has a list of key-value properties associated with it. 
+
+#### DrawableGameObject
+
+A `DrawableGameObject` is a game object that can load and draw itself. By default, it supports drawing a `GraphicAsset` but can perform its own drawing too. It supports setting the `ColourKey` when drawing the graphic
+
+#### GameObjectFactory
+
+A `GameObjectFactory` object creates specific types of GameObjects from their XML definitions. Currently supports ability to rehydrate the following game types:
+* `AnimatedSprite`
+* `StaticSprite`
+
+#### NPC
+
+#### Static Sprite
+
 ## GameStructure
 
 `GameStructure` is a crucial part of any game. This object is used to structure the game parts. It is responsible for executing the GameLoop at the desired framerate and drawing asking the `SceneManager` to draw all the objects in the scene, as well as getting the controller input through the controller input function that you provide in the constructor.
@@ -198,9 +226,25 @@ A `GraphicAssetFactory` creates `GraphicAsset` from serialized XML
 
 A `ColourKey` is a colour that is considered invisible when drawing a graphic that has the colour key colour in it.
 
+### Drawing
+
+The `Drawing` class is a utility function for drawing operations
+
 ### Logging and Error Management
 
-TBD
+#### ErrorLogManager
+
+The `ErrorLogManager` creates a log file that errors are written to.
+
+## Character Management
+
+### Movement
+
+A `Movement` is the number of pixels to move in a particular direction.
+
+### IGameObjectMoveStrategy
+
+An `IGameObjectMoveStrategy` makes a `Movement`.
 
 ## AI
 
@@ -275,8 +319,9 @@ gamelib::BehaviorTree* behaviorTree = BehaviorTreeBuilder()
 .Finish()
 .Finish()
 .End();
-
-
 ```
 
+## Networking 
+
+TBD
 

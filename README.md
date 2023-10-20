@@ -178,8 +178,89 @@ The `SDLGraphicsManager` is responsible for setting up the Window and its associ
 
 * You should call `Initialize()` before first use of `SDLGraphicsManager::ClearAndDraw()`
 
-### Logging and Error Managment
+### Logging and Error Management
 
 TBD
+
+## AI
+
+### Finite State Machines
+
+#### FSM
+
+The `FSM` class is the Finite State Machine that manages the execution and transition of loaded states.
+
+#### FSMState
+
+The `FSMState` class is a state that can be loaded into the FSM and be executed depending on if a transition (`FSMTransition`) exists for it
+
+#### FSM transition
+
+A `FSMTransition` is a condition that specifies that the associated state should be executed or transitioned to.
+
+### Behaviour Trees
+
+#### BehaviorTree
+
+The `BehaviorTree` class holds a hierarchy of behaviours. It is essentially the root node of the tree.
+
+#### FirstOrNextSelector 
+
+The `FirstOrNextSelector` node can be added to a `BehaviorTree` and it will cycle through its child nodes, executing the same child while that child's condition is met.
+
+#### LastOrNextSelector
+
+The `LastOrNextSelector` node a can be added to a `Behavior Tree` which will continue to execute the last child node is executed previously (while the conditions for that child node are still true. This is essentially executing a sticky while it is valid, and then moving to the next child node in the sequence when its condition becomes false.
+
+#### Sequence
+
+The `Sequence` node is a behaviour that executes each child node in the sequence. You can add child nodes that will execute in sequence
+
+#### Condition
+
+The `Condition` node is a behaviour that will only execute its child nodes if the condition is met. This can be interpreted as a conditional sequence.
+
+#### Action
+
+The `Action` node is a behaviour that will execute when it is reached. An action can be a child of a sequence or condition
+
+#### BehaviorTreeBuilder
+
+Allows the construction of a `BehaviorTree` declaratively for example
+
+```cpp
+gamelib::BehaviorTree* behaviorTree = BehaviorTreeBuilder()
+.ActiveSelector()
+ .Sequence("Check if player is visible")
+  .Condition(IsPlayerVisible)
+  .ActiveSelector()
+   .Sequence()
+    .Condition(IsPlayerInRange)
+    .Filter()
+     .Action(FireAtPlayer)
+    .Finish() 
+   .Finish()
+   .Action(MoveTowardsPlayer)
+ .Finish()
+.Finish()
+.Sequence("Check if player spotted")
+ .Condition(HaveWeGotASuspectedLocation)
+  .Action(MovePlayerToLastKnownLocation)
+  .Action(LookAround)
+ .Finish()
+ .Sequence("Act normal")
+  .Action(MoveToRandomPosition)
+  .Action(LookAroundSomeMore)
+ .Finish()
+ .Sequence("Do something else")
+  .Action(DummyAction7)
+  .Action(DummyAction8)
+ .Finish()
+.Finish()
+.Finish()
+.End();
+
+
+```
 
 

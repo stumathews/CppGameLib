@@ -75,7 +75,7 @@ A `GameObjectFactory` object creates specific types of GameObjects from their XM
 
 #### NPC
 
-An `NPC` is a `DrawableGameObject` that uses an `AnimatedSprite` with support for moving, and having its animation change according to the direction it is facing.
+An `NPC` is a `DrawableGameObject` that uses an `AnimatedSprite` with support for moving, and having its animation change according to the direction it is facing. It also supports drawing a label affixed to its top left corner which can be used to show the current state of the NPC.
 
 It currently has 5 fixed behavioural states that are controlled by a `FiniteStateMachine` and has the following states:
 

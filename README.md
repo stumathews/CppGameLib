@@ -51,6 +51,10 @@ An `AnimatedSprite` is a Drawable Game Object that draws a time-based keyframe a
 
 An `StaticSprite` is a sprite that does not support a time-based keyframe animation, but one in which the keyframes can be manually set.
 
+#### KeyFrame
+
+A `KeyFrame` is an area on a sprite sheet. Each keyframe usually represents a different image within a sprite sheet. Cycling through a series of keyframes usually represents a particular animation. Such a series is keyframes can be associated with an identifier or 'group'.
+
 #### Component
 
 A `Component` is a named item that has a list of key-value properties associated with it. 

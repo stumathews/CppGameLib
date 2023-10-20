@@ -266,6 +266,58 @@ A `Movement` is the number of pixels to move in a particular direction.
 
 An `IGameObjectMoveStrategy` makes a `Movement`.
 
+## Time-Based Objects
+
+### Process
+
+A `Process` is like a workflow or a sequence. A process can contain multiple processes, which can be nested or not, like:
+
+Process 1: [ processA, processB, processC: [process X, processY, processZ]]
+
+A process can have either one of the following states:
+
+* Uninitialized = 0,
+* Running
+* Succeeded
+* Failed
+* Aborted
+
+Processes support an `OnInit()`,`OnUpdate()` `OnFail()`, `OnSuccess()` function which will run depending on the state of the process.
+
+Processes can also call `Succeed()`, `Fail()`, `Pause()` to change its status.
+
+The premise is that a process will be managed by a `ProcessManager` whose responsibility it is to start executing the process which involves giving each process time slices for updating its progress over time. 
+
+### Action
+
+An `Action` is a process that succeeds (sets is status to succcess) after is associated action is run.
+
+### DelayProcess
+
+A `DelayProcess` is a process that waits, and then runs its action before reporting its status as success.
+
+### ProcessManager
+
+The `ProcessManager` runs each process by giving it time-slices. 
+
+### Example
+
+```cpp
+const auto a = std::static_pointer_cast<Process>(std::make_shared<Action>([&]() { ActionA(); }));
+const auto b = std::static_pointer_cast<Process>(std::make_shared<Action>([&]() { ActionB(); }));
+const auto c = std::static_pointer_cast<Process>(std::make_shared<DelayProcess>(5000)); // Wait 5 secs
+const auto d = std::static_pointer_cast<Process>(std::make_shared<Action>([&]() { ActionD(); }));
+
+// Chain a set of subsequent processes
+a->AttachChild(b); 
+	b->AttachChild(c); 
+		c->AttachChild(d);
+
+processManager.AttachProcess(a);
+...
+processManager.Update(deltaMs);
+```
+
 ## AI
 
 ### Finite State Machines

@@ -43,6 +43,10 @@ Typically objects in the game inherit from GameObjects so that they can subscrib
 
 ### Miscellaneous Objects
 
+#### GameWorldData
+
+An object that holds the game's common state such as `IsGameDone`, `IsNetworkGame`, `CanDraw` and most importantly, a reference to the player `GameObject`.  
+
 #### AnimatedSprite
 
 An `AnimatedSprite` is a Drawable Game Object that draws a time-based keyframe animation, using the supplied `SpriteAsset`. It is used by `NPC`.  
@@ -70,6 +74,18 @@ A `GameObjectFactory` object creates specific types of GameObjects from their XM
 * `StaticSprite`
 
 #### NPC
+
+An `NPC` is a `DrawableGameObject` that uses an `AnimatedSprite` with support for moving, and having its animation change according to the direction it is facing.
+
+It currently has 5 fixed behavioural states that are controlled by a `FiniteStateMachine` and has the following states:
+
+* hitWallState, which switches the current direction of the NPC
+* upState, which moves the NPC up
+* downState, which moves the NPC down
+* leftState, which moves the NPC left
+* rightState, which moves the NPC right.
+
+The exact behaviour of the NPC can be specified by the derived class, which is what the `Enemy` class does.
 
 #### Static Sprite
 

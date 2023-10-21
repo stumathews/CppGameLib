@@ -249,7 +249,13 @@ The `SceneManager` is responsible for drawing the objects that are associated wi
 
 The `SceneManager` also is responsible for adding items to the scene. The scene is composed of Layers and each layer can have items that can be added to that layer. The SceneManager will then traverse the layers in order to draw the scene and in so doing achieve z-order drawing, i.e. the ability to draw some object over others.
 
-The `SceneManager` typically subscribes to scene change events and events asking it to load an item into a particular layer in the scene. The `SceneManager` will also do this by reading the associated scene or level file associated with the scene and load the contents thereof into the scene.
+The `SceneManager` typically subscribes to scene change events and events asking it to load an item into a particular layer in the scene. The `SceneManager` will also do this by reading the associated scene or level file associated with the scene and load the contents thereof into the scene. 
+
+Games can raise the `SceneChangedEvent` event to trigger the `ResourceManager` and `SceneManager` coordinating the reading of the specified level and swapping out previously loaded resources for new-level's resources that are referenced in the level/scene file.
+
+```cpp
+EventManager::Get()->RaiseEvent(std::make_unique<SceneChangedEvent>(newLevel), this);
+```
 
 #### Example Scene File
 

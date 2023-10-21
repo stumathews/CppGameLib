@@ -1,13 +1,19 @@
 #include "ErrorLogManager.h"
 #include <iomanip>
 
+ErrorLogManager::~ErrorLogManager()
+{
+	Flush();
+	Close();
+}
+
 ErrorLogManager* ErrorLogManager::GetErrorLogManager()
 {
-	if (Instance == nullptr)
+	if (instance == nullptr)
 	{
-		Instance = new ErrorLogManager();
+		instance = new ErrorLogManager();
 	}
-	return Instance;
+	return instance;
 }
 
 void ErrorLogManager::Create(const std::string& fileName)
@@ -58,4 +64,4 @@ std::string ErrorLogManager::GetTimeString()
 	return timeString.str();
 }
 
-ErrorLogManager* ErrorLogManager::Instance = nullptr;
+ErrorLogManager* ErrorLogManager::instance = nullptr;

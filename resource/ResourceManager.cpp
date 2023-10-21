@@ -112,12 +112,12 @@ namespace gamelib
 	/// <summary>
 	/// Index the Resources.xml file	 
 	/// </summary>
-	void ResourceManager::IndexResourceFile(const string& resourceFilePath)
+	void ResourceManager::IndexResourceFile(const string& resourcesFilePath)
 	{
 		Logger::Get()->LogThis("ResourceManager: reading resources.xml.");
 
 		XMLDocument xmlDocument;
-		xmlDocument.LoadFile(resourceFilePath.c_str());
+		xmlDocument.LoadFile(resourcesFilePath.c_str());
 
 		if (xmlDocument.ErrorID() == 0)
 		{

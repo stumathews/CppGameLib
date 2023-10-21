@@ -24,7 +24,7 @@ namespace gamelib
 		/// <param name="logStdout">Log to std out</param>
 		void LogThis(const std::string& message, bool beVerbose = false, bool logStdout = true) const;
 	protected:
-		static Logger* Instance;
+		static Logger* instance;
 	private:
 		LoggingFunc func;	
 		void static LogToStdOut(const std::string& message);

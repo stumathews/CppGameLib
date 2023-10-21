@@ -9,17 +9,17 @@ namespace gamelib
 
 	Logger* Logger::Get()
 	{
-		if (Instance == nullptr)
+		if (instance == nullptr)
 		{
-			Instance = new Logger( [=](const std::string& message)
+			instance = new Logger( [=](const std::string& message)
 			{
 				LogToStdOut(message);
 			});
 		}
-		return Instance;
+		return instance;
 	}
 
-	Logger* Logger::Instance = nullptr;
+	Logger* Logger::instance = nullptr;
 
 	void Logger::LogThis(const string& message, const bool beVerbose, const bool logStdout) const
 	{

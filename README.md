@@ -204,6 +204,23 @@ The `SceneManager` also is responsible for adding items to the scene. The scene 
 
 The `SceneManager` typically subscribes to scene change events and events asking it to load an item into a particular layer in the scene. The `SceneManager` will also do this by reading the associated scene or level file associated with the scene and load the contents thereof into the scene.
 
+#### Example Scene File
+
+```cpp
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Objects in Scene/Level 3 -->
+<scene id="2">
+	<layer name="layer0" posx="0" posy="0" visible="true">
+		<objects>
+			<object name="name3" type="graphic" posx="100" posy="40" resourceId="9" visible="true"></object>
+      <object name="name4" type="graphic" posx="400" posy="40" resourceId="11" visible="true"></object>
+     <object name="name5" type="graphic" posx="400" posy="40" resourceId="18" visible="true"></object>
+		</objects>
+	</layer>
+</scene>
+```
+
 ### Layer
 
 A layer is named a collection of `GameObject`s that are in that layer. A layer has a z-order which dictates the order in which the GameObjects in the layer are drawn by the `SceneManager`.

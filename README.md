@@ -36,7 +36,22 @@ A `GameObjectFactory` object creates specific types of GameObjects from their XM
 
 It is also the place where all the subsystems are initialized (via `Initialize()`) before the game is put into the game loop. 
 
-* Make sure you call Initialize() before you try and run the game loop. 
+* Make sure you call Initialize() before you try and run the game loop.
+
+```cpp
+// Create our game structure that uses the level manager's polling function for keyboard input
+GameStructure infrastructure([&]() { LevelManager::Get()->GetKeyboardInput(); });
+		
+gameStructure.Initialize(screenWidth, screenHeight, windowTitle, resourcesFilePath, gameSettingsFilePath);
+
+// Load level and create/add game objects
+PrepareFirstLevel();
+
+// Start the game loop which will pump update/draw events onto the event system, which level objects subscribe to
+infrastructure.DoGameLoop(GameData::Get());
+
+infrastructure.Unload();	
+```
 
 ## Event management
 

@@ -137,7 +137,9 @@ The `SettingsManager` allows the retrieval of settings from an xml file which is
 
 Settings can retrieved directly from the `SettingsManager` who manages this file:
 
-const auto tick_time_ms = SettingsManager::Int("global", "verbose");
+```cpp
+int tick_time_ms = SettingsManager::Int("global", "tick_time_ms");
+```
 
 ## Resource Management
 ### ResourceManager

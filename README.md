@@ -46,7 +46,7 @@ int main(int argc, char *args[])
 		// Create our game structure that uses the level manager's polling function for keyboard input
 		GameStructure infrastructure([&]() { LevelManager::Get()->GetKeyboardInput(); });
 				
-		gameStructure.Initialize(screenWidth, screenHeight, windowTitle, resourcesFilePath, gameSettingsFilePath);
+		gameStructure.Initialize(screenWidth, screenHeight, windowTitle, "game\\Resources.xml", "game\\settings.xml");
 		
 		// Load level and create/add game objects
 		PrepareFirstLevel();

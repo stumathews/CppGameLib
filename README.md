@@ -72,6 +72,44 @@ return 0;
 
 The GameStructure is passed a game settings file and a resources file. See the `GameSettingsManager` and `ResourceManager` respectively for details on the format.
 
+The `GameStructure` also handles calling a controller input function during the gameloop.
+
+### Example of Controller Input function
+
+```cpp
+void LevelManager::GetKeyboardInput() const
+{
+	SDL_Event sdlEvent;
+	const auto keyState = SDL_GetKeyboardState(nullptr);
+
+	if (keyState[SDL_SCANCODE_UP] || keyState[SDL_SCANCODE_W]) { gameCommands->MoveUp(verbose); }
+	if (keyState[SDL_SCANCODE_DOWN] || keyState[SDL_SCANCODE_S]) { gameCommands->MoveDown(verbose); }
+	if (keyState[SDL_SCANCODE_LEFT] || keyState[SDL_SCANCODE_A]) { gameCommands->MoveLeft(verbose); }
+	if (keyState[SDL_SCANCODE_RIGHT] || keyState[SDL_SCANCODE_D]) { gameCommands->MoveRight(verbose); }
+		
+	while (SDL_PollEvent(&sdlEvent))
+	{		
+		if (sdlEvent.type == SDL_KEYDOWN)
+		{
+			switch (sdlEvent.key.keysym.sym)
+			{
+ 				// Raise events via the EventManager					
+				case SDLK_q: 
+				case SDLK_ESCAPE: gameCommands->Quit(verbose); break;
+				case SDLK_r: gameCommands->ReloadSettings(verbose); break;
+				case SDLK_p: gameCommands->PingGameServer(); break;
+				case SDLK_n: gameCommands->StartNetworkLevel(); break;
+				case SDLK_SPACE: gameCommands->Fire(verbose); break;
+				case SDLK_0: gameCommands->ToggleMusic(false); break;
+			default: /* Do nothing */;
+			}
+		}
+		
+		if (sdlEvent.type == SDL_QUIT)  { gameCommands->Quit(verbose); return; }
+	}
+}
+```
+
 ## Event management
 
 ### EventManager
@@ -280,6 +318,11 @@ Loads/unloads and holds a reference to an spritesheet that is used in the scene
 ## Audio Management
 
 Audio assets are managed by the `AudioManager` which can `Play()` provided `AudioAssets`.
+
+```cpp
+const auto asset = ResourceManager::Get()->GetAssetInfo(levelMusicAssetName);
+AudioManager::Get()->Play(asset);	
+```
 
 ## Font Management
 

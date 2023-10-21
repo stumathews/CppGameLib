@@ -155,37 +155,21 @@ You should call `ResourceManager::Initialize()` before using or depending on thi
 
 <!-- List of all asset in the game -->
 <Assets>
-  <!-- AudioAssets -->
+  <!-- Audio Assets -->
   <Asset uid="1" scene="4" name="LevelMusic4" type="music" filename="Assets/Music/MainTheme.wav"></Asset>
   <Asset uid="2" scene="0" name="scratch.wav" type="fx" filename="Assets/scratch.wav"></Asset>
-  <!-- GraphicAssets -->
-  <Asset uid="6" scene="1" name="p1.png" type="graphic" filename="Assets/Platformer/Base pack/Player/p1_front.png" width="66" height="92">
-  <Asset uid="9" scene="3" name="p1.png" type="graphic" filename="Assets/Platformer/Base pack/Player/p1_walk/p1_walk.png" width="256" height="512">
-    <!-- This is a SpriteAsset -->
-    <sprite>
-      <animation>
-        <keyframes>
-          <keyframe x="0" y="0" w="67" h="92"/>
-          <keyframe x="66" y="0" w="66" h="93"/>
-          <keyframe x="132" y="0" w="67" h="92"/>
-          <keyframe x="0" y="93" w="67" h="93"/>
-          <keyframe x="67" y="93" w="66" h="93"/>
-          <keyframe x="133" y="93" w="71" h="92"/>
-          <keyframe x="0" y="186" w="71" h="93"/>
-          <keyframe x="71" y="186" w="71" h="93"/>
-          <keyframe x="142" y="186" w="70" h="93"/>
-          <keyframe x="0" y="279" w="71" h="93"/>
-          <keyframe x="71" y="279" w="67" h="92"/>
-        </keyframes>
-      </animation> 
-    </sprite>  
-  </Asset>
-  
 
+  <!-- Graphic Assets -->
+  <Asset uid="6" scene="1" name="p1.png" type="graphic" filename="Assets/Platformer/Base pack/Player/p1_front.png" width="66" height="92">
+
+  <!-- Font Assets -->
   <Asset uid="12" scene="0" name="arial.ttf" type="font" filename="Assets/fonts/arial.ttf"></Asset>
+  <Asset uid="26" scene="0" name="kenvector_future2.ttf" type="font" filename="Assets/fonts/kenvector_future2.ttf"></Asset>
+
+   <!-- This is a SpriteAsset with extra data such that a AnimatedSprite with a colour key can be created by the GameObjectFactory -->
   <Asset uid="18" scene="0" name="snap_player" type="graphic" filename="game/assets/character2.png" width="32" height="32">
      <colorkey red="255" blue="255" green="255"/>
-     <sprite>
+     <sprite> 
       <animation>
         <keyframes duration="150"> <!-- Wait 0 ms before switching to next frame -->
 	        <keyframe x="0" y="0" w="32" h="32" group="up"/>
@@ -200,8 +184,7 @@ You should call `ResourceManager::Initialize()` before using or depending on thi
       </animation> 
     </sprite>  
   </Asset>
-	
-<Asset uid="26" scene="0" name="kenvector_future2.ttf" type="font" filename="Assets/fonts/kenvector_future2.ttf"></Asset>
+...
 </Assets>
 
 ```

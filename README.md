@@ -80,26 +80,19 @@ All objects that are IEventSubscribers can raise events with the EventManager an
 
 ```cpp
 // Subscribing to events
-SubscribeToEvent(FireEventId);
-SubscribeToEvent(gamelib::PlayerMovedEventTypeEventId);
+SubscribeToEvent(PlayerMovedEventTypeEventId);
 
 // Enemy GameObject Raising event to indicate enemy collided with player
 RaiseEvent(std::make_shared<PlayerCollidedWithEnemyEvent>(shared_from_this(), player));
 ...
 
 // handling event notification that were subscribed to
-ListOfEvents LevelManager::HandleEvent(const std::shared_ptr<Event> evt, const unsigned long inDeltaMs)
+std::vector<std::shared_ptr<gamelib::Event>> Enemy::HandleEvent(const std::shared_ptr<gamelib::Event> event, unsigned long deltaMs)
 {
-	if(evt->Id.PrimaryId == LevelChangedEventTypeEventId.PrimaryId) { OnLevelChanged(evt); }
-	if(evt->Id.PrimaryId == UpdateProcessesEventId.PrimaryId) { processManager.UpdateProcesses(inDeltaMs); }
-	if(evt->Id.PrimaryId == InvalidMoveEventId.PrimaryId) { gameCommands->InvalidMove();}
-	if(evt->Id.PrimaryId == NetworkPlayerJoinedEventId.PrimaryId) { OnNetworkPlayerJoined(evt);}
-	if(evt->Id.PrimaryId == StartNetworkLevelEventId.PrimaryId) { OnStartNetworkLevel(evt); }
-	if(evt->Id.PrimaryId == FetchedPickupEventId.PrimaryId) { OnFetchedPickup();}
-	if(evt->Id.PrimaryId == GameWonEventId.PrimaryId) { OnGameWon();}
-	if(evt->Id.PrimaryId == PlayerCollidedWithEnemyEventId.PrimaryId) { OnEnemyCollision(evt);}
-	if(evt->Id.PrimaryId == PlayerDiedEventId.PrimaryId) { OnPlayerDied(); }
-	if(evt->Id.PrimaryId == PlayerCollidedWithPickupEventId.PrimaryId) { OnPickupCollision(evt); }
+	if (event->Id == gamelib::PlayerMovedEventTypeEventId)
+	{
+		CheckForPlayerCollision();
+	}
 
 	return {};
 }

@@ -1,28 +1,6 @@
 ﻿# cppgamelib
 This is a game library for C++ for creating simple 2D games.
 
-### Dependencies:
- #### Include
- * C:\SDL\SDL2\include 
- * C:\SDL\SDL2_image-2.0.4\include 
- * C:\SDL\SDL2_mixer-devel-2.0.4-VC\SDL2_mixer-2.0.4\include 
- * C:\SDL\SDL2_ttf-2.0.15\include 
- * C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include (not needed yet)
- #### Link
- * C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86  (not needed yet)
- * C:\SDL\SDL2\lib\x86 
- #### libs
- * SDL2.lib
- * SDL2main.lib
- * SDL2_image.lib
- * Winmm.lib
- * SDL2_mixer.lib
- * d3d10.lib (not needed yet)
- * d3dx10.lib (not needed yet)
- * SDL2_ttf.lib
-
-To use you'll the library in your game, you'll need to link to cppgamelib.lib
-
 ## Introduction
 
 TODO
@@ -40,6 +18,83 @@ Typically objects in the game inherit from GameObjects so that they can subscrib
 * All GameObjects are event subscribers.
 * All Game Objects have a `Bounds`, `Position` might be `Visible` and can load its own Settings via `LoadSettings()`. 
 * All GameObjects have a unique ID
+
+### Miscellaneous Objects
+
+#### GameWorldData
+
+An object that holds the game's common state such as `IsGameDone`, `IsNetworkGame`, `CanDraw` and most importantly, a reference to the player `GameObject`.  
+
+#### AnimatedSprite
+
+An `AnimatedSprite` is a Drawable Game Object that draws a time-based keyframe animation, using the supplied `SpriteAsset`. It is used by `NPC`.  
+
+#### StaticSprite
+
+An `StaticSprite` is a sprite that does not support a time-based keyframe animation, but one in which the keyframes can be manually set.
+
+#### KeyFrame
+
+A `KeyFrame` is an area on a sprite sheet. Each keyframe usually represents a different image within a sprite sheet. Cycling through a series of keyframes usually represents a particular animation. Such a series is keyframes can be associated with an identifier or 'group'.
+
+#### Component
+
+A `Component` is a named item that has a list of key-value properties associated with it. 
+
+#### DrawableGameObject
+
+A `DrawableGameObject` is a game object that can load and draw itself. By default, it supports drawing a `GraphicAsset` but can perform its own drawing too. It supports setting the `ColourKey` when drawing the graphic
+
+#### GameObjectFactory
+
+A `GameObjectFactory` object creates specific types of GameObjects from their XML definitions. Currently supports ability to rehydrate the following game types:
+* `AnimatedSprite`
+* `StaticSprite`
+
+#### NPC
+
+An `NPC` is a `DrawableGameObject` that uses an `AnimatedSprite` with support for moving, and having its animation change according to the direction it is facing. It also supports drawing a label affixed to its top left corner which can be used to show the current state of the NPC.
+
+It currently has 5 fixed behavioural states that are controlled by a `FiniteStateMachine` and has the following states:
+
+* hitWallState, which switches the current direction of the NPC
+* upState, which moves the NPC up
+* downState, which moves the NPC down
+* leftState, which moves the NPC left
+* rightState, which moves the NPC right.
+
+The exact behaviour of the NPC can be specified by the derived class, which is what the `Enemy` class does.
+
+#### Direction
+
+An enumeration of Directions:
+
+```cpp
+enum class Direction 
+{ 
+	Up, 
+	Down,
+	Left, 
+	Right,
+	None
+};
+```
+
+#### Hotspot
+
+A `Hotspot` is a `DrawableGameObject` that has a position within its parent. 
+
+Note: A hotspot should move with its parent's position. Currently, this is a pain because we have to do this manually, i.e when the parent changes, we need to calculate the position of the hotspot by passing in the parents co-ordinates. This will be improved when we have a dedicated scene graph where relationships between parents and children will easily allows this to happen automatically.
+
+#### Inventory
+
+An `Inventory` is a collection of `Components`. This would typically be associated with a Player or NPC.
+
+You can search for a component, remove a component and check if a component exists in the `Inventory`.
+
+#### Timer
+
+A `Timer` is a countdown timer that elapses when the timer has been run for the duration of the timer. It allows you to check if an event that started when the timer started has now been happening for a specific amount of time.  
 
 ## GameStructure
 
@@ -130,6 +185,33 @@ The `SceneManager` also is responsible for adding items to the scene. The scene 
 
 The `SceneManager` typically subscribes to scene change events and events asking it to load an item into a particular layer in the scene. The `SceneManager` will also do this by reading the associated scene or level file associated with the scene and load the contents thereof into the scene.
 
+### Layer
+
+A layer is named a collection of `GameObject`s that are in that layer. A layer has a z-order which dictates the order in which the GameObjects in the layer are drawn by the `SceneManager`.
+
+### ABCDRectangle
+
+An `ABCDRectable` is a model of the geometry of a rectangle. 
+
+```cpp
+/*
+ An ABCD Rectangle looks like this;
+
+	A----B
+	|    |
+	|    |
+	D----C
+
+Each point A, B, C, D has and x,y coordinate
+
+	A(ax,ay)----B(bx,by)
+	|                  |
+	|                  |
+	D(dx,dy)----C(cx,cy)
+
+*/
+```
+
 ## Assets
 
 The `Asset` class is an object that holds a path to an asset file, like an image file or sound file and then is able to load that asset into memory. 
@@ -178,8 +260,196 @@ The `SDLGraphicsManager` is responsible for setting up the Window and its associ
 
 * You should call `Initialize()` before first use of `SDLGraphicsManager::ClearAndDraw()`
 
-### Logging and Error Managment
+### DrawableText
+
+`DrawableText` is a game object that draws a string of text.
+
+### DrawableFrameRate
+
+The `DrawableFrameRate` is a game object that shows the current framerate.
+
+### GraphicAsset
+
+A `GraphicAsset` is an asset that knows how to load a graphic into memory.
+
+### GraphicAssetFactory
+
+A `GraphicAssetFactory` creates `GraphicAsset` from serialized XML 
+
+### ColourKey
+
+A `ColourKey` is a colour that is considered invisible when drawing a graphic that has the colour key colour in it.
+
+### Drawing
+
+The `Drawing` class is a utility function for drawing operations
+
+### Logging and Error Management
+
+#### ErrorLogManager
+
+The `ErrorLogManager` creates a log file that errors are written to.
+
+## Character Management
+
+### Movement
+
+A `Movement` is the number of pixels to move in a particular direction.
+
+### IGameObjectMoveStrategy
+
+An `IGameObjectMoveStrategy` makes a `Movement`.
+
+## Time-Based Objects
+
+### Process
+
+A `Process` is like a workflow or a sequence. A process can contain multiple processes, which can be nested or not, like:
+
+Process 1: [ processA, processB, processC: [process X, processY, processZ]]
+
+A process can have either one of the following states:
+
+* Uninitialized = 0,
+* Running
+* Succeeded
+* Failed
+* Aborted
+
+Processes support an `OnInit()`,`OnUpdate()` `OnFail()`, `OnSuccess()` function which will run depending on the state of the process.
+
+Processes can also call `Succeed()`, `Fail()`, `Pause()` to change its status.
+
+The premise is that a process will be managed by a `ProcessManager` whose responsibility it is to start executing the process which involves giving each process time slices for updating its progress over time. 
+
+### Action
+
+An `Action` is a process that succeeds (sets is status to succcess) after is associated action is run.
+
+### DelayProcess
+
+A `DelayProcess` is a process that waits, and then runs its action before reporting its status as success.
+
+### ProcessManager
+
+The `ProcessManager` runs each process by giving it time-slices. 
+
+### Example
+
+```cpp
+const auto a = std::static_pointer_cast<Process>(std::make_shared<Action>([&]() { ActionA(); }));
+const auto b = std::static_pointer_cast<Process>(std::make_shared<Action>([&]() { ActionB(); }));
+const auto c = std::static_pointer_cast<Process>(std::make_shared<DelayProcess>(5000)); // Wait 5 secs
+const auto d = std::static_pointer_cast<Process>(std::make_shared<Action>([&]() { ActionD(); }));
+
+// Chain a set of subsequent processes
+a->AttachChild(b); 
+	b->AttachChild(c); 
+		c->AttachChild(d);
+
+processManager.AttachProcess(a);
+...
+processManager.Update(deltaMs);
+```
+
+## AI
+
+### Finite State Machines
+
+#### FSM
+
+The `FSM` class is the Finite State Machine that manages the execution and transition of loaded states.
+
+#### FSMState
+
+The `FSMState` class is a state that can be loaded into the FSM and be executed depending on if a transition (`FSMTransition`) exists for it
+
+#### FSM transition
+
+A `FSMTransition` is a condition that specifies that the associated state should be executed or transitioned to.
+
+### Behaviour Trees
+
+#### BehaviorTree
+
+The `BehaviorTree` class holds a hierarchy of behaviours. It is essentially the root node of the tree.
+
+#### FirstOrNextSelector 
+
+The `FirstOrNextSelector` node can be added to a `BehaviorTree` and it will cycle through its child nodes, executing the same child while that child's condition is met.
+
+#### LastOrNextSelector
+
+The `LastOrNextSelector` node a can be added to a `Behavior Tree` which will continue to execute the last child node is executed previously (while the conditions for that child node are still true. This is essentially executing a sticky while it is valid, and then moving to the next child node in the sequence when its condition becomes false.
+
+#### Sequence
+
+The `Sequence` node is a behaviour that executes each child node in the sequence. You can add child nodes that will execute in sequence
+
+#### Behavior
+
+The `Behavior` node is an action that will execute when it is reached. A behavior can be a child of a sequence or condition
+
+#### BehaviorTreeBuilder
+
+Allows the construction of a `BehaviorTree` declaratively for example
+
+```cpp
+gamelib::BehaviorTree* behaviorTree = BehaviorTreeBuilder()
+.ActiveSelector()
+ .Sequence("Check if player is visible")
+  .Condition(IsPlayerVisible)
+  .ActiveSelector()
+   .Sequence()
+    .Condition(IsPlayerInRange)
+    .Filter()
+     .Action(FireAtPlayer)
+    .Finish() 
+   .Finish()
+   .Action(MoveTowardsPlayer)
+ .Finish()
+.Finish()
+.Sequence("Check if player spotted")
+ .Condition(HaveWeGotASuspectedLocation)
+  .Action(MovePlayerToLastKnownLocation)
+  .Action(LookAround)
+ .Finish()
+ .Sequence("Act normal")
+  .Action(MoveToRandomPosition)
+  .Action(LookAroundSomeMore)
+ .Finish()
+ .Sequence("Do something else")
+  .Action(DummyAction7)
+  .Action(DummyAction8)
+ .Finish()
+.Finish()
+.Finish()
+.End();
+```
+
+## Networking 
 
 TBD
 
+# Dependencies:
+ ## Include
+ * C:\SDL\SDL2\include 
+ * C:\SDL\SDL2_image-2.0.4\include 
+ * C:\SDL\SDL2_mixer-devel-2.0.4-VC\SDL2_mixer-2.0.4\include 
+ * C:\SDL\SDL2_ttf-2.0.15\include 
+ * C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include (not needed yet)
+ ## Link
+ * C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86  (not needed yet)
+ * C:\SDL\SDL2\lib\x86 
+ ## libs
+ * SDL2.lib
+ * SDL2main.lib
+ * SDL2_image.lib
+ * Winmm.lib
+ * SDL2_mixer.lib
+ * d3d10.lib (not needed yet)
+ * d3dx10.lib (not needed yet)
+ * SDL2_ttf.lib
+
+To use you'll the library in your game, you'll need to link to cppgamelib.lib
 

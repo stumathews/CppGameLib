@@ -155,7 +155,9 @@ std::vector<std::shared_ptr<gamelib::Event>> Enemy::HandleEvent(const std::share
 }
 ```
 
-## Settings Managment
+## Settings Management
+
+A settings file path is passed to the `GameStructure` which can be accessed via the `SettingsManager`. This file can contain settings for various parts of the game and can be retrieved on demand.
 
 ## SettingsManager
 

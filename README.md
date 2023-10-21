@@ -70,6 +70,8 @@ return 0;
 }	
 ```
 
+The GameStructure is passed a game settings file and a resources file. See the `GameSettingsManager` and `ResourceManager` respectively for details on the format.
+
 ## Event management
 
 ### EventManager
@@ -144,7 +146,65 @@ int tick_time_ms = SettingsManager::Int("global", "tick_time_ms");
 ## Resource Management
 ### ResourceManager
 
-The ResourceManager will read and index all the assets that are defined in the global resources file. It will also ask assets that are associated with a particular scene to load themselves when it receives the `SceneChangedEvent`. Equally in handling this event, it unloads any assets that are now not associated with the current scene. You should call `ResourceManager::IndexResourceFile()` before using or depending on this behaviour.
+The ResourceManager will read and index all the assets that are defined in the global resources file. It will also ask assets that are associated with a particular scene to load themselves when it receives the `SceneChangedEvent`. Equally in handling this event, it unloads any assets that are now not associated with the current scene. 
+
+You should call `ResourceManager::Initialize()` before using or depending on this behaviour, as this will start indexing the resources file that was provided to the `GameStructure`. The format of the resources file is:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- List of all asset in the game -->
+<Assets>
+  <!-- AudioAssets -->
+  <Asset uid="1" scene="4" name="LevelMusic4" type="music" filename="Assets/Music/MainTheme.wav"></Asset>
+  <Asset uid="2" scene="0" name="scratch.wav" type="fx" filename="Assets/scratch.wav"></Asset>
+  <!-- GraphicAssets -->
+  <Asset uid="6" scene="1" name="p1.png" type="graphic" filename="Assets/Platformer/Base pack/Player/p1_front.png" width="66" height="92">
+  <Asset uid="9" scene="3" name="p1.png" type="graphic" filename="Assets/Platformer/Base pack/Player/p1_walk/p1_walk.png" width="256" height="512">
+    <!-- This is a SpriteAsset -->
+    <sprite>
+      <animation>
+        <keyframes>
+          <keyframe x="0" y="0" w="67" h="92"/>
+          <keyframe x="66" y="0" w="66" h="93"/>
+          <keyframe x="132" y="0" w="67" h="92"/>
+          <keyframe x="0" y="93" w="67" h="93"/>
+          <keyframe x="67" y="93" w="66" h="93"/>
+          <keyframe x="133" y="93" w="71" h="92"/>
+          <keyframe x="0" y="186" w="71" h="93"/>
+          <keyframe x="71" y="186" w="71" h="93"/>
+          <keyframe x="142" y="186" w="70" h="93"/>
+          <keyframe x="0" y="279" w="71" h="93"/>
+          <keyframe x="71" y="279" w="67" h="92"/>
+        </keyframes>
+      </animation> 
+    </sprite>  
+  </Asset>
+  
+
+  <Asset uid="12" scene="0" name="arial.ttf" type="font" filename="Assets/fonts/arial.ttf"></Asset>
+  <Asset uid="18" scene="0" name="snap_player" type="graphic" filename="game/assets/character2.png" width="32" height="32">
+     <colorkey red="255" blue="255" green="255"/>
+     <sprite>
+      <animation>
+        <keyframes duration="150"> <!-- Wait 0 ms before switching to next frame -->
+	        <keyframe x="0" y="0" w="32" h="32" group="up"/>
+	        <keyframe x="32" y="0" w="32" h="32" group="up"/>
+	        <keyframe x="64" y="0" w="32" h="32" group="right"/>
+	        <keyframe x="96" y="0" w="32" h="32" group="right"/>
+	        <keyframe x="128" y="0" w="32" h="32" group="down"/>
+	        <keyframe x="160" y="0" w="32" h="32" group="down"/>
+	        <keyframe x="192" y="0" w="32" h="32" group="left"/>
+	        <keyframe x="224" y="0" w="32" h="32" group="left"/>
+        </keyframes>
+      </animation> 
+    </sprite>  
+  </Asset>
+	
+<Asset uid="26" scene="0" name="kenvector_future2.ttf" type="font" filename="Assets/fonts/kenvector_future2.ttf"></Asset>
+</Assets>
+
+```
 
 The `ResourceManager` keeps a list of all the resources by keeping a list of `Asset`s (see Assets). It essentially tracks all resources whether they are loaded or not.
 
@@ -211,11 +271,11 @@ Loads/unloads and holds a reference to a font that is used in a scene.
 
 ### GraphicAsset
 
-Loads/unloads and holds a reference to an image that is used in the scene
-
-### GraphicAsset
-
 A `GraphicAsset` is an asset that knows how to load a graphic into memory.
+
+### SpriteAsset
+
+Loads/unloads and holds a reference to an spritesheet that is used in the scene
 
 ## Audio Management
 

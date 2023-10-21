@@ -52,7 +52,7 @@ namespace gamelib
 		else
 		{
 			// TODO: Fix
-			THROW(99, string("Unknown audio asset sub type") + type, "Audio Asset")
+			THROW(99, string("Unknown audio asset sub type") + Type, "Audio Asset")
 		}
 
 		IsLoadedInMemory = true;

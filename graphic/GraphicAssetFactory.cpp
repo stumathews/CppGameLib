@@ -24,19 +24,19 @@ namespace gamelib
 
     GraphicAssetFactory* GraphicAssetFactory::Get()
     {
-        if (Instance == nullptr)
+        if (instance == nullptr)
         {
-            Instance = new GraphicAssetFactory();
+            instance = new GraphicAssetFactory();
         }
-        return Instance;
+        return instance;
     }
 
     GraphicAssetFactory::~GraphicAssetFactory()
     {
-        Instance = nullptr;
+        instance = nullptr;
     }
 
-    GraphicAssetFactory* GraphicAssetFactory::Instance = nullptr;
+    GraphicAssetFactory* GraphicAssetFactory::instance = nullptr;
 
     shared_ptr<Asset> GraphicAssetFactory::Parse(XMLElement* assetNode) const
     {
@@ -56,7 +56,7 @@ namespace gamelib
             auto level = assetAttributes["scene"].empty() ? 0 : stoi(assetAttributes["scene"]);
             const auto width = stoi(assetAttributes["width"]);
             const auto height = stoi(assetAttributes["height"]);
-            auto dimensions = ABCDRectangle(0, 0, width, height);
+            auto dimensions = AbcdRectangle(0, 0, width, height);
 
             graphicAsset = std::make_shared<GraphicAsset>(uid, name, fileName, type, level, dimensions);
             ColourKey ColourKey;
@@ -72,7 +72,7 @@ namespace gamelib
                 {
                     // Yes, is a sprite, process it
                     _sprite = std::make_shared<SpriteAsset>(graphicAsset->Uid, graphicAsset->Name, graphicAsset->FilePath,
-                                                            graphicAsset->type, graphicAsset->SceneId, dimensions);
+                                                            graphicAsset->Type, graphicAsset->SceneId, dimensions);
                     
                     ParseSprite(pAssetChild, _sprite);
 

@@ -226,7 +226,6 @@
     <ClInclude Include="net\UdpNetworkPlayer.h" />
     <ClInclude Include="objects\Npc.h" />
     <ClInclude Include="objects\StaticSprite.h" />
-    <ClInclude Include="objects\MultipleInheritableEnableSharedFromThis.h" />
     <ClInclude Include="objects\DrawableGameObject.h" />
     <ClInclude Include="events\AddGameObjectToCurrentSceneEvent.h" />
     <ClInclude Include="events\UpdateAllGameObjectsEvent.h" />
@@ -270,7 +269,6 @@
     <ClInclude Include="Timer.h" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="net\UdpGameServerConnection.h" />
-    <ClInclude Include="Utils.h" />
     <ClInclude Include="util\COMUtils.h" />
     <ClInclude Include="util\RectDebugging.h" />
     <ClInclude Include="util\SettingDetail.h" />
@@ -319,7 +317,6 @@
     <ClCompile Include="net\UdpNetworkPlayer.cpp" />
     <ClCompile Include="objects\Npc.cpp" />
     <ClCompile Include="objects\StaticSprite.cpp" />
-    <ClCompile Include="objects\MultipleInheritableEnableSharedFromThis.cpp" />
     <ClCompile Include="objects\DrawableGameObject.cpp" />
     <ClCompile Include="events\AddGameObjectToCurrentSceneEvent.cpp" />
     <ClCompile Include="events\UpdateAllGameObjectsEvent.cpp" />
@@ -333,8 +330,6 @@
     <ClCompile Include="exceptions\EngineException.cpp" />
     <ClCompile Include="font\FontManager.cpp" />
     <ClCompile Include="font\FontAsset.cpp" />
-    <ClCompile Include="objects\GameWorldComponent.cpp" />
-    <ClCompile Include="objects\GameWorldData.cpp" />
     <ClCompile Include="graphic\Drawing.cpp" />
     <ClCompile Include="graphic\GraphicAsset.cpp" />
     <ClCompile Include="graphic\SDLGraphicsManager.cpp" />
@@ -356,7 +351,6 @@
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="net\UdpGameServerConnection.cpp" />
-    <ClCompile Include="Utils.cpp" />
     <ClCompile Include="util\RectDebugging.cpp" />
     <ClCompile Include="util\SettingDetail.cpp" />
     <ClCompile Include="util\SettingsManager.cpp" />

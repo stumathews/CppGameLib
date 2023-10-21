@@ -36,44 +36,44 @@ TEST_F(BehaviorTreeBuilderTests, Behavior_Tree_Builder_Works)
 	auto* IsPlayerVisible = new gamelib::InlineActionBehavior ([&]{ return isPlayerVisible ? gamelib::BehaviorResult::Success : gamelib::BehaviorResult::Failure;});
 	auto* IsPlayerInRange = new gamelib::InlineActionBehavior([&]{ return isPlayerInRange ? gamelib::BehaviorResult::Success : gamelib::BehaviorResult::Failure;});
 	auto* HaveWeGotASuspectedLocation = new gamelib::InlineActionBehavior([&] { return haveWeGotASuspectedLocation ? gamelib::BehaviorResult::Success : gamelib::BehaviorResult::Failure; });
-	auto* DummyAction1 = new gamelib::InlineActionBehavior([&] { dummy1TickCount++; return gamelib::BehaviorResult::Success; });
-	auto* DummyAction2 = new gamelib::InlineActionBehavior([&]{ dummy2TickCount++; return gamelib::BehaviorResult::Success; });
-	auto* DummyAction3 = new gamelib::InlineActionBehavior([&] { dummy3TickCount++; return gamelib::BehaviorResult::Success; });
-	auto* DummyAction4 = new gamelib::InlineActionBehavior([&]{ dummy4TickCount++; return gamelib::BehaviorResult::Success; });
-	auto* DummyAction5 = new gamelib::InlineActionBehavior([&] { dummy5TickCount++; return dummyAction5Result; });
-	auto* DummyAction6 = new gamelib::InlineActionBehavior([&] { dummy6TickCount++; return gamelib::BehaviorResult::Success; });
+	auto* FireAtPlayer = new gamelib::InlineActionBehavior([&] { dummy1TickCount++; return gamelib::BehaviorResult::Success; });
+	auto* MoveTowardsPlayer = new gamelib::InlineActionBehavior([&]{ dummy2TickCount++; return gamelib::BehaviorResult::Success; });
+	auto* MovePlayerToLastKnownLocation = new gamelib::InlineActionBehavior([&] { dummy3TickCount++; return gamelib::BehaviorResult::Success; });
+	auto* LookAround = new gamelib::InlineActionBehavior([&]{ dummy4TickCount++; return gamelib::BehaviorResult::Success; });
+	auto* MoveToRandomPosition = new gamelib::InlineActionBehavior([&] { dummy5TickCount++; return dummyAction5Result; });
+	auto* LookAroundSomeMore = new gamelib::InlineActionBehavior([&] { dummy6TickCount++; return gamelib::BehaviorResult::Success; });
 	auto* DummyAction7 = new gamelib::InlineActionBehavior([&]{ dummy7TickCount++; return gamelib::BehaviorResult::Success; });
 	auto* DummyAction8 = new gamelib::InlineActionBehavior([&] { dummy8TickCount++; return gamelib::BehaviorResult::Success; });
 
 	gamelib::BehaviorTree* behaviorTree = BehaviorTreeBuilder()
 		.ActiveSelector()
-			.Sequence()
+			.Sequence("Check if player is visible")
 				.Condition(IsPlayerVisible)
 			    .ActiveSelector()
 					.Sequence()
 						.Condition(IsPlayerInRange)
 						.Filter()
-							.Action(DummyAction1)
-	                        .Finish() 
-	                    .Finish()
-					.Action(DummyAction2)
-	                .Finish()
-	            .Finish()
-            .Sequence()
+							.Action(FireAtPlayer)
+	                    .Finish() // finish filter sequence
+	                .Finish() // finish sequence
+					.Action(MoveTowardsPlayer)
+	            .Finish() // finish active selector
+	        .Finish() // finish sequence
+            .Sequence("Check if player spotted")
 				.Condition(HaveWeGotASuspectedLocation)
-			    .Action(DummyAction3)
-				.Action(DummyAction4)
-				.Finish()
-			.Sequence()
-				.Action(DummyAction5)
-				.Action(DummyAction6)
-				.Finish()
-			.Sequence()
+			    .Action(MovePlayerToLastKnownLocation)
+				.Action(LookAround)
+			.Finish() // finish sequence
+			.Sequence("Act normal")
+				.Action(MoveToRandomPosition)
+				.Action(LookAroundSomeMore)
+				.Finish() // finish sequence
+			.Sequence("Do something else")
 				.Action(DummyAction7)
 				.Action(DummyAction8)
-				.Finish()
-			.Finish()
+			.Finish() // finish sequence
 		.Finish()
+	.Finish()
 	.End();
 
 	behaviorTree->Tick();

@@ -24,7 +24,7 @@ namespace gamelib
 		             const std::string& inPath, 
 		             const std::string& inType,
 		             int level, 
-		             const ABCDRectangle& dimensions);
+		             const AbcdRectangle& dimensions);
 
 		~GraphicAsset() override;		
 
@@ -51,7 +51,7 @@ namespace gamelib
 		/// <returns></returns>
 		[[nodiscard]] SDL_Texture* GetTexture() const;
 				
-		ABCDRectangle Dimensions;
+		AbcdRectangle Dimensions;
 
 		void SetColourKey(int red, int green, int blue);
 

@@ -61,7 +61,7 @@ namespace gamelib
 		{
 			const auto graphicAsset = GetGraphic();
 
-			if (graphicAsset->type == "graphic")
+			if (graphicAsset->Type == "graphic")
 			{
 				const auto& frame = keyFrames[frameNumber];
 				

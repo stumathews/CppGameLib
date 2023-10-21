@@ -217,7 +217,7 @@ namespace gamelib
 		resourcesById.insert(pair<int, shared_ptr<Asset>>(asset->Uid, asset));
 
 		LogMessage(
-			"Discovered " + string(asset->type) + string(" asset#: ") + to_string(asset->Uid) + string(" ") + string(
+			"Discovered " + string(asset->Type) + string(" asset#: ") + to_string(asset->Uid) + string(" ") + string(
 				asset->Name));
 		countResources++;
 	}

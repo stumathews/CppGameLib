@@ -37,7 +37,7 @@ namespace gamelib
 		return {position.GetX(), position.GetY(), width, height};
 	}
 
-	SDL_Rect GameObject::CalculateBounds(const Coordinate<int> position, const ABCDRectangle dimensions)
+	SDL_Rect GameObject::CalculateBounds(const Coordinate<int> position, const AbcdRectangle dimensions)
 	{
 		return {position.GetX(), position.GetY(), dimensions.GetWidth(), dimensions.GetHeight()};
 	}
@@ -51,7 +51,7 @@ namespace gamelib
 		Bounds = CalculateBounds(Position, static_cast<int>(width), static_cast<int>(height));
 	}
 
-	void GameObject::UpdateBounds(const ABCDRectangle dimensions)
+	void GameObject::UpdateBounds(const AbcdRectangle dimensions)
 	{
 		Bounds = CalculateBounds(Position, dimensions);
 	}

@@ -8,7 +8,7 @@ namespace gamelib
 {
 
 	/// <summary>
-	/// Object Can Draw on itself
+	/// Object Can Draw on itself in any way it wants to
 	/// </summary>
 	class DrawableGameObject : public GameObject
 	{
@@ -17,6 +17,7 @@ namespace gamelib
 		explicit DrawableGameObject(bool isVisible);
 		DrawableGameObject(int x, int y, bool isVisible);
 		DrawableGameObject(const std::string& name, const std::string& type, Coordinate<int> coordinate, bool isVisible);
+		DrawableGameObject(const std::shared_ptr<GraphicAsset>& graphic, Coordinate<int> coordinate, bool isVisible);
 
 		/// <summary>
 		/// Draw Graphic
@@ -53,7 +54,7 @@ namespace gamelib
 		/// <param name="dimensions">rectangular dimensions</param>
 		/// <param name="colour">colour</param>
 		static void DrawFilledRect(SDL_Renderer* renderer, const SDL_Rect* dimensions, SDL_Color colour);
-
+		
 		/// <summary>
 		/// Set colour key
 		/// </summary>
@@ -61,12 +62,13 @@ namespace gamelib
 		/// <param name="g"></param>
 		/// <param name="b"></param>
 		void SetColourKey(Uint8 r, Uint8 g, Uint8 b);
+		void SetColourKey(const ColourKey& key);
 
 		/// <summary>
 		/// Set Graphic
 		/// </summary>
-		/// <param name="graphic"></param>
-		void SetGraphic(const std::shared_ptr<GraphicAsset>& graphic);
+		/// <param name="graphicAsset"></param>
+		void SetGraphic(const std::shared_ptr<GraphicAsset>& graphicAsset);
 
 		/// <summary>
 		/// Draw
@@ -99,7 +101,7 @@ namespace gamelib
 		bool IsColorKeyEnabled {};
 
 	private:
-
+		void LogNoGraphicAssetProvidedError() const;
 		// Game Object Graphic
 		std::shared_ptr<GraphicAsset> graphic; // can be shared by other actors	
 

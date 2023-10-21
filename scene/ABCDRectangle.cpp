@@ -2,32 +2,32 @@
 
 namespace gamelib
 {
-	ABCDRectangle::ABCDRectangle(const SDL_Rect rect) : ABCDRectangle(rect.x, rect.y, rect.w, rect.h) {}		
-	ABCDRectangle::ABCDRectangle(const int x, const int y, const int w, const int h) : x(x), y(y), w(w), h(h) {}
+	AbcdRectangle::AbcdRectangle(const SDL_Rect rect) : AbcdRectangle(rect.x, rect.y, rect.w, rect.h) {}		
+	AbcdRectangle::AbcdRectangle(const int x, const int y, const int w, const int h) : x(x), y(y), w(w), h(h) {}
 
-	void ABCDRectangle::SetX(const int x) { this->x = x; }  // NOLINT(clang-diagnostic-shadow)
-	void ABCDRectangle::SetY(const int y) { this->y = y; }  // NOLINT(clang-diagnostic-shadow)
-	void ABCDRectangle::SetHeight(const int h) { this->h = h; }  // NOLINT(clang-diagnostic-shadow)
-	void ABCDRectangle::SetWidth(const int w) { this->w = w; }  // NOLINT(clang-diagnostic-shadow)
+	void AbcdRectangle::SetX(const int x) { this->x = x; }  // NOLINT(clang-diagnostic-shadow)
+	void AbcdRectangle::SetY(const int y) { this->y = y; }  // NOLINT(clang-diagnostic-shadow)
+	void AbcdRectangle::SetHeight(const int h) { this->h = h; }  // NOLINT(clang-diagnostic-shadow)
+	void AbcdRectangle::SetWidth(const int w) { this->w = w; }  // NOLINT(clang-diagnostic-shadow)
 
-	int ABCDRectangle::GetAx() const { return this->x; }
-	int ABCDRectangle::GetAy() const { return this->y; }
-	int ABCDRectangle::GetBx() const { return GetAx() + w; }
-	int ABCDRectangle::GetBy() const { return GetAy(); }
-	int ABCDRectangle::GetCx() const { return GetBx(); }
-	int ABCDRectangle::GetCy() const { return GetBy() + h; }
-	int ABCDRectangle::GetDx() const { return GetAx(); }
-	int ABCDRectangle::GetDy() const { return GetAy() + h; }	
-	int ABCDRectangle::GetWidth() const { return w; }
+	int AbcdRectangle::GetAx() const { return this->x; }
+	int AbcdRectangle::GetAy() const { return this->y; }
+	int AbcdRectangle::GetBx() const { return GetAx() + w; }
+	int AbcdRectangle::GetBy() const { return GetAy(); }
+	int AbcdRectangle::GetCx() const { return GetBx(); }
+	int AbcdRectangle::GetCy() const { return GetBy() + h; }
+	int AbcdRectangle::GetDx() const { return GetAx(); }
+	int AbcdRectangle::GetDy() const { return GetAy() + h; }	
+	int AbcdRectangle::GetWidth() const { return w; }
 
-	bool ABCDRectangle::operator==(const ABCDRectangle& other) const
+	bool AbcdRectangle::operator==(const AbcdRectangle& other) const
 	{
 		return other.x == x && other.y == y && other.w == w && other.h == h;
 	}
 
-	int ABCDRectangle::GetHeight() const { return h; }
+	int AbcdRectangle::GetHeight() const { return h; }
 
-	bool ABCDRectangle::Intersects(const ABCDRectangle& a, const ABCDRectangle& b)
+	bool AbcdRectangle::Intersects(const AbcdRectangle& a, const AbcdRectangle& b)
 	{
 		// Untested
 		return a.GetAx() < b.GetCx() && 
@@ -36,9 +36,9 @@ namespace gamelib
 			   a.GetCy() > b.GetAy();
 	}
 
-	void ABCDRectangle::Reinitialize(const int x, const int y, const int w, const int h) { SetX(x); SetY(y); SetWidth(w); SetHeight(h); }  // NOLINT(clang-diagnostic-shadow)
+	void AbcdRectangle::Reinitialize(const int x, const int y, const int w, const int h) { SetX(x); SetY(y); SetWidth(w); SetHeight(h); }  // NOLINT(clang-diagnostic-shadow)
 
-	Coordinate<int> ABCDRectangle::GetCenter() const
+	Coordinate<int> AbcdRectangle::GetCenter() const
 	{
 		const int midX = GetAx() + GetWidth()/2;
 		const int midY = GetAy() + GetHeight()/2;

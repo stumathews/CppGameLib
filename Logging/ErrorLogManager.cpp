@@ -39,7 +39,6 @@ void ErrorLogManager::LogMessage(const std::string& message)
 	Flush();
 }
 
-ErrorLogManager::ErrorLogManager() = default;
 
 std::string ErrorLogManager::GetTimeString()
 {

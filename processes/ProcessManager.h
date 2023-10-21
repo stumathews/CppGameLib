@@ -11,11 +11,7 @@ namespace gamelib
 		ProcessManager() = default;
 
 		unsigned int UpdateProcesses(unsigned long deltaMs);
-		std::weak_ptr<Process> AttachProcess(const std::shared_ptr<Process>& process)
-		{
-			processes.push_back(process);
-			return std::weak_ptr(process);
-		}
+		std::weak_ptr<Process> AttachProcess(const std::shared_ptr<Process>& process);
 		void AbortAllProcesses(bool immediate) const { for (auto& process : processes) process->OnAbort(); }
 
 		[[nodiscard]] unsigned int GetProcessCount() const { return processes.size(); }

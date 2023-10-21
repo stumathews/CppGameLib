@@ -46,4 +46,10 @@ namespace gamelib
 		}
 		return ((successCount << 16 | failCount));
 	}
+
+	std::weak_ptr<Process> ProcessManager::AttachProcess(const std::shared_ptr<Process>& process)
+	{
+		processes.push_back(process);
+		return std::weak_ptr(process);
+	}
 }

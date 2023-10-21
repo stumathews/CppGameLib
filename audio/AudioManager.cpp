@@ -11,19 +11,19 @@ namespace gamelib
 {
 	void AudioManager::Play(const shared_ptr<AudioAsset>& asset)
 	{
-		if(asset->type == "music")
+		if(asset->Type == "music")
 		{
 			PlaySdlMusic(asset->AsMusic());
 			return;
 		}
-		if(asset->type == "fx")
+		if(asset->Type == "fx")
 		{
 			PlaySdlSound(asset->AsSoundEffect());
 			return;
 		}
 
 		std::stringstream message;
-		message << "Unable to Play asset type: " << asset->type << ", Filepath: " << asset->FilePath << std::endl;
+		message << "Unable to Play asset type: " << asset->Type << ", Filepath: " << asset->FilePath << std::endl;
 		LogMessage(message.str());
 	}
 

@@ -31,7 +31,7 @@ namespace gamelib
 		const int Uid;
 		const std::string Name;
 		const std::string FilePath;
-		const std::string type;
+		const std::string Type;
 		AssetType AssetType;		
 
 		const int SceneId;

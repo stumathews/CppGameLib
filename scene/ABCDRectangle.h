@@ -20,12 +20,12 @@ namespace gamelib
 		D(dx,dy)----C(cx,cy)
 	
 	*/
-	class ABCDRectangle
+	class AbcdRectangle
 	{
 	public:
-		ABCDRectangle() = default;
-		ABCDRectangle(SDL_Rect rect);
-		ABCDRectangle(int x, int y, int w, int h);
+		AbcdRectangle() = default;
+		AbcdRectangle(SDL_Rect rect);
+		AbcdRectangle(int x, int y, int w, int h);
 
 		[[nodiscard]] int GetAx() const;
 		[[nodiscard]] int GetAy() const;
@@ -44,9 +44,9 @@ namespace gamelib
 
 		[[nodiscard]] int GetHeight() const;
 		[[nodiscard]] int GetWidth() const;
-		bool operator==(const ABCDRectangle& other) const;
+		bool operator==(const AbcdRectangle& other) const;
 
-		static bool Intersects(const ABCDRectangle& a, const ABCDRectangle& b);
+		static bool Intersects(const AbcdRectangle& a, const AbcdRectangle& b);
 
 		[[nodiscard]] Coordinate<int> GetCenter() const;
 	private:

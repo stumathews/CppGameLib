@@ -13,7 +13,7 @@ namespace gamelib
 	/// Create Graphic Asset
 	/// </summary>
 	GraphicAsset::GraphicAsset(const int inUid, const std::string& inName, const std::string& inPath, const std::string& inType, 
-		const int level, const ABCDRectangle& dimensions)
+		const int level, const AbcdRectangle& dimensions)
 		: Asset(inUid, inName, inPath, inType, level), Dimensions(dimensions)
 	{
 		hasColourKey = false;

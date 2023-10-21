@@ -5,8 +5,6 @@ namespace gamelib
 {
 	class DelayProcess final : public Process
 	{
-		unsigned long delayTargetMs;
-		unsigned long delayedMs;
 	public:
 		explicit DelayProcess(const unsigned long delayMs) : Process(), delayTargetMs(delayMs), delayedMs(0) {}
 	protected:
@@ -14,7 +12,12 @@ namespace gamelib
 		{
 			delayedMs += deltaMs; 
 			if (delayedMs >= delayTargetMs)
+			{
 				Succeed();
+			}
 		}
+	private:		
+		unsigned long delayTargetMs;
+		unsigned long delayedMs;
 	};
 }

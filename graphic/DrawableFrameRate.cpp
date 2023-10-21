@@ -17,8 +17,9 @@ void gamelib::DrawableFrameRate::Update(const unsigned long deltaMs)
 	}
 	else
 	{
+		// We got all the updates we can get within 1 sec
 		framesPerSecond = countUpdates;
-		accumulatedUpdateTime = countUpdates = 0;
+		accumulatedUpdateTime = countUpdates = 0; // reset
 	}
 	Text = std::to_string(framesPerSecond) + " FPS";
 };

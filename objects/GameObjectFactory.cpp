@@ -54,7 +54,7 @@ namespace gamelib
 		}
 		ThrowCouldNotFindAssetException(asset, detail_value);
 
-		if (!asset->type._Equal("graphic")) { throw exception("Cannot load non graphic asset yet..."); }
+		if (!asset->Type._Equal("graphic")) { throw exception("Cannot load non graphic asset yet..."); }
 
 		resource = asset;
 	}
@@ -68,7 +68,7 @@ namespace gamelib
 		{
 			case Asset::AssetType::Sprite:  return BuildSprite(name, type, asset, position, IsVisible);
 			case Asset::AssetType::Graphic: return BuildGraphic(asset, position);
-			default: throw exception((string("Graphic asset not supported:") + asset->type).c_str());
+			default: throw exception((string("Graphic asset not supported:") + asset->Type).c_str());
 		}
 	}
 
@@ -80,7 +80,7 @@ namespace gamelib
 
 		// graphic assets have dimensions, so we will need it as a graphic asset
 		const auto spriteAsset = make_shared<SpriteAsset>(graphicAsset->Uid, graphicAsset->Name,
-		                                                  graphicAsset->FilePath, graphicAsset->type,
+		                                                  graphicAsset->FilePath, graphicAsset->Type,
 		                                                  graphicAsset->SceneId, graphicAsset->Dimensions);
 
 		return Get().BuildStaticSprite(spriteAsset, position);
@@ -113,14 +113,14 @@ namespace gamelib
 		sprite->SetGraphic(graphicAsset);
 		sprite->LoadSettings();
 		sprite->SupportsColourKey(graphicAsset->GetColourKey().IsSet());
-		sprite->IsVisible = isVisible;
+		//sprite->IsVisible = isVisible;
 
-		// Tell the render what colour it should consider as transparent i.e ignore drawing
-		if (sprite->HasColourKey())
-		{
-			sprite->SetColourKey(graphicAsset->GetColourKey().Red, graphicAsset->GetColourKey().Green,
-			                      graphicAsset->GetColourKey().Blue);
-		}
+		//// Tell the render what colour it should consider as transparent i.e ignore drawing
+		//if (sprite->HasColourKey())
+		//{
+		//	sprite->SetColourKey(graphicAsset->GetColourKey().Red, graphicAsset->GetColourKey().Green,
+		//	                      graphicAsset->GetColourKey().Blue);
+		//}
 	}
 
 	void GameObjectFactory::OnBlueParse(uint& blue, const std::string& detailValue) const { blue = stoi(detailValue); }
@@ -135,7 +135,7 @@ namespace gamelib
 
 	void GameObjectFactory::ThrowCouldNotFindAssetException(const std::shared_ptr<Asset>& asset, const std::string& detailValue)
 	{
-		if (!asset->type._Equal("graphic")) { throw exception(("Cannot load non graphic resource: " + asset->Name + " type=" + asset->type).c_str()); }
+		if (!asset->Type._Equal("graphic")) { throw exception(("Cannot load non graphic resource: " + asset->Name + " type=" + asset->Type).c_str()); }
 		if (asset == nullptr) { throw exception(("Could not load resource meta data for resource id:" + detailValue).c_str()); }
 	}	
 }

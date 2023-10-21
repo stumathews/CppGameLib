@@ -8,9 +8,16 @@ class Movement;
 
 namespace gamelib
 {
+	// Makes a movement
 	class IGameObjectMoveStrategy
 	{
 	public:
+		IGameObjectMoveStrategy(){} // Needed
+		IGameObjectMoveStrategy(const IGameObjectMoveStrategy& other) = delete;
+		IGameObjectMoveStrategy(const IGameObjectMoveStrategy&& other) = delete;
+		IGameObjectMoveStrategy& operator=(const IGameObjectMoveStrategy& other) = delete;
+		IGameObjectMoveStrategy& operator=(const IGameObjectMoveStrategy&& other) = delete;
+
 		virtual ~IGameObjectMoveStrategy() = default;
 		/// <summary>
 		/// Move the player according to the calculated movement

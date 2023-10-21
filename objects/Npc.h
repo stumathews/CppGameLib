@@ -27,7 +27,7 @@ namespace gamelib
 
 		// Fields
 		std::shared_ptr<AnimatedSprite> Sprite;
-		ABCDRectangle Dimensions{};
+		AbcdRectangle Dimensions{};
 		std::shared_ptr<Hotspot> Hotspot;
 
 		[[nodiscard]] Direction GetDirection() const;

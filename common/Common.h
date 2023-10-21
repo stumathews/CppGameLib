@@ -25,7 +25,6 @@ namespace gamelib
 		if (is == true)
 		{		
 			Logger::Get()->LogThis(message);
-			ErrorLogManager::GetErrorLogManager()->LogMessage(message);
 		}
 		return is;
 	}
@@ -41,15 +40,14 @@ namespace gamelib
 		return ignore == true ? !ignore : isFalse;
 	}
 	
-	inline void LogMessage(const std::string &message, const bool be_verbose = false, const bool isFatal = false)
+	inline void LogMessage(const std::string &message, const bool beVerbose = false, const bool isFatal = false)
 	{
-		Logger::Get()->LogThis(message, be_verbose);
+		Logger::Get()->LogThis(message, beVerbose);
+
 		if(isFatal)
 		{
-			Logger::Get()->LogThis("Fatal error encountered.", be_verbose);
+			Logger::Get()->LogThis("Fatal error encountered.", beVerbose);
 			ErrorLogManager::GetErrorLogManager()->LogMessage(message);
-			std::string key;
-			std::cin >> key;
 		}
 	}
 		

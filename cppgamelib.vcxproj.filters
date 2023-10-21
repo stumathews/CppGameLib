@@ -117,9 +117,6 @@
     <ClInclude Include="events\EventSubscriber.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="objects\MultipleInheritableEnableSharedFromThis.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameStructure.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -157,9 +154,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="KeyFrame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tests\Tests\GraphicAssetFactory.h">
@@ -416,9 +410,6 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="objects\GameWorldComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="events\IEventSubscriber.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -432,9 +423,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="events\EventSubscriber.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="objects\MultipleInheritableEnableSharedFromThis.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameStructure.cpp">
@@ -461,9 +449,6 @@
     <ClCompile Include="common\Logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="objects\GameWorldData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="scene\ABCDRectangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -477,9 +462,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="KeyFrame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="graphic\GraphicAssetFactory.cpp">

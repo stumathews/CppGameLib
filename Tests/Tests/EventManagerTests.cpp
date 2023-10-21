@@ -3,11 +3,10 @@
 #include "events/UpdateAllGameObjectsEvent.h"
 #include "events/EventManager.h"
 #include <events/EventSubscriber.h>
-#include <objects/MultipleInheritableEnableSharedFromThis.h>
 using namespace std;
 using namespace gamelib;
 
-class dummy_subscriber final : public EventSubscriber, public inheritable_enable_shared_from_this<dummy_subscriber>
+class dummy_subscriber final : public EventSubscriber, public enable_shared_from_this<dummy_subscriber>
 {
 public:
 	bool handle_event_received = false;

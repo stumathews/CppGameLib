@@ -20,11 +20,10 @@ namespace gamelib
 		               bool isVisible,
 		               const std::shared_ptr<SpriteAsset>& spriteAsset);
 		AnimatedSprite() = default;
+
 		static std::shared_ptr<AnimatedSprite> Create(Coordinate<int> position, const std::shared_ptr<SpriteAsset>& asset);
 		static void Initialize();
-		/// <summary>
-		/// Set game object type
-		/// </summary>
+
 		GameObjectType GetGameObjectType() override { return GameObjectType::AnimatedSprite; }
 		void Draw(SDL_Renderer* renderer) override;	
 		void LoadSettings() override;
@@ -42,7 +41,7 @@ namespace gamelib
 		std::string GetName() override;
 		void AddKeyFrame(const KeyFrame& keyFrame);
 
-		ABCDRectangle Dimensions{};
+		AbcdRectangle Dimensions{};
 		std::vector<KeyFrame> KeyFrames;
 		void SetAnimationFrameGroup(const std::string& group);
 		static std::string GetStdDirectionAnimationFrameGroup(Direction facingDirection);

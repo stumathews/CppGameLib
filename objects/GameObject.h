@@ -33,7 +33,7 @@ namespace gamelib
 		GameObject(Coordinate<int> coordinate, bool isVisible);
 		void SetTag(const std::string& tag);
 		void UpdateBounds(unsigned int width, unsigned int height);
-		void UpdateBounds(ABCDRectangle dimensions);
+		void UpdateBounds(AbcdRectangle dimensions);
 		ListOfEvents HandleEvent(std::shared_ptr<Event> event, unsigned long deltaMs) override;
 		std::string GetSubscriberName() override;
 		[[nodiscard]] std::string GetTag() const;
@@ -44,7 +44,7 @@ namespace gamelib
 		virtual void Update(const unsigned long deltaMs) = 0;
 		virtual void Draw(SDL_Renderer* renderer) = 0;
 		static SDL_Rect CalculateBounds(const Coordinate<int> position, const int width, const int height);
-		static SDL_Rect CalculateBounds(const Coordinate<int> position, const ABCDRectangle dimensions);
+		static SDL_Rect CalculateBounds(const Coordinate<int> position, const AbcdRectangle dimensions);
 
 		bool IsVisible{};
 		bool IsActive = true;

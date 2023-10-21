@@ -91,7 +91,7 @@ namespace gamelib
 		{
 			const auto graphicAsset = GetGraphic();
 
-			if (graphicAsset->type == "graphic")
+			if (graphicAsset->Type == "graphic")
 			{
 				const auto& frame = KeyFrames[currentFrameNumber];
 				const SDL_Rect srcLocation = { frame.X, frame.Y, frame.W, frame.H  };

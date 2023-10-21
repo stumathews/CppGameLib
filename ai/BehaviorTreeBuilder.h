@@ -17,7 +17,7 @@ public:
 		return *this;
 	}
 
-	BehaviorTreeBuilder& Sequence()
+	BehaviorTreeBuilder& Sequence(const char* description = "")
 	{
 		AddToCurrentNode(new gamelib::Sequence());
 		return *this;

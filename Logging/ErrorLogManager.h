@@ -18,7 +18,7 @@ public:
 	std::stringstream Buffer;
 	
 protected:
-	ErrorLogManager();
+	ErrorLogManager() = default;
 	static ErrorLogManager* Instance;
 	
 	std::ofstream logFile;

@@ -2,10 +2,7 @@
 #include "pch.h"
 #include <graphic/GraphicAsset.h>
 #include "tinyxml2.h"
-#include <tuple>
 #include <KeyFrame.h>
-#include <Utils.h>
-#include <list>
 #include <graphic/GraphicAssetFactory.h>
 
 using namespace tinyxml2;
@@ -32,7 +29,7 @@ TEST(GraphicAssetFactoryTests, ParseStaticSprite)
     EXPECT_EQ(graphicAsset->Dimensions.GetWidth(), 64);
     EXPECT_EQ(graphicAsset->Dimensions.GetHeight(), 65);
     EXPECT_EQ(graphicAsset->Name, string("p1.png"));
-    EXPECT_EQ(graphicAsset->type, string("graphic"));
+    EXPECT_EQ(graphicAsset->Type, string("graphic"));
     EXPECT_EQ(graphicAsset->FilePath, string("Assets/Platformer/Base pack/Player/p1_walk/p1_walk.png"));
     EXPECT_EQ(graphicAsset->AssetType, gamelib::Asset::AssetType::Graphic);
 
@@ -78,7 +75,7 @@ TEST(GraphicAssetFactoryTests, ParseSprite)
     EXPECT_EQ(_sprite->Dimensions.GetWidth(), 64);
     EXPECT_EQ(_sprite->Dimensions.GetHeight(), 65);
     EXPECT_EQ(_sprite->Name, string("p1.png"));
-    EXPECT_EQ(_sprite->type, string("graphic"));
+    EXPECT_EQ(_sprite->Type, string("graphic"));
     EXPECT_EQ(_sprite->FilePath, string("Assets/Platformer/Base pack/Player/p1_walk/p1_walk.png"));
     EXPECT_EQ(_sprite->AssetType, gamelib::Asset::AssetType::Sprite);
     EXPECT_EQ(_sprite->KeyFrames.size(), 11);

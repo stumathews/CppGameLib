@@ -206,7 +206,7 @@ The `SceneManager` typically subscribes to scene change events and events asking
 
 #### Example Scene File
 
-```cpp
+```xml
 <?xml version="1.0" encoding="utf-8"?>
 
 <!-- Objects in Scene/Level 3 -->

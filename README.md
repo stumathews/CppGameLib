@@ -68,7 +68,7 @@ Each event has a particular it to its particular `EventId` that is associated wi
 
 ```cpp
 
-// Subscribing to events
+// Subscribing to events directly via `EventManager`
 eventManager->SubscribeToEvent(GenerateNewLevelEventId, this);
 ...
 
@@ -80,7 +80,11 @@ All objects that are IEventSubscribers can raise events with the EventManager an
 
 ```cpp
 // Subscribing to events
-eventManager->SubscribeToEvent(GenerateNewLevelEventId, this);
+SubscribeToEvent(FireEventId);
+SubscribeToEvent(gamelib::PlayerMovedEventTypeEventId);
+
+// Enemy GameObject Raising event to indicate enemy collided with player
+RaiseEvent(std::make_shared<PlayerCollidedWithEnemyEvent>(shared_from_this(), player));
 ...
 
 // handling event notification that were subscribed to

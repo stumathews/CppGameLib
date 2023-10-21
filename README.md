@@ -9,7 +9,9 @@ A Basic view of how the library would be used to structure a game:
 
 ![Basic Architecture](AppGameLibArchitecture.png)
 
-## GameObject
+## Core
+
+### GameObject
 
 `GameObject` is any object that can be drawn via its `Draw()` function and be updated via its `Update()` function. 
 
@@ -19,37 +21,173 @@ Typically objects in the game inherit from GameObjects so that they can subscrib
 * All Game Objects have a `Bounds`, `Position` might be `Visible` and can load its own Settings via `LoadSettings()`. 
 * All GameObjects have a unique ID
 
-### Miscellaneous Objects
 
-#### GameWorldData
-
-An object that holds the game's common state such as `IsGameDone`, `IsNetworkGame`, `CanDraw` and most importantly, a reference to the player `GameObject`.  
-
-#### AnimatedSprite
-
-An `AnimatedSprite` is a Drawable Game Object that draws a time-based keyframe animation, using the supplied `SpriteAsset`. It is used by `NPC`.  
-
-#### StaticSprite
-
-An `StaticSprite` is a sprite that does not support a time-based keyframe animation, but one in which the keyframes can be manually set.
-
-#### KeyFrame
-
-A `KeyFrame` is an area on a sprite sheet. Each keyframe usually represents a different image within a sprite sheet. Cycling through a series of keyframes usually represents a particular animation. Such a series is keyframes can be associated with an identifier or 'group'.
-
-#### Component
-
-A `Component` is a named item that has a list of key-value properties associated with it. 
-
-#### DrawableGameObject
-
-A `DrawableGameObject` is a game object that can load and draw itself. By default, it supports drawing a `GraphicAsset` but can perform its own drawing too. It supports setting the `ColourKey` when drawing the graphic
 
 #### GameObjectFactory
 
 A `GameObjectFactory` object creates specific types of GameObjects from their XML definitions. Currently supports ability to rehydrate the following game types:
 * `AnimatedSprite`
 * `StaticSprite`
+
+
+## GameStructure
+
+`GameStructure` is a crucial part of any game. This object is used to structure the game parts. It is responsible for executing the GameLoop at the desired framerate and drawing asking the `SceneManager` to draw all the objects in the scene, as well as getting the controller input through the controller input function that you provide in the constructor.
+
+It is also the place where all the subsystems are initialized (via `Initialize()`) before the game is put into the game loop. 
+
+* Make sure you call Initialize() before you try and run the game loop. 
+
+## Event management
+
+### EventManager
+The `EventManager` is the central component of the event management system. It is a Singleton which allows supported objects (`IEventSubscriber`) to subscribe and raise `Events`. 
+
+When an event is subscribed to, it is stored in the EventManager's event queue and when an Event is raised that matches the subscribed event, the object that subscribed to the event gets notified. 
+
+All objects that can subscribe and be notified need to inherit from `IEventSubscriber` as this is the interface that the EventManager will use to contact it.
+
+An `Event` can be subscribed to by asking the EventManager to subscribe to it's `EventId` which is a numeric identifier particular to each event and passing yourself (`IEventSubscriber`) as a reference so it can get back to you to notify when the event is raised.
+
+Each event has a particular it to its particular `EventId` that is associated with a known event type, and when they are raised the data associated with the event is also stored in the Event object that is returned to the subscriber. 
+
+### IEventSubscriber
+
+All objects that are IEventSubscribers can raise events with the EventManager and typically do so by calling the `RaiseEvent()` function. Also, they can use the `Subscribe()` to subscribe to an event. Internally this calls the EventManager.
+
+## Resource Management
+### ResourceManager
+
+The ResourceManager will read and index all the assets that are defined in the global resources file. It will also ask assets that are associated with a particular scene to load themselves when it receives the `SceneChangedEvent`. Equally in handling this event, it unloads any assets that are now not associated with the current scene. You should call `ResourceManager::IndexResourceFile()` before using or depending on this behaviour.
+
+The `ResourceManager` keeps a list of all the resources by keeping a list of `Asset`s (see Assets). It essentially tracks all resources whether they are loaded or not.
+
+The `ResourceManager` can also be consulted to return information about the assets in the resources file, as it effectively manages the resources specified therein. 
+
+`ResourceManager::GetAssetInfo()` can be used to obtain the asset associated with a specific asset Id or asset name. You can also query the number of loaded or unloaded resources (`GetCountLoadedResources()` and `GetCountUnloadedResources()` respectively ) and get the total number of resources that the resource manager knows about.
+
+## Scene Management
+### SceneManager
+
+The `SceneManager` is responsible for drawing the objects that are associated with the current scene. It subscribes to the `DrawCurrentSceneEventId` event Id which is raised within the game loop and is called as often as possible between the calls to the desired update() calls each frame (to achieve the desired fixed update frame rate)
+
+The `SceneManager` also is responsible for adding items to the scene. The scene is composed of Layers and each layer can have items that can be added to that layer. The SceneManager will then traverse the layers in order to draw the scene and in so doing achieve z-order drawing, i.e. the ability to draw some object over others.
+
+The `SceneManager` typically subscribes to scene change events and events asking it to load an item into a particular layer in the scene. The `SceneManager` will also do this by reading the associated scene or level file associated with the scene and load the contents thereof into the scene.
+
+### Layer
+
+A layer is named a collection of `GameObject`s that are in that layer. A layer has a z-order which dictates the order in which the GameObjects in the layer are drawn by the `SceneManager`.
+
+## Geometry
+
+### ABCDRectangle
+
+An `ABCDRectable` is a model of the geometry of a rectangle. 
+
+```cpp
+/*
+ An ABCD Rectangle looks like this;
+
+	A----B
+	|    |
+	|    |
+	D----C
+
+Each point A, B, C, D has and x,y coordinate
+
+	A(ax,ay)----B(bx,by)
+	|                  |
+	|                  |
+	D(dx,dy)----C(cx,cy)
+
+*/
+```
+
+## Asset Support
+
+The `Asset` class is an object that holds a path to an asset file, like an image file or sound file and then is able to load that asset into memory. 
+
+Each asset has an associated `Uid` that distinguishes this asset from others. Each asset can be either of type (Graphic, Sprite, Audio, Font) and additionally can be associated with a particular scene via the `SceneId`
+
+There are a variety of built-in assets that derive from Asset and therefore have the overriding ability to Load() and Unload() themselves into/from memory.
+
+### AudioAsset
+Loads/unloads and holds a reference to an audio clip that is used in a scene
+
+Currently, the asset can have an asset type of `SoundEffect` or `Music` which distinguishes between a short-player fx clip or a long-playing music clip.
+
+The `AudioManager` can construct these.
+
+### FontAsset
+
+Loads/unloads and holds a reference to a font that is used in a scene.
+
+### GraphicAsset
+
+Loads/unloads and holds a reference to an image that is used in the scene
+
+### GraphicAsset
+
+A `GraphicAsset` is an asset that knows how to load a graphic into memory.
+
+## Audio Management
+
+Audio assets are managed by the `AudioManager` which can `Play()` provided `AudioAssets`.
+
+## Font Management
+
+The `FontManager` creates `FontAsset`s that can be tracked in the `ResourceManager`
+
+## Graphics
+
+All `GameObjects` can `Draw()` themselves by writing to the surface that is provided to them.
+
+* Typically it is the `SceneManager` that calls the `Draw()` function for each GameObject in the scene and it passes the surface that is provided by the `SDLGraphicsManager`. 
+* The surface is only shown when the `SDLGraphicsManager` shows what has been written to the surface by calling the `SDLGraphicsManager::ClearAndDraw()` which is also involved by the SceneManager when all objects in the scene has been given a chance to write to the surface.
+
+### SDLGraphicsManager
+
+The `SDLGraphicsManager` is responsible for setting up the Window and its associated drawable surface.
+
+* You should call `Initialize()` before first use of `SDLGraphicsManager::ClearAndDraw()`
+
+#### DrawableGameObject
+
+A `DrawableGameObject` is a game object that can load and draw itself. By default, it supports drawing a `GraphicAsset` but can perform its own drawing too. It supports setting the `ColourKey` when drawing the graphic
+
+### DrawableText
+
+`DrawableText` is a game object that draws a string of text.
+
+### DrawableFrameRate
+
+The `DrawableFrameRate` is a game object that shows the current framerate.
+
+### GraphicAssetFactory
+
+A `GraphicAssetFactory` creates `GraphicAsset` from serialized XML 
+
+### ColourKey
+
+A `ColourKey` is a colour that is considered invisible when drawing a graphic that has the colour key colour in it.
+
+### KeyFrame
+
+A `KeyFrame` is an area on a sprite sheet. Each keyframe usually represents a different image within a sprite sheet. Cycling through a series of keyframes usually represents a particular animation. Such a series is keyframes can be associated with an identifier or 'group'.
+
+
+### Drawing
+
+The `Drawing` class is a utility function for drawing operations
+
+### Logging and Error Management
+
+#### ErrorLogManager
+
+The `ErrorLogManager` creates a log file that errors are written to.
+
+## Character Management
 
 #### NPC
 
@@ -80,6 +218,11 @@ enum class Direction
 };
 ```
 
+#### Component
+
+A `Component` is a named item that has a list of key-value properties associated with it. 
+
+
 #### Hotspot
 
 A `Hotspot` is a `DrawableGameObject` that has a position within its parent. 
@@ -92,206 +235,15 @@ An `Inventory` is a collection of `Components`. This would typically be associat
 
 You can search for a component, remove a component and check if a component exists in the `Inventory`.
 
-#### Timer
+#### AnimatedSprite
 
-A `Timer` is a countdown timer that elapses when the timer has been run for the duration of the timer. It allows you to check if an event that started when the timer started has now been happening for a specific amount of time.  
+An `AnimatedSprite` is a Drawable Game Object that draws a time-based keyframe animation, using the supplied `SpriteAsset`. It is used by `NPC`.  
 
-## GameStructure
+#### StaticSprite
 
-`GameStructure` is a crucial part of any game. This object is used to structure the game parts. It is responsible for executing the GameLoop at the desired framerate and drawing asking the `SceneManager` to draw all the objects in the scene, as well as getting the controller input through the controller input function that you provide in the constructor.
+An `StaticSprite` is a sprite that does not support a time-based keyframe animation, but one in which the keyframes can be manually set.
 
-It is also the place where all the subsystems are initialized (via `Initialize()`) before the game is put into the game loop. 
-
-* Make sure you call Initialize() before you try and run the game loop. 
-
-## Event management
-
-### EventManager
-The `EventManager` is the central component of the event management system. It is a Singleton which allows supported objects (`IEventSubscriber`) to subscribe and raise `Events`. 
-
-When an event is subscribed to, it is stored in the EventManager's event queue and when an Event is raised that matches the subscribed event, the object that subscribed to the event gets notified. 
-
-All objects that can subscribe and be notified need to inherit from `IEventSubscriber` as this is the interface that the EventManager will use to contact it.
-
-An `Event` can be subscribed to by asking the EventManager to subscribe to it's `EventId` which is a numeric identifier particular to each event and passing yourself (`IEventSubscriber`) as a reference so it can get back to you to notify when the event is raised.
-
-Each event has a particular it to its particular `EventId` that is associated with a known event type, and when they are raised the data associated with the event is also stored in the Event object that is returned to the subscriber. 
-
-### IEventSubscriber
-
-All objects that are IEventSubscribers can raise events with the EventManager and typically do so by calling the `RaiseEvent()` function. Also, they can use the `Subscribe()` to subscribe to an event. Internally this calls the EventManager.
-
-### Built-in Events
-
-#### PlayerMovedEvent
-
-This Event is raised when the code that registers a up/down/left/right controller press is detected. Typically this is subscribed to by the `Player` so that the player can move itself.
-
-#### GameObjectEvent
-
-This Event is always associated with a particular `GameObject` and serves as a convenient way to raise events about them. The specific thing that the event relates to is encoded in the Event's `Context` member which is of type `GameObjectEventContext` and currently specifies two contexts:
-
-1. Remove
-2. RemoveSubscription
-
-#### SceneChangedEvent
-
-This Event is raised when a particular scene is being changed, typically in response to a new level starting where a scene can be interpreted as a level. The event carries with it the `SceneId` that was changed to. This is used by the `ResourceManager` to unload resources that are not for that scene and load resources that are.
-
-#### SceneLoadedEvent 
-
-This event is raised when the scene is completely loaded, i.e the resources for that scene have all been loaded into memory and theoretically, that scene can be presented/drawn.
-
-#### StartNetworkLevelEvent
-
-This event is raised when its time to start a level in a networked game. The idea is that the event is propagated to all players who have joined a network game. It contains which level they should all load.
-
-#### UpdateAllGameObjectsEvent
-
-This event is raised in the game loop when objects so can update themselves. 
-
-#### NetworkPlayerJoinedEventId
-
-This event is raised when a network player joins.
-
-#### NetworkTrafficReceivedEvent
-
-This event is raised when network traffic is received. 
-
-#### AddGameObjectToCurrentSceneEvent
-
-This event is raised when an object needs to be added to the scene. This is typically subscribed to by the `SceneManager`. 
-
-#### LevelChangedEventTypeEventId
-TBD
-
-## Resource Management
-### ResourceManager
-
-The ResourceManager will read and index all the assets that are defined in the global resources file. It will also ask assets that are associated with a particular scene to load themselves when it receives the `SceneChangedEvent`. Equally in handling this event, it unloads any assets that are now not associated with the current scene. You should call `ResourceManager::IndexResourceFile()` before using or depending on this behaviour.
-
-The `ResourceManager` keeps a list of all the resources by keeping a list of `Asset`s (see Assets). It essentially tracks all resources whether they are loaded or not.
-
-The `ResourceManager` can also be consulted to return information about the assets in the resources file, as it effectively manages the resources specified therein. 
-
-`ResourceManager::GetAssetInfo()` can be used to obtain the asset associated with a specific asset Id or asset name. You can also query the number of loaded or unloaded resources (`GetCountLoadedResources()` and `GetCountUnloadedResources()` respectively ) and get the total number of resources that the resource manager knows about.
-
-## Scene Management
-### SceneManager
-
-The `SceneManager` is responsible for drawing the objects that are associated with the current scene. It subscribes to the `DrawCurrentSceneEventId` event Id which is raised within the game loop and is called as often as possible between the calls to the desired update() calls each frame (to achieve the desired fixed update frame rate)
-
-The `SceneManager` also is responsible for adding items to the scene. The scene is composed of Layers and each layer can have items that can be added to that layer. The SceneManager will then traverse the layers in order to draw the scene and in so doing achieve z-order drawing, i.e. the ability to draw some object over others.
-
-The `SceneManager` typically subscribes to scene change events and events asking it to load an item into a particular layer in the scene. The `SceneManager` will also do this by reading the associated scene or level file associated with the scene and load the contents thereof into the scene.
-
-### Layer
-
-A layer is named a collection of `GameObject`s that are in that layer. A layer has a z-order which dictates the order in which the GameObjects in the layer are drawn by the `SceneManager`.
-
-### ABCDRectangle
-
-An `ABCDRectable` is a model of the geometry of a rectangle. 
-
-```cpp
-/*
- An ABCD Rectangle looks like this;
-
-	A----B
-	|    |
-	|    |
-	D----C
-
-Each point A, B, C, D has and x,y coordinate
-
-	A(ax,ay)----B(bx,by)
-	|                  |
-	|                  |
-	D(dx,dy)----C(cx,cy)
-
-*/
-```
-
-## Assets
-
-The `Asset` class is an object that holds a path to an asset file, like an image file or sound file and then is able to load that asset into memory. 
-
-Each asset has an associated `Uid` that distinguishes this asset from others. Each asset can be either of type (Graphic, Sprite, Audio, Font) and additionally can be associated with a particular scene via the `SceneId`
-
-There are a variety of built-in assets that derive from Asset and therefore have the overriding ability to Load() and Unload() themselves into/from memory.
-
-### AudioAsset
-Loads/unloads and holds a reference to an audio clip that is used in a scene
-
-Currently, the asset can have an asset type of `SoundEffect` or `Music` which distinguishes between a short-player fx clip or a long-playing music clip.
-
-The `AudioManager` can construct these.
-
-### FontAsset
-
-Loads/unloads and holds a reference to a font that is used in a scene.
-
-### GraphicAsset
-
-Loads/unloads and holds a reference to an image that is used in the scene
-
-### SpriteAsset
-
-Loads/unloads and holds a reference to a sprite-sheet that is used in the scene.
-
-## Audio Management
-
-Audio assets are managed by the `AudioManager` which can `Play()` provided `AudioAssets`.
-
-## Font Management
-
-The `FontManager` creates `FontAsset`s that can be tracked in the `ResourceManager`
-
-## Drawing
-
-All `GameObjects` can `Draw()` themselves by writing to the surface that is provided to them.
-
-* Typically it is the `SceneManager` that calls the `Draw()` function for each GameObject in the scene and it passes the surface that is provided by the `SDLGraphicsManager`. 
-* The surface is only shown when the `SDLGraphicsManager` shows what has been written to the surface by calling the `SDLGraphicsManager::ClearAndDraw()` which is also involved by the SceneManager when all objects in the scene has been given a chance to write to the surface.
-
-### SDLGraphicsManager
-
-The `SDLGraphicsManager` is responsible for setting up the Window and its associated drawable surface.
-
-* You should call `Initialize()` before first use of `SDLGraphicsManager::ClearAndDraw()`
-
-### DrawableText
-
-`DrawableText` is a game object that draws a string of text.
-
-### DrawableFrameRate
-
-The `DrawableFrameRate` is a game object that shows the current framerate.
-
-### GraphicAsset
-
-A `GraphicAsset` is an asset that knows how to load a graphic into memory.
-
-### GraphicAssetFactory
-
-A `GraphicAssetFactory` creates `GraphicAsset` from serialized XML 
-
-### ColourKey
-
-A `ColourKey` is a colour that is considered invisible when drawing a graphic that has the colour key colour in it.
-
-### Drawing
-
-The `Drawing` class is a utility function for drawing operations
-
-### Logging and Error Management
-
-#### ErrorLogManager
-
-The `ErrorLogManager` creates a log file that errors are written to.
-
-## Character Management
-
+## Movement
 ### Movement
 
 A `Movement` is the number of pixels to move in a particular direction.
@@ -300,7 +252,14 @@ A `Movement` is the number of pixels to move in a particular direction.
 
 An `IGameObjectMoveStrategy` makes a `Movement`.
 
-## Time-Based Objects
+## Time
+
+### Timer
+
+A `Timer` is a countdown timer that elapses when the timer has been run for the duration of the timer. It allows you to check if an event that started when the timer started has now been happening for a specific amount of time.  
+
+
+## Processes
 
 ### Process
 
@@ -430,6 +389,57 @@ gamelib::BehaviorTree* behaviorTree = BehaviorTreeBuilder()
 ## Networking 
 
 TBD
+
+## Built-in Events
+
+### PlayerMovedEvent
+
+This Event is raised when the code that registers a up/down/left/right controller press is detected. Typically this is subscribed to by the `Player` so that the player can move itself.
+
+### GameObjectEvent
+
+This Event is always associated with a particular `GameObject` and serves as a convenient way to raise events about them. The specific thing that the event relates to is encoded in the Event's `Context` member which is of type `GameObjectEventContext` and currently specifies two contexts:
+
+1. Remove
+2. RemoveSubscription
+
+### SceneChangedEvent
+
+This Event is raised when a particular scene is being changed, typically in response to a new level starting where a scene can be interpreted as a level. The event carries with it the `SceneId` that was changed to. This is used by the `ResourceManager` to unload resources that are not for that scene and load resources that are.
+
+### SceneLoadedEvent 
+
+This event is raised when the scene is completely loaded, i.e the resources for that scene have all been loaded into memory and theoretically, that scene can be presented/drawn.
+
+### StartNetworkLevelEvent
+
+This event is raised when its time to start a level in a networked game. The idea is that the event is propagated to all players who have joined a network game. It contains which level they should all load.
+
+#### UpdateAllGameObjectsEvent
+
+This event is raised in the game loop when objects so can update themselves. 
+
+### NetworkPlayerJoinedEventId
+
+This event is raised when a network player joins.
+
+### NetworkTrafficReceivedEvent
+
+This event is raised when network traffic is received. 
+
+### AddGameObjectToCurrentSceneEvent
+
+This event is raised when an object needs to be added to the scene. This is typically subscribed to by the `SceneManager`. 
+
+### LevelChangedEventTypeEventId
+TBD
+
+### Miscellaneous Objects
+
+#### GameWorldData
+
+An object that holds the game's common state such as `IsGameDone`, `IsNetworkGame`, `CanDraw` and most importantly, a reference to the player `GameObject`.  
+
 
 # Dependencies:
  ## Include

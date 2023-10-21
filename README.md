@@ -135,7 +135,7 @@ eventManager->SubscribeToEvent(GenerateNewLevelEventId, this);
 
 ### IEventSubscriber
 
-All objects that are IEventSubscribers can raise events with the EventManager and typically do so by calling the `RaiseEvent()` function. Also, they can use the `Subscribe()` to subscribe to an event. Internally this calls the EventManager.
+All objects that are IEventSubscribers (including `GameObject`s) can raise events with the EventManager and typically do so by calling the `RaiseEvent()` function. Also, they can use the `Subscribe()` to subscribe to an event. Internally this calls the EventManager.
 
 ```cpp
 // Subscribing to events

@@ -112,6 +112,8 @@ void LevelManager::GetKeyboardInput() const
 
 ## Event management
 
+A key design pattern to decouple GameObjects is to tie them together with events that are subscribed to and raised throughout the game.
+
 ### EventManager
 The `EventManager` is the central component of the event management system. It is a Singleton which allows supported objects (`IEventSubscriber`) to subscribe and raise `Events`. 
 
@@ -184,6 +186,11 @@ int tick_time_ms = SettingsManager::Int("global", "tick_time_ms");
 ```
 
 ## Resource Management
+
+Resources are the data that the game can use such as images, sounds etc. 
+
+You specify the resources for your game in an XML file that you pass to the `GameStructure` and then which can subsequently be accessed by using the `ResourceManager`
+
 ### ResourceManager
 
 The ResourceManager will read and index all the assets that are defined in the global resources file. It will also ask assets that are associated with a particular scene to load themselves when it receives the `SceneChangedEvent`. Equally in handling this event, it unloads any assets that are now not associated with the current scene. 

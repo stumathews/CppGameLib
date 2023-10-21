@@ -1,7 +1,7 @@
 #pragma once
 #include "AudioAsset.h"
 #include <memory>
-#include <tinyxml2.h>
+#include <file/tinyxml2.h>
 #include <SDL_mixer.h>
 
 namespace gamelib

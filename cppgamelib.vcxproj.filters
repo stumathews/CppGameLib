@@ -30,7 +30,7 @@
     <ClInclude Include="util\Tuple.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tinyxml2.h">
+    <ClInclude Include="file\tinyxml2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="scene\Layer.h">
@@ -87,13 +87,13 @@
     <ClInclude Include="events\SceneLoadedEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="objects\Component.h">
+    <ClInclude Include="character\Component.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="objects\GameObjectFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="objects\AnimatedSprite.h">
+    <ClInclude Include="character\AnimatedSprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="graphic\Drawing.h">
@@ -141,7 +141,7 @@
     <ClInclude Include="objects\GameWorldData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scene\ABCDRectangle.h">
+    <ClInclude Include="geometry\ABCDRectangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="graphic\GraphicAsset.h">
@@ -153,7 +153,7 @@
     <ClInclude Include="common\StaticConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="KeyFrame.h">
+    <ClInclude Include="graphic\KeyFrame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tests\Tests\GraphicAssetFactory.h">
@@ -162,16 +162,16 @@
     <ClInclude Include="graphic\GraphicAssetFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Inventory.h">
+    <ClInclude Include="character\Inventory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SpriteAsset.h">
+    <ClInclude Include="asset\SpriteAsset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="util\SettingDetail.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Direction.h">
+    <ClInclude Include="character\Direction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ai\FSMState.h">
@@ -189,7 +189,7 @@
     <ClInclude Include="graphic\ColourKey.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Timer.h">
+    <ClInclude Include="time\Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="geometry\Line.h">
@@ -237,7 +237,7 @@
     <ClInclude Include="json\JsonEventSerializationManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SerializationManager.h">
+    <ClInclude Include="file\SerializationManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="net\MessageHeader.h">
@@ -264,7 +264,7 @@
     <ClInclude Include="events\NetworkPlayerJoinedEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="objects\StaticSprite.h">
+    <ClInclude Include="character\StaticSprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="processes\Action.h">
@@ -279,13 +279,13 @@
     <ClInclude Include="processes\ProcessManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hotspot.h">
+    <ClInclude Include="character\Hotspot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="movement\IMovement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="objects\Npc.h">
+    <ClInclude Include="character\Npc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="movement\IGameMoveStrategy.h">
@@ -294,7 +294,7 @@
     <ClInclude Include="events\EventId.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DirectionUtils.h">
+    <ClInclude Include="character\DirectionUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="geometry\SideUtils.h">
@@ -348,6 +348,66 @@
     <ClInclude Include="ai\BehaviorTreeBuilder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="cppgamelib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\ai.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\asset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\audio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\character.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\events.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\exceptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\file.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\geometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\graphic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\json.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\movement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\logging.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\net.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\objects.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\processes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -359,7 +419,7 @@
     <ClCompile Include="util\Tuple.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tinyxml2.cpp">
+    <ClCompile Include="file\tinyxml2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="font\FontAsset.cpp">
@@ -395,13 +455,13 @@
     <ClCompile Include="events\SceneChangedEvent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="objects\Component.cpp">
+    <ClCompile Include="character\Component.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="objects\GameObjectFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="objects\AnimatedSprite.cpp">
+    <ClCompile Include="character\AnimatedSprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="graphic\Drawing.cpp">
@@ -449,7 +509,7 @@
     <ClCompile Include="common\Logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="scene\ABCDRectangle.cpp">
+    <ClCompile Include="geometry\ABCDRectangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="graphic\GraphicAsset.cpp">
@@ -461,16 +521,16 @@
     <ClCompile Include="Logging\ErrorLogManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="KeyFrame.cpp">
+    <ClCompile Include="graphic\KeyFrame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="graphic\GraphicAssetFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Inventory.cpp">
+    <ClCompile Include="character\Inventory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SpriteAsset.cpp">
+    <ClCompile Include="asset\SpriteAsset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="util\SettingDetail.cpp">
@@ -488,7 +548,7 @@
     <ClCompile Include="graphic\ColourKey.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Timer.cpp">
+    <ClCompile Include="time\Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="geometry\Line.cpp">
@@ -536,7 +596,7 @@
     <ClCompile Include="json\JsonEventSerializationManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SerializationManager.cpp">
+    <ClCompile Include="file\SerializationManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="net\MessageHeader.cpp">
@@ -554,22 +614,22 @@
     <ClCompile Include="net\UdpNetworkPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="objects\StaticSprite.cpp">
+    <ClCompile Include="character\StaticSprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="processes\ProcessManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hotspot.cpp">
+    <ClCompile Include="character\Hotspot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="objects\Npc.cpp">
+    <ClCompile Include="character\Npc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="events\EventId.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DirectionUtils.cpp">
+    <ClCompile Include="character\DirectionUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="graphic\DrawableText.cpp">

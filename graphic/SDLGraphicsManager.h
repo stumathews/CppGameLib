@@ -2,7 +2,7 @@
 #define SDL_GRAPHICS_MANAGER_H
 #include <vector>
 #include "GraphicAsset.h"
-#include "tinyxml2.h"
+#include "file/tinyxml2.h"
 #include <memory>
 #include "SDL.h"
 #include <functional>

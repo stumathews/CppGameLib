@@ -1,8 +1,8 @@
 #pragma once
-#include "Direction.h"
-#include "GameObject.h"
-#include "KeyFrame.h"
-#include "scene/ABCDRectangle.h"
+#include "character/Direction.h"
+#include "objects/GameObject.h"
+#include "graphic/KeyFrame.h"
+#include "geometry/ABCDRectangle.h"
 #include "objects/DrawableGameObject.h"
 
 namespace gamelib

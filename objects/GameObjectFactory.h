@@ -1,10 +1,10 @@
 #pragma once
 #include <memory>
-#include "tinyxml2.h"
+#include "file/tinyxml2.h"
 #include "GameObject.h"
 #include "common/aliases.h"
 #include "asset/Asset.h"
-#include <objects/AnimatedSprite.h>
+#include <character/AnimatedSprite.h>
 
 namespace gamelib
 {

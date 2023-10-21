@@ -1,6 +1,6 @@
 #pragma once
 
-#include "objects/Component.h"
+#include "character/Component.h"
 #include <objects/GameWorldData.h>
 #include "common/constants.h"
 

@@ -1,7 +1,7 @@
 #pragma once
-#include "KeyFrame.h"
+#include "graphic/KeyFrame.h"
 #include "graphic/GraphicAsset.h"
-#include "scene/ABCDRectangle.h"
+#include "geometry/ABCDRectangle.h"
 namespace gamelib
 {
 	class SpriteAsset final : public GraphicAsset

@@ -2,7 +2,7 @@
 #include <net/Networking.h>
 #include <events/EventManager.h>
 #include <events/EventFactory.h>
-#include <SerializationManager.h>
+#include <file/SerializationManager.h>
 #include <net/PeerInfo.h>
 #include <events/Event.h>
 

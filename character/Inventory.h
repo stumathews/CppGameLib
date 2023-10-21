@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "objects/Component.h"
+#include "character/Component.h"
 #include <string>
 #include <map>
 

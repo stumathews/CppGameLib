@@ -2,9 +2,8 @@
 #include "SDL.h"
 #include "windows.h"
 #include "resource/ResourceManager.h"
-#include <SpriteAsset.h>
-
-#include "Direction.h"
+#include <asset/SpriteAsset.h>
+#include "character/Direction.h"
 #include "exceptions/EngineException.h"
 #include "util/SettingsManager.h"
 

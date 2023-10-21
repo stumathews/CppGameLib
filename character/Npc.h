@@ -1,6 +1,6 @@
 #pragma once
-#include "Hotspot.h"
-#include "objects/AnimatedSprite.h"
+#include "character/Hotspot.h"
+#include "character/AnimatedSprite.h"
 #include "objects/DrawableGameObject.h"
 #include <memory>
 

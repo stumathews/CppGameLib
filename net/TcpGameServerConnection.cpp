@@ -3,7 +3,7 @@
 #include <net/PeerInfo.h>
 #include <events/EventManager.h>
 #include <events/EventFactory.h>
-#include <SerializationManager.h>
+#include <file/SerializationManager.h>
 
 namespace gamelib
 {

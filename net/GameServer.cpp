@@ -4,7 +4,7 @@
 #include <net/Networking.h>
 #include <json/json11.h>
 #include <events/EventFactory.h>
-#include <SerializationManager.h>
+#include <file/SerializationManager.h>
 #include <net/IGameServerConnection.h>
 #include <net/TcpGameServerConnection.h>
 #include <net/UdpGameServerConnection.h>

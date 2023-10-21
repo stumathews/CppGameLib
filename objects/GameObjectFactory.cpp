@@ -1,10 +1,10 @@
 #include "GameObjectFactory.h"
 #include "GameObject.h"
-#include "AnimatedSprite.h"
+#include "character/AnimatedSprite.h"
 #include "resource/ResourceManager.h"
 #include "common/aliases.h"
-#include "SpriteAsset.h"
-#include "StaticSprite.h"
+#include "asset/SpriteAsset.h"
+#include "character/StaticSprite.h"
 
 using namespace tinyxml2;
 using namespace std;

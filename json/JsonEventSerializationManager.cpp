@@ -3,7 +3,7 @@
 #include <events/ControllerMoveEvent.h>
 #include <events/StartNetworkLevelEvent.h>
 
-#include "DirectionUtils.h"
+#include "character/DirectionUtils.h"
 #include "events/NetworkTrafficReceivedEvent.h"
 
 using namespace json11;

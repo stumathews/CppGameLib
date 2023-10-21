@@ -1,5 +1,5 @@
 #include "FontManager.h"
-#include "tinyxml2.h"
+#include "file/tinyxml2.h"
 #include "common/Common.h"
 
 using namespace std;

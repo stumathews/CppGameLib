@@ -1,0 +1,12 @@
+#pragma once
+#include <events/AddGameObjectToCurrentSceneEvent.h>
+#include <events/ControllerMoveEvent.h>
+#include <events/Event.h>
+#include <events/EventFactory.h>
+#include <events/EventId.h>
+#include <events/EventManager.h>
+#include <events/EventNumbers.h>
+#include <events/EventSubscriber.h>
+#include <events/GameObjectEvent.h>
+#include <events/IEventSerializationManager.h>
+#include <events/IEventSubscriber.h>

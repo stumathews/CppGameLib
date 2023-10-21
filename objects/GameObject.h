@@ -3,9 +3,9 @@
 #include <map>
 #include <SDL.h>
 #include "events/EventManager.h"
-#include "Inventory.h"
+#include "character/Inventory.h"
 #include <string>
-#include "scene/ABCDRectangle.h"
+#include "geometry/ABCDRectangle.h"
 #include "util/Tuple.h"
 #include <list>
 

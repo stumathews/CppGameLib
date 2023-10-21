@@ -1,8 +1,8 @@
 //#include "gtest/gtest.h"
 #include "pch.h"
 #include <graphic/GraphicAsset.h>
-#include "tinyxml2.h"
-#include <KeyFrame.h>
+#include "file/tinyxml2.h"
+#include <graphic/KeyFrame.h>
 #include <graphic/GraphicAssetFactory.h>
 
 using namespace tinyxml2;

@@ -2,9 +2,9 @@
 #include <objects/DrawableGameObject.h>
 #include <objects/GameObject.h>
 #include <common/aliases.h>
-#include <KeyFrame.h>
-#include <SpriteAsset.h>
-#include <Timer.h>
+#include <graphic/KeyFrame.h>
+#include <asset/SpriteAsset.h>
+#include <time/Timer.h>
 #include <events/Event.h>
 
 namespace gamelib

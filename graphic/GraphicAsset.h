@@ -3,9 +3,9 @@
 #include "asset/asset.h"
 #include "common/aliases.h"
 #include <list>
-#include <KeyFrame.h>
-#include <Inventory.h>
-#include "scene/ABCDRectangle.h"
+#include <graphic/KeyFrame.h>
+#include <character/Inventory.h>
+#include "geometry/ABCDRectangle.h"
 #include "ColourKey.h"
 
 namespace gamelib

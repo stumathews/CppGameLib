@@ -5,7 +5,7 @@
 #include <events/EventManager.h>
 #include <json/json11.h>
 #include <events/EventFactory.h>
-#include <SerializationManager.h>
+#include <file/SerializationManager.h>
 
 #include "events/StartNetworkLevelEvent.h"
 #include "util/SettingsManager.h"

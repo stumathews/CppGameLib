@@ -1,7 +1,7 @@
 #include "Npc.h"
 #include <memory>
 #include "Movement/Movement.h"
-#include "objects/AnimatedSprite.h"
+#include "character/AnimatedSprite.h"
 
 gamelib::Npc::Npc(const std::string& name, const std::string& type, const Coordinate<int> position,
                   const bool visible,

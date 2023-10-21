@@ -1,8 +1,8 @@
 #pragma once
 #include "GraphicAsset.h"
-#include "tinyxml2.h"
+#include "file/tinyxml2.h"
 #include <memory>
-#include "SpriteAsset.h"
+#include "asset/SpriteAsset.h"
 
 namespace gamelib
 {

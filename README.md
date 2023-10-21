@@ -115,6 +115,30 @@ std::vector<std::shared_ptr<gamelib::Event>> Enemy::HandleEvent(const std::share
 }
 ```
 
+## Settings Managment
+
+## SettingsManager
+
+The `SettingsManager` allows the retrieval of settings from an xml file which is of the following format:
+```xml
+<!-- Settings -->
+<settings>
+  <!-- Global Game Settings -->
+  <global>
+    <!-- 1 update very 20 ms = 50 times a second (1000 milliseconds) -->
+    <setting name="tick_time_ms" type="int">16</setting>
+  </global>
+...
+  <AnotherSection>
+    <setting name="YourSetting" type="string">YourSettingValue</setting>
+  </AnotherSection>
+</settings>
+```
+
+Settings can retrieved directly from the `SettingsManager` who manages this file:
+
+const auto tick_time_ms = SettingsManager::Int("global", "verbose");
+
 ## Resource Management
 ### ResourceManager
 

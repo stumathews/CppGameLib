@@ -21,8 +21,6 @@ Typically objects in the game inherit from GameObjects so that they can subscrib
 * All Game Objects have a `Bounds`, `Position` might be `Visible` and can load its own Settings via `LoadSettings()`. 
 * All GameObjects have a unique ID
 
-
-
 #### GameObjectFactory
 
 A `GameObjectFactory` object creates specific types of GameObjects from their XML definitions. Currently supports ability to rehydrate the following game types:
@@ -303,32 +301,7 @@ Each point A, B, C, D has and x,y coordinate
 */
 ```
 
-## Asset Support
 
-The `Asset` class is an object that holds a path to an asset file, like an image file or sound file and then is able to load that asset into memory. 
-
-Each asset has an associated `Uid` that distinguishes this asset from others. Each asset can be either of type (Graphic, Sprite, Audio, Font) and additionally can be associated with a particular scene via the `SceneId`
-
-There are a variety of built-in assets that derive from Asset and therefore have the overriding ability to Load() and Unload() themselves into/from memory.
-
-### AudioAsset
-Loads/unloads and holds a reference to an audio clip that is used in a scene
-
-Currently, the asset can have an asset type of `SoundEffect` or `Music` which distinguishes between a short-player fx clip or a long-playing music clip.
-
-The `AudioManager` can construct these.
-
-### FontAsset
-
-Loads/unloads and holds a reference to a font that is used in a scene.
-
-### GraphicAsset
-
-A `GraphicAsset` is an asset that knows how to load a graphic into memory.
-
-### SpriteAsset
-
-Loads/unloads and holds a reference to an spritesheet that is used in the scene
 
 ## Audio Management
 
@@ -343,7 +316,7 @@ AudioManager::Get()->Play(asset);
 
 The `FontManager` creates `FontAsset`s that can be tracked in the `ResourceManager`
 
-## Graphics
+## Graphic Management
 
 All `GameObjects` can `Draw()` themselves by writing to the surface that is provided to them.
 
@@ -589,6 +562,33 @@ gamelib::BehaviorTree* behaviorTree = BehaviorTreeBuilder()
 .Finish()
 .End();
 ```
+
+## Asset Support
+
+The `Asset` class is an object that holds a path to an asset file, like an image file or sound file and then is able to load that asset into memory. 
+
+Each asset has an associated `Uid` that distinguishes this asset from others. Each asset can be either of type (Graphic, Sprite, Audio, Font) and additionally can be associated with a particular scene via the `SceneId`
+
+There are a variety of built-in assets that derive from Asset and therefore have the overriding ability to Load() and Unload() themselves into/from memory.
+
+### AudioAsset
+Loads/unloads and holds a reference to an audio clip that is used in a scene
+
+Currently, the asset can have an asset type of `SoundEffect` or `Music` which distinguishes between a short-player fx clip or a long-playing music clip.
+
+The `AudioManager` can construct these.
+
+### FontAsset
+
+Loads/unloads and holds a reference to a font that is used in a scene.
+
+### GraphicAsset
+
+A `GraphicAsset` is an asset that knows how to load a graphic into memory.
+
+### SpriteAsset
+
+Loads/unloads and holds a reference to an spritesheet that is used in the scene
 
 ## Networking 
 

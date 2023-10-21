@@ -13,7 +13,6 @@ namespace gamelib
 		{
 			Instance = new Logger( [=](const std::string& message)
 			{
-				ErrorLogManager::GetErrorLogManager()->LogMessage(message);	
 				LogToStdOut(message);
 			});
 		}
@@ -47,10 +46,7 @@ namespace gamelib
 		if (logStdout && !fallbackToStdOut)
 		{
 			LogToStdOut(message);
-		}
-
-		ErrorLogManager::GetErrorLogManager()->LogMessage(message);
-
+		}		
 	}
 
 	void Logger::LogToStdOut(const string& message) 	{

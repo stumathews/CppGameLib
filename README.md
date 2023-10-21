@@ -72,7 +72,18 @@ Each event has a particular it to its particular `EventId` that is associated wi
 eventManager->SubscribeToEvent(GenerateNewLevelEventId, this);
 ...
 
-// handling events that were subscribed to
+```
+
+### IEventSubscriber
+
+All objects that are IEventSubscribers can raise events with the EventManager and typically do so by calling the `RaiseEvent()` function. Also, they can use the `Subscribe()` to subscribe to an event. Internally this calls the EventManager.
+
+```cpp
+// Subscribing to events
+eventManager->SubscribeToEvent(GenerateNewLevelEventId, this);
+...
+
+// handling event notification that were subscribed to
 ListOfEvents LevelManager::HandleEvent(const std::shared_ptr<Event> evt, const unsigned long inDeltaMs)
 {
 	if(evt->Id.PrimaryId == LevelChangedEventTypeEventId.PrimaryId) { OnLevelChanged(evt); }
@@ -88,12 +99,7 @@ ListOfEvents LevelManager::HandleEvent(const std::shared_ptr<Event> evt, const u
 
 	return {};
 }
-
 ```
-
-### IEventSubscriber
-
-All objects that are IEventSubscribers can raise events with the EventManager and typically do so by calling the `RaiseEvent()` function. Also, they can use the `Subscribe()` to subscribe to an event. Internally this calls the EventManager.
 
 ## Resource Management
 ### ResourceManager

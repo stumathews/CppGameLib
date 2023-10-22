@@ -7,4 +7,7 @@
 #include <character/Npc.h>
 #include <character/StaticSprite.h>
 #include <character/Component.h>
+#include <character/IGameMoveStrategy.h>
+#include <character/IMovement.h>
+#include <character/Movement.h>
 

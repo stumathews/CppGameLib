@@ -6,7 +6,7 @@
 
 #include "ai/FSM.h"
 #include "graphic/DrawableText.h"
-#include "movement/IGameMoveStrategy.h"
+#include "character/IGameMoveStrategy.h"
 
 class RoomInfo;
 namespace gamelib

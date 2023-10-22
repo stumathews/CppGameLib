@@ -195,7 +195,7 @@
     <ClInclude Include="geometry\Line.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="movement\Movement.h">
+    <ClInclude Include="character\Movement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="net\NetworkManager.h">
@@ -282,13 +282,13 @@
     <ClInclude Include="character\Hotspot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="movement\IMovement.h">
+    <ClInclude Include="character\IMovement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="character\Npc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="movement\IGameMoveStrategy.h">
+    <ClInclude Include="character\IGameMoveStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="events\EventId.h">
@@ -382,9 +382,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cppgamelib\json.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cppgamelib\movement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cppgamelib\logging.h">
@@ -554,7 +551,7 @@
     <ClCompile Include="geometry\Line.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="movement\Movement.cpp">
+    <ClCompile Include="character\Movement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="net\NetworkManager.cpp">

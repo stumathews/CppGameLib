@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
 #include <memory>
-#include <movement/IMovement.h>
+#include <character/IMovement.h>
 
 class Room;
 class Movement;

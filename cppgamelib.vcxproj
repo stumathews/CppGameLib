@@ -193,7 +193,6 @@
     <ClInclude Include="cppgamelib\graphic.h" />
     <ClInclude Include="cppgamelib\json.h" />
     <ClInclude Include="cppgamelib\logging.h" />
-    <ClInclude Include="cppgamelib\movement.h" />
     <ClInclude Include="cppgamelib\net.h" />
     <ClInclude Include="cppgamelib\objects.h" />
     <ClInclude Include="cppgamelib\processes.h" />
@@ -212,8 +211,8 @@
     <ClInclude Include="character\Hotspot.h" />
     <ClInclude Include="json\JsonEventSerializationManager.h" />
     <ClInclude Include="json\json11.h" />
-    <ClInclude Include="movement\IGameMoveStrategy.h" />
-    <ClInclude Include="movement\IMovement.h" />
+    <ClInclude Include="character\IGameMoveStrategy.h" />
+    <ClInclude Include="character\IMovement.h" />
     <ClInclude Include="net\IGameServerConnection.h" />
     <ClInclude Include="net\MessageHeader.h" />
     <ClInclude Include="net\NetworkPlayer.h" />
@@ -239,7 +238,7 @@
     <ClInclude Include="Logging\ErrorLogManager.h" />
     <ClInclude Include="events\EventSubscriber.h" />
     <ClInclude Include="events\GameObjectEvent.h" />
-    <ClInclude Include="movement\Movement.h" />
+    <ClInclude Include="character\Movement.h" />
     <ClInclude Include="net\Networking.h" />
     <ClInclude Include="net\NetworkEvent.h" />
     <ClInclude Include="net\NetworkManager.h" />
@@ -330,7 +329,7 @@
     <ClCompile Include="events\EventSubscriber.cpp" />
     <ClCompile Include="events\GameObjectEvent.cpp" />
     <ClCompile Include="GameStructure.cpp" />
-    <ClCompile Include="movement\Movement.cpp" />
+    <ClCompile Include="character\Movement.cpp" />
     <ClCompile Include="net\NetworkEvent.cpp" />
     <ClCompile Include="net\Networking.cpp" />
     <ClCompile Include="net\NetworkManager.cpp" />

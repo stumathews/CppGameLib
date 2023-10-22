@@ -1,6 +1,6 @@
 #include "Npc.h"
 #include <memory>
-#include "Movement/Movement.h"
+#include "character/Movement.h"
 #include "character/AnimatedSprite.h"
 
 gamelib::Npc::Npc(const std::string& name, const std::string& type, const Coordinate<int> position,

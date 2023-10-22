@@ -1,4 +1,4 @@
-﻿# cppgamelib
+﻿# CppGameLib
 
 CppGameLib is a game library for C++ for creating simple real-time, interactive 2D games.
 

@@ -2,23 +2,25 @@
 
 CppGameLib is a game library for C++ for creating simple real-time, interactive 2D games.
 
-The library is seperated into areas:
+The main parts of the library revolve around managing resources, events and drawing `GameObjects`
 
-* AI - FSMs, Behavior Trees
-* Assets - Audio, graphics, fonts and sprites asset files that can be loaded into memory
-* Audio - playing music and sound effects
-* Characters - building and controlling characters
-* Events - Subscribing and handling events
-* Exceptions and Errors - Dealing with errors and exceptions
-* Files - Serialization matters eg. xml, json etc.
-* Fonts - Loading Fonts
-* Geometry - Modeling lines, rectangles etc
-* Graphics - Drawing (ony 2D drawing is supported)
-* Logging - Auditing and diagnostics tracing
-* Networking - Networking and Multiplayer
-* Workflow Sequences and Coordination - Running sequences etc
-* Resources - Loading assets into/outof memory
-* Scenes - Loading and drawing resource for a particualar scene or level
+The library is seperated into various areas:
+
+* `AI` - FSMs, Behavior Trees
+* `Assets` - Audio, graphics, fonts and sprites asset files that can be loaded into memory
+* `Audio` - playing music and sound effects
+* `Characters` - building and controlling characters
+* `Events` - Subscribing and handling events
+* `Exceptions and Errors` - Dealing with errors and exceptions
+* `Files` - Serialization matters eg. xml, json etc.
+* `Fonts` - Loading Fonts
+* `Geometry` - Modeling lines, rectangles etc
+* `Graphics` - Drawing (ony 2D drawing is supported)
+* `Logging` - Auditing and diagnostics tracing
+* `Networking` - Networking and Multiplayer
+* `Workflow Sequences and Coordination` - Running sequences etc
+* `Resources` - Loading assets into/outof memory
+* `Scenes` - Loading and drawing resource for a particualar scene or level
 
 A Basic view of how the library would be used to structure a game:
 
@@ -41,7 +43,6 @@ Typically objects in the game inherit from GameObjects so that they can subscrib
 A `GameObjectFactory` object creates specific types of GameObjects from their XML definitions. Currently supports ability to rehydrate the following game types:
 * `AnimatedSprite`
 * `StaticSprite`
-
 
 ## GameStructure
 

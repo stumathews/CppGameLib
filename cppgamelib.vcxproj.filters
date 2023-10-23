@@ -21,13 +21,13 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="util\COMUtils.h">
+    <ClInclude Include="com\COMUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="util\RectDebugging.h">
+    <ClInclude Include="graphic\RectDebugging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="util\Tuple.h">
+    <ClInclude Include="geometry\Coordinate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="file\tinyxml2.h">
@@ -57,7 +57,7 @@
     <ClInclude Include="common\constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\Logger.h">
+    <ClInclude Include="file\Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="common\TypeAliases.h">
@@ -120,7 +120,7 @@
     <ClInclude Include="GameStructure.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="util\SettingsManager.h">
+    <ClInclude Include="file\SettingsManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="events\EventManager.h">
@@ -150,9 +150,6 @@
     <ClInclude Include="Logging\ErrorLogManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="common\StaticConfig.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="graphic\KeyFrame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -168,7 +165,7 @@
     <ClInclude Include="asset\SpriteAsset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="util\SettingDetail.h">
+    <ClInclude Include="file\SettingDetail.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="character\Direction.h">
@@ -410,10 +407,7 @@
     <ClCompile Include="cppgamelib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="util\RectDebugging.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="util\Tuple.cpp">
+    <ClCompile Include="geometry\Coordinate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="file\tinyxml2.cpp">
@@ -485,7 +479,7 @@
     <ClCompile Include="GameStructure.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="util\SettingsManager.cpp">
+    <ClCompile Include="file\SettingsManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="events\EventManager.cpp">
@@ -503,7 +497,7 @@
     <ClCompile Include="graphic\SDLGraphicsManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="common\Logger.cpp">
+    <ClCompile Include="file\Logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="geometry\ABCDRectangle.cpp">
@@ -530,7 +524,7 @@
     <ClCompile Include="asset\SpriteAsset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="util\SettingDetail.cpp">
+    <ClCompile Include="file\SettingDetail.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ai\FSM.cpp">

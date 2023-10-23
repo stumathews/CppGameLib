@@ -6,14 +6,11 @@
 #include <SDL.h>
 #include <functional>
 #include <SDL_mixer.h>
-#include <SDL_ttf.h>
-
 #include "audio/AudioManager.h"
 #include "common/Common.h"
 #include "events/EventManager.h"
 #include "common/aliases.h"
-#include "font/FontManager.h"
-#include "util/SettingsManager.h"
+#include "file/SettingsManager.h"
 
 using namespace std;
 

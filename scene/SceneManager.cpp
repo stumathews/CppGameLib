@@ -11,7 +11,7 @@
 #include "events/SceneLoadedEvent.h"
 #include "events/UpdateAllGameObjectsEvent.h"
 #include "objects/GameObjectFactory.h"
-#include "util/SettingsManager.h"
+#include "file/SettingsManager.h"
 
 using namespace std;
 
@@ -144,7 +144,7 @@ namespace gamelib
 
 	shared_ptr<Layer> SceneManager::AddLayer(const string& name)
 	{
-		shared_ptr<Layer> layer = std::make_shared<Layer>();
+		auto layer = std::make_shared<Layer>();
 		layer->SetName(name);
 		layers.push_back(layer);
 
@@ -163,7 +163,7 @@ namespace gamelib
 
 	void SceneManager::RemoveLayer(const string& name) 
 	{
-		remove_if(begin(layers), end(layers), [&name](const shared_ptr<Layer>& layer)  // NOLINT(bugprone-unused-return-value, clang-diagnostic-unused-result)
+		auto _ = remove_if(begin(layers), end(layers), [&name](const shared_ptr<Layer>& layer)
 		{
 			return layer->Name()._Equal(name);
 		});

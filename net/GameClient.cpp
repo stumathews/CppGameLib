@@ -8,7 +8,7 @@
 #include <file/SerializationManager.h>
 
 #include "events/StartNetworkLevelEvent.h"
-#include "util/SettingsManager.h"
+#include "file/SettingsManager.h"
 
 using namespace json11;
 

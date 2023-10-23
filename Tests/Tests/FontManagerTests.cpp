@@ -1,10 +1,8 @@
 ﻿#include "pch.h"
 
-#include "common/StaticConfig.h"
 #include "events/EventManager.h"
 #include "font/FontManager.h"
 #include "graphic/SDLGraphicsManager.h"
-#include "resource/ResourceManager.h"
 
 using namespace std;
 using namespace gamelib;

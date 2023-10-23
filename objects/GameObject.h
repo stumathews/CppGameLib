@@ -6,8 +6,7 @@
 #include "character/Inventory.h"
 #include <string>
 #include "geometry/ABCDRectangle.h"
-#include "util/Tuple.h"
-#include <list>
+#include "geometry/Coordinate.h"
 
 namespace gamelib
 {

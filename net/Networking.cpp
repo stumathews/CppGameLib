@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Networking.h"
 #include <sstream>
-#include <common/Logger.h>
+#include <file/Logger.h>
 #include <sstream>
 #include <string>
 

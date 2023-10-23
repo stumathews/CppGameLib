@@ -223,8 +223,7 @@
     <ClInclude Include="common\aliases.h" />
     <ClInclude Include="common\Common.h" />
     <ClInclude Include="common\constants.h" />
-    <ClInclude Include="common\Logger.h" />
-    <ClInclude Include="common\StaticConfig.h" />
+    <ClInclude Include="file\Logger.h" />
     <ClInclude Include="common\TypeAliases.h" />
     <ClInclude Include="character\Direction.h" />
     <ClInclude Include="ai\FSM.h" />
@@ -288,11 +287,11 @@
     <ClInclude Include="time\Timer.h" />
     <ClInclude Include="file\tinyxml2.h" />
     <ClInclude Include="net\UdpGameServerConnection.h" />
-    <ClInclude Include="util\COMUtils.h" />
-    <ClInclude Include="util\RectDebugging.h" />
-    <ClInclude Include="util\SettingDetail.h" />
-    <ClInclude Include="util\SettingsManager.h" />
-    <ClInclude Include="util\Tuple.h" />
+    <ClInclude Include="com\COMUtils.h" />
+    <ClInclude Include="graphic\RectDebugging.h" />
+    <ClInclude Include="file\SettingDetail.h" />
+    <ClInclude Include="file\SettingsManager.h" />
+    <ClInclude Include="geometry\Coordinate.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ai\ConditionalSequence.h" />
@@ -317,7 +316,7 @@
     <ClCompile Include="net\GameClient.cpp" />
     <ClCompile Include="net\GameServer.cpp" />
     <ClCompile Include="net\Connection.cpp" />
-    <ClCompile Include="common\Logger.cpp" />
+    <ClCompile Include="file\Logger.cpp" />
     <ClCompile Include="cppgamelib.cpp" />
     <ClCompile Include="ai\FSM.cpp" />
     <ClCompile Include="graphic\ColourKey.cpp" />
@@ -370,10 +369,9 @@
     <ClCompile Include="time\Timer.cpp" />
     <ClCompile Include="file\tinyxml2.cpp" />
     <ClCompile Include="net\UdpGameServerConnection.cpp" />
-    <ClCompile Include="util\RectDebugging.cpp" />
-    <ClCompile Include="util\SettingDetail.cpp" />
-    <ClCompile Include="util\SettingsManager.cpp" />
-    <ClCompile Include="util\Tuple.cpp" />
+    <ClCompile Include="file\SettingDetail.cpp" />
+    <ClCompile Include="file\SettingsManager.cpp" />
+    <ClCompile Include="geometry\Coordinate.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="net\tcpclient.skel" />

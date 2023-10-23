@@ -1,6 +1,6 @@
 #pragma once
 #include <SDL.h>
-#include "util/Tuple.h"
+#include "geometry/Coordinate.h"
 
 namespace gamelib
 {

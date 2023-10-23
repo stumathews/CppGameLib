@@ -18,7 +18,7 @@
 #include "Logging/ErrorLogManager.h"
 #include <events/UpdateProcessesEvent.h>
 #include "font/FontManager.h"
-#include "util/SettingsManager.h"
+#include "file/SettingsManager.h"
 
 using namespace std;
 

@@ -1,5 +1,5 @@
 #include "NetworkManager.h"
-#include <util/SettingsManager.h>
+#include <file/SettingsManager.h>
 #include <net/Networking.h>
 
 namespace gamelib

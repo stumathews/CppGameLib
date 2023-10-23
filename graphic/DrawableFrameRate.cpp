@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "DrawableFrameRate.h"
-#include <util\RectDebugging.h>
+#include <graphic\RectDebugging.h>
 #include <SDL.h>
 
 gamelib::DrawableFrameRate::DrawableFrameRate(SDL_Rect* bounds) : DrawableText(*bounds, "", {0,0,0,0})

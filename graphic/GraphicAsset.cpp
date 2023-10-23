@@ -3,7 +3,7 @@
 #include "SDLGraphicsManager.h"
 #include <SDL.h>
 #include "common/Common.h"
-#include <common/Logger.h>
+#include <file/Logger.h>
 
 using namespace std;
 

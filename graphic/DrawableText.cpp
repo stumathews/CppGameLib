@@ -1,6 +1,6 @@
 #include "DrawableText.h"
 
-#include "util/RectDebugging.h"
+#include "graphic/RectDebugging.h"
 
 gamelib::DrawableText::DrawableText(SDL_Rect bounds, std::string text, const SDL_Color color = {0,0,0, 0})
 : DrawBounds(bounds), Text(std::move(text)), Color(color)

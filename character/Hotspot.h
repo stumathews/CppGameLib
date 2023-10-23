@@ -1,5 +1,5 @@
 #pragma once
-#include <util/Tuple.h>
+#include <geometry/Coordinate.h>
 #include <objects/DrawableGameObject.h>
 
 namespace gamelib

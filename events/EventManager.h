@@ -5,7 +5,7 @@
 #include <map>
 #include <queue>
 #include "Event.h"
-#include "common/Logger.h"
+#include "file/Logger.h"
 
 namespace gamelib
 {

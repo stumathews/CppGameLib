@@ -9,7 +9,7 @@
 #include "font/FontManager.h"
 #include <exceptions/EngineException.h>
 #include "graphic/GraphicAssetFactory.h"
-#include "util/SettingsManager.h"
+#include "file/SettingsManager.h"
 
 namespace gamelib
 {

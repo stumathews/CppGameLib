@@ -8,7 +8,7 @@
 #include <vector>
 #include <memory>
 #include "asset/asset.h"
-#include "common/Logger.h"
+#include "file/Logger.h"
 #include "Logging/ErrorLogManager.h"
 
 namespace gamelib

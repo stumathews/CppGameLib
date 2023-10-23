@@ -1,6 +1,6 @@
 #include "DrawableGameObject.h"
 #include <SDL.h>
-#include <util/Tuple.h>
+#include <geometry/Coordinate.h>
 using namespace std;
 
 namespace gamelib

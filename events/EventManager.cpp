@@ -4,8 +4,8 @@
 #include "Event.h"
 #include "IEventSubscriber.h"
 #include "common/Common.h"
-#include "util/RectDebugging.h"
-#include <util/SettingsManager.h>
+#include "graphic/RectDebugging.h"
+#include <file/SettingsManager.h>
 #include <sstream>
 #include <string>
 #include "UpdateAllGameObjectsEvent.h"

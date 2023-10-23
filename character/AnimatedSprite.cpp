@@ -5,7 +5,7 @@
 #include <asset/SpriteAsset.h>
 #include "character/Direction.h"
 #include "exceptions/EngineException.h"
-#include "util/SettingsManager.h"
+#include "file/SettingsManager.h"
 
 using namespace std;
 

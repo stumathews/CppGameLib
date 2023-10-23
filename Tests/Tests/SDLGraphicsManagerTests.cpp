@@ -1,14 +1,10 @@
 ﻿#include "pch.h"
 #include "audio/AudioManager.h"
-
-#include "common/StaticConfig.h"
 #include "events/EventManager.h"
 #include "font/FontManager.h"
 #include "graphic/SDLGraphicsManager.h"
-#include "objects/GameObject.h"
 #include "resource/ResourceManager.h"
 #include "scene/SceneManager.h"
-#include "util/SettingsManager.h"
 
 using namespace std;
 using namespace gamelib;
@@ -18,8 +14,7 @@ class SDLGraphicsManagerTests : public testing::Test
  protected:
 
   void SetUp() override
-  {  	
-  	config = shared_ptr<SettingsManager>(SettingsManager::Get());
+  {
 	event_admin = shared_ptr<EventManager>(EventManager::Get());
 	font_admin = shared_ptr<FontManager>(FontManager::Get());
 	graphics_admin = shared_ptr<SdlGraphicsManager>(SdlGraphicsManager::Get());
@@ -32,7 +27,6 @@ class SDLGraphicsManagerTests : public testing::Test
   void TearDown() override {}
   
   shared_ptr<ResourceManager> resource_admin;
-  shared_ptr<SettingsManager> config;
   shared_ptr<EventManager> event_admin;	
   shared_ptr<FontManager> font_admin;
   shared_ptr<SdlGraphicsManager> graphics_admin;

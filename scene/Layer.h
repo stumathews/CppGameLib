@@ -2,7 +2,7 @@
 #include <string>
 #include <list>
 #include <memory>
-#include <util/Tuple.h>
+#include <geometry/Coordinate.h>
 
 namespace gamelib
 {

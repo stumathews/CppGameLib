@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "common/StaticConfig.h"
 #include "events/UpdateAllGameObjectsEvent.h"
 #include "events/EventManager.h"
 #include <events/EventSubscriber.h>
@@ -40,12 +39,7 @@ class EventManagerTests : public ::testing::Test
   void TearDown() override 
   {
   }
-
-  static shared_ptr<StaticConfig> create_config() 
-  {	
-  	return shared_ptr<StaticConfig>(new StaticConfig());
-  }
-
+  
   static shared_ptr<EventManager> create_event_manager()
   {
   	return shared_ptr<EventManager>(EventManager::Get());

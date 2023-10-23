@@ -1,6 +1,4 @@
 ﻿#include "pch.h"
-
-#include "common/StaticConfig.h"
 #include "events/EventManager.h"
 #include "events/SceneChangedEvent.h"
 #include "font/FontManager.h"

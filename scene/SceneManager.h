@@ -6,7 +6,7 @@
 #include "events/EventSubscriber.h"
 #include "resource/ResourceManager.h"
 #include "objects/GameWorldData.h"
-#include <common/Logger.h>
+#include <file/Logger.h>
 
 #include "events/EventNumbers.h"
 

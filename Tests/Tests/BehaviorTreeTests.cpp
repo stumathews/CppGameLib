@@ -3,7 +3,7 @@
 #include "ai/FirstOrNextSelector.h"
 #include "ai/InlineActionBehavior.h"
 #include "ai/Sequence.h"
-#include "common/Logger.h"
+#include "file/Logger.h"
 #include <gmock/gmock-more-matchers.h>
 
 using namespace std;

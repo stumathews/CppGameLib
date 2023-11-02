@@ -7,6 +7,11 @@ gamelib::DrawableText::DrawableText(SDL_Rect bounds, std::string text, const SDL
 {
 }
 
+gamelib::DrawableText::DrawableText(const AbcdRectangle& bounds, std::string text, SDL_Color color)
+: DrawBounds(SDL_Rect { bounds.GetAx(),bounds.GetAy(), bounds.GetWidth(), bounds.GetHeight()}), Text(std::move(text)), Color(color)
+{
+}
+
 void gamelib::DrawableText::Update(unsigned long deltaMs)
 {
 }

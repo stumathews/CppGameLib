@@ -5,6 +5,9 @@
 #include "scene/SceneManager.h"
 #include <file/Logger.h>
 
+#include "IGameLoopStrategy.h"
+#include "input/IInputManager.h"
+
 namespace gamelib
 {
 	/// <summary>
@@ -17,7 +20,8 @@ namespace gamelib
 		/// <summary>
 		/// Create a game structure
 		/// </summary>
-		explicit GameStructure(std::function<void()> getControllerInputFunction);
+		explicit GameStructure(std::function<void(unsigned long deltaMs)> getInputFunction);
+		GameStructure(std::shared_ptr<IGameLoopStrategy> gameLoop);
 		GameStructure(const GameStructure& other) = delete;
 		GameStructure(const GameStructure&& other) = delete;
 		GameStructure& operator=(const GameStructure& other) = delete;
@@ -26,7 +30,7 @@ namespace gamelib
 		// What we do when we unload the Game structure
 		~GameStructure() override;
 
-		static bool Initialize(int screenWidth, int screenHeight, const std::string& windowTitle, const std::string resourceFilePath, const std::
+		bool Initialize(int screenWidth, int screenHeight, const std::string& windowTitle, const std::string resourceFilePath, const std::
 		                                     string& gameSettingsFilePath);
 
 		/// <summary>
@@ -73,9 +77,9 @@ namespace gamelib
 		/// <summary>
 		/// Read keyboard/controller input
 		/// </summary>
-		void ReadKeyboard() const;
+		void ReadKeyboard(unsigned long deltaMs) const;
 
-		static void ReadNetwork();
+		void ReadNetwork() const;
 
 		/// <summary>
 		/// Gte the Time now in MS
@@ -90,6 +94,18 @@ namespace gamelib
 		/// <summary>
 		/// Input function (get physical player/controller input)
 		/// </summary>
-		std::function<void()> _getControllerInputFunction;
+		std::function<void(unsigned long deltaMs)> getControllerInputFunction;
+
+		/**
+		 * \brief If we should routinely check for keyboard events
+		 */
+		bool sampleInput{};
+
+		/**
+		 * \brief If we should routinely check for network events
+		 */
+		bool sampleNetwork{};
+
+		std::shared_ptr<IGameLoopStrategy> gameLoop;
 	};
 }

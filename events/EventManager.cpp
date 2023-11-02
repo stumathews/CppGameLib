@@ -13,7 +13,9 @@
 using namespace std;
 namespace gamelib
 {	
-	EventManager::EventManager() : logEvents(false) { 	}
+	EventManager::EventManager() : logEvents(false), printStatistics(true)
+	{
+	}
 
 	std::map<const EventId, std::vector<IEventSubscriber*>>& EventManager::GetSubscriptions() { return eventSubscribers; }
 	std::string EventManager::GetSubscriberName() { return "EventManager"; }
@@ -46,7 +48,7 @@ namespace gamelib
 	
 	bool EventManager::Initialize() 
 	{ 
-		logEvents = SettingsManager::Get()->GetBool("EventManager", "logEvents");
+		logEvents = SettingsManager::Get()->GetBool("eventManager", "logEvents");
 		return true;
 	}
 
@@ -92,21 +94,54 @@ namespace gamelib
 	/// The subscriber does the work.
 	/// </summary>
 	/// <param name="event">Event to send to subscribers</param>
+	/// <param name="deltaMs">delta time</param>
 	void EventManager::DispatchEventToSubscriber(const shared_ptr<Event>& event, const unsigned long deltaMs)
 	{
+
 		// Go through each subscriber of the event and have the subscriber handle it
 		for (const auto& pSubscriber :  eventSubscribers[event->Id])
 		{
-			if (eventSubscribers.empty()) { return; } 
-			if (!pSubscriber) { continue; }
+			if (eventSubscribers.empty())
+			{
+				noSubscribersDuringDispatch++;
+				return;
+			} 
+			if (!pSubscriber)
+			{
+				badSubscribersDuringDispatch++;
+				continue;
+			}
+					
 			
 			// allow subscriber to process the event
-			for(const auto &secondary_event : pSubscriber->HandleEvent(event, deltaMs))
+			for(const auto &secondaryEvent : pSubscriber->HandleEvent(event, deltaMs))
 			{
-				AddToSecondaryEventQueue(secondary_event, pSubscriber);
-			}	
-			
+				AddToSecondaryEventQueue(secondaryEvent, pSubscriber);
+			}
+			eventsDispatched[event->Id]++;			
 		}
+
+
+		if(printStatistics)
+		{			
+			elapsedTimeMs += deltaMs;
+			dispatchCalledTimes++;
+			if(std::isgreater(elapsedTimeMs, 1000))
+			{
+				int totalPrimaryEvents = 0;
+				std::stringstream str;
+				for(auto [eventId, count] : eventsDispatched)
+				{
+					str << eventId.Name << " " << count << "/s ";
+					totalPrimaryEvents += count;
+				}
+				std::cout << "|"<< totalPrimaryEvents << " events/s over " << dispatchCalledTimes << " dispatches. " << str.str() << std::endl;
+				eventsDispatched.clear();
+				elapsedTimeMs = 0;
+				noSubscribersDuringDispatch = badSubscribersDuringDispatch = dispatchCalledTimes = 0;
+			}
+ 		}
+
 		event->Processed = true;
 	}
 
@@ -127,9 +162,9 @@ namespace gamelib
 			if (pSubscriber->GetSubscriberName() != target) { return; }
 						
 			// allow subscriber to process the event
-			for(const auto &secondary_event : pSubscriber->HandleEvent(event))
+			for(const auto &secondaryEvent : pSubscriber->HandleEvent(event))
 			{
-				AddToSecondaryEventQueue(secondary_event, pSubscriber);
+				AddToSecondaryEventQueue(secondaryEvent, pSubscriber);
 			}	
 			
 		}
@@ -142,7 +177,11 @@ namespace gamelib
 		{
 			const auto& event = primaryEventQueue.front();
 							
-			if (event->Processed) { continue; }
+			if (event->Processed)
+			{
+				primaryEventQueue.pop();
+				continue;
+			}
 			
 			// Ask each subscriber to deal with event			
 			DispatchEventToSubscriber(event, deltaMs);

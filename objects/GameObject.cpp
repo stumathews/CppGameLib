@@ -1,3 +1,5 @@
+
+#include "pch.h"
 #include "GameObject.h"
 #include <memory>
 #include <SDL_mixer.h>

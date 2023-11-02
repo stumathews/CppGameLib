@@ -17,6 +17,8 @@
 #include <net/NetworkManager.h>
 #include "Logging/ErrorLogManager.h"
 #include <events/UpdateProcessesEvent.h>
+
+#include "VariableGameLoop.h"
 #include "font/FontManager.h"
 #include "file/SettingsManager.h"
 
@@ -24,10 +26,32 @@ using namespace std;
 
 namespace gamelib
 {
-	GameStructure::GameStructure(std::function<void()> getControllerInputFunction)
-		: _getControllerInputFunction(std::move(getControllerInputFunction))
+
+	GameStructure::GameStructure(std::shared_ptr<IGameLoopStrategy> gameLoop): gameLoop(std::move(gameLoop))
 	{
 	}
+
+	GameStructure::GameStructure(std::function<void(unsigned long deltaMs)> getInputFunction)
+		: getControllerInputFunction(std::move(getInputFunction)), gameLoop(nullptr)
+	{
+		gameLoop =  make_shared<VariableGameLoop>([&](const unsigned long deltaMs)
+	                {
+	                    getControllerInputFunction(deltaMs);
+	                    NetworkManager::Get()->Listen();
+	                    EventManager::Get()->ProcessAllEvents(deltaMs);
+	                    EventManager::Get()->DispatchEventToSubscriber(make_shared<UpdateAllGameObjectsEvent>(), deltaMs);
+	                    EventManager::Get()->DispatchEventToSubscriber(make_shared<UpdateProcessesEvent>(), deltaMs);
+	                },
+	                []()
+	                {
+	                    // Time-sensitive, skip queue. Draws the current scene
+	                    EventManager::Get()->DispatchEventToSubscriber(std::make_shared<Event>(DrawCurrentSceneEventId), 0UL);
+	                });
+		
+	}
+
+	
+
 
 	/// <summary>
 	/// Update & Draw until the game ends
@@ -35,75 +59,7 @@ namespace gamelib
 	/// <returns></returns>
 	bool GameStructure::DoGameLoop(const GameWorldData* gameWorldData) const
 	{
-		const auto maxUpdates = SettingsManager::Int("global", "max_loops");
-
-		// Tick/update every tick_time_ms, ie if tick_time_ms = 10, then will tick/update 10 times in one second
-		const auto TICK_TIME = SettingsManager::Int("global", "tick_time_ms");
-
-		// A 'tick' reprents one update call(). 
-		// We want a fixed number of ticks within a real unit of time. 
-		// A real unit of time does not change (1 second is always one second in the real world)
-		// irrespective of what the hardware you are running on. So if we can ensure we have the same number of updates in one second, the update rate
-		// will always be te same, the we have a fixed update rate. 
-
-		// t0 repreesnts the time when the last update() finished.
-		// t1 when re-evaluated represents the time elapsed since t0 (last update)
-
-		// t1-t0 is the elapsed time since the last update and is called the frame-time, and includes the time taken to draw.
-		// The frame-time is the time it it takes to since the last update, and which includes subsequent drawing
-		// that a new update might be ready to be called again or if not, more drawing can be done.
-
-		// Initialize/prepare process by saying last update occured right now.
-		auto t0 = GetTimeNowMs();
-
-		while (!gameWorldData->IsGameDone) // main game loop (exact speed of loops is hardware dependaant)
-		{
-			const auto t1 = GetTimeNowMs(); // t1 is the time now, and at t0, the last update was called.
-			// t1 has been affected by the time to update and draw.
-
-			auto elapsedTime = 0; // Elapsed time in counted as number of updates per 1 game loop (hardware dependant).
-			auto countUpdates = 0; // Number of loops 
-
-			// Update() can be called every tick_time_ms which will result in a constant amount of ticks, as a ms is a ms independant on hardware.			
-			// Update() will 'tick' x times a second, depending on how long a tick is set to be, ie. tick_time_ms
-
-			// updating time!
-
-			// allow for multiple successive updates if the previous a) drawing b) sparetime operations (t1) took too long (longer than
-			// 1 tick_time_ms and so we couldn't do an update, so make up for it here)
-			// This only means it executes the right number of updates within a second, not that they have the same interval between them
-			while ((t1 - t0) > TICK_TIME && countUpdates < maxUpdates)
-			{
-				// +TICK_TIME has just occured, since last update so do another update
-				// update logic
-				Update(t1 - t0);
-
-				t0 += TICK_TIME;
-
-				elapsedTime += TICK_TIME;
-				countUpdates++;
-			}
-
-			// at this point the stats we have are: 
-			// 1) the elapsed time taken in 1 hardware loop
-			// 2) the number of updates in 1 hardware loop, while (still ensuring we alway update every tick_time_ms)
-
-			// Misc tasks
-
-			HandleSpareTime(elapsedTime); // handle player input, general housekeeping (Event Manager processing)
-
-			// drawing time!
-
-			if (gameWorldData->IsNetworkGame && (t1 - t0) > TICK_TIME) { t0 = t1 - TICK_TIME; }
-
-			if (gameWorldData->CanDraw)
-			{
-				// How much within the new 'tick' are we?
-				const auto percentWithinTick = min(1.0f, (t1 - t0) / TICK_TIME);
-				// NOLINT(bugprone-integer-division, clang-diagnostic-implicit-int-float-conversion)				
-				Draw(static_cast<unsigned int>(percentWithinTick));
-			}
-		}
+		gameLoop->Loop(gameWorldData);
 		std::cout << "Game done" << std::endl;
 		return true;
 	}
@@ -114,6 +70,8 @@ namespace gamelib
 		// Read config about the game's settings
 		const auto settingsInitialized = SettingsManager::Get()->Load(gameSettingsFilePath);
 		const auto beVerbose = SettingsManager::Bool("global", "verbose");
+		sampleInput = SettingsManager::Bool("gameStructure", "sampleInput");
+		sampleNetwork = SettingsManager::Bool("gameStructure", "sampleNetwork");
 
 		if (screenWidth == 0) { screenWidth = SettingsManager::Int("global", "screen_width"); }
 		if (screenHeight == 0) { screenHeight = SettingsManager::Int("global", "screen_height"); }
@@ -149,12 +107,15 @@ namespace gamelib
 
 	void GameStructure::Update(const unsigned long deltaMs) const
 	{
-		ReadKeyboard();
+		
+		ReadKeyboard(deltaMs);
 		ReadNetwork();
 
 		EventManager::Get()->ProcessAllEvents(deltaMs);
 		EventManager::Get()->DispatchEventToSubscriber(make_shared<UpdateAllGameObjectsEvent>(), deltaMs);
 		EventManager::Get()->DispatchEventToSubscriber(make_shared<UpdateProcessesEvent>(), deltaMs);
+		std::cout << deltaMs <<  " ";
+		
 	}
 
 	void GameStructure::Draw(unsigned long percentWithinTick) const
@@ -213,11 +174,21 @@ namespace gamelib
 		}
 	}
 
-	void GameStructure::ReadKeyboard() const { _getControllerInputFunction(); }
-	void GameStructure::ReadNetwork() { NetworkManager::Get()->Listen(); }
+	void GameStructure::ReadKeyboard(const unsigned long deltaMs) const
+	{
+		if(!sampleInput) return;
+
+		getControllerInputFunction(deltaMs);
+	}
+	void GameStructure::ReadNetwork() const
+	{
+		if(!sampleNetwork) return;
+		NetworkManager::Get()->Listen();
+	}
 
 	void GameStructure::HandleSpareTime(long elapsedTime)
 	{
+		
 	}
 
 	vector<shared_ptr<Event>> GameStructure::HandleEvent(std::shared_ptr<Event> the_event, unsigned long deltaMs)
@@ -234,6 +205,8 @@ namespace gamelib
 	{
 		return static_cast<long>(timeGetTime());
 	}
+
+	
 
 	GameStructure::~GameStructure()
 	{

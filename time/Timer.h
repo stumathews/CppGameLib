@@ -1,5 +1,4 @@
 #pragma once
-#include <windows.h>
 namespace gamelib
 {
 	class Timer
@@ -10,9 +9,9 @@ namespace gamelib
 
 		void AddTime(unsigned long timeMs);
 
-		void Start(DWORD durationMs, DWORD startTimeMs = 0);
+		void Start(long durationMs, long startTimeMs = 0);
 
-		static DWORD GetTimeMs();
+		static long GetTimeMs();
 
 		void Reset();
 
@@ -21,9 +20,9 @@ namespace gamelib
 		bool IsElapsed;
 		bool IsStopped;
 
-		DWORD StartTimeMs;
-		DWORD ElapsedTimeMs;
-		DWORD TimerDurationMs;
+		long StartTimeMs;
+		long ElapsedTimeMs;
+		long TimerDurationMs;
 	};
 }
 

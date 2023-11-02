@@ -1,4 +1,6 @@
+#include "pch.h"
 #include "FSMState.h"
+
 
 using namespace std;
 

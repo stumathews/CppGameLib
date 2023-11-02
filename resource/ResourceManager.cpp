@@ -211,10 +211,10 @@ namespace gamelib
 		resourcesByScene[asset->SceneId].push_back(asset);
 
 		// Index asset by its name
-		resourcesByName.insert(pair<string, shared_ptr<Asset>>(asset->Name, asset));
+		resourcesByName.insert(pair(asset->Name, asset));
 
 		// Index the asset by its id
-		resourcesById.insert(pair<int, shared_ptr<Asset>>(asset->Uid, asset));
+		resourcesById.insert(pair(asset->Uid, asset));
 
 		LogMessage(
 			"Discovered " + string(asset->Type) + string(" asset#: ") + to_string(asset->Uid) + string(" ") + string(

@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 #include <file/Logger.h>
-#include <WinSock2.h>
 #include <events/EventSubscriber.h>
 
 

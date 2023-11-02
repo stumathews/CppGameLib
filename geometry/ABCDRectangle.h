@@ -26,6 +26,8 @@ namespace gamelib
 		AbcdRectangle() = default;
 		AbcdRectangle(SDL_Rect rect);
 		AbcdRectangle(int x, int y, int w, int h);
+		AbcdRectangle(const AbcdRectangle& other) { x = other.x; y = other.y; w = other.w; h = other.h; }
+		AbcdRectangle& operator=(const AbcdRectangle& other) = default;
 
 		[[nodiscard]] int GetAx() const;
 		[[nodiscard]] int GetAy() const;

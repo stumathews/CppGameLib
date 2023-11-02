@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "asset.h"
 
 using namespace std;

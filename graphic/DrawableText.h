@@ -9,6 +9,7 @@ namespace gamelib
 	{
 	public:
 		explicit DrawableText(SDL_Rect bounds, std::string text, SDL_Color color);
+		explicit DrawableText(const AbcdRectangle& bounds, std::string text, SDL_Color color);
 
 		/// <summary>
 		/// Update the frame rate

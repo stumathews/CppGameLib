@@ -9,8 +9,15 @@ namespace gamelib
 	{
 	public:
 		explicit Event(EventId id): Id(std::move(id)) {}
+		Event(const Event& other) = delete;
+		Event(const Event&& other) = delete;
+		Event& operator=(const Event& other) = delete;
+		Event& operator=(const Event&& other) = delete;
+
 		bool Processed = false;
+		bool IsSingleton = false;
 		std::string Origin;
+
 		EventId Id;
 		virtual std::string ToString();
 		virtual ~Event();

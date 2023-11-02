@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "GameObjectFactory.h"
 #include "GameObject.h"
 #include "character/AnimatedSprite.h"

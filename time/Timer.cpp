@@ -1,4 +1,6 @@
 #include "Timer.h"
+#include <Windows.h>
+
 
 void gamelib::Timer::Update(const unsigned long deltaMs)
 {
@@ -6,7 +8,7 @@ void gamelib::Timer::Update(const unsigned long deltaMs)
 		return;
 
 	ElapsedTimeMs += deltaMs;
-	IsElapsed = ElapsedTimeMs > TimerDurationMs ? true : false;
+	IsElapsed = ElapsedTimeMs >= TimerDurationMs ? true : false;
 }
 
 void gamelib::Timer::AddTime(const unsigned long timeMs)
@@ -14,7 +16,7 @@ void gamelib::Timer::AddTime(const unsigned long timeMs)
 	ElapsedTimeMs = (ElapsedTimeMs - timeMs <= 0) ? 0 : ElapsedTimeMs - timeMs;
 }
 
-void gamelib::Timer::Start(const DWORD durationMs, const DWORD startTimeMs)
+void gamelib::Timer::Start(const long durationMs, const long startTimeMs)
 {
 	if (startTimeMs == 0)
 	{
@@ -28,7 +30,7 @@ void gamelib::Timer::Start(const DWORD durationMs, const DWORD startTimeMs)
 }
 
 
-DWORD gamelib::Timer::GetTimeMs()
+long gamelib::Timer::GetTimeMs()
 {
 	return timeGetTime();
 }

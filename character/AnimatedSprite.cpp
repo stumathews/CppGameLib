@@ -1,11 +1,11 @@
 #include "AnimatedSprite.h"
 #include "SDL.h"
-#include "windows.h"
 #include "resource/ResourceManager.h"
 #include <asset/SpriteAsset.h>
 #include "character/Direction.h"
 #include "exceptions/EngineException.h"
 #include "file/SettingsManager.h"
+#include <Windows.h>
 
 using namespace std;
 

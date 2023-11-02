@@ -2,7 +2,6 @@
 
 
 #include "audio/AudioManager.h"
-#include "common/StaticConfig.h"
 #include "events/EventManager.h"
 #include "font/FontManager.h"
 #include "graphic/SDLGraphicsManager.h"

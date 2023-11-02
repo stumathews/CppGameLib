@@ -117,7 +117,7 @@
     <ClInclude Include="events\EventSubscriber.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameStructure.h">
+    <ClInclude Include="structure\GameStructure.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="file\SettingsManager.h">
@@ -402,6 +402,33 @@
     <ClInclude Include="cppgamelib\time.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="input\IInputManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cppgamelib\utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="character\MovementAtSpeed.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="structure\VariableGameLoop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="structure\IGameLoopStrategy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="structure\FixedStepGameLoop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="structure\Profiler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="time\PeriodicTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -476,7 +503,7 @@
     <ClCompile Include="events\EventSubscriber.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameStructure.cpp">
+    <ClCompile Include="structure\GameStructure.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="file\SettingsManager.cpp">
@@ -543,9 +570,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="geometry\Line.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="character\Movement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="net\NetworkManager.cpp">
@@ -636,6 +660,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ai\BehaviorTreeBuilder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="input\IInputManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="character\MovementAtSpeed.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="structure\VariableGameLoop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="structure\FixedStepGameLoop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="structure\Profiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="time\PeriodicTimer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

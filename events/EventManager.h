@@ -50,7 +50,13 @@ namespace gamelib
 		std::queue<std::shared_ptr<Event>> primaryEventQueue; // Primary queue used for event processing 		
 		std::queue<std::shared_ptr<Event>> secondaryEventQueue; // used to hold events occurring out of processing of primary events
 		std::map<const EventId, std::vector<IEventSubscriber*>> eventSubscribers;
-		bool logEvents;
+		std::map<EventId, int> eventsDispatched {};
+		int badSubscribersDuringDispatch {};
+		int noSubscribersDuringDispatch {};
+		int dispatchCalledTimes {};
+		unsigned long elapsedTimeMs {}
+;		bool logEvents;
+		bool printStatistics;
 	};
 }
 

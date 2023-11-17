@@ -47,7 +47,6 @@ void gamelib::DrawableFrameRate::Update(const unsigned long deltaMs)
 void gamelib::DrawableFrameRate::Draw(SDL_Renderer* renderer)
 {
 	DrawableText::Draw(renderer);
-
 	const AbcdRectangle rect(*drawBounds);
 	constexpr auto intervals = 4;
 	constexpr auto ratio = 25;
@@ -66,20 +65,22 @@ void gamelib::DrawableFrameRate::Draw(SDL_Renderer* renderer)
 		SDL_RenderDrawLine(renderer, marker.X1, marker.Y1, marker.X2, marker.Y2);
 	}
 
-	for (auto sample : sampleRates)
+	for (auto& sample : sampleRates)
 	{
 		// draw framesPerSecond as a point somewhere on the widget
 		std::stringstream format;
 		
-		const auto sampleValueAtMs = std::get<1>(sample);
-		const auto sampleMs = std::get<0>(sample);
-		const auto totalSecsPassed = sampleMs / 1000;
+		const auto rate = std::get<1>(sample);
+		const auto t = std::get<0>(sample);
+		const auto totalSecsPassed = t / 1000;
 		const auto xPerSecond = rect.GetDx() + (rect.GetWidth() / (MaxTotalSampleDurationMs / 1000)) * totalSecsPassed;
 
 		const AbcdRectangle valueBounds(xPerSecond, rect.GetDy() + 25, rect.GetWidth()/2, rect.GetHeight()/2);
-		format << sampleValueAtMs;
-		DrawableText value(valueBounds, format.str(), Color);
-		const auto point = Line(xPerSecond, rect.GetDy(), xPerSecond, rect.GetDy() - (sampleValueAtMs * pixelsPerUnitValue));
+		//format << rate;
+		//DrawableText value(valueBounds, format.str(), Color);
+
+		const auto point = Line(xPerSecond,rect.GetDy() - rate, xPerSecond, rect.GetDy() - rate);
+
 		SDL_RenderDrawLine(renderer, point.X1, point.Y1, point.X2, point.Y2);
 		
 	}

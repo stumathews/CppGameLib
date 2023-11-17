@@ -429,6 +429,9 @@
     <ClInclude Include="time\PeriodicTimer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="character\StatefulMove.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -678,6 +681,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="time\PeriodicTimer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="character\StatefulMove.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

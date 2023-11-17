@@ -3,7 +3,8 @@
 using namespace std;
 namespace gamelib
 {
-	ControllerMoveEvent::ControllerMoveEvent(const gamelib::Direction dir): Event(ControllerMoveEventId)
+	ControllerMoveEvent::ControllerMoveEvent(const gamelib::Direction dir, const KeyState keyState = KeyState::Pressed):
+		Event(ControllerMoveEventId), keyState(keyState)
 	{
 		Direction = dir;
 	}

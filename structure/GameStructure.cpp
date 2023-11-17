@@ -34,25 +34,11 @@ namespace gamelib
 	GameStructure::GameStructure(std::function<void(unsigned long deltaMs)> getInputFunction)
 		: getControllerInputFunction(std::move(getInputFunction)), gameLoop(nullptr)
 	{
-		gameLoop =  make_shared<VariableGameLoop>([&](const unsigned long deltaMs)
-	                {
-	                    getControllerInputFunction(deltaMs);
-	                    NetworkManager::Get()->Listen();
-	                    EventManager::Get()->ProcessAllEvents(deltaMs);
-	                    EventManager::Get()->DispatchEventToSubscriber(make_shared<UpdateAllGameObjectsEvent>(), deltaMs);
-	                    EventManager::Get()->DispatchEventToSubscriber(make_shared<UpdateProcessesEvent>(), deltaMs);
-	                },
-	                []()
-	                {
-	                    // Time-sensitive, skip queue. Draws the current scene
-	                    EventManager::Get()->DispatchEventToSubscriber(std::make_shared<Event>(DrawCurrentSceneEventId), 0UL);
-	                });
-		
+		// We use the old variable game loop if we don't specify a specific one
+		gameLoop =  make_shared<VariableGameLoop>(
+			[&](const unsigned long deltaMs) { Update(deltaMs); },
+			[&]() { Draw(0UL);});		
 	}
-
-	
-
-
 	/// <summary>
 	/// Update & Draw until the game ends
 	/// </summary>

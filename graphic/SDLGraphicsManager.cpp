@@ -60,8 +60,13 @@ namespace gamelib
 
 		// Create the Window
 		window = CreateSdlWindow(static_cast<int>(width), static_cast<int>(height), windowTitle);	
-		windowSurface = SDL_GetWindowSurface(window);
 		WindowRenderer = GetSdlRendererFromWindow(window);
+		if(WindowRenderer == nullptr)
+		{
+			std::stringstream message;
+			message << "Could not get Window Renderer: " << SDL_GetError();
+			THROW(12, message.str(), "SDLGraphicsManager")
+		}
 		screenHeight = height;
 		screenWidth = width;
 

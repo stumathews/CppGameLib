@@ -51,7 +51,6 @@ void gamelib::DrawableFrameRate::Draw(SDL_Renderer* renderer)
 	constexpr auto intervals = 4;
 	constexpr auto ratio = 25;
 	const auto pixelsPerInterval = rect.GetHeight() / (100/ratio);
-	const auto pixelsPerUnitValue = rect.GetHeight() / 100;
 
 	// draw a line every interval
 	for(int i = 0; i < intervals;i++)

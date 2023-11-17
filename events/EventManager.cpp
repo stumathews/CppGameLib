@@ -13,7 +13,7 @@
 using namespace std;
 namespace gamelib
 {	
-	EventManager::EventManager() : logEvents(false), printStatistics(true)
+	EventManager::EventManager() : logEvents(false), printStatistics(false)
 	{
 	}
 
@@ -97,7 +97,6 @@ namespace gamelib
 	/// <param name="deltaMs">delta time</param>
 	void EventManager::DispatchEventToSubscriber(const shared_ptr<Event>& event, const unsigned long deltaMs)
 	{
-
 		// Go through each subscriber of the event and have the subscriber handle it
 		for (const auto& pSubscriber :  eventSubscribers[event->Id])
 		{
@@ -120,8 +119,7 @@ namespace gamelib
 			}
 			eventsDispatched[event->Id]++;			
 		}
-
-
+		
 		if(printStatistics)
 		{			
 			elapsedTimeMs += deltaMs;
@@ -135,7 +133,7 @@ namespace gamelib
 					str << eventId.Name << " " << count << "/s ";
 					totalPrimaryEvents += count;
 				}
-				std::cout << "|"<< totalPrimaryEvents << " events/s over " << dispatchCalledTimes << " dispatches. " << str.str() << std::endl;
+				std::cout << totalPrimaryEvents  << " events/s over " << dispatchCalledTimes << " dispatches. " << str.str() << std::endl;
 				eventsDispatched.clear();
 				elapsedTimeMs = 0;
 				noSubscribersDuringDispatch = badSubscribersDuringDispatch = dispatchCalledTimes = 0;

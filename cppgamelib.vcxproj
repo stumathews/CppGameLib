@@ -90,8 +90,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(ProjectDir);C:\tinyxml2-master;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\SDL\SDL2\lib\$(Platform);C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;C:\SDL\SDL2\lib\$(Configuration);$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\SDL\SDL2\lib\$(platform);$(LibraryPath)</LibraryPath>
     <SourcePath>$(ProjectDir);C:\tinyxml2-master;$(SourcePath)</SourcePath>
+    <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -147,6 +149,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>C:\SDL\SDL2\include;C:\SDL\SDL2_image-2.0.4\include;C:\SDL\SDL2_mixer-devel-2.0.4-VC\SDL2_mixer-2.0.4\include;C:\SDL\SDL2_ttf-2.0.15\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>

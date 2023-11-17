@@ -1,6 +1,7 @@
 #pragma once
-
+#define HAVE_WINSOCK2_H
 #ifdef HAVE_WINSOCK2_H 
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 #include <WinSock2.h>
 #include <Ws2tcpip.h>

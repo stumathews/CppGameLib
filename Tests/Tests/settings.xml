@@ -1,33 +1,35 @@
 <!-- Settings -->
 <settings>
-	<!-- Global Game Settings -->
-	<global>
-		<!-- 20 times a second = 50 milliseconds, 1 second is 20*50 = 1000 milliseconds -->
-		<setting name="tick_time_ms" type="int">20</setting>
-		<setting name="square_width" type="int">150</setting>
-		<setting name="sprite_width" type="int">50</setting>
-		<setting name="max_loops" type="int">4</setting>
-		<setting name="screen_width" type="int">640</setting>
-		<setting name="screen_height" type="int">480</setting>
-		<setting name="frames_per_row" type="int">3</setting>
-		<setting name="frames_per_column" type="int">3</setting>
-		<setting name="verbose" type="bool">false</setting>
-		<setting name="use_3d_render_manager" type="bool">false</setting>
-		<setting name="print_debugging_text" type="bool">false</setting>
-		<setting name="print_debugging_text_neighbours_only" type="bool">true</setting>
+  <!-- Global Game Settings -->
+  <global>
+    <!-- 1 update very 20 ms = 50 times a second (1000 milliseconds) -->
+    <setting name="tick_time_ms" type="int">50</setting>
+    <setting name="square_width" type="int">150</setting>
+    <setting name="sprite_width" type="int">50</setting>
+    <setting name="max_loops" type="int">4</setting>
+    <setting name="screen_width" type="int">1024</setting>
+    <setting name="screen_height" type="int">768</setting>
+    <setting name="frames_per_row" type="int">3</setting>
+    <setting name="frames_per_column" type="int">3</setting>
+    <setting name="verbose" type="bool">false</setting>
+    <setting name="use_3d_render_manager" type="bool">false</setting>
+    <setting name="print_debugging_text" type="bool">false</setting>
+    <setting name="print_debugging_text_neighbours_only" type="bool">true</setting>
 		<setting name="numPickups" type="int">20</setting>
 		<setting name="isNetworkGame" type="bool">false</setting>
 		<setting name="createAutoLevel" type="bool">false</setting>
-		<setting name="level1FileName" type="string">game\\Level1.xml</setting>
-		<setting name="level2FileName" type="string">game\\balls.xml</setting>
-		<setting name="level3FileName" type="string">game\\eight.xml</setting>
-		<setting name="level4FileName" type="string">game\\stu.xml</setting>
-	</global>
+		<setting name="level1FileName" type="string">game\\Level5.xml</setting>
+		<setting name="level2FileName" type="string">game\\Level2.xml</setting>
+    <setting name="level3FileName" type="string">game\\Level3.xml</setting>
+    <setting name="level4FileName" type="string">game\\Level4.xml</setting>
+    <setting name="level5FileName" type="string">game\\Level5.xml</setting>
+    <setting name="disableCharacters" type="bool">false</setting>
+  </global>
 
 	<gamecommands>
 		<setting name="logCommands" type="bool">false</setting>
 	</gamecommands>
-
+	
 	<networking>
 		<setting name="isGameServer" type="bool">true</setting>
 		<setting name="gameServerAddress" type="string">Surface</setting>
@@ -37,85 +39,102 @@
 		<!-- If its not TCP, we're using 'connected' udp -->
 		<setting name="isTcp" type="bool">false</setting>
 	</networking>
-
-	<!-- Maze Settings -->
-	<grid>
+      
+  <!-- Maze Settings -->
+  <grid>
 		<!-- createAutoLevel: -->
-		<setting name="rows" type="int">10</setting>
-		<setting name="cols" type="int">10</setting>
-		<setting name="removeSidesRandomly" type="bool">true</setting>
-		<setting name="nowalls" type="bool">false</setting>
-	</grid>
-
-	<room>
-		<setting name="drawHotSpot" type="bool">false</setting>
-		<setting name="drawinnerBounds" type="bool">false</setting>
-		<setting name="innerBoundsOffset" type="int">2</setting>
-		<setting name="logWallRemovals" type="bool">true</setting>
-	</room>
-
-	<pickup1>
-		<setting name="assetName" type="string">goldcoin</setting>
-	</pickup1>
-
-	<pickup2>
-		<setting name="assetName" type="string">silvercoin</setting>
-	</pickup2>
-
-	<pickup3>
-		<setting name="assetName" type="string">coppercoin</setting>
-	</pickup3>
-
-	<!-- Audio settings -->
-	<audio>
-		<setting name="invalid_move" type="string">low.wav</setting>
-		<setting name="fetched_pickup" type="string">boop.wav</setting>
-	</audio>
-
-	<!-- Player settings -->
-	<player>
-		<setting name="move_interval" type="int">1</setting>
-		<setting name="drawBounds" type="bool">false</setting>
-		<setting name="hotspotSize" type="int">2</setting>
-		<setting name="drawHotspot" type="bool">false</setting>
-		<setting name="hideSprite" type="bool">false</setting>
-		<setting name="box_width" type="int">10</setting>
-		<setting name="r" type="int">255</setting>
-		<setting name="g" type="int">0</setting>
-		<setting name="b" type="int">0</setting>
-		<setting name="a" type="int">0</setting>
-		<setting name="verbose" type="bool">false</setting>
-		<setting name="ignoreRestrictions" type="bool">false</setting>
-		<setting name="moveStrategy" type="string">edge</setting>
-		<!-- 'snap' or 'edge' strategy -->
-		<setting name="debugMovement" type="bool">false</setting>
-		<setting name="moveDurationMs" type="int">200</setting>
-		<setting name="maxPixelsToMove" type="int">10</setting>
-	</player>
+    <setting name="rows" type="int">10</setting>
+    <setting name="cols" type="int">10</setting>
+    <setting name="removeSidesRandomly" type="bool">true</setting>
+    <setting name="nowalls" type="bool">false</setting>
+  </grid>
+  
+  <room>
+    <setting name="drawHotSpot" type="bool">false</setting>
+    <setting name="drawinnerBounds" type="bool">false</setting>	
+    <setting name="innerBoundsOffset" type="int">2</setting>	
+    <setting name="logWallRemovals" type="bool">true</setting>
+    <setting name="trackEnemies" type="bool">true</setting>
+  </room>
+  
+  <pickup1>
+    <setting name="assetName" type="string">goldcoin</setting>
+  </pickup1>
+  
+  <pickup2>
+    <setting name="assetName" type="string">silvercoin</setting>
+  </pickup2>
+  
+  <pickup3>
+    <setting name="assetName" type="string">coppercoin</setting>
+  </pickup3>
+    
+  <!-- Audio settings -->
+  <audio>
+    <setting name="invalid_move" type="string">low.wav</setting>
+    <setting name="fetched_pickup" type="string">boop.wav</setting>
+		<setting name="win_music" type="string">win.wav</setting>
+  </audio>
+  
+  <!-- Player settings -->
+  <player>
+    <!--<setting name="move_interval" type="int">1</setting>-->
+    <setting name="drawBounds" type="bool">false</setting>
+    <setting name="hotspotSize" type="int">5</setting>
+    <setting name="drawHotspot" type="bool">false</setting>
+    <setting name="hideSprite" type="bool">false</setting>
+    <setting name="box_width" type="int">10</setting>
+    <setting name="r" type="int">255</setting>
+    <setting name="g" type="int">0</setting>
+    <setting name="b" type="int">0</setting>
+    <setting name="a" type="int">0</setting> 
+    <setting name="verbose" type="bool">true</setting>
+    <setting name="ignoreRestrictions" type="bool">false</setting>
+		<setting name="debugMovement" type="bool">true</setting>
+		<setting name="moveDurationMs" type="int">1</setting>
+		<setting name="pixelsToMove" type="int">1</setting>
+    <setting name="speed" type="int" description="move speed">3</setting>
+    <setting name="moveRateMs" type="int" description="Move every n ms">1</setting>
+  </player>
 
 	<sprite>
 		<setting name="debug" type="bool">false</setting>
 	</sprite>
+	
+  <!-- Room fill settings-->
+  <room_fill>
+    <setting name="r" type="int">255</setting>
+    <setting name="g" type="int">255</setting>
+    <setting name="b" type="int">0</setting>
+    <setting name="a" type="int">0</setting>
+    <setting name="enable" type="bool" description="If the room should be filled">false</setting>
+  </room_fill>
+  
+  <!-- Pickup settings -->
+  <pickup>
+    <setting name="r" type="int">0</setting>
+    <setting name="g" type="int">255</setting>
+    <setting name="b" type="int">0</setting>
+    <setting name="a" type="int">0</setting>		
+  </pickup>
 
-	<EventManager>
-		<setting name="logEvents" type="bool">false</setting>
-	</EventManager>
+  <gameStructure>
+	  <setting name="printFrameRate" type="bool" description="printFrameRate">false</setting>
+	  <setting name="sampleInput" type="bool" description="sampleInput">true</setting>
+	  <setting name="sampleNetwork" type="bool" description="sampleNetwork">false</setting>
+  </gameStructure>
 
-	<!-- Room fill settings-->
-	<room_fill>
-		<setting name="r" type="int">255</setting>
-		<setting name="g" type="int">255</setting>
-		<setting name="b" type="int">0</setting>
-		<setting name="a" type="int">0</setting>
-		<setting name="enable" type="bool" description="If the room should be filled">false</setting>
-	</room_fill>
+  <eventManager>
+	  <setting name="logEvents" type="bool">false</setting>
+	  <setting name="sampleNetwork" type="bool" description="sampleNetwork">false</setting>
+  </eventManager>
 
-	<!-- Pickup settings -->
-	<pickup>
-		<setting name="r" type="int">0</setting>
-		<setting name="g" type="int">255</setting>
-		<setting name="b" type="int">0</setting>
-		<setting name="a" type="int">0</setting>
-	</pickup>
+  <enemy>
+		<setting name="emitMoveEvents" type="bool" description="Should emit EnemyMovedEvent or not">true</setting>
+		<setting name="moveAtSpeed" type="bool" description="Use Speed to move">true</setting>
+		<setting name="speed" type="int" description="move speed">1</setting>
+	  <setting name="moveRateMs" type="int" description="Move every n ms">1</setting>
+	  <setting name="animate" type="bool" description="animate character by changing key frames">true</setting>
+  </enemy>
 
 </settings>

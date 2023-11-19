@@ -55,7 +55,7 @@ namespace gamelib
 			message << "SDL_image could not initialize:" << SDL_GetError();
 
 			// TODO: Fix
-			THROW(12, message.str(), "SDLGraphicsManager")
+			THROW(12, message.str(), "SDLGraphicsManager");
 		}
 
 		// Create the Window
@@ -65,7 +65,7 @@ namespace gamelib
 		{
 			std::stringstream message;
 			message << "Could not get Window Renderer: " << SDL_GetError();
-			THROW(12, message.str(), "SDLGraphicsManager")
+			THROW(12, message.str(), "SDLGraphicsManager");
 		}
 		screenHeight = height;
 		screenWidth = width;

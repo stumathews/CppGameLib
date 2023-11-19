@@ -23,7 +23,7 @@ namespace gamelib
 	};
 
 
-#define THROW(ErrorNum, ErrorDesc, SubsystemDesc) throw gamelib::EngineException(ErrorNum, ErrorDesc, SubsystemDesc,  __FILE__, __LINE__);
+#define THROW(ErrorNum, ErrorDesc, SubsystemDesc) throw gamelib::EngineException(ErrorNum, ErrorDesc, SubsystemDesc,  __FILE__, __LINE__)
 #endif
 }
 

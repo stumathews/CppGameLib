@@ -146,20 +146,20 @@ namespace gamelib
 							const auto message = string("No asset manager defined for ") + ptrAssetType;
 							Logger::Get()->LogThis(message);
 							THROW(static_cast<int>(ResourceManager::ErrorNumbers::NoAssetManagerForType), message,
-							      this->GetSubscriberName())
+							      this->GetSubscriberName());
 						}
 					}
 				}
 			}
 			else
 			{
-				THROW(12, "No Assets found", GetSubscriberName())
+				THROW(12, "No Assets found", GetSubscriberName());
 			}
 		}
 		else
 		{
 			THROW(static_cast<int>(ResourceManager::ErrorNumbers::FailedToLoadResourceFile),
-			      "Failed to load resources file", this->GetSubscriberName())
+			      "Failed to load resources file", this->GetSubscriberName());
 		}
 
 		LogMessage(to_string(countResources) + string(" assets available in resource manager."));
@@ -195,7 +195,7 @@ namespace gamelib
 		else
 		{
 			const auto message = string("Unknown resource type:") + type;
-			THROW(static_cast<int>(ResourceManager::ErrorNumbers::UnknownResourceType), message, GetSubscriberName())
+			THROW(static_cast<int>(ResourceManager::ErrorNumbers::UnknownResourceType), message, GetSubscriberName());
 		}
 
 		return asset;

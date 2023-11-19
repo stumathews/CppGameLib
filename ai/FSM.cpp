@@ -12,7 +12,7 @@ namespace gamelib
 
 		if (InitialState == nullptr)
 		{
-			THROW(12, "No valid initial state could be determined", "Finite State Machine")
+			THROW(12, "No valid initial state could be determined", "Finite State Machine");
 		}
 
 		// Look if we need to transition from active/current state

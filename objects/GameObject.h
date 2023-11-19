@@ -14,8 +14,7 @@ namespace gamelib
 	enum class GameObjectType
 	{
 		Undefined,
-		GameDefined,
-		// Game Object is custom made and has no special handling in the library
+		GameDefined, // Game Object is custom made and has no special handling in the library
 		AnimatedSprite,
 		StaticSprite,
 		Pickup,

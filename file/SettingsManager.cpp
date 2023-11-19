@@ -134,7 +134,7 @@ namespace gamelib
 		}
 		catch (exception&)
 		{
-			THROW(12, "Could not find setting [" + section + "][" + name + "]", "Settings")
+			THROW(12, "Could not find setting [" + section + "][" + name + "]", "Settings");
 		}
 	}
 

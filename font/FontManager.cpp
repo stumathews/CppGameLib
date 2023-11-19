@@ -28,7 +28,7 @@ namespace gamelib
 		if (asset->AssetType != Asset::AssetType::Font)
 		{
 			// TODO: Fix
-			THROW(97, "Cannot cast a generic asset that is not an font asset to an font asset", "Font Manager")
+			THROW(97, "Cannot cast a generic asset that is not an font asset to an font asset", "Font Manager");
 		}
 
 		return AsAsset<FontAsset>(asset);

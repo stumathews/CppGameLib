@@ -54,7 +54,7 @@ namespace gamelib
 
 	void EventManager::RaiseEvent(const shared_ptr<Event> event, IEventSubscriber* you)  // NOLINT(performance-unnecessary-value-param)
 	{	
-		if(event == nullptr) { THROW(0, "Can't raise a null or empty event", "EventManager")}
+		if(event == nullptr) { THROW(0, "Can't raise a null or empty event", "EventManager");}
 		if(!you) { Logger::Get()->LogThis("Invalid sender", true); return; }
 		
 		event->Origin = you->GetSubscriberName();

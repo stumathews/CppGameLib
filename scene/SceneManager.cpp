@@ -136,7 +136,7 @@ namespace gamelib
 		} 
 		catch(exception &e)
 		{
-			THROW(13, string("Cloud not load scene file: ") + string(e.what()), GetSubscriberName())
+			THROW(13, string("Cloud not load scene file: ") + string(e.what()), GetSubscriberName());
 		}		
 	}
 
@@ -158,7 +158,7 @@ namespace gamelib
 			if (layer->Name() == name) { return layer; }
 		}
 		
-		THROW(12, string("layer not found:" + name), GetSubscriberName())
+		THROW(12, string("layer not found:" + name), GetSubscriberName());
 	}
 
 	void SceneManager::RemoveLayer(const string& name) 
@@ -301,7 +301,7 @@ namespace gamelib
 
 	std::shared_ptr<GameObject> SceneManager::GetGameObjectFrom(const std::shared_ptr<Event>& event) const
 	{
-		if (event->Id.PrimaryId != AddGameObjectToCurrentSceneEventId.PrimaryId) { THROW(1, "Cannot extract game object from event", "SceneManager") }
+		if (event->Id.PrimaryId != AddGameObjectToCurrentSceneEventId.PrimaryId) { THROW(1, "Cannot extract game object from event", "SceneManager"); }
 
 		return dynamic_pointer_cast<AddGameObjectToCurrentSceneEvent>(event)->GetGameObject();
 	}

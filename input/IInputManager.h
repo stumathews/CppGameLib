@@ -1,8 +1,6 @@
 #pragma once
 #include <list>
 
-#include "events/Event.h"
-
 namespace gamelib
 {
 	class IInputManager
@@ -16,7 +14,6 @@ namespace gamelib
 		IInputManager& operator=(const IInputManager&& other) = delete;
 
 		virtual void Sample(unsigned long deltaMs) = 0;
-		virtual int GetSampleRatePerSec() = 0;
 	};
 }
 

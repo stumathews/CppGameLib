@@ -19,7 +19,7 @@ namespace gamelib
 
 		Direction GetDirection() override { return direction; }
 		unsigned short GetPixelsToMove() override { return static_cast<unsigned short>(totalTargetMovePixels); }
-		Coordinate<int> GetPosition(Coordinate<int> currentPosition) override { THROW(2, "GetPosition Not Supported in Movement class", "Movement")}
+		Coordinate<int> GetPosition(Coordinate<int> currentPosition) override { THROW(2, "GetPosition Not Supported in Movement class", "Movement");}
 		bool SupportsPositionalMovement() override { return false; }
 
 	private:	

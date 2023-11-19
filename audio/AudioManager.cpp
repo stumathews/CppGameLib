@@ -75,7 +75,7 @@ namespace gamelib
 		if (asset->AssetType != Asset::AssetType::Audio)
 		{
 			// TODO: Fix
-			THROW(97, "Cannot cast a generic asset that is not an audio asset to an audio asset", "Audio Manager")
+			THROW(97, "Cannot cast a generic asset that is not an audio asset to an audio asset", "Audio Manager");
 		}
 
 		return AsAsset<AudioAsset>(asset);

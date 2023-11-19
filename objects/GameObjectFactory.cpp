@@ -94,7 +94,7 @@ namespace gamelib
 	}
 
 	shared_ptr<AnimatedSprite> GameObjectFactory::BuildSprite(const string& name, const string& type, const std::shared_ptr<Asset>
-	                                                          & asset, const Coordinate<int>& position, const bool isVisible) const
+	                                                          & asset, const Coordinate<int>& position, const bool isVisible) 
 	{
 		const auto spriteAsset = dynamic_pointer_cast<SpriteAsset>(asset);
 		const auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);

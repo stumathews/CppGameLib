@@ -104,21 +104,24 @@ namespace gamelib
 			{
 				noSubscribersDuringDispatch++;
 				return;
-			} 
+			}
+
 			if (!pSubscriber)
 			{
 				badSubscribersDuringDispatch++;
 				continue;
-			}
-					
+			}					
 			
 			// allow subscriber to process the event
 			for(const auto &secondaryEvent : pSubscriber->HandleEvent(event, deltaMs))
 			{
 				AddToSecondaryEventQueue(secondaryEvent, pSubscriber);
 			}
+
 			eventsDispatched[event->Id]++;			
-		}
+		}	
+
+		event->Processed = true;
 		
 		if(printStatistics)
 		{			
@@ -139,8 +142,6 @@ namespace gamelib
 				noSubscribersDuringDispatch = badSubscribersDuringDispatch = dispatchCalledTimes = 0;
 			}
  		}
-
-		event->Processed = true;
 	}
 
 	void EventManager::AddToSecondaryEventQueue(const std::shared_ptr<Event>& secondaryEvent, IEventSubscriber* originSubscriber)
@@ -163,8 +164,7 @@ namespace gamelib
 			for(const auto &secondaryEvent : pSubscriber->HandleEvent(event))
 			{
 				AddToSecondaryEventQueue(secondaryEvent, pSubscriber);
-			}	
-			
+			}				
 		}
 		event->Processed = true;
 	}
@@ -195,30 +195,24 @@ namespace gamelib
 			secondaryEventQueue.pop();
 		}
 	}
-
-
-
+	
 	/// <summary>
 	/// Handles events that the event manager subscribes to itself
 	/// </summary>
-	/// <param name="evt"></param>
-	/// <param name="deltaMs"></param>
-	/// <returns></returns>
 	std::vector<std::shared_ptr<Event>> EventManager::HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs)
 	{
 		// Does not handle any events in the event queue itself
-		std::vector<std::shared_ptr<Event>> generated_events;
-		return generated_events;
+		return {};
 	}
 
 	bool IsSameSubscriber(IEventSubscriber* candidate, const int subscriptionId) 
 	{
 		if(candidate)
 		{
-			const auto found_match = candidate == nullptr 
+			const auto foundMatch = candidate == nullptr 
 				                         ? true 
 				                         : candidate->GetSubscriberId() == subscriptionId;
-			return found_match;
+			return foundMatch;
 		}
 		return false;
 	};
@@ -227,7 +221,6 @@ namespace gamelib
 	{
 		for(auto & [eventId, subscribers] : eventSubscribers )
 		{
-
 			// We only remove subscriptions for the specific event type provided
 			if(eventId != id) { continue; }
 
@@ -258,4 +251,3 @@ namespace gamelib
 		}
 	}
 }
-

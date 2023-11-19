@@ -124,7 +124,7 @@ namespace gamelib
 			case Direction::Right: return "right";
 			case Direction::Down: return "down";
 			case Direction::Left: return "left";
-			case Direction::None: THROW(0, "Invalid Direction", "Player");
+			case Direction::None: return "none";
 			default: THROW(0, "Invalid Direction", "Player");  // NOLINT(clang-diagnostic-covered-switch-default)
 		}
 	}

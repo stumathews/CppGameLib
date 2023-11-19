@@ -31,4 +31,17 @@ namespace gamelib
 	{
 		return std::dynamic_pointer_cast<T>(from);
 	}
+
+	inline SDL_Rect JoinRects(const bool vertically, std::initializer_list<SDL_Rect> rects)
+	{
+		SDL_Rect result {};
+		result.x = rects.begin()->x;
+		result.y = rects.begin()->y;
+		for(const auto& [x, y, w, h] : rects)
+		{			
+			!vertically ? result.w += w : result.w = w;
+			vertically ? result.h += h : result.h = h;	
+		}
+		return result;
+	};
 }

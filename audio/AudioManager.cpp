@@ -16,6 +16,7 @@ namespace gamelib
 			PlaySdlMusic(asset->AsMusic());
 			return;
 		}
+
 		if(asset->Type == "fx")
 		{
 			PlaySdlSound(asset->AsSoundEffect());
@@ -64,11 +65,6 @@ namespace gamelib
 		Mix_PlayMusic(music, -1);
 	}
 
-	/// <summary>
-	/// Cast to Audio asset
-	/// </summary>
-	/// <param name="asset"></param>
-	/// <returns></returns>
 	shared_ptr<AudioAsset> AudioManager::ToAudioAsset(const shared_ptr<Asset>& asset)
 	{	
 		if (asset->AssetType != Asset::AssetType::Audio)

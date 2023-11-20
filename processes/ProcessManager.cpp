@@ -1,5 +1,7 @@
 #include <processes/ProcessManager.h>
+
 using namespace std;
+
 namespace gamelib
 {
 	unsigned int ProcessManager::UpdateProcesses(const unsigned long deltaMs)

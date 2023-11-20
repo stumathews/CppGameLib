@@ -16,7 +16,7 @@ namespace gamelib
 		Direction direction;
 		unsigned deltaMs;
 	private:
-		float movementStepPerFrame;
+		float movementStepPerFrame{};
 	};
 }
 

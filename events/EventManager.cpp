@@ -11,6 +11,7 @@
 #include "UpdateAllGameObjectsEvent.h"
 
 using namespace std;
+
 namespace gamelib
 {	
 	EventManager::EventManager() : logEvents(false), printStatistics(false)
@@ -52,7 +53,7 @@ namespace gamelib
 		return true;
 	}
 
-	void EventManager::RaiseEvent(const shared_ptr<Event> event, IEventSubscriber* you)  // NOLINT(performance-unnecessary-value-param)
+	void EventManager::RaiseEvent(const shared_ptr<Event>& event, IEventSubscriber* you)
 	{	
 		if(event == nullptr) { THROW(0, "Can't raise a null or empty event", "EventManager");}
 		if(!you) { Logger::Get()->LogThis("Invalid sender", true); return; }

@@ -22,7 +22,7 @@ void gamelib::PeriodicTimer::Update(const unsigned long deltaMs)
 	ready = timer.IsElapsed;
 }
 
-void gamelib::PeriodicTimer::SetFrequency(int everyMs)
+void gamelib::PeriodicTimer::SetFrequency(const int everyMs)
 {
 	this->everyMs = everyMs;
 }

@@ -20,7 +20,7 @@ namespace gamelib
 		std::shared_ptr<Asset> GetAssetInfo(const std::string& name);
 		std::shared_ptr<Asset> GetAssetInfo(int uuid);
 		[[nodiscard]] int GetCountResources() const { return countResources; }
-		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> theEvent, unsigned long deltaMs) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> event, unsigned long deltaMs) override;
 		void Unload() const;
 		
 		bool Initialize(const std::string& filePath);

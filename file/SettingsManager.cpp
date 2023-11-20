@@ -71,30 +71,31 @@ namespace gamelib
 					continue;
 
 				// Loop through each setting section eg. 'global' or 'player' etc.
-				const auto* section_name = section->Value();
+				const auto* sectionName = section->Value();
 				for(auto* setting = section->FirstChild(); setting; setting = setting->NextSibling())
 				{
 					if(setting->ToComment())
 					continue;
 
 					// Loop through the settings attributes i.e name, type etc.
-					auto setting_element = setting->ToElement();
-					string setting_name;
-					string setting_value;
-					string setting_type;
-					for(const auto* attributes = setting_element->FirstAttribute(); attributes; attributes = attributes->Next()) // // <layer name="layer0" posx="0" posy="0" visible="true"
+					auto settingElement = setting->ToElement();
+					string settingName;
+					string settingValue;
+					string settingType;
+
+					for(const auto* attributes = settingElement->FirstAttribute(); attributes; attributes = attributes->Next()) // // <layer name="layer0" posx="0" posy="0" visible="true"
 					{
 						const string key(attributes->Name());
 						const string value(attributes->Value());						
 
 						if(key == "name")
-							setting_name = value;
+							settingName = value;
 						if(key == "type")
-							setting_type = value;
+							settingType = value;
 					}
 
 					// Persist the setting into the SettingsManager
-					AddSetting(section_name, setting_name,  SettingDetail(setting_name, setting_element->GetText(), setting_type));
+					AddSetting(sectionName, settingName,  SettingDetail(settingName, settingElement->GetText(), settingType));
 				}
 			}
 		}

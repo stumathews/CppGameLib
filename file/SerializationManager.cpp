@@ -8,6 +8,8 @@
 #include <events/PlayerMovedEvent.h>
 #include <events/StartNetworkLevelEvent.h>
 
+#include "utils/Utils.h"
+
 using namespace json11;
 
 namespace gamelib
@@ -64,12 +66,12 @@ namespace gamelib
 		
 		if(messageHeader.MessageType == StartNetworkLevelEventId.Name)
 		{
-			return std::dynamic_pointer_cast<Event>(eventSerialization->DeserializeStartNetworkLevel(serializedMessage));
+			return To<Event>(eventSerialization->DeserializeStartNetworkLevel(serializedMessage));
 		}
 
 		if(messageHeader.MessageType == PlayerMovedEventTypeEventId.Name)
 		{
-			return std::dynamic_pointer_cast<Event>(eventSerialization->DeserializePlayerMovedEvent(serializedMessage));
+			return To<Event>(eventSerialization->DeserializePlayerMovedEvent(serializedMessage));
 		}
 		
 		return event;
@@ -78,21 +80,21 @@ namespace gamelib
 	std::string SerializationManager::CreatePlayerMovedEventMessage(const std::shared_ptr<Event>& event, const std::string
 	                                                                & target) const
 	{
-		const auto playerMovedEvent = std::dynamic_pointer_cast<PlayerMovedEvent>(event);
+		const auto playerMovedEvent = To<PlayerMovedEvent>(event);
 		return eventSerialization->SerializePlayerMovedEvent(playerMovedEvent, target);
 	}
 
 	std::string SerializationManager::CreateControllerMoveEventMessage(const std::shared_ptr<Event>& evt, const std::string
 	                                                                   & target) const
 	{
-		const auto controllerMoveEvent = std::dynamic_pointer_cast<ControllerMoveEvent>(evt);
+		const auto controllerMoveEvent = To<ControllerMoveEvent>(evt);
 		return eventSerialization->SerializeControllerMoveEvent(controllerMoveEvent, target);
 	}
 
 	std::string SerializationManager::CreateStartNetworkLevelMessage(const std::shared_ptr<Event>& evt, const std::string
 	                                                                 & target) const
 	{
-		const auto startNetworkLevelEvent = std::dynamic_pointer_cast<StartNetworkLevelEvent>(evt);
+		const auto startNetworkLevelEvent = To<StartNetworkLevelEvent>(evt);
 		return eventSerialization->SerializeStartNetworkLevelEvent(startNetworkLevelEvent, target);
 	}
 		

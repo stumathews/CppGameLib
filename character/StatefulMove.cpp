@@ -1,4 +1,5 @@
 #include "StatefulMove.h"
+
 namespace gamelib
 {
 	Coordinate<int> StatefulMove::GetPosition(const Coordinate<int> currentPosition)
@@ -19,7 +20,8 @@ namespace gamelib
 		if(moveRight)
 		{
 			newPosition.SetX(currentPosition.GetX() + moveRight);
-		}else
+		}
+		else
 		{
 			newPosition.SetX(currentPosition.GetX() - moveLeft);
 		}
@@ -27,7 +29,8 @@ namespace gamelib
 		if(moveUp)
 		{
 			newPosition.SetY(currentPosition.GetY() - moveUp);
-		}else
+		}
+		else
 		{
 			newPosition.SetY(currentPosition.GetY() + moveDown);	
 		}
@@ -36,7 +39,7 @@ namespace gamelib
 	}
 
 	StatefulMove::StatefulMove(const int speed, 
-		const std::map<Direction, ControllerMoveEvent::KeyState>& movementAcceleration,
+		const std::map<Direction, ControllerMoveEvent::KeyState>& movementAcceleration,  // NOLINT(modernize-pass-by-value)
 		const unsigned long deltaMs): movementAcceleration(movementAcceleration), speed(speed), deltaMs(deltaMs)
 	{
 	}

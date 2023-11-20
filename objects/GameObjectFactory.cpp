@@ -42,17 +42,19 @@ namespace gamelib
 	}
 
 
-	void GameObjectFactory::GetAssetForResourceIdParse(std::string& detail_value, std::shared_ptr<Asset>& resource)
+	void GameObjectFactory::GetAssetForResourceIdParse(const std::string& detailValue, std::shared_ptr<Asset>& resource)
 	{
 
-		const auto* const resourceIdString = detail_value.c_str();
+		const auto* const resourceIdString = detailValue.c_str();
 		const int resourceId = static_cast<int>(atoi(resourceIdString));
 		const auto asset = ResourceManager::Get()->GetAssetInfo(resourceId);
+
 		if (asset == nullptr) 
 		{
 			throw exception("Resource manager could not determine the asset");
 		}
-		ThrowCouldNotFindAssetException(asset, detail_value);
+
+		ThrowCouldNotFindAssetException(asset, detailValue);
 
 		if (!asset->Type._Equal("graphic")) { throw exception("Cannot load non graphic asset yet..."); }
 
@@ -98,6 +100,7 @@ namespace gamelib
 		const auto spriteAsset = dynamic_pointer_cast<SpriteAsset>(asset);
 		const auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
 		auto sprite = AnimatedSprite::Create(position, spriteAsset);
+
 		SetupCommonSprite(sprite, asset, graphicAsset, isVisible);
 
 		sprite->KeyFrames = spriteAsset->KeyFrames;
@@ -113,14 +116,6 @@ namespace gamelib
 		sprite->SetGraphic(graphicAsset);
 		sprite->LoadSettings();
 		sprite->SupportsColourKey(graphicAsset->GetColourKey().IsSet());
-		//sprite->IsVisible = isVisible;
-
-		//// Tell the render what colour it should consider as transparent i.e ignore drawing
-		//if (sprite->HasColourKey())
-		//{
-		//	sprite->SetColourKey(graphicAsset->GetColourKey().Red, graphicAsset->GetColourKey().Green,
-		//	                      graphicAsset->GetColourKey().Blue);
-		//}
 	}
 
 	void GameObjectFactory::OnBlueParse(uint& blue, const std::string& detailValue) const { blue = stoi(detailValue); }

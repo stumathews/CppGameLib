@@ -1,11 +1,11 @@
 #include "DrawableGameObject.h"
 #include <SDL.h>
 #include <geometry/Coordinate.h>
+
 using namespace std;
 
 namespace gamelib
-{
-	
+{	
 	DrawableGameObject::DrawableGameObject(const bool isVisible)
 		: GameObject(isVisible)
 	{
@@ -68,7 +68,6 @@ namespace gamelib
 			return;
 		}
 
-		// We can draw the graphic resource if we have one however 
 		if (HasGraphic())
 		{
 			DrawGraphic(renderer);

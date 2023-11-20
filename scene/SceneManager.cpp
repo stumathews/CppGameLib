@@ -12,6 +12,7 @@
 #include "events/UpdateAllGameObjectsEvent.h"
 #include "objects/GameObjectFactory.h"
 #include "file/SettingsManager.h"
+#include "utils/Utils.h"
 
 using namespace std;
 
@@ -21,15 +22,11 @@ namespace gamelib
 	/// Create a Scene Manager.
 	/// <remarks>A scene is a collection of objects. A scene is loaded from a file</remarks>
 	/// </summary>
-	SceneManager::SceneManager() { }
+	SceneManager::SceneManager() = default;
 	SceneManager* SceneManager::Get() { if (instance == nullptr) { instance = new SceneManager(); } return instance; }
 	SceneManager::~SceneManager() { instance = nullptr; }
 		
 	void SceneManager::AddGameObjectToScene(const shared_ptr<Event>& event) const { layers.back()->Objects.push_back(GetGameObjectFrom(event)); }
-	void SceneManager::SortLayers() 
-	{ 
-		layers.sort([=](const shared_ptr<Layer>& rhs, const shared_ptr<Layer>& lhs) { return lhs->Zorder < rhs->Zorder; });
-	}
 	void SceneManager::Update() { }
 	void SceneManager::SetSceneFolder(const string& inSceneFolder) { this->sceneFolder = inSceneFolder; }
 	void SceneManager::OnVisibleParse(const shared_ptr<Layer>& layer, const string& value) { layer->Visible = (value == "true") ? true : false; }
@@ -40,6 +37,10 @@ namespace gamelib
 	bool SceneManager::CompareLayerOrder(const shared_ptr<Layer>& rhs, const shared_ptr<Layer>& lhs) { return lhs->Zorder < rhs->Zorder; }
 	list<shared_ptr<Layer>> SceneManager::GetLayers() const { return layers; }
 	string SceneManager::GetSubscriberName() { return "SceneManager"; }
+	void SceneManager::SortLayers() 
+	{ 
+		layers.sort([=](const shared_ptr<Layer>& rhs, const shared_ptr<Layer>& lhs) { return lhs->Zorder < rhs->Zorder; });
+	}
 
 	bool SceneManager::Initialize(const string sceneFolder)
 	{
@@ -64,20 +65,14 @@ namespace gamelib
 		vector<shared_ptr<Event>> secondaryEvents;
 
 		// ReSharper disable once CppDefaultCaseNotHandledInSwitchStatement
-		if(event->Id.PrimaryId == DrawCurrentSceneEventId.PrimaryId)
-		{
-			DrawScene();
-		}
+		if(event->Id.PrimaryId == DrawCurrentSceneEventId.PrimaryId) { DrawScene(); }
 		if(event->Id.PrimaryId == LevelChangedEventTypeEventId.PrimaryId) { LoadNewScene(event); }
-		if(event->Id.PrimaryId == UpdateAllGameObjectsEventTypeEventId.PrimaryId)
-		{
-			UpdateAllObjects(deltaMs);
-		}
+		if(event->Id.PrimaryId == UpdateAllGameObjectsEventTypeEventId.PrimaryId) { UpdateAllObjects(deltaMs); }
 		if(event->Id.PrimaryId == AddGameObjectToCurrentSceneEventId.PrimaryId) { AddGameObjectToScene(event);}
 		if(event->Id.PrimaryId == GameObjectTypeEventId.PrimaryId) { OnGameObjectEventReceived(event); }
 		if(event->Id.PrimaryId == SceneLoadedEventId.PrimaryId) { OnSceneLoaded(event);}
 		
-		// We dont generate any events yet;
+		// We don't generate any events yet;
 		return secondaryEvents;
 	}
 
@@ -91,7 +86,7 @@ namespace gamelib
 
 	void SceneManager::OnGameObjectEventReceived(const shared_ptr<Event>& event)
 	{
-		const auto gameObjectEvent = dynamic_pointer_cast<GameObjectEvent>(event);
+		const auto gameObjectEvent = To<GameObjectEvent>(event);
 
 		if (gameObjectEvent->Context == GameObjectEventContext::Remove)
 		{
@@ -117,7 +112,7 @@ namespace gamelib
 	void SceneManager::LoadNewScene(const shared_ptr<Event>& event)
 	{
 		string sceneFileName;		
-		const auto scene = dynamic_pointer_cast<SceneChangedEvent>(event)->SceneId;
+		const auto scene = To<SceneChangedEvent>(event)->SceneId;
 
 		switch(scene)
 		{
@@ -139,9 +134,7 @@ namespace gamelib
 			THROW(13, string("Cloud not load scene file: ") + string(e.what()), GetSubscriberName());
 		}		
 	}
-
-
-
+	
 	shared_ptr<Layer> SceneManager::AddLayer(const string& name)
 	{
 		auto layer = std::make_shared<Layer>();
@@ -241,12 +234,13 @@ namespace gamelib
 			{
 				for(auto layerNode = scene->FirstChild(); layerNode; layerNode = layerNode->NextSibling()) //  <layer ...>
 				{				
+					// ReSharper disable once CppTooWideScope
 					auto layerElement = layerNode->ToElement();
 					if(layerElement) 
 					{
 						// build up a layer object from scene file
-						shared_ptr<Layer> currentLayer = std::make_shared<Layer>();
-						currentLayer->Zorder = layers.size();					
+						auto currentLayer = std::make_shared<Layer>();
+						currentLayer->Zorder = static_cast<unsigned>(layers.size());					
 
 						// Loop through layer attributes
 						for(auto layerAttributes = layerElement->FirstAttribute(); layerAttributes; layerAttributes = layerAttributes->Next()) // // <layer name="layer0" posx="0" posy="0" visible="true"

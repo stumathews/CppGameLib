@@ -23,7 +23,7 @@ namespace gamelib
 		void Unsubscribe(int subscriptionId);
 		void Reset(); // Clears subscribers, primary and secondary queues		
 		void ClearSubscribers();
-		void RaiseEvent(std::shared_ptr<Event> event, IEventSubscriber* you);
+		void RaiseEvent(const std::shared_ptr<Event>& event, IEventSubscriber* you);
 		void RaiseEventWithNoLogging(const std::shared_ptr<Event>& event);
 		void SubscribeToEvent(const EventId& eventId, IEventSubscriber* pYou);
 		void DispatchEventToSubscriber(const std::shared_ptr<Event>& event, unsigned long deltaMs);

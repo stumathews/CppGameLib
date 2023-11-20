@@ -1,6 +1,5 @@
 #include "EventSubscriber.h"
 #include <common/Common.h>
-
 #include "EventManager.h"
 
 int gamelib::EventSubscriber::GetSubscriberId()

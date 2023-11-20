@@ -54,7 +54,7 @@ namespace gamelib
 		void OnPosXParse(uint& x, const std::string& detailValue) const;
 		static void OnNameParse(std::string& x, const std::string& detailValue);
 		static void OnTypeParse(std::string& x, const std::string& detailValue);
-		static void GetAssetForResourceIdParse(std::string& detail_value, std::shared_ptr<Asset>& resource);
+		static void GetAssetForResourceIdParse(const std::string& detailValue, std::shared_ptr<Asset>& resource);
 
 		[[nodiscard]] std::shared_ptr<GameObject> InitializeGameObject(const std::string& name, const std::string& type, Coordinate<int> position, bool IsVisible,
 		                                                               const std::shared_ptr<Asset>& asset) const;

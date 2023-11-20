@@ -1,4 +1,5 @@
 #include "SpriteAsset.h"
+
 namespace gamelib
 {
 	SpriteAsset::SpriteAsset(const int inUid, const std::string& inName, const std::string& inPath,

@@ -3,7 +3,7 @@
 
 namespace gamelib
 {
-	void FSM::Update(unsigned long deltaMs)
+	void FSM::Update(const unsigned long deltaMs)
 	{
 		if (ActiveState == nullptr)
 		{

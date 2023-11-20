@@ -1,5 +1,5 @@
 #include "DrawableFrameRate.h"
-#include <graphic\RectDebugging.h>
+#include <graphic/RectDebugging.h>
 #include <geometry/Line.h>
 #include <SDL.h>
 
@@ -12,8 +12,8 @@ gamelib::DrawableFrameRate::DrawableFrameRate(SDL_Rect* bounds)
 void gamelib::DrawableFrameRate::Update(const unsigned long deltaMs) 
 {	
 	accumulatedUpdateTime += deltaMs;
-	currentSampleTimeMs += deltaMs;
-	accumulatedSampleWindowTime += deltaMs;
+	currentSampleTimeMs += static_cast<int>(deltaMs);
+	accumulatedSampleWindowTime += static_cast<int>(deltaMs);
 
 	if (accumulatedUpdateTime <= 1000)
 	{
@@ -36,7 +36,7 @@ void gamelib::DrawableFrameRate::Update(const unsigned long deltaMs)
 		sampleRates.emplace_back(accumulatedSampleWindowTime,framesPerSecond);
 	}
 
-	if(accumulatedSampleWindowTime > MaxTotalSampleDurationMs)
+	if(accumulatedSampleWindowTime > maxTotalSampleDurationMs)
 	{
 		accumulatedSampleWindowTime = 0;
 		sampleRates.clear();
@@ -71,22 +71,14 @@ void gamelib::DrawableFrameRate::Draw(SDL_Renderer* renderer)
 		const auto rate = std::get<1>(sample);
 		const auto t = std::get<0>(sample);
 		const auto totalSecsPassed = t / 1000;
-		const auto xPerSecond = rect.GetDx() + (rect.GetWidth() / (MaxTotalSampleDurationMs / 1000)) * totalSecsPassed;
+		const auto xPerSecond = rect.GetDx() + (rect.GetWidth() / (maxTotalSampleDurationMs / 1000)) * totalSecsPassed;
 
 		const AbcdRectangle valueBounds(xPerSecond, rect.GetDy() + 25, rect.GetWidth()/2, rect.GetHeight()/2);
-		//format << rate;
-		//DrawableText value(valueBounds, format.str(), Color);
 
 		const auto point = Line(xPerSecond,rect.GetDy() - rate, xPerSecond, rect.GetDy() - rate);
 
-		SDL_RenderDrawLine(renderer, point.X1, point.Y1, point.X2, point.Y2);
-		
+		SDL_RenderDrawLine(renderer, point.X1, point.Y1, point.X2, point.Y2);		
 	}
-	
-
-
-
-
 };
 
 

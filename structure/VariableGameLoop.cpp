@@ -1,18 +1,15 @@
 #include "VariableGameLoop.h"
-
 #include <iostream>
 #include <ostream>
-
 #include "file/SettingsManager.h"
 #include <windows.h>
-
 #include "objects/GameWorldData.h"
 #include "Profiler.h"
 
 
 gamelib::VariableGameLoop::VariableGameLoop(std::function<void(unsigned long deltaMs)> updateFunc,
                                             std::function<void()> drawFunc)
-: updateFunc(std::move(updateFunc)), drawFunc(std::move(drawFunc)), gameWorldData(std::move(gameWorldData))
+	: updateFunc(std::move(updateFunc)), drawFunc(std::move(drawFunc)), gameWorldData(std::move(gameWorldData))
 {
 }
 

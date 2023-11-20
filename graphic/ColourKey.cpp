@@ -16,6 +16,7 @@ namespace gamelib
 	{
 		isSet = true;
 	}
+
 	bool operator==(const ColourKey& lhs, const ColourKey& rhs)
 	{
 		return lhs.Red == rhs.Red && lhs.Green == rhs.Green && lhs.Blue == rhs.Blue;

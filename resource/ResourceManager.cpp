@@ -20,7 +20,7 @@ namespace gamelib
 	ResourceManager::~ResourceManager() { Instance = nullptr; }
 
 	/// <summary>
-	/// Initialise the resrouce manager
+	/// Initialise the resource manager
 	/// </summary>
 	bool ResourceManager::Initialize(const std::string& filePath)
 	{
@@ -34,11 +34,6 @@ namespace gamelib
 		}, true, true);
 	}
 
-	/// <summary>
-	/// Handle events resource manager subscribes to
-	/// </summary>
-	/// <param name="event"></param>
-	/// <returns></returns>
 	vector<shared_ptr<Event>> ResourceManager::HandleEvent(const shared_ptr<Event> event, unsigned long deltaMs)
 	{
 		if (event->Id.PrimaryId == LevelChangedEventTypeEventId.PrimaryId)
@@ -60,12 +55,12 @@ namespace gamelib
 	/// <param name="level">Scene/Level assets to load.</param>
 	void ResourceManager::LoadSceneAssets(const int level)
 	{
-		for (const auto& level_resources : resourcesByScene) // we need access to all resources to swap in/out resources
+		for (const auto& levelResources : resourcesByScene) // we need access to all resources to swap in/out resources
 		{
-			for (const auto& asset : level_resources.second)
+			for (const auto& asset : levelResources.second)
 			{
-				const auto always_load_resource = asset->SceneId == 0;
-				if ((asset->SceneId == level || always_load_resource) && !asset->IsLoadedInMemory)
+				const auto alwaysLoadResource = asset->SceneId == 0;
+				if ((asset->SceneId == level || alwaysLoadResource) && !asset->IsLoadedInMemory)
 				{
 					asset->Load();
 
@@ -76,7 +71,7 @@ namespace gamelib
 					countLoadedResources++;
 					countUnloadedResources--;
 				}
-				else if (asset->IsLoadedInMemory && asset->SceneId != level && !always_load_resource)
+				else if (asset->IsLoadedInMemory && asset->SceneId != level && !alwaysLoadResource)
 				{
 					asset->Unload();
 
@@ -98,12 +93,12 @@ namespace gamelib
 		{
 			for (const auto& item : resourcesByName)
 			{
-				auto& asset_name = item.first;
+				auto& assetName = item.first;
 				auto& asset = item.second;
 
 				asset->Unload();
 
-				LogMessage("Unloaded asset '" + asset_name + string("'."));
+				LogMessage("Unloaded asset '" + assetName + string("'."));
 			}
 			return true;
 		}, true, true);
@@ -136,7 +131,7 @@ namespace gamelib
 						element->QueryStringAttribute("type", &ptrAssetType);
 						theAsset = CreateAssetFromElement(ptrAssetType, theAsset, element);
 
-						// Store the asset reference, but dont load it
+						// Store the asset reference, but don't load it
 						if (theAsset != nullptr)
 						{
 							StoreAsset(theAsset);
@@ -232,6 +227,7 @@ namespace gamelib
 		{
 			Instance = new ResourceManager();
 		}
+
 		return Instance;
 	}
 

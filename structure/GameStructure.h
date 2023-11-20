@@ -48,7 +48,7 @@ namespace gamelib
 		/// <summary>
 		/// Draw the game 
 		/// </summary>
-		void Draw(unsigned long) const;
+		static void Draw(unsigned long);
 
 		/// <summary>
 		/// Update the game

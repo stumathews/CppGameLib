@@ -49,7 +49,8 @@ namespace gamelib
 		}		
 	}
 
-	void Logger::LogToStdOut(const string& message) 	{
+	void Logger::LogToStdOut(const string& message)
+	{
 		cout << message << endl;
 	}
 

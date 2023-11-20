@@ -14,7 +14,7 @@ namespace gamelib
 		}
 	}
 
-	void FSMState::OnUpdate(unsigned long deltaMs) 
+	void FSMState::OnUpdate(const unsigned long deltaMs) 
 	{
 		// Run passed in lambda if its provided
 		if (onUpdateFn != nullptr)

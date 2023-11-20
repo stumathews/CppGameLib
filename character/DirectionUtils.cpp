@@ -8,11 +8,11 @@ const char* gamelib::DirectionUtils::ToString(const Direction direction)
 {
 	switch (direction)
 	{
-	case Direction::Up:   return "Up";
-	case Direction::Down: return "Down";
-	case Direction::Left: return "Left";
-	case Direction::Right: return "Right";
-	case Direction::None: return "None";
+		case Direction::Up:   return "Up";
+		case Direction::Down: return "Down";
+		case Direction::Left: return "Left";
+		case Direction::Right: return "Right";
+		case Direction::None: return "None";
 	}
 	return nullptr;
 }
@@ -55,17 +55,21 @@ gamelib::Direction gamelib::DirectionUtils::FromDirectionString(const std::strin
 	{
 		return Direction::Up;
 	}
+
 	if (direction == ToString(Direction::Down))
 	{
 		return Direction::Down;
 	}
+
 	if (direction == ToString(Direction::Left))
 	{
 		return Direction::Left;
 	}
+
 	if (direction == ToString(Direction::Right))
 	{
 		return Direction::Right;
 	}
+
 	return gamelib::Direction::None;
 }

@@ -1,6 +1,8 @@
 #include "EngineException.h"
 #include <sstream>
+
 using namespace std;
+
 namespace gamelib
 {
 	EngineException::EngineException(const int errorNumber, const std::string& message, const std::string& subsystem,

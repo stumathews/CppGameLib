@@ -6,7 +6,6 @@
 #include <json/json11.h>
 #include <events/EventFactory.h>
 #include <file/SerializationManager.h>
-
 #include "events/StartNetworkLevelEvent.h"
 #include "file/SettingsManager.h"
 
@@ -16,30 +15,29 @@ namespace gamelib
 {
 	GameClient::GameClient()
 	{
-		this->readBufferLength = 512;				
-		this->noDataTimeout.tv_sec = 0;
-		this->noDataTimeout.tv_usec = 0;	
-		this->clientSocketToGameSever = -1;
-		this->IsDisconnectedFromGameServer = true;
-		this->readfds = {0,{0}};
-		this->_eventManager = nullptr;
-		this->serializationManager = nullptr;
-		this->networking = nullptr;
-		this->_eventFactory = nullptr;
-		this->isTcp = true;
+		readBufferLength = 512;				
+		noDataTimeout.tv_sec = 0;
+		noDataTimeout.tv_usec = 0;	
+		clientSocketToGameSever = -1;
+		IsDisconnectedFromGameServer = true;
+		readfds = {0,{0}};
+		_eventManager = nullptr;
+		serializationManager = nullptr;
+		networking = nullptr;
+		_eventFactory = nullptr;
+		isTcp = true;
 	}
 
 	void GameClient::Initialize()
 	{		
 		Logger::Get()->LogThis("Initializing game client...");
 
-		this->_eventManager = EventManager::Get();
-		this->serializationManager = SerializationManager::Get();
-		this->networking = Networking::Get();
-		this->_eventFactory = EventFactory::Get();
-
-		this->nickName  = SettingsManager::Get()->GetString("networking", "nickname");
-		this->isTcp = SettingsManager::Get()->GetBool("networking", "isTcp");
+		_eventManager = EventManager::Get();
+		serializationManager = SerializationManager::Get();
+		networking = Networking::Get();
+		_eventFactory = EventFactory::Get();
+		nickName  = SettingsManager::Get()->GetString("networking", "nickname");
+		isTcp = SettingsManager::Get()->GetBool("networking", "isTcp");
 
 		Logger::Get()->LogThis(isTcp ? "Client using TCP" : "Client using UDP");
 		Logger::Get()->LogThis("Nickname:");

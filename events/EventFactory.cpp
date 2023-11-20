@@ -59,6 +59,7 @@ namespace gamelib
 		event->BytesReceived = bytesReceived;
 		return event;
 	}
+
 	std::shared_ptr<SceneChangedEvent> EventFactory::CreateLevelEvent(const int level) const
 	{
 		return std::make_shared<SceneChangedEvent>(level);
@@ -94,6 +95,7 @@ namespace gamelib
 	{
 		return std::make_shared<AddGameObjectToCurrentSceneEvent>(obj);
 	}
+
 	std::shared_ptr<SceneChangedEvent> EventFactory::CreateSceneChangedEventEvent(const int newLevel) const
 	{
 		return std::make_shared<SceneChangedEvent>(newLevel);

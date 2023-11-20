@@ -1,6 +1,7 @@
 #include "SceneChangedEvent.h"
 
 using namespace std;
+
 namespace gamelib
 {	
 	string SceneChangedEvent::ToString()

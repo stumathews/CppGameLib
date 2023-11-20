@@ -1,6 +1,7 @@
 #include "ControllerMoveEvent.h"
 
 using namespace std;
+
 namespace gamelib
 {
 	ControllerMoveEvent::ControllerMoveEvent(const gamelib::Direction dir, const KeyState keyState = KeyState::Pressed):

@@ -2,11 +2,11 @@
 #include <events/PlayerMovedEvent.h>
 #include <events/ControllerMoveEvent.h>
 #include <events/StartNetworkLevelEvent.h>
-
 #include "character/DirectionUtils.h"
 #include "events/NetworkTrafficReceivedEvent.h"
 
 using namespace json11;
+
 namespace gamelib
 {
 	std::string JsonEventSerializationManager::SerializePlayerMovedEvent(const std::shared_ptr<PlayerMovedEvent> object, std::string target)
@@ -26,6 +26,7 @@ namespace gamelib
         std::string error;
         const auto payload = Json::parse(serializedMessage.c_str(), error);
         const auto& direction = payload["direction"].string_value();
+
         return std::make_shared<PlayerMovedEvent>(DirectionUtils::FromDirectionString(direction));
     }	
 
@@ -34,8 +35,8 @@ namespace gamelib
 		std::string error;
 		const auto payload = Json::parse(serializedMessage.c_str(), error);
         const auto& level = payload["level"].int_value();
-        return std::make_shared<StartNetworkLevelEvent>(level);
-	
+
+        return std::make_shared<StartNetworkLevelEvent>(level);	
 	}
 
 	std::string JsonEventSerializationManager::SerializeControllerMoveEvent(const std::shared_ptr<ControllerMoveEvent> object, std::string target)

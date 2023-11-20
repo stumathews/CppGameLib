@@ -9,9 +9,6 @@ using namespace std;
 
 namespace gamelib
 {
-	/// <summary>
-	/// Create Graphic Asset
-	/// </summary>
 	GraphicAsset::GraphicAsset(const int inUid, const std::string& inName, const std::string& inPath, const std::string& inType, 
 		const int level, const AbcdRectangle& dimensions)
 		: Asset(inUid, inName, inPath, inType, level), Dimensions(dimensions)
@@ -20,10 +17,8 @@ namespace gamelib
 		viewPort = { dimensions.GetAx(), dimensions.GetAy(), dimensions.GetWidth(), dimensions.GetHeight() };
 		AssetType = AssetType::Graphic;
 	}
-	
-	/// <summary>
-	/// Load asset into memory
-	/// </summary>
+
+	// Load into memory
 	void GraphicAsset::Load()
 	{
 		Unload();
@@ -39,8 +34,7 @@ namespace gamelib
 
 			// Create texture from surface pixels
 			texture = SDL_CreateTextureFromSurface(SdlGraphicsManager::Get()->WindowRenderer, loadedSurface);
-			
-			
+						
 			// Get rid of old loaded surface (we have the texture pixels)
 			SDL_FreeSurface(loadedSurface);
 			

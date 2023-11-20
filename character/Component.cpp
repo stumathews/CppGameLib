@@ -1,4 +1,5 @@
 #include "component.h"
+
 namespace gamelib
 {	
 	

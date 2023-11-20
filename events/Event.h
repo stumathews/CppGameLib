@@ -26,7 +26,7 @@ namespace gamelib
 		static int lastEventId;
 	};
 
-	std::string operator+(const std::string& str, EventId id);	
+	std::string operator+(const std::string& str, const EventId& id);	
 }
 
 

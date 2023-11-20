@@ -27,7 +27,7 @@ namespace gamelib
 		// list of frame rates over time { ms, rate }
 		std::vector<std::tuple<int, int>> sampleRates {};
 		int accumulatedSampleWindowTime {};
-		int MaxTotalSampleDurationMs = 30 * 1000;
+		int maxTotalSampleDurationMs = 30 * 1000;
 		int sampleDurationInSecs = 1;
 		int sampleDurationInMilliSecs = sampleDurationInSecs * 1000;
 

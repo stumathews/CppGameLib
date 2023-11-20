@@ -59,7 +59,7 @@ namespace gamelib
             auto dimensions = AbcdRectangle(0, 0, width, height);
 
             graphicAsset = std::make_shared<GraphicAsset>(uid, name, fileName, type, level, dimensions);
-            ColourKey ColourKey;
+            ColourKey colourKey;
 
             // Process Asset children
             for (auto pAssetChild = assetNode->FirstChild(); pAssetChild; pAssetChild = pAssetChild->NextSibling())
@@ -67,17 +67,17 @@ namespace gamelib
                 string assetChildName = pAssetChild->Value();
                 
                 // Look to see if this is a sprite
-                shared_ptr<SpriteAsset> _sprite = nullptr;
+                shared_ptr<SpriteAsset> sprite = nullptr;
                 if (assetChildName == "sprite")
                 {
                     // Yes, is a sprite, process it
-                    _sprite = std::make_shared<SpriteAsset>(graphicAsset->Uid, graphicAsset->Name, graphicAsset->FilePath,
+                    sprite = std::make_shared<SpriteAsset>(graphicAsset->Uid, graphicAsset->Name, graphicAsset->FilePath,
                                                             graphicAsset->Type, graphicAsset->SceneId, dimensions);
                     
-                    ParseSprite(pAssetChild, _sprite);
+                    ParseSprite(pAssetChild, sprite);
 
                     // Upcast to Asset
-                    graphicAsset = _sprite;
+                    graphicAsset = sprite;
                     graphicAsset->AssetType = Asset::AssetType::Sprite;
                 }
 
@@ -87,13 +87,13 @@ namespace gamelib
                     const auto red = stoi(attributes.at("red"));
                     const auto green = stoi(attributes.at("green"));
                     const auto blue = stoi(attributes.at("blue"));
-                    ColourKey = gamelib::ColourKey(red, green, blue);
+                    colourKey = ColourKey(red, green, blue);
                 }
             }
 
-            if (ColourKey.IsSet())
+            if (colourKey.IsSet())
             {
-                graphicAsset->SetColourKey(ColourKey.Red, ColourKey.Green, ColourKey.Blue);
+                graphicAsset->SetColourKey(colourKey.Red, colourKey.Green, colourKey.Blue);
             }
         }
         return graphicAsset;
@@ -112,10 +112,12 @@ namespace gamelib
             {
                 auto attributes = GetNodeAttributes(pAnimationChild);
                 float duration = 0;
+
                 if (attributes.count("duration") > 0)
                 {
                     duration = stof(attributes.at("duration"));
                 }
+
                 sprite->FrameDurationMs = duration;
                 ParseSpriteKeyFrames(pAnimationChild, sprite);
             }

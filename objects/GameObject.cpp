@@ -28,9 +28,7 @@ namespace gamelib
 		SetDefaults(isVisible, coordinate.GetX(), coordinate.GetY());
 	}
 
-	void GameObject::Draw(SDL_Renderer* renderer)
-	{
-	}
+	void GameObject::Draw(SDL_Renderer* renderer) { }
 
 	SDL_Rect GameObject::CalculateBounds(const Coordinate<int> position, const int width, const int height)
 	{
@@ -51,12 +49,12 @@ namespace gamelib
 		Bounds = CalculateBounds(Position, static_cast<int>(width), static_cast<int>(height));
 	}
 
-	void GameObject::UpdateBounds(const AbcdRectangle dimensions)
+	void GameObject::UpdateBounds(const AbcdRectangle& dimensions)
 	{
 		Bounds = CalculateBounds(Position, dimensions);
 	}
 
-	void GameObject::SetTag(const string& tag) { this->tag = tag; }
+	void GameObject::SetTag(const string& theTag) { this->tag = theTag; }
 
 	string GameObject::GetName() { return Name; }
 	string GameObject::GetSubscriberName() { return GetName(); }

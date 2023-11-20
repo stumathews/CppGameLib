@@ -16,8 +16,8 @@
 #include <net/NetworkManager.h>
 #include "Logging/ErrorLogManager.h"
 #include <events/UpdateProcessesEvent.h>
-
 #include "VariableGameLoop.h"
+#include "events/EventFactory.h"
 #include "font/FontManager.h"
 #include "file/SettingsManager.h"
 
@@ -97,16 +97,16 @@ namespace gamelib
 		ReadNetwork();
 
 		EventManager::Get()->ProcessAllEvents(deltaMs);
-		EventManager::Get()->DispatchEventToSubscriber(make_shared<UpdateAllGameObjectsEvent>(), deltaMs);
-		EventManager::Get()->DispatchEventToSubscriber(make_shared<UpdateProcessesEvent>(), deltaMs);
+		EventManager::Get()->DispatchEventToSubscriber(EventFactory::Get()->CreateUpdateAllGameObjectsEvent(), deltaMs);
+		EventManager::Get()->DispatchEventToSubscriber(EventFactory::Get()->CreateUpdateProcessesEvent(), deltaMs);
 		std::cout << deltaMs <<  " ";
 		
 	}
 
-	void GameStructure::Draw(unsigned long percentWithinTick) const
+	void GameStructure::Draw(unsigned long percentWithinTick)
 	{
 		// Time-sensitive, skip queue. Draws the current scene
-		EventManager::Get()->DispatchEventToSubscriber(std::make_shared<Event>(DrawCurrentSceneEventId), 0UL);
+		EventManager::Get()->DispatchEventToSubscriber(EventFactory::Get()->CreateGenericEvent(DrawCurrentSceneEventId), 0UL);
 	}
 
 
@@ -190,8 +190,6 @@ namespace gamelib
 	{
 		return static_cast<long>(timeGetTime());
 	}
-
-	
 
 	GameStructure::~GameStructure()
 	{

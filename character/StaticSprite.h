@@ -42,7 +42,7 @@ namespace gamelib
 
         [[nodiscard]] uint GetNumKeyFrames() const
         {
-            return keyFrames.size();
+            return static_cast<uint>(keyFrames.size());
         }
 
 

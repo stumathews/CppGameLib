@@ -8,6 +8,9 @@
 #include <events/SceneChangedEvent.h>
 #include <net/NetworkPlayer.h>
 
+#include "UpdateAllGameObjectsEvent.h"
+#include "UpdateProcessesEvent.h"
+
 namespace gamelib
 {
 	class NetworkPlayerJoinedEvent;
@@ -17,13 +20,12 @@ namespace gamelib
 	class EventFactory
 	{
 	protected:
-			static EventFactory* Instance;
+			static EventFactory* instance;
 	private:
 			std::shared_ptr<IEventSerializationManager> eventSerializationManager;
 	public:
 		static EventFactory* Get();
 		EventFactory();
-			static bool Initialize();
 
 		// Cannot copy an EventFactory
 		EventFactory(EventFactory const&) = delete;
@@ -38,9 +40,13 @@ namespace gamelib
 			[[nodiscard]] std::shared_ptr<NetworkTrafficReceivedEvent> CreateNetworkTrafficReceivedEvent(const std::string& message,
 			const std::string& identifier, int bytesReceived) const;
 			[[nodiscard]] std::shared_ptr<SceneChangedEvent> CreateLevelEvent(int level) const;
+			[[nodiscard]] std::shared_ptr<UpdateAllGameObjectsEvent> CreateUpdateAllGameObjectsEvent() const;
+			[[nodiscard]] std::shared_ptr<UpdateProcessesEvent> CreateUpdateProcessesEvent() const;
 			[[nodiscard]] std::shared_ptr<StartNetworkLevelEvent> CreateStartNetworkLevelEvent(int level) const;
 			[[nodiscard]] std::shared_ptr<Event> CreateNetworkPlayerJoinedEvent(const NetworkPlayer& player) const;
+			[[nodiscard]] std::shared_ptr<ControllerMoveEvent> CreateControllerMoveEvent(Direction direction, ControllerMoveEvent::KeyState keyState) const;
 			[[nodiscard]] static std::shared_ptr<AddGameObjectToCurrentSceneEvent> CreateAddToSceneEvent(const std::shared_ptr<GameObject>& obj);
+			[[nodiscard]] std::shared_ptr<SceneChangedEvent> CreateSceneChangedEventEvent(int newLevel) const;
 			[[nodiscard]] std::shared_ptr<Event> CreateGenericEvent(const EventId& id) const;
 	};
 }

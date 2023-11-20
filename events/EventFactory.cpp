@@ -7,16 +7,18 @@
 #include <events/IEventSubscriber.h>
 #include <events/AddGameObjectToCurrentSceneEvent.h>
 
+#include "UpdateAllGameObjectsEvent.h"
+#include "UpdateProcessesEvent.h"
+
 namespace gamelib
 {
 	EventFactory* EventFactory::Get()
 	{
-		if (Instance == nullptr)
+		if (instance == nullptr)
 		{
-			Instance = new EventFactory();
-			Initialize();
+			instance = new EventFactory();
 		}
-		return Instance;
+		return instance;
 	}
 
 	EventFactory::EventFactory()
@@ -24,17 +26,12 @@ namespace gamelib
 		this->eventSerializationManager = std::make_shared<JsonEventSerializationManager>();
 	}
 
-	bool EventFactory::Initialize()
-	{		
-		return false;
-	}
-
-	EventFactory* EventFactory::Instance = nullptr;
+	EventFactory* EventFactory::instance = nullptr;
 
 	
 	EventFactory::~EventFactory()
 	{		
-		Instance = nullptr;
+		instance = nullptr;
 	}
 
 	std::shared_ptr<Event> EventFactory::CreateGenericEvent(const EventId& id) const
@@ -53,7 +50,6 @@ namespace gamelib
 		return eventSerializationManager->DeserializePlayerMovedEvent(serializedMessage);
 	}
 
-	
 	std::shared_ptr<NetworkTrafficReceivedEvent> EventFactory::CreateNetworkTrafficReceivedEvent(const std::string&
 		message, const std::string& identifier, const int bytesReceived) const
 	{
@@ -68,6 +64,16 @@ namespace gamelib
 		return std::make_shared<SceneChangedEvent>(level);
 	}
 
+	std::shared_ptr<UpdateAllGameObjectsEvent> EventFactory::CreateUpdateAllGameObjectsEvent() const
+	{
+		return std::make_shared<UpdateAllGameObjectsEvent>();
+	}
+
+	std::shared_ptr<UpdateProcessesEvent> EventFactory::CreateUpdateProcessesEvent() const
+	{
+		return std::make_shared<UpdateProcessesEvent>();
+	}
+
 	std::shared_ptr<StartNetworkLevelEvent> EventFactory::CreateStartNetworkLevelEvent(const int level) const
 	{
 		return std::make_shared<StartNetworkLevelEvent>(level);
@@ -78,8 +84,18 @@ namespace gamelib
 		return std::make_shared<NetworkPlayerJoinedEvent>(player);
 	}
 
+	std::shared_ptr<ControllerMoveEvent> EventFactory::CreateControllerMoveEvent(Direction direction,
+		ControllerMoveEvent::KeyState keyState) const
+	{
+		return std::make_shared<ControllerMoveEvent>(direction, keyState);
+	}
+
 	std::shared_ptr<AddGameObjectToCurrentSceneEvent> EventFactory::CreateAddToSceneEvent(const std::shared_ptr<GameObject> & obj)
 	{
 		return std::make_shared<AddGameObjectToCurrentSceneEvent>(obj);
+	}
+	std::shared_ptr<SceneChangedEvent> EventFactory::CreateSceneChangedEventEvent(const int newLevel) const
+	{
+		return std::make_shared<SceneChangedEvent>(newLevel);
 	}
 }

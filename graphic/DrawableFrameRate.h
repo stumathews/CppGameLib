@@ -2,7 +2,6 @@
 #include <objects/GameObject.h>
 
 #include "DrawableText.h"
-#include "geometry/Line.h"
 #include "objects/DrawableGameObject.h"
 
 namespace gamelib

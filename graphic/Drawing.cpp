@@ -1,7 +1,5 @@
 #include "Drawing.h"
 #include <SDL.h>
-#include <iostream>
-#include <SDL_image.h>
 
 namespace gamelib
 {

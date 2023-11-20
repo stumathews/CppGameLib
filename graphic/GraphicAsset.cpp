@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "GraphicAsset.h"
 #include <SDL_image.h>
 #include "SDLGraphicsManager.h"

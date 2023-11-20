@@ -1,6 +1,5 @@
 #include "GameServer.h"
 #include <events/EventManager.h>
-#include <net/PeerInfo.h>
 #include <net/Networking.h>
 #include <json/json11.h>
 #include <events/EventFactory.h>

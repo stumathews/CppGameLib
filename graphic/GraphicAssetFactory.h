@@ -1,5 +1,4 @@
 #pragma once
-#include "GraphicAsset.h"
 #include "file/tinyxml2.h"
 #include <memory>
 #include "asset/SpriteAsset.h"

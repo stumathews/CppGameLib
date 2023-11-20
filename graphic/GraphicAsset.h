@@ -2,9 +2,6 @@
 #include <SDL.h>
 #include "asset/asset.h"
 #include "common/aliases.h"
-#include <list>
-#include <graphic/KeyFrame.h>
-#include <character/Inventory.h>
 #include "geometry/ABCDRectangle.h"
 #include "ColourKey.h"
 

@@ -1,5 +1,4 @@
 #pragma once
-#include "pch.h"
 #include <memory>
 #include <character/IMovement.h>
 

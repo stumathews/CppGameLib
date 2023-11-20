@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "DrawableFrameRate.h"
 #include <graphic\RectDebugging.h>
 #include <geometry/Line.h>

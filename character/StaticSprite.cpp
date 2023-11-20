@@ -28,7 +28,7 @@ namespace gamelib
 		return Create(coordinate.GetX(), coordinate.GetY(), spriteAsset);
 	}
 
-	std::vector<std::shared_ptr<Event>> StaticSprite::HandleEvent(std::shared_ptr<Event> event, unsigned long deltaMs)
+	ListOfEvents StaticSprite::HandleEvent(std::shared_ptr<Event> event, unsigned long deltaMs)
 	{
 		return {};
 	}
@@ -44,6 +44,11 @@ namespace gamelib
 		if (!HasGraphic())
 			return;
 		frameNumber = static_cast<int>(number);
+	}
+
+	uint StaticSprite::GetNumKeyFrames() const
+	{
+		return static_cast<uint>(keyFrames.size());
 	}
 
 	GameObjectType StaticSprite::GetGameObjectType()

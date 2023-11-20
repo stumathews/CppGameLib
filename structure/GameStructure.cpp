@@ -1,4 +1,3 @@
-#include <SDL_image.h>
 #include <winsock2.h>
 #include <Windows.h>
 #include <iostream>

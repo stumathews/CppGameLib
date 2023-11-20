@@ -3,10 +3,8 @@
 #include "events/EventSubscriber.h"
 #include "objects/GameWorldData.h"
 #include "scene/SceneManager.h"
-#include <file/Logger.h>
 
 #include "IGameLoopStrategy.h"
-#include "input/IInputManager.h"
 
 namespace gamelib
 {

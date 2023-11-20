@@ -5,7 +5,6 @@
 #include <memory>
 #include <memory>
 #include <memory>
-#include <vector>
 #include <memory>
 #include "asset/asset.h"
 #include "file/Logger.h"

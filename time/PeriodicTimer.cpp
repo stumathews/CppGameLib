@@ -1,5 +1,4 @@
 #include "PeriodicTimer.h"
-#include <exceptions/EngineException.h>
 
 void gamelib::PeriodicTimer::DoIfReady(const std::function<void()>& action)
 {

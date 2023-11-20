@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "component.h"
 namespace gamelib
 {	

@@ -19,5 +19,7 @@ namespace gamelib
 
 		// Radiate duplicate serialized event to all connected players
 		virtual void SendEventToAllPlayers(std::string serializedEvent) = 0;
+
+		virtual void Disconnect() = 0;
 	};
 }

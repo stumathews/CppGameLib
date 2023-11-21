@@ -222,7 +222,6 @@ namespace gamelib
 	{
 		if (shutdown(clientSocketToGameSever, SD_SEND) == SOCKET_ERROR) 
 		{
-			printf("shutdown failed: %d\n", WSAGetLastError());
 			closesocket(clientSocketToGameSever);
 			WSACleanup();
 		}

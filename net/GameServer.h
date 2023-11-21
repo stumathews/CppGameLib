@@ -32,6 +32,7 @@ namespace gamelib
 		/// Check if there is any data waiting to be ready from any of the connected player sockets
 		/// </summary>
 		void CheckForPlayerTraffic() const;
+		void Disconnect() const;
 
 		std::string address;
 		std::string port;

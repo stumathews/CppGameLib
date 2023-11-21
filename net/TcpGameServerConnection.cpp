@@ -89,6 +89,27 @@ namespace gamelib
 		listeningSocket = networking->netTcpServer(host.c_str(), port.c_str());
 	}
 
+	void TcpGameServerConnection::Disconnect()
+	{
+		for (const auto & player : Players)
+		{
+			// disconnect client socket
+			const auto clientSocket = player.GetSocket();
+
+			// Let the client know we're shutting them down...
+			const auto iResult = shutdown(clientSocket, SD_SEND);
+			if (iResult == SOCKET_ERROR) 
+			{
+				// maybe the client is already finished. Close Socket.
+				closesocket(clientSocket);
+				WSACleanup();
+			}
+		}
+
+		// disconnect listening socket so its no longer binding to the listening port
+		closesocket(listeningSocket);		
+	}
+
 	void TcpGameServerConnection::CheckForPlayerTraffic()
 	{
 		for (size_t playerId = 0; playerId < Players.size(); playerId++)

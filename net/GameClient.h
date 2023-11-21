@@ -17,13 +17,15 @@ namespace gamelib
 	public:
 		~GameClient() override;
 		GameClient();
+		GameClient(const GameClient& other) = delete;
+		GameClient(const GameClient&& other) = delete;
+		const GameClient& operator=(const GameClient& other) = delete;
+		const GameClient& operator=(const GameClient&& other) = delete;
 
 		/// <summary>
 		/// Initializes the Game client.
 		/// </summary>
 		void Initialize();
-
-		void SubscribeToGameEvents();
 		
 		// Make an initial connection to the game server. This will register a socket with the game server tat we can later use to talk to it
 		void Connect(const std::shared_ptr<GameServer>& inGameServer);
@@ -31,12 +33,10 @@ namespace gamelib
 		void PingGameServer() const;
 
 		/// <summary>
-		/// Listen for incomiing traffic from the game server
+		/// Listen for incoming traffic from the game server
 		/// </summary>
 		void Listen();
-		void CheckSocketForTraffic();
-		void ParseReceivedServerPayload(char  buffer[512]) const;
-		void RaiseNetworkTrafficReceivedEvent(char  buffer[512], int bytesReceived) const;
+		
 	private:
 		std::shared_ptr<GameServer> gameServer;
 
@@ -61,6 +61,10 @@ namespace gamelib
 
 		// Inherited via EventSubscriber
 		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs) override;
+		void SubscribeToGameEvents();
+		void CheckSocketForTraffic();
+		void RaiseNetworkTrafficReceivedEvent(char  buffer[512], int bytesReceived) const;
+		void ParseReceivedServerPayload(char  buffer[512]) const;
 		std::string GetSubscriberName() override;
 	};
 }

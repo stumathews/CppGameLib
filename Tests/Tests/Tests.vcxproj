@@ -63,6 +63,7 @@
     <ClCompile Include="BehaviorTreeTests.cpp" />
     <ClCompile Include="FontManagerTests.cpp" />
     <ClCompile Include="FSMTests.cpp" />
+    <ClCompile Include="NetworkingTests.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="ResourceManagerTests.cpp" />
     <ClCompile Include="GraphicAssetFactoryTests.cpp" />

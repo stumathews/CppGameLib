@@ -7,7 +7,6 @@
 #include <net/IGameServerConnection.h>
 #include <net/TcpGameServerConnection.h>
 #include <net/UdpGameServerConnection.h>
-
 #include "events/StartNetworkLevelEvent.h"
 #include "file/SettingsManager.h"
 
@@ -62,6 +61,11 @@ namespace gamelib
 	void GameServer::CheckForPlayerTraffic() const
 	{
 		gameServerConnection->CheckForPlayerTraffic();		
+	}
+
+	void GameServer::Disconnect() const
+	{
+		gameServerConnection->Disconnect();
 	}
 
 	std::vector<std::shared_ptr<Event>> GameServer::HandleEvent(const std::shared_ptr<Event> evt, unsigned long deltaMs)

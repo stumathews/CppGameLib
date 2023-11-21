@@ -58,6 +58,9 @@ namespace gamelib
 
 		// Inherited via IGameServerConnection
 		void Create() override;
+
+	public:
+		void Disconnect() override;
 	};
 }
 

@@ -174,4 +174,9 @@ namespace gamelib
 		listeningSocket = networking->netUdpServer(host.c_str(), port.c_str());
 	}
 
+	void UdpGameServerConnection::Disconnect()
+	{		
+		closesocket(listeningSocket);
+		WSACleanup();
+	}
 }

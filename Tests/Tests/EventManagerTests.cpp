@@ -5,14 +5,14 @@
 using namespace std;
 using namespace gamelib;
 
-class dummy_subscriber final : public EventSubscriber, public enable_shared_from_this<dummy_subscriber>
+class DummySubscriber final : public EventSubscriber, public enable_shared_from_this<DummySubscriber>
 {
 public:
-	bool handle_event_received = false;
+	bool HandleEventReceived = false;
 	
 	virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs) override
 	{
-		handle_event_received = true;
+		HandleEventReceived = true;
 		return {};
 	}
 	virtual std::string GetSubscriberName() override
@@ -26,7 +26,7 @@ class EventManagerTests : public ::testing::Test
  protected:
   
   
-  dummy_subscriber subscriber;	
+  DummySubscriber subscriber;	
   const shared_ptr<UpdateAllGameObjectsEvent> the_event = std::make_shared<UpdateAllGameObjectsEvent>();
   const EventId Id = UpdateAllGameObjectsEventTypeEventId;
 
@@ -75,7 +75,7 @@ TEST_F(EventManagerTests, SubscribeToEvent)
 	EventManager::Get()->ProcessAllEvents();
 
 	EXPECT_EQ(0, EventManager::Get()->CountReady()) << "Expected there to be no events waiting to be dispatched after processing all events";
-	EXPECT_TRUE(subscriber.handle_event_received) << "Subscriber was not notified after processing events";
+	EXPECT_TRUE(subscriber.HandleEventReceived) << "Subscriber was not notified after processing events";
 
 	auto& all_event_subscribers = EventManager::Get()->GetSubscriptions()[Id];
 	
@@ -88,7 +88,7 @@ TEST_F(EventManagerTests, DispatchEventDirectlyToSubscriber)
 	EventManager::Get()->SubscribeToEvent(Id, &subscriber);
 	EventManager::Get()->DispatchEventToSubscriber(the_event, 0UL);
 	EXPECT_EQ(EventManager::Get()->CountReady(), 0) << "Direct dispatch of event to subscriber should not show up in event queues";
-	EXPECT_TRUE(subscriber.handle_event_received) << "subscriber was not directly notified";
+	EXPECT_TRUE(subscriber.HandleEventReceived) << "subscriber was not directly notified";
 	EXPECT_TRUE(the_event->Processed) << "The event was not marked as processed";
 }
 

@@ -8,49 +8,44 @@
 #include <net/TcpGameServerConnection.h>
 #include <net/UdpGameServerConnection.h>
 #include "events/StartNetworkLevelEvent.h"
-#include "file/SettingsManager.h"
+#include "utils/Utils.h"
 
 using namespace json11;
 
 
 namespace gamelib
 {
-	GameServer::GameServer(const std::string& address, const std::string& port)
+	GameServer::GameServer(const std::string& address, const std::string& port, const bool useTcp = true, const std::string& nickName )
 	{
-		this->address = address;
-		this->port = port;			
-		this->isTcp = true;
+		this->Address = address;
+		this->Port = port;			
+		this->isTcp = useTcp;
 		this->gameServerConnection = nullptr;
+		this->nickname = nickName;
 	}
 
 	void GameServer::Initialize()
-	{
+	{		
 		Logger::Get()->LogThis("Game Server Starting...");
-
+		
 		serializationManager = SerializationManager::Get();
-		_eventManager = EventManager::Get();
+		eventManager = EventManager::Get();
 		networking = Networking::Get();
-		_eventFactory = EventFactory::Get();
-		isTcp = SettingsManager::Get()->GetBool("networking", "isTcp");
+		eventFactory = EventFactory::Get();
 
 		Logger::Get()->LogThis(this->isTcp ? "Using TCP" : "Using UDP");
 
 		// Create a new server socket connection, either TCP or UDP depending on game configuration
-		gameServerConnection = this->isTcp ? std::dynamic_pointer_cast<IGameServerConnection>(
-				                       std::make_shared<TcpGameServerConnection>(address, port))
-										   : std::dynamic_pointer_cast<IGameServerConnection>(
-											   std::make_shared<UdpGameServerConnection>(address, port));
+		gameServerConnection = this->isTcp ? To<IGameServerConnection>(std::make_shared<TcpGameServerConnection>(Address, Port))
+										   : To<IGameServerConnection>(std::make_shared<UdpGameServerConnection>(Address, Port));
 		
 		gameServerConnection->Initialize();
 		gameServerConnection->Create();
-
-		// Get our nickname
-		nickname  = SettingsManager::Get()->GetString("networking", "nickname");
-
+		
 		// We're interested in some of the our own game's events
-		_eventManager->SubscribeToEvent(PlayerMovedEventTypeEventId, this);
-		_eventManager->SubscribeToEvent(ControllerMoveEventId, this);
-		_eventManager->SubscribeToEvent(StartNetworkLevelEventId, this);
+		eventManager->SubscribeToEvent(PlayerMovedEventTypeEventId, this);
+		eventManager->SubscribeToEvent(ControllerMoveEventId, this);
+		eventManager->SubscribeToEvent(StartNetworkLevelEventId, this);
 	}
 	
 	void GameServer::Listen() const

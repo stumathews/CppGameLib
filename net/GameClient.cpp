@@ -7,41 +7,38 @@
 #include <events/EventFactory.h>
 #include <file/SerializationManager.h>
 #include "events/StartNetworkLevelEvent.h"
-#include "file/SettingsManager.h"
 
 using namespace json11;
 
 namespace gamelib
 {
-	GameClient::GameClient()
+	GameClient::GameClient(const std::string& nickName, const bool isTcp)
 	{
 		readBufferLength = 512;				
 		noDataTimeout.tv_sec = 0;
 		noDataTimeout.tv_usec = 0;	
 		clientSocketToGameSever = -1;
-		IsDisconnectedFromGameServer = true;
+		isDisconnectedFromGameServer = true;
 		readfds = {0,{0}};
-		_eventManager = nullptr;
+		eventManager = nullptr;
 		serializationManager = nullptr;
 		networking = nullptr;
-		_eventFactory = nullptr;
-		isTcp = true;
+		eventFactory = nullptr;
+		this->isTcp = isTcp;
+		this->nickName = nickName;
 	}
 
 	void GameClient::Initialize()
 	{		
 		Logger::Get()->LogThis("Initializing game client...");
-
-		_eventManager = EventManager::Get();
+		
+		eventManager = EventManager::Get();
 		serializationManager = SerializationManager::Get();
 		networking = Networking::Get();
-		_eventFactory = EventFactory::Get();
-		nickName  = SettingsManager::Get()->GetString("networking", "nickname");
-		isTcp = SettingsManager::Get()->GetBool("networking", "isTcp");
+		eventFactory = EventFactory::Get();
 
 		Logger::Get()->LogThis(isTcp ? "Client using TCP" : "Client using UDP");
-		Logger::Get()->LogThis("Nickname:");
-		Logger::Get()->LogThis(nickName);
+		Logger::Get()->LogThis("Nickname:" + std::string(nickName));
 
 		SubscribeToGameEvents();
 	}
@@ -49,18 +46,18 @@ namespace gamelib
 	void GameClient::SubscribeToGameEvents()
 	{
 		// We subscribe to some of our own events and send them to the game server...
-		_eventManager->SubscribeToEvent(PlayerMovedEventTypeEventId, this);
-		_eventManager->SubscribeToEvent(ControllerMoveEventId, this);
+		eventManager->SubscribeToEvent(PlayerMovedEventTypeEventId, this);
+		eventManager->SubscribeToEvent(ControllerMoveEventId, this);
 	}
 
 	void GameClient::Connect(const std::shared_ptr<GameServer>& inGameServer)
 	{
-		std::stringstream message; message << "Connecting to game server: " << inGameServer->address << ":" << inGameServer->port;
+		std::stringstream message; message << "Connecting to game server: " << inGameServer->Address << ":" << inGameServer->Port;
 		Logger::Get()->LogThis(message.str());
 		
 		clientSocketToGameSever = this->isTcp 
-			? networking->netTcpClient(inGameServer->address.c_str(), inGameServer->port.c_str())
-			: networking->netConnectedUdpClient(inGameServer->address.c_str(), inGameServer->port.c_str());
+			? networking->netTcpClient(inGameServer->Address.c_str(), inGameServer->Port.c_str())
+			: networking->netConnectedUdpClient(inGameServer->Address.c_str(), inGameServer->Port.c_str());
 		
 		Logger::Get()->LogThis("Server socket created. Connected to server.");
 		
@@ -68,7 +65,7 @@ namespace gamelib
 						
 		if(clientSocketToGameSever)
 		{
-			this->IsDisconnectedFromGameServer = false;
+			this->isDisconnectedFromGameServer = false;
 		}
 	}
 	void GameClient::SendPlayerDetails() const
@@ -88,7 +85,7 @@ namespace gamelib
 
 	void GameClient::Listen()
 	{
-		if(this->IsDisconnectedFromGameServer)
+		if(this->isDisconnectedFromGameServer)
 		{
 			return;
 		}
@@ -115,9 +112,10 @@ namespace gamelib
 		// Process network data coming from the game server
 		if (FD_ISSET(clientSocketToGameSever, &readfds))
 		{
-			const int DEFAULT_BUFLEN = 512;
-			char readBuffer[DEFAULT_BUFLEN];
-			const int bufferLength = DEFAULT_BUFLEN;
+			constexpr int maxBufferLength = 512;
+
+			char readBuffer[maxBufferLength];
+			constexpr int bufferLength = maxBufferLength;
 			ZeroMemory(readBuffer, bufferLength);
 
 			// Read the payload off the network, wait for all the data
@@ -130,12 +128,12 @@ namespace gamelib
 				ParseReceivedServerPayload(readBuffer);
 				RaiseNetworkTrafficReceivedEvent(readBuffer, bytesReceived);
 
-				this->IsDisconnectedFromGameServer = false;
+				this->isDisconnectedFromGameServer = false;
 			}
 			else if (bytesReceived == SOCKET_ERROR && WSAGetLastError() == WSAECONNRESET)
 			{
 				// Connection closed. Server died.
-				this->IsDisconnectedFromGameServer = true;
+				this->isDisconnectedFromGameServer = true;
 			}
 		}
 	}
@@ -165,18 +163,18 @@ namespace gamelib
 		{			
 			if (noTarget)
 			{
-				_eventManager->DispatchEventToSubscriber(event, 0UL);
+				eventManager->DispatchEventToSubscriber(event, 0UL);
 				return;
 			}
 
 			// Notice target, send only to a specific target
-			_eventManager->DispatchEventToSubscriber(event, msgHeader.MessageTarget);	
+			eventManager->DispatchEventToSubscriber(event, msgHeader.MessageTarget);	
 		}
 	}
 
-	void GameClient::RaiseNetworkTrafficReceivedEvent(char  buffer[512], const int bytesReceived) const
+	void GameClient::RaiseNetworkTrafficReceivedEvent(char  buffer[512], const int bytesReceived)
 	{
-		_eventManager->RaiseEventWithNoLogging(_eventFactory->CreateNetworkTrafficReceivedEvent(buffer, "Game Server", bytesReceived));
+		eventManager->RaiseEventWithNoLogging(eventFactory->CreateNetworkTrafficReceivedEvent(buffer, "Game Server", bytesReceived, this->GetSubscriberName()));
 	}
 
 	std::vector<std::shared_ptr<Event>> GameClient::HandleEvent(const std::shared_ptr<Event> evt, unsigned long deltaMs)
@@ -197,7 +195,7 @@ namespace gamelib
 
 	std::string GameClient::GetSubscriberName()
 	{
-		return "Game Client";
+		return nickName;
 	}
 
 	void GameClient::PingGameServer() const

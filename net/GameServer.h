@@ -17,7 +17,11 @@ namespace gamelib
 	class GameServer final : public EventSubscriber
 	{
 	public:
-		GameServer(const std::string& address, const std::string& port);
+		GameServer(const std::string& address, const std::string& port, const bool useTcp, const std::string& nickName = "Server");
+		GameServer(const GameServer& other) = delete;
+		GameServer(const GameServer&& other) = delete;
+		GameServer& operator=(GameServer& other) = delete;
+		GameServer& operator=(GameServer&& other) = delete;
 
 		void Initialize();
 
@@ -34,8 +38,8 @@ namespace gamelib
 		void CheckForPlayerTraffic() const;
 		void Disconnect() const;
 
-		std::string address;
-		std::string port;
+		std::string Address;
+		std::string Port;
 
 	private:
 				
@@ -53,9 +57,9 @@ namespace gamelib
 		std::string GetSubscriberName() override;
 
 		SerializationManager* serializationManager{};
-		EventManager* _eventManager{};
+		EventManager* eventManager{};
 		Networking* networking{};
-		EventFactory* _eventFactory{};
+		EventFactory* eventFactory{};
 		bool isTcp;
 
 	};

@@ -16,7 +16,7 @@ namespace gamelib
 	{
 	public:
 		~GameClient() override;
-		GameClient();
+		GameClient(const std::string& nickName, bool isTcp);
 		GameClient(const GameClient& other) = delete;
 		GameClient(const GameClient&& other) = delete;
 		const GameClient& operator=(const GameClient& other) = delete;
@@ -45,7 +45,7 @@ namespace gamelib
 		/// </summary>
 		SOCKET clientSocketToGameSever;
 		fd_set readfds{};
-		bool IsDisconnectedFromGameServer;
+		bool isDisconnectedFromGameServer;
 
 		// How long to wait for network data the arrive {0,0} means non-blocking
 		timeval noDataTimeout{};
@@ -53,17 +53,17 @@ namespace gamelib
 		// What is the maximum amount of data to read off the network.
 		int readBufferLength;
 		std::string nickName;
-		EventManager* _eventManager;
+		EventManager* eventManager;
 		SerializationManager* serializationManager;
 		Networking* networking;
-		EventFactory* _eventFactory;
+		EventFactory* eventFactory;
 		bool isTcp;
 
 		// Inherited via EventSubscriber
 		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs) override;
 		void SubscribeToGameEvents();
 		void CheckSocketForTraffic();
-		void RaiseNetworkTrafficReceivedEvent(char  buffer[512], int bytesReceived) const;
+		void RaiseNetworkTrafficReceivedEvent(char  buffer[512], int bytesReceived);
 		void ParseReceivedServerPayload(char  buffer[512]) const;
 		std::string GetSubscriberName() override;
 	};

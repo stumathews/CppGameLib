@@ -4,37 +4,30 @@
 #include "net/NetworkManager.h"
 #include <thread>
 
+#include "events/ControllerMoveEvent.h"
 #include "events/EventManager.h"
 #include "events/NetworkTrafficReceivedEvent.h"
 #include "utils/Utils.h"
 
+#include "events/NetworkPlayerJoinedEvent.h"
+#include "events/PlayerMovedEvent.h"
+#include "events/StartNetworkLevelEvent.h"
+#include "file/SerializationManager.h"
 #pragma comment(lib, "ws2_32.lib")
 
 using namespace std;
 using namespace gamelib;
 
-class NetworkingTests : public ::testing::Test, public EventSubscriber, public enable_shared_from_this<NetworkingTests>
+
+class NetworkingTests : public ::testing::Test
 {
 public:
 
 	const char* ListeningPort = "8080";
 	const char* ServerAddress = "localhost";
-
-	std::shared_ptr<NetworkTrafficReceivedEvent> NetTrafficReceivedEvent = nullptr;
-
-	std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event> event, unsigned long deltaMs) override
-	{
-		if(event->Id == NetworkTrafficReceivedEventId)
-		{
-			NetTrafficReceivedEvent = To<NetworkTrafficReceivedEvent>(event);
-		}
-		return {};
-	}
-
-	std::string GetSubscriberName() override
-	{
-		return "NetworkingTests";
-	}
+	const char* ClientNickName = "Alice";
+	const char* ServerNickName = "Bob";	
+	const string ServerOrigin = ServerAddress + string(":") + ListeningPort;
 
 	void StartNetworkServer()
 	{
@@ -43,7 +36,7 @@ public:
 		ListeningThread = thread([&]()
 		{
 			// Make a new server connection
-			Server = std::make_shared<GameServer>(ServerAddress, ListeningPort);
+			Server = std::make_shared<GameServer>(ServerAddress, ListeningPort, false /* using UDP*/);
 			Server->Initialize();
 
 			// Wait for connections
@@ -66,7 +59,6 @@ public:
 
 	void SetUp() override
 	{
-		SubscribeToEvent(NetworkTrafficReceivedEventId);
 	}
 
 	void TearDown() override
@@ -76,13 +68,95 @@ public:
 
 		// finish listening thread
 		ListeningThread.join();
-
-		// reset everything
-		NetTrafficReceivedEvent = nullptr;
+		
+		
 		Client = nullptr;
 		Server = nullptr;
+		EventManager::Get()->Reset();
+		EventManager::Get()->ClearSubscribers();
 	}
 
+	[[nodiscard]] std::tuple<vector<shared_ptr<Event>>, vector<shared_ptr<Event>>> PartitionEvents() const
+	{
+		auto events = EventManager::Get()->GetEvents();
+
+		vector<shared_ptr<Event>> serverEmittedEvents;
+		vector<shared_ptr<Event>> clientEmittedEvents;
+
+		while(!events.empty())
+		{
+			const auto event = events.front();
+			if(event->Origin == ServerOrigin)
+			{
+				serverEmittedEvents.push_back(event);
+			}
+			else
+			{
+				clientEmittedEvents.push_back(event);
+			}
+			events.pop();
+		}
+
+		return {clientEmittedEvents, serverEmittedEvents};
+	}
+
+	[[nodiscard]] shared_ptr<Event> FindNetworkTrafficReceivedEvent(std::vector<shared_ptr<Event>> events, const std::string requiredMessageType, const std::string& trafficEventIdentifier) const
+	{
+		const auto result = std::find_if(events.begin(), events.end(), 
+	     [&](const shared_ptr<Event> & event)
+	     {
+	         if( event->Id == NetworkTrafficReceivedEventId)
+	         {
+	             const auto trafficReceivedEvent = To<NetworkTrafficReceivedEvent>(event);
+	             const auto messageType = SerializationManager::Get()->GetMessageHeader(trafficReceivedEvent->Message).MessageType;
+	             return messageType == requiredMessageType && trafficReceivedEvent->Identifier == trafficEventIdentifier;
+	         }
+	         return false;	
+	     });
+		return *result;
+	}
+
+
+	void TestIfPongTrafficReceivedByClient(const std::vector<shared_ptr<Event>>& clientEmittedEvents, const std::string& messageIdentifier, const std::string& expectedEventOrigin) const
+	{
+		EXPECT_EQ(clientEmittedEvents.size(), 1) << "Expected the client to receive a pong in response to its ping request";
+
+		const auto event = FindNetworkTrafficReceivedEvent(clientEmittedEvents, "pong", messageIdentifier);
+		const auto trafficEvent = To<NetworkTrafficReceivedEvent>(event);
+
+		// The client emitted that it received traffic
+		EXPECT_TRUE(trafficEvent != nullptr);
+		EXPECT_EQ(trafficEvent->Identifier, messageIdentifier);
+		EXPECT_EQ(trafficEvent->Origin, expectedEventOrigin);
+	}
+
+
+
+	void TestIfPlayerPingTrafficReceivedByServer(const std::vector<shared_ptr<Event>>& serverEmittedEvents, const std::string& messageIdentifier, const std::string& expectedEventOrigin) const
+	{
+		const auto event = FindNetworkTrafficReceivedEvent(serverEmittedEvents, "ping", messageIdentifier);
+		const auto trafficEvent = To<NetworkTrafficReceivedEvent>(event);
+
+		// Ensure we got a ping response from the server
+		EXPECT_TRUE(trafficEvent != nullptr);
+		EXPECT_EQ(trafficEvent->BytesReceived, 143);
+		EXPECT_EQ(trafficEvent->Identifier, messageIdentifier); // Ensure it came from the client
+		EXPECT_EQ(trafficEvent->Origin, expectedEventOrigin);
+		EXPECT_EQ(trafficEvent->Message, "{\"ages\": [1, 2, 3], \"eventType\": 1015, \"fish\": {\"yo\": \"sushi\"}, \"isHappy\": false, \"messageType\": \"ping\", \"names\": [\"Stuart\", \"Jenny\", \"bruce\"]}");
+
+	}
+
+	void TestIfPlayerJoinedTrafficReceivedByServer(const std::vector<shared_ptr<Event>>& serverEmittedEvents, const std::string& messageIdentifier, const std::string& expectedEventOrigin) const
+	{
+		const auto event = FindNetworkTrafficReceivedEvent(serverEmittedEvents, "requestPlayerDetails", messageIdentifier);
+		const auto trafficEvent = To<NetworkTrafficReceivedEvent>(event);
+
+		EXPECT_EQ(trafficEvent->Identifier, messageIdentifier); // Ensure it came from the client
+		EXPECT_EQ(trafficEvent->Origin, expectedEventOrigin);
+		stringstream expectedMessage;
+		expectedMessage << R"({"messageType": "requestPlayerDetails", "nickname": )" << "\"" << messageIdentifier << "\"}";
+		EXPECT_EQ(trafficEvent->Message,expectedMessage.str());
+	}
 	
 	std::thread ListeningThread;
 	bool ServerListening{};
@@ -92,57 +166,105 @@ public:
 
 TEST_F(NetworkingTests, TestConnectToServer)
 {
-	EXPECT_TRUE(NetTrafficReceivedEvent == nullptr);
 
 	StartNetworkServer();
 
 	// Setup client
-	Client = make_shared<GameClient>();
+	Client = make_shared<GameClient>(ClientNickName, false /* using UDP*/);
 	Client->Initialize();
 	Client->Connect(Server);
 	
 	// Wait for the server to respond
 	Sleep(1000);
+	Client->Listen();
 
-	// Collect events raised by the server, hopefully informing us that it got something
-	EventManager::Get()->ProcessAllEvents();
+	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
 
-	// Ensure we got a the player details response
-	EXPECT_TRUE(NetTrafficReceivedEvent != nullptr);
-	EXPECT_EQ(NetTrafficReceivedEvent->BytesReceived, 62);
-	EXPECT_EQ(NetTrafficReceivedEvent->Identifier, "Charlie");
-	EXPECT_EQ(NetTrafficReceivedEvent->Message, "{\"messageType\": \"requestPlayerDetails\", \"nickname\": \"Charlie\"}");
-
+	TestIfPlayerJoinedTrafficReceivedByServer(serverEmittedEvents, ClientNickName, ServerOrigin);
+	
+	EXPECT_EQ(serverEmittedEvents.size(), 2) << "Should be 1 joined traffic event, and 1 official player joined events - both emitted from server";
+	EXPECT_EQ(clientEmittedEvents.size(), 0) << "No events expected to be emitted from client";
 }
 
-TEST_F(NetworkingTests, TestPingServer)
+
+
+TEST_F(NetworkingTests, TestPing)
 {
-	EXPECT_TRUE(NetTrafficReceivedEvent == nullptr);
 
 	StartNetworkServer();
 
 	// Setup client
-	Client = make_shared<GameClient>();
+	Client = make_shared<GameClient>(ClientNickName, false /* using UDP*/);
 	Client->Initialize();
 	Client->Connect(Server);
-
-	// Process events (which we'll ignore)
-	EventManager::Get()->ProcessAllEvents();
-	NetTrafficReceivedEvent = nullptr;
-
+	
 	// When pinging the game server...
 	Client->PingGameServer();
 
 	// Wait for the server to respond
 	Sleep(1000);
 
-	// Collect events raised by the server, hopefully informing us that it got something
-	EventManager::Get()->ProcessAllEvents();
+	// Read pong response
+	Client->Listen();
 
-	// Ensure we got a ping response
-	EXPECT_TRUE(NetTrafficReceivedEvent != nullptr);
-	EXPECT_EQ(NetTrafficReceivedEvent->BytesReceived, 143);
-	EXPECT_EQ(NetTrafficReceivedEvent->Identifier, "Charlie");
-	EXPECT_EQ(NetTrafficReceivedEvent->Message, "{\"ages\": [1, 2, 3], \"eventType\": 1015, \"fish\": {\"yo\": \"sushi\"}, \"isHappy\": false, \"messageType\": \"ping\", \"names\": [\"Stuart\", \"Jenny\", \"bruce\"]}");
+	// Collect events raised
 
+	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
+
+	// Server says it got the player joined traffic?
+	TestIfPlayerJoinedTrafficReceivedByServer(serverEmittedEvents, ClientNickName, ServerOrigin);
+
+	// Server says it got the ping request?
+	TestIfPlayerPingTrafficReceivedByServer(serverEmittedEvents, ClientNickName, ServerOrigin);
+
+	// Client says it got the pong response from game server
+	TestIfPongTrafficReceivedByClient(clientEmittedEvents, "Game Server", ClientNickName);
+
+	
+	EXPECT_EQ(clientEmittedEvents.size(), 1) << "Expected 1 response that the client received the pong traffic";
+	EXPECT_EQ(serverEmittedEvents.size(), 3) << "Should be 3 joined traffic events - emitted from server";
+}
+
+TEST_F(NetworkingTests, MultiPlayerJoinEventsEmittedOnConnect)
+{
+
+	StartNetworkServer();
+
+	const auto player1Nick = "Player1";
+	const auto player2Nick = "Player2";
+	const auto player3Nick = "Player3";
+
+	// Setup client
+	const auto client1 = make_shared<GameClient>(player1Nick, false /* using UDP*/);
+	client1->Initialize();
+	client1->Connect(Server);
+
+	const auto client2 = make_shared<GameClient>(player2Nick, false /* using UDP*/);
+	client2->Initialize();
+	client2->Connect(Server);
+
+	const auto client3 = make_shared<GameClient>(player3Nick, false /* using UDP*/);
+	client3->Initialize();
+	client3->Connect(Server);
+	
+	// Wait for the server to respond
+	Sleep(1000);
+
+	client1->Listen();
+	client2->Listen();
+	client3->Listen();
+	
+	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
+
+	// Server got player 1 join traffic ?
+	TestIfPlayerJoinedTrafficReceivedByServer(serverEmittedEvents, player1Nick, ServerOrigin);
+
+	// Server got player 2 join traffic ?
+	TestIfPlayerJoinedTrafficReceivedByServer(serverEmittedEvents, player2Nick, ServerOrigin);
+
+	// Server got player 3 join traffic ?
+	TestIfPlayerJoinedTrafficReceivedByServer(serverEmittedEvents, player3Nick, ServerOrigin);
+
+	EXPECT_EQ(clientEmittedEvents.size(), 0) << "Expected no responses from server on connect, therefore no client events for traffic received";
+	EXPECT_EQ(serverEmittedEvents.size(), 6) << "Should be 3 joined traffic events, and 3 official player joined events - both emitted from server";
 }

@@ -10,6 +10,9 @@ namespace gamelib
 		gameServerAddress = SettingsManager::Get()->GetString("networking", "gameServerAddress");
 		gameServerPort = SettingsManager::Get()->GetString("networking", "gameServerPort");
 		maxPlayers = SettingsManager::Get()->GetInt("networking", "maxPlayers");
+
+		nickName = SettingsManager::Get()->GetString("networking", "nickname");
+		isTcp = SettingsManager::Get()->GetBool("networking", "isTcp");
 	}
 
 	bool NetworkManager::IsGameServer() const
@@ -21,7 +24,7 @@ namespace gamelib
 	{
 		Networking::Get()->InitializeWinSock();
 		
-		Server = std::make_shared<GameServer>(gameServerAddress, gameServerPort);
+		Server = std::make_shared<GameServer>(gameServerAddress, gameServerPort, isTcp, nickName);
 
 		if(isGameServer)
 		{			
@@ -29,7 +32,7 @@ namespace gamelib
 		}
 		else
 		{
-			Client = std::make_shared<GameClient>();
+			Client = std::make_shared<GameClient>(nickName, isTcp);
 			Client->Initialize();
 			Client->Connect(Server);
 		}
@@ -39,20 +42,20 @@ namespace gamelib
 
 	NetworkManager* NetworkManager::Get()
 	{
-		if (Instance == nullptr)
+		if (instance == nullptr)
 		{
-			Instance = new NetworkManager();
+			instance = new NetworkManager();
 		}
-		return Instance;
+		return instance;
 	}
 
-	NetworkManager* NetworkManager::Instance = nullptr;
+	NetworkManager* NetworkManager::instance = nullptr;
 
 	
 	NetworkManager::~NetworkManager()
 	{
 		
-		Instance = nullptr;
+		instance = nullptr;
 	}
 
 	void NetworkManager::PingGameServer() const

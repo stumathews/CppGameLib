@@ -81,7 +81,9 @@ namespace gamelib
 
 	std::string TcpGameServerConnection::GetSubscriberName()
 	{
-		return "TcpGameServerConnection";
+		std::stringstream subscriberName;
+		subscriberName << host << ":" << port;
+		return subscriberName.str();
 	}
 
 	void TcpGameServerConnection::Create()
@@ -185,9 +187,9 @@ namespace gamelib
 
 	}
 
-	void TcpGameServerConnection::RaiseNetworkTrafficReceivedEvent(char buffer[512], const size_t& i, const int bytesReceived) const
+	void TcpGameServerConnection::RaiseNetworkTrafficReceivedEvent(char buffer[512], const size_t& i, const int bytesReceived) 
 	{
-		const auto event = _eventFactory->CreateNetworkTrafficReceivedEvent(buffer, std::to_string(i + 1), bytesReceived);
+		const auto event = _eventFactory->CreateNetworkTrafficReceivedEvent(buffer, std::to_string(i + 1), bytesReceived, GetSubscriberName());
 
 		_eventManager->RaiseEventWithNoLogging(event);
 	}

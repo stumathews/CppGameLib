@@ -37,7 +37,7 @@ namespace gamelib
 		void ProcessPingMessage(const size_t& playerId) const;
 		void SendToConnectedPlayersExceptToSender(const std::string& senderNickname, const std::string&
 		                                          serializedMessage, const size_t& playerId) const;
-		void RaiseNetworkTrafficReceivedEvent(char buffer[512], const size_t& i, int bytesReceived) const;
+		void RaiseNetworkTrafficReceivedEvent(char buffer[512], const size_t& i, int bytesReceived);
 		void ParseReceivedPlayerPayload(const size_t& playerId, const char* inPayload, int payloadLength);
 		void ProcessRequestPlayerDetailsMessage(int playerId, const MessageHeader& messageHeader);
 		void SendEventToAllPlayers(std::string serializedEvent) override;

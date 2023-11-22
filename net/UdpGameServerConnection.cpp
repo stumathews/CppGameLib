@@ -64,7 +64,7 @@ namespace gamelib
 		}
 	}
 
-	void UdpGameServerConnection::RaiseNetworkTrafficReceivedEvent(char buffer[512], const int bytesReceived, const PeerInfo fromClient) const
+	void UdpGameServerConnection::RaiseNetworkTrafficReceivedEvent(char buffer[512], const int bytesReceived, const PeerInfo fromClient) 
 	{
 		std::string identifier = "unknown";
 		for(auto player : players)
@@ -76,7 +76,7 @@ namespace gamelib
 			}
 		}
 
-		const auto event = eventFactory->CreateNetworkTrafficReceivedEvent(buffer, identifier, bytesReceived);
+		const auto event = eventFactory->CreateNetworkTrafficReceivedEvent(buffer, identifier, bytesReceived,  this->GetSubscriberName());
 
 		eventManager->RaiseEventWithNoLogging(event);
 	}
@@ -166,7 +166,9 @@ namespace gamelib
 
 	std::string UdpGameServerConnection::GetSubscriberName()
 	{
-		return "UdpGameServerConnection";
+		std::stringstream subscriberName;
+		subscriberName << host << ":" << port;
+		return subscriberName.str();
 	}
 
 	void UdpGameServerConnection::Create()

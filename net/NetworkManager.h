@@ -6,21 +6,25 @@
 #include <net/GameClient.h>
 #include <net/GameServer.h>
 
+#include "file/SettingsManager.h"
+
 namespace gamelib
 {
 	// Setups networking to listens for network events
 	class NetworkManager
 	{
 	protected:
-			static NetworkManager* Instance;
+			static NetworkManager* instance;
 	private:
 			std::shared_ptr<Connection> remote;
 			bool isGameServer;
 			std::string gameServerAddress;
 			std::string gameServerPort;
 			int maxPlayers;
+			std::string nickName;
+			bool isTcp;
 
-	public:
+		public:
 		static NetworkManager* Get();
 		NetworkManager();
 			[[nodiscard]] bool IsGameServer() const;

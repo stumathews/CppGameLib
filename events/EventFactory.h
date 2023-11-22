@@ -38,7 +38,7 @@ namespace gamelib
 			[[nodiscard]] std::shared_ptr<PlayerMovedEvent> CreatePlayerMovedEvent(Direction direction, const std::string& target = "") const;
 			[[nodiscard]] std::shared_ptr<PlayerMovedEvent> CreatePlayerMovedEvent(const std::string& serializedMessage) const;
 			[[nodiscard]] std::shared_ptr<NetworkTrafficReceivedEvent> CreateNetworkTrafficReceivedEvent(const std::string& message,
-			const std::string& identifier, int bytesReceived) const;
+			const std::string& identifier, const int bytesReceived, const std::string& origin) const;
 			[[nodiscard]] std::shared_ptr<SceneChangedEvent> CreateLevelEvent(int level) const;
 			[[nodiscard]] std::shared_ptr<UpdateAllGameObjectsEvent> CreateUpdateAllGameObjectsEvent() const;
 			[[nodiscard]] std::shared_ptr<UpdateProcessesEvent> CreateUpdateProcessesEvent() const;

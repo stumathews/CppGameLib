@@ -85,8 +85,8 @@ namespace gamelib
 			message << "EventManager: " << you->GetSubscriberName() << " subscribed to event " << eventId.Name;
 
 			Logger::Get()->LogThis(message.str());
-		
-			eventSubscribers[eventId].push_back(you);
+
+			eventSubscribers[eventId].push_back(you);			
 		}
 	}
 

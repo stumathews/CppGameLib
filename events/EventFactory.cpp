@@ -51,12 +51,13 @@ namespace gamelib
 	}
 
 	std::shared_ptr<NetworkTrafficReceivedEvent> EventFactory::CreateNetworkTrafficReceivedEvent(const std::string&
-		message, const std::string& identifier, const int bytesReceived) const
+		message, const std::string& identifier, const int bytesReceived, const std::string& origin) const
 	{
 		auto event = std::make_shared<NetworkTrafficReceivedEvent>();
 		event->Message = message;
 		event->Identifier = identifier;
 		event->BytesReceived = bytesReceived;
+		event->Origin = origin; // Origin of the event is the where the event was emitted from
 		return event;
 	}
 

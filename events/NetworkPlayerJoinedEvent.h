@@ -4,7 +4,7 @@
 
 namespace gamelib
 {
-	const static EventId NetworkPlayerJoinedEventId(NetworkPlayerJoined, "FetchedPickup");
+	const static EventId NetworkPlayerJoinedEventId(NetworkPlayerJoined, "NetworkPlayerJoinedEvent");
 	class NetworkPlayerJoinedEvent final : public Event
 	{	
 	public:

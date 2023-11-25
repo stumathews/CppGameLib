@@ -32,10 +32,7 @@ namespace gamelib
 		/// </summary>
 		void Listen() const;
 
-		/// <summary>
-		/// Check if there is any data waiting to be ready from any of the connected player sockets
-		/// </summary>
-		void CheckForPlayerTraffic() const;
+		
 		void Disconnect() const;
 
 		std::string Address;
@@ -50,6 +47,11 @@ namespace gamelib
 		/// Nick name of this machine
 		/// </summary>
 		std::string nickname;
+
+		/// <summary>
+		/// Check if there is any data waiting to be ready from any of the connected player sockets
+		/// </summary>
+		void CheckForPlayerTraffic() const;
 
 		// Inherited via EventSubscriber
 		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs) override;

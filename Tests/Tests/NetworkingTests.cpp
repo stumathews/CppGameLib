@@ -67,8 +67,7 @@ public:
 		ServerListening = false;
 
 		// finish listening thread
-		ListeningThread.join();
-		
+		ListeningThread.join();		
 		
 		Client = nullptr;
 		Server = nullptr;
@@ -116,8 +115,41 @@ public:
 		return *result;
 	}
 
+	[[nodiscard]] shared_ptr<Event> FindEmittedEvent(const std::vector<shared_ptr<Event>>& events, const EventId& eventId) const
+	{
+		const auto result = std::find_if(events.begin(), events.end(), 
+	     [&](const shared_ptr<Event> & event)
+	     {
+	         if( event->Id == eventId )
+	         {
+	             return true;
+	         }
+	         return false;	
+	     });
+		return *result;
+	}
 
-	void TestIfPongTrafficReceivedByClient(const std::vector<shared_ptr<Event>>& clientEmittedEvents, const std::string& messageIdentifier, const std::string& expectedEventOrigin) const
+	[[nodiscard]] shared_ptr<NetworkPlayerJoinedEvent> FindPlayerJoinedEvent(const std::vector<shared_ptr<Event>>& events, const string& playerNick) const
+	{
+		const auto result = std::find_if(events.begin(), events.end(), 
+	     [&](const shared_ptr<Event> & event)
+	     {
+	         return event->Id == NetworkPlayerJoinedEventId && To<NetworkPlayerJoinedEvent>(event)->Player.GetNickName() == playerNick ? true : false;
+	     });
+		return To<NetworkPlayerJoinedEvent>(*result);
+	}
+
+	void EnsureNetworkJoinedEventEmittedByServer(const std::vector<shared_ptr<Event>>& events, const std::string playerNick) const
+	{
+		const auto resultEvent = FindEmittedEvent(events, NetworkPlayerJoinedEventId);
+		const auto joinedEvent = To<NetworkPlayerJoinedEvent>(resultEvent);
+		EXPECT_TRUE(resultEvent != nullptr);
+		EXPECT_EQ(joinedEvent->Origin, ServerOrigin);
+		EXPECT_EQ(joinedEvent->Player.GetNickName(), playerNick);
+
+	}
+	
+	void EnsurePongTrafficReceivedByClient(const std::vector<shared_ptr<Event>>& clientEmittedEvents, const std::string& messageIdentifier, const std::string& expectedEventOrigin) const
 	{
 		EXPECT_EQ(clientEmittedEvents.size(), 1) << "Expected the client to receive a pong in response to its ping request";
 
@@ -129,10 +161,8 @@ public:
 		EXPECT_EQ(trafficEvent->Identifier, messageIdentifier);
 		EXPECT_EQ(trafficEvent->Origin, expectedEventOrigin);
 	}
-
-
-
-	void TestIfPlayerPingTrafficReceivedByServer(const std::vector<shared_ptr<Event>>& serverEmittedEvents, const std::string& messageIdentifier, const std::string& expectedEventOrigin) const
+		
+	void EnsurePlayerPingTrafficReceivedByServer(const std::vector<shared_ptr<Event>>& serverEmittedEvents, const std::string& messageIdentifier, const std::string& expectedEventOrigin) const
 	{
 		const auto event = FindNetworkTrafficReceivedEvent(serverEmittedEvents, "ping", messageIdentifier);
 		const auto trafficEvent = To<NetworkTrafficReceivedEvent>(event);
@@ -146,15 +176,17 @@ public:
 
 	}
 
-	void TestIfPlayerJoinedTrafficReceivedByServer(const std::vector<shared_ptr<Event>>& serverEmittedEvents, const std::string& messageIdentifier, const std::string& expectedEventOrigin) const
+	void EnsurePlayerJoinedTrafficReceivedByServer(const std::vector<shared_ptr<Event>>& serverEmittedEvents, const std::string& messageIdentifier, const std::string& expectedEventOrigin) const
 	{
 		const auto event = FindNetworkTrafficReceivedEvent(serverEmittedEvents, "requestPlayerDetails", messageIdentifier);
 		const auto trafficEvent = To<NetworkTrafficReceivedEvent>(event);
 
 		EXPECT_EQ(trafficEvent->Identifier, messageIdentifier); // Ensure it came from the client
 		EXPECT_EQ(trafficEvent->Origin, expectedEventOrigin);
+
 		stringstream expectedMessage;
 		expectedMessage << R"({"messageType": "requestPlayerDetails", "nickname": )" << "\"" << messageIdentifier << "\"}";
+
 		EXPECT_EQ(trafficEvent->Message,expectedMessage.str());
 	}
 	
@@ -166,7 +198,6 @@ public:
 
 TEST_F(NetworkingTests, TestConnectToServer)
 {
-
 	StartNetworkServer();
 
 	// Setup client
@@ -180,17 +211,14 @@ TEST_F(NetworkingTests, TestConnectToServer)
 
 	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
 
-	TestIfPlayerJoinedTrafficReceivedByServer(serverEmittedEvents, ClientNickName, ServerOrigin);
+	EnsurePlayerJoinedTrafficReceivedByServer(serverEmittedEvents, ClientNickName, ServerOrigin);
 	
 	EXPECT_EQ(serverEmittedEvents.size(), 2) << "Should be 1 joined traffic event, and 1 official player joined events - both emitted from server";
 	EXPECT_EQ(clientEmittedEvents.size(), 0) << "No events expected to be emitted from client";
 }
 
-
-
 TEST_F(NetworkingTests, TestPing)
 {
-
 	StartNetworkServer();
 
 	// Setup client
@@ -210,19 +238,16 @@ TEST_F(NetworkingTests, TestPing)
 	// Collect events raised
 
 	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
-
-	// Server says it got the player joined traffic?
-	TestIfPlayerJoinedTrafficReceivedByServer(serverEmittedEvents, ClientNickName, ServerOrigin);
-
-	// Server says it got the ping request?
-	TestIfPlayerPingTrafficReceivedByServer(serverEmittedEvents, ClientNickName, ServerOrigin);
-
-	// Client says it got the pong response from game server
-	TestIfPongTrafficReceivedByClient(clientEmittedEvents, "Game Server", ClientNickName);
-
 	
 	EXPECT_EQ(clientEmittedEvents.size(), 1) << "Expected 1 response that the client received the pong traffic";
+	
+	EnsureNetworkJoinedEventEmittedByServer(serverEmittedEvents, ClientNickName);
+	
 	EXPECT_EQ(serverEmittedEvents.size(), 3) << "Should be 3 joined traffic events - emitted from server";
+
+	EnsurePlayerJoinedTrafficReceivedByServer(serverEmittedEvents, ClientNickName, ServerOrigin);	
+	EnsurePlayerPingTrafficReceivedByServer(serverEmittedEvents, ClientNickName, ServerOrigin);	
+	EnsurePongTrafficReceivedByClient(clientEmittedEvents, "Game Server", ClientNickName);
 }
 
 TEST_F(NetworkingTests, MultiPlayerJoinEventsEmittedOnConnect)
@@ -255,16 +280,20 @@ TEST_F(NetworkingTests, MultiPlayerJoinEventsEmittedOnConnect)
 	client3->Listen();
 	
 	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
+	
+	EnsurePlayerJoinedTrafficReceivedByServer(serverEmittedEvents, player1Nick, ServerOrigin);	
+	EnsurePlayerJoinedTrafficReceivedByServer(serverEmittedEvents, player2Nick, ServerOrigin);
+	EnsurePlayerJoinedTrafficReceivedByServer(serverEmittedEvents, player3Nick, ServerOrigin);
+	
+	// Ensure Player Joined event emitted by server
+	const auto candidateFind1 = FindPlayerJoinedEvent(serverEmittedEvents, player1Nick);
+	const auto candidateFind2 = FindPlayerJoinedEvent(serverEmittedEvents, player2Nick);
+	const auto candidateFind3 = FindPlayerJoinedEvent(serverEmittedEvents, player3Nick);
 
-	// Server got player 1 join traffic ?
-	TestIfPlayerJoinedTrafficReceivedByServer(serverEmittedEvents, player1Nick, ServerOrigin);
-
-	// Server got player 2 join traffic ?
-	TestIfPlayerJoinedTrafficReceivedByServer(serverEmittedEvents, player2Nick, ServerOrigin);
-
-	// Server got player 3 join traffic ?
-	TestIfPlayerJoinedTrafficReceivedByServer(serverEmittedEvents, player3Nick, ServerOrigin);
-
+	EXPECT_EQ(candidateFind1->Player.GetNickName(), player1Nick);
+	EXPECT_EQ(candidateFind2->Player.GetNickName(), player2Nick);
+	EXPECT_EQ(candidateFind3->Player.GetNickName(), player3Nick);
+	
 	EXPECT_EQ(clientEmittedEvents.size(), 0) << "Expected no responses from server on connect, therefore no client events for traffic received";
 	EXPECT_EQ(serverEmittedEvents.size(), 6) << "Should be 3 joined traffic events, and 3 official player joined events - both emitted from server";
 }

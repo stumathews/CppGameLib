@@ -16,7 +16,8 @@ class SceneManagerTests : public testing::Test
 
   void SetUp() override
   {
-	  EventManager::Get()->ClearSubscribers();
+	  EventManager::Get()->ClearSubscribers();	
+  	  SdlGraphicsManager::Get()->Initialize();
   }
     
   void TearDown() override {}

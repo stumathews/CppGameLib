@@ -4,7 +4,7 @@
 #include "IEventSubscriber.h"
 namespace gamelib
 {
-	class EventSubscriber : public IEventSubscriber
+	class EventSubscriber : virtual public IEventSubscriber
 	{
 	public:
 									
@@ -12,8 +12,9 @@ namespace gamelib
 		int GetSubscriberId() override;		
 		void SubscribeToEvent(const EventId& eventId);
 		void UnsubscribeSubscribeToEvent(const EventId& eventId);
-		std::list<EventId> EventSubscriptions;
 		bool SubscribesTo(const EventId& eventId);
+
+		std::list<EventId> EventSubscriptions;
 	};
 }
 

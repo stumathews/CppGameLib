@@ -34,10 +34,13 @@ namespace gamelib
 		instance = nullptr;
 	}
 
-	std::shared_ptr<Event> EventFactory::CreateGenericEvent(const EventId& id) const
+	std::shared_ptr<Event> EventFactory::CreateGenericEvent(const EventId& id, const std::string& origin = "") const
 	{
-		return std::make_shared<Event>(id);
+		auto event = std::make_shared<Event>(id);
+		event->Origin = origin;
+		return event;
 	}
+	
 
 	std::shared_ptr<PlayerMovedEvent> EventFactory::CreatePlayerMovedEvent(const Direction direction, const std::string
 	                                                                       & target) const

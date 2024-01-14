@@ -24,22 +24,26 @@ namespace gamelib
 		{
 			switch(direction)
 			{
-			case Direction::Up: return Side::Bottom;
-			case Direction::Down: return Side::Top;
-			case Direction::Left: return Side::Right;
-			case Direction::Right: return Side::Left;
+				case Direction::Up: return Side::Bottom;
+				case Direction::Down: return Side::Top;
+				case Direction::Left: return Side::Right;
+				case Direction::Right: return Side::Left;
+				case Direction::None: throw std::exception("GetOppositeSideForDirection: Cant get opposite direction of None");
 			}
+			throw std::exception("GetOppositeSideForDirection: unknown direction");
 		}
 
 		static Side GetSideForDirection(const Direction direction)
 		{
 			switch(direction)
 			{
-			case Direction::Up: return Side::Top;
-			case Direction::Down: return Side::Bottom;
-			case Direction::Left: return Side::Left;
-			case Direction::Right: return Side::Right;
+				case Direction::Up: return Side::Top;
+				case Direction::Down: return Side::Bottom;
+				case Direction::Left: return Side::Left;
+				case Direction::Right: return Side::Right;
+				case Direction::None: break;
 			}
+			throw std::exception("GetSideForDirection: unknown direction");
 		}
 	};
 }

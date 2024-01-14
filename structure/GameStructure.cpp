@@ -106,7 +106,7 @@ namespace gamelib
 	void GameStructure::Draw(unsigned long percentWithinTick)
 	{
 		// Time-sensitive, skip queue. Draws the current scene
-		EventManager::Get()->DispatchEventToSubscriber(EventFactory::Get()->CreateGenericEvent(DrawCurrentSceneEventId), 0UL);
+		EventManager::Get()->DispatchEventToSubscriber(EventFactory::Get()->CreateGenericEvent(DrawCurrentSceneEventId, "GameStructure"), 0UL);
 	}
 
 

@@ -432,6 +432,12 @@
     <ClInclude Include="character\StatefulMove.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="graphic\Window.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="graphic\Subscribable.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -684,6 +690,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="character\StatefulMove.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="graphic\Window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="graphic\Subscribable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

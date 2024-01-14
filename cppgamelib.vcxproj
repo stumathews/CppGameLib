@@ -215,6 +215,8 @@
     <ClInclude Include="cppgamelib\time.h" />
     <ClInclude Include="cppgamelib\utils.h" />
     <ClInclude Include="character\StatefulMove.h" />
+    <ClInclude Include="graphic\Subscribable.h" />
+    <ClInclude Include="graphic\Window.h" />
     <ClInclude Include="time\PeriodicTimer.h" />
     <ClInclude Include="events\EventId.h" />
     <ClInclude Include="events\EventFactory.h" />
@@ -327,6 +329,8 @@
     <ClCompile Include="ai\BehaviorTreeBuilder.cpp" />
     <ClCompile Include="character\DirectionUtils.cpp" />
     <ClCompile Include="character\StatefulMove.cpp" />
+    <ClCompile Include="graphic\Subscribable.cpp" />
+    <ClCompile Include="graphic\Window.cpp" />
     <ClCompile Include="time\PeriodicTimer.cpp" />
     <ClCompile Include="events\EventId.cpp" />
     <ClCompile Include="events\EventFactory.cpp" />

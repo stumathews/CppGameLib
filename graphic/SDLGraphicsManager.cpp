@@ -6,6 +6,8 @@
 #include <SDL.h>
 #include <functional>
 #include <SDL_mixer.h>
+
+#include "Window.h"
 #include "audio/AudioManager.h"
 #include "common/Common.h"
 #include "events/EventManager.h"
@@ -16,7 +18,7 @@ using namespace std;
 
 namespace gamelib
 {
-	SDL_Window* CreateSdlWindow(const int screenWidth, const int screenHeight, const char* windowTitle)
+	SDL_Window* SdlGraphicsManager::CreateSdlWindow(const int screenWidth, const int screenHeight, const char* windowTitle)
 	{
 		const auto outWindow = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight,SDL_WINDOW_SHOWN);	
 
@@ -28,7 +30,7 @@ namespace gamelib
 		return outWindow;
 	}
 
-	SDL_Renderer* GetSdlRendererFromWindow(SDL_Window* window)
+	SDL_Renderer* SdlGraphicsManager::GetSdlRendererFromWindow(SDL_Window* window)
 	{
 		const auto renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 		
@@ -39,13 +41,11 @@ namespace gamelib
 		
 		return renderer;
 	}
-
-
+	
 	bool SdlGraphicsManager::Initialize(const uint width, const uint height, const char * windowTitle)
 	{
 		Logger::Get()->LogThis("SDLGraphicsManager::Initialize()", SettingsManager::Bool("global", "verbose"));
-		
-		
+				
 		// Initialize SDL Image extension/library
 		constexpr int imgFlags = IMG_INIT_PNG;
 		if(!(IMG_Init(imgFlags) & imgFlags ))
@@ -57,62 +57,28 @@ namespace gamelib
 			THROW(12, message.str(), "SDLGraphicsManager");
 		}
 
-		// Create the Window
-		window = CreateSdlWindow(static_cast<int>(width), static_cast<int>(height), windowTitle);	
-		WindowRenderer = GetSdlRendererFromWindow(window);
-
-		if(WindowRenderer == nullptr)
-		{
-			std::stringstream message;
-			message << "Could not get Window Renderer: " << SDL_GetError();
-			THROW(12, message.str(), "SDLGraphicsManager");
-		}
-
-		screenHeight = height;
-		screenWidth = width;
-
-		// Set drawing colour to Grey background
-		SDL_SetRenderDrawColor(WindowRenderer, 192,192,192, 0);
+		// Create the main window
+		mainWindow = std::make_shared<Window>(MainWindowName, width, height, windowTitle);
+		mainWindow->Initialize();
 			
-
 		Logger::Get()->LogThis("SDLGraphicsManager ready.");
 
 		return true;
 	}
 
-
-	void SdlGraphicsManager::ClearAndDraw(const std::function<void(SDL_Renderer* renderer)> &drawObjectsFn) const
+	void SdlGraphicsManager::ClearAndDraw(const std::function<void(SDL_Renderer* renderer)> &drawObjects) const
 	{
-		// Backup current render color
-		SDL_Color oldColour = {0, 0, 0, 0};
-		SDL_GetRenderDrawColor(WindowRenderer, &oldColour.r, &oldColour.g, &oldColour.b, &oldColour.a);
-		
-		// Clear
-		SDL_RenderClear(WindowRenderer);
-
-		// Draw everything
-		drawObjectsFn(WindowRenderer);
-		
-		// Set draw colour
-		SDL_SetRenderDrawColor(WindowRenderer, oldColour.r, oldColour.g, oldColour.b, oldColour.a); // nb: restore whatever the render routine set as the draw color to
-		
-		// Show what we've drawn
-		SDL_RenderPresent(WindowRenderer);
-	}
-
-	void SdlGraphicsManager::ShowOnly() const
-	{
-		SDL_RenderPresent(WindowRenderer);
+		mainWindow->ClearAndDraw(drawObjects);
 	}
 	
 	SdlGraphicsManager::~SdlGraphicsManager()
 	{
-		SDL_DestroyRenderer(WindowRenderer);
-		SDL_DestroyWindow(window);
 	    IMG_Quit();
 	    SDL_Quit();
 		instance = nullptr;
 	}
+
+	shared_ptr<Window> SdlGraphicsManager::GetMainWindow() { return mainWindow; }
 		
 	SdlGraphicsManager* SdlGraphicsManager::Get()
 	{
@@ -143,8 +109,7 @@ namespace gamelib
 	{
 		IMG_Quit();
 	}
-
-
+	
 	std::shared_ptr<GraphicAsset> SdlGraphicsManager::ToGraphicAsset(const std::shared_ptr<Asset>& asset)
 	{
 		return AsAsset<GraphicAsset>(asset);

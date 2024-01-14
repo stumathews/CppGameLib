@@ -6,13 +6,15 @@
 #include <memory>
 #include "SDL.h"
 #include <functional>
+
+#include "Window.h"
 #include "events/EventManager.h"
 #include "events/EventSubscriber.h"
 
 
 namespace gamelib
 {
-	class SceneManager;
+	class SceneManager;	
 
 	class SdlGraphicsManager final : public EventSubscriber
 	{
@@ -25,31 +27,30 @@ namespace gamelib
 		SdlGraphicsManager & operator=(SdlGraphicsManager &&other) = delete;
 		SdlGraphicsManager& operator=(SdlGraphicsManager const&)  = delete;
 		~SdlGraphicsManager() override;
-			
+		std::shared_ptr<Window> GetMainWindow();
+
+		static SDL_Window* CreateSdlWindow(int screenWidth, int screenHeight, const char* windowTitle);
+		static SDL_Renderer* GetSdlRendererFromWindow(SDL_Window* window);
 		bool Initialize(uint width = 800, uint height = 600, const char* windowTitle = nullptr);
 		static void Unload();
-
+		
 		void ClearAndDraw(const std::function<void(SDL_Renderer* renderer)>& drawObjects) const;
-		void ShowOnly() const;
 
-		[[nodiscard]] uint GetScreenWidth() const { return screenWidth;}
-		[[nodiscard]] uint GetScreenHeight() const { return screenHeight;}
+		[[nodiscard]] uint GetScreenWidth() const { return mainWindow->Width();}
+		[[nodiscard]] uint GetScreenHeight() const { return mainWindow->Height();}
 		
 	    std::string GetSubscriberName() override;
 		
 
 		static std::shared_ptr<GraphicAsset> ToGraphicAsset(const std::shared_ptr<Asset>& asset);
-
-		SDL_Renderer* WindowRenderer = nullptr; //The window renderer
+		const char* MainWindowName = "main";
 	protected:		
 		static SdlGraphicsManager* instance;
 	private:		
-		SdlGraphicsManager();
-		uint screenWidth = 0;
-		uint screenHeight = 0;		
-		SDL_Window* window = nullptr; //The window we'll be rendering to
-		SDL_Surface* windowSurface = nullptr; 
-		ListOfEvents HandleEvent(std::shared_ptr<Event> theEvent, unsigned long deltaMs) override;
+		SdlGraphicsManager();	
+		std::shared_ptr<Window> mainWindow; //The window we'll be rendering to
+		std::map<std::string, std::shared_ptr<Window>> windows;
+		ListOfEvents HandleEvent(std::shared_ptr<Event> event, unsigned long deltaMs) override;
 	};
 }
 #endif

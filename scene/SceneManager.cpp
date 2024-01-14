@@ -26,7 +26,10 @@ namespace gamelib
 	SceneManager* SceneManager::Get() { if (instance == nullptr) { instance = new SceneManager(); } return instance; }
 	SceneManager::~SceneManager() { instance = nullptr; }
 		
-	void SceneManager::AddGameObjectToScene(const shared_ptr<Event>& event) const { layers.back()->Objects.push_back(GetGameObjectFrom(event)); }
+	void SceneManager::AddGameObjectToScene(const shared_ptr<Event>& event) const
+	{
+		layers.back()->Objects.push_back(GetGameObjectFrom(event));
+	}
 	void SceneManager::Update() { }
 	void SceneManager::SetSceneFolder(const string& inSceneFolder) { this->sceneFolder = inSceneFolder; }
 	void SceneManager::OnVisibleParse(const shared_ptr<Layer>& layer, const string& value) { layer->Visible = (value == "true") ? true : false; }

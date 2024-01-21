@@ -10,7 +10,7 @@ namespace gamelib
 		virtual ~IGameLoopStrategy() = default;
 		virtual void Update(unsigned long deltaMs) = 0;
 		virtual void Draw() = 0;
-		virtual void Loop(const GameWorldData* gameWorldData) = 0;
+		virtual void Loop(GameWorldData* gameWorldData) = 0;
 		
 	};
 }

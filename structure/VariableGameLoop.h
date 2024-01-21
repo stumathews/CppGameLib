@@ -14,7 +14,7 @@ namespace gamelib
 		VariableGameLoop(std::function<void(unsigned long deltaMs)> updateFunc, std::function<void()> drawFunc);
 		void Update(unsigned long deltaMs) override;
 		void Draw() override;
-		void Loop(const GameWorldData* gameWorldData) override;
+		void Loop(GameWorldData* gameWorldData) override;
 	private:
 		std::function<void(unsigned long deltaMs)> updateFunction;
 		std::function<void()> drawFunction;

@@ -215,6 +215,7 @@
     <ClInclude Include="cppgamelib\time.h" />
     <ClInclude Include="cppgamelib\utils.h" />
     <ClInclude Include="character\StatefulMove.h" />
+    <ClInclude Include="events\SubscriberHandledEvent.h" />
     <ClInclude Include="graphic\Subscribable.h" />
     <ClInclude Include="graphic\Window.h" />
     <ClInclude Include="time\PeriodicTimer.h" />

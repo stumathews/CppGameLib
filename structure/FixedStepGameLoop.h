@@ -12,7 +12,7 @@ namespace gamelib
 			std::function<void(unsigned long deltaMs)> updateFunc, 
 			std::function<void()> drawFunc,
 			std::function<void(unsigned long deltaMs)> inputFunc);		
-		void Loop(const GameWorldData* gameWorldData) override;
+		void Loop(GameWorldData* gameWorldData) override;
 	private:
 		static long GetTimeNowMs();
 		void Update(unsigned long deltaMs) override;

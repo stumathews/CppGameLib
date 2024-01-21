@@ -158,7 +158,7 @@ namespace gamelib
 		}
 	}
 
-	std::vector<std::shared_ptr<Event>> UdpGameServerConnection::HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs)
+	std::vector<std::shared_ptr<Event>> UdpGameServerConnection::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs)
 	{
 		// We dont handle events yet
 		return {};

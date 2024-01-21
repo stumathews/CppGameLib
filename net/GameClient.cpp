@@ -177,7 +177,7 @@ namespace gamelib
 		eventManager->RaiseEventWithNoLogging(eventFactory->CreateNetworkTrafficReceivedEvent(buffer, "Game Server", bytesReceived, this->GetSubscriberName()));
 	}
 
-	std::vector<std::shared_ptr<Event>> GameClient::HandleEvent(const std::shared_ptr<Event> evt, unsigned long deltaMs)
+	std::vector<std::shared_ptr<Event>> GameClient::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs)
 	{		
 		std::vector<std::shared_ptr<Event>> createdEvents;
 

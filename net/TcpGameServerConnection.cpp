@@ -74,7 +74,7 @@ namespace gamelib
 		}
 	}
 
-	std::vector<std::shared_ptr<Event>> TcpGameServerConnection::HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs)
+	std::vector<std::shared_ptr<Event>> TcpGameServerConnection::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs)
 	{
 		return {};
 	}

@@ -5,6 +5,7 @@
 #include "scene/SceneManager.h"
 
 #include "IGameLoopStrategy.h"
+#include "VariableGameLoop.h"
 
 namespace gamelib
 {
@@ -20,6 +21,7 @@ namespace gamelib
 		/// </summary>
 		explicit GameStructure(std::function<void(unsigned long deltaMs)> getInputFunction);
 		GameStructure(std::shared_ptr<IGameLoopStrategy> gameLoop);
+		std::shared_ptr<VariableGameLoop> MakeVariableGameLoop() const;
 		GameStructure(const GameStructure& other) = delete;
 		GameStructure(const GameStructure&& other) = delete;
 		GameStructure& operator=(const GameStructure& other) = delete;
@@ -40,7 +42,7 @@ namespace gamelib
 		/// Do the Game Loop
 		/// </summary>
 		/// <returns></returns>
-		bool DoGameLoop(const GameWorldData* gameWorldData) const;	
+		bool DoGameLoop(GameWorldData* gameWorldData) const;	
 		
 
 	private:
@@ -58,7 +60,7 @@ namespace gamelib
 		/// <summary>
 		/// Handle any game Structure events
 		/// </summary>
-		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> event, unsigned long deltaMs) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& event, const unsigned long deltaMs) override;
 
 		/// <summary>
 		/// Name we register with the event system

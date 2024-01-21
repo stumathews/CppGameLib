@@ -94,7 +94,7 @@ namespace gamelib
 
 	SdlGraphicsManager::SdlGraphicsManager() = default;
 
-	vector<shared_ptr<Event>> SdlGraphicsManager::HandleEvent(const std::shared_ptr<Event> event, unsigned long deltaMs)
+	vector<shared_ptr<Event>> SdlGraphicsManager::HandleEvent(const std::shared_ptr<Event>& event, const unsigned long deltaMs)
 	{ 
 		return {};	
 	}	

@@ -19,7 +19,7 @@ using namespace std;
 using namespace gamelib;
 
 
-class NetworkingTests : public ::testing::Test
+class NetworkingTests : public testing::Test
 {
 public:
 

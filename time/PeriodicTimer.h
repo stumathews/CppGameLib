@@ -12,7 +12,7 @@ namespace gamelib
 		void SetFrequency(int everyMs);
 
 	private:
-		gamelib::Timer timer{};
+		Timer timer{};
 		unsigned everyMs {};
 		bool ready {};
 	};

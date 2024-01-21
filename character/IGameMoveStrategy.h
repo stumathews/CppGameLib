@@ -24,7 +24,7 @@ namespace gamelib
 		/// </summary>
 		/// <returns>true if movement could be performed, false otherwise</returns>
 		virtual bool MoveGameObject(std::shared_ptr<IMovement> movement) = 0;
-		virtual bool IsValidMove(const std::shared_ptr<gamelib::IMovement>& movement) = 0;
+		virtual bool IsValidMove(const std::shared_ptr<IMovement>& movement) = 0;
 		virtual bool CanGameObjectMove(Direction direction) = 0;
 	};
 }

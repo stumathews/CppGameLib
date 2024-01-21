@@ -22,16 +22,19 @@ inline void gamelib::FixedStepGameLoop::Update(const unsigned long deltaMs)
 
 inline void gamelib::FixedStepGameLoop::Draw() { DrawFunc(); }
 
-void gamelib::FixedStepGameLoop::Loop(const GameWorldData* gameWorldData)
+void gamelib::FixedStepGameLoop::Loop(GameWorldData* gameWorldData)
 {
 	// fixed loop strategy: https://gameprogrammingpatterns.com/game-loop.html
-	double previous = GetTimeNowMs();
-	double lag = 0.0;
+	unsigned long previous = GetTimeNowMs();
+	unsigned long lag = 0.0;
 
 	while (!gameWorldData->IsGameDone)
 	{
-		const double current = GetTimeNowMs();
-		const double elapsed = current - previous;
+		const unsigned long current = GetTimeNowMs();
+		const unsigned long elapsed = current - previous;
+
+		gameWorldData->ElapsedGameTime += elapsed;
+
 		previous = current;
 		lag += elapsed;
 

@@ -27,6 +27,8 @@ namespace gamelib
 		[[nodiscard]] bool IsSinglePlayerGame() const { return !IsNetworkGame; }
 
 		[[nodiscard]] bool IsMultiPlayerGame() const { return IsNetworkGame; }
+
+		unsigned long ElapsedGameTime;
 	};
 }
 

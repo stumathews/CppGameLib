@@ -71,5 +71,5 @@ gamelib::Direction gamelib::DirectionUtils::FromDirectionString(const std::strin
 		return Direction::Right;
 	}
 
-	return gamelib::Direction::None;
+	return Direction::None;
 }

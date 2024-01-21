@@ -10,7 +10,7 @@ class DummySubscriber final : public EventSubscriber, public enable_shared_from_
 public:
 	bool HandleEventReceived = false;
 	
-	virtual std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs) override
+	virtual std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs) override
 	{
 		HandleEventReceived = true;
 		return {};
@@ -21,7 +21,7 @@ public:
 	}
 };
 
-class EventManagerTests : public ::testing::Test 
+class EventManagerTests : public testing::Test 
 {
  protected:
   
@@ -106,5 +106,16 @@ TEST_F(EventManagerTests, ClearSubscribersTest)
 	EventManager::Get()->ClearSubscribers();
 
 	EXPECT_EQ(0, all_event_subscribers.size()) << "Expected all the subscribers to have been removed";
+
+}
+
+TEST_F(EventManagerTests, CantSubscribeAgain)
+{
+	EventManager::Get()->SubscribeToEvent(Id, &subscriber);
+	EventManager::Get()->SubscribeToEvent(Id, &subscriber);
+
+	auto& all_event_subscribers = EventManager::Get()->GetSubscriptions();
+
+	EXPECT_TRUE(all_event_subscribers[Id].size(), 1);
 
 }

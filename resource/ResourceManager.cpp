@@ -34,7 +34,7 @@ namespace gamelib
 		}, true, true);
 	}
 
-	vector<shared_ptr<Event>> ResourceManager::HandleEvent(const shared_ptr<Event> event, unsigned long deltaMs)
+	vector<shared_ptr<Event>> ResourceManager::HandleEvent(const std::shared_ptr<Event>& event, const unsigned long deltaMs)
 	{
 		if (event->Id.PrimaryId == LevelChangedEventTypeEventId.PrimaryId)
 		{

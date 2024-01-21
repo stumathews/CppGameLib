@@ -32,7 +32,7 @@ void gamelib::VariableGameLoop::Draw()
 	drawFunc();
 }
 
-void gamelib::VariableGameLoop::Loop(const GameWorldData* gameWorldData)
+void gamelib::VariableGameLoop::Loop(GameWorldData* gameWorldData)
 {
 	const auto maxCatchupLoops = SettingsManager::Int("global", "max_loops");
 		const auto printFrameRate = SettingsManager::Bool("gameStructure", "printFrameRate");

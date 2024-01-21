@@ -9,6 +9,7 @@
 
 #include "UpdateAllGameObjectsEvent.h"
 #include "UpdateProcessesEvent.h"
+#include <events/SubscriberHandledEvent.h>
 
 namespace gamelib
 {
@@ -93,6 +94,13 @@ namespace gamelib
 		ControllerMoveEvent::KeyState keyState) const
 	{
 		return std::make_shared<ControllerMoveEvent>(direction, keyState);
+	}
+
+	std::shared_ptr<Event> EventFactory::CreateSubscriberHandledEvent(IEventSubscriber* value,
+	                                                                  const std::shared_ptr<Event>& event,
+	                                                                  unsigned long deltaMs) const
+	{
+		return std::make_shared<SubscriberHandledEvent>(value, event, deltaMs);
 	}
 
 	std::shared_ptr<AddGameObjectToCurrentSceneEvent> EventFactory::CreateAddToSceneEvent(const std::shared_ptr<GameObject> & obj)

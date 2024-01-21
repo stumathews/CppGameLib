@@ -30,19 +30,24 @@ namespace gamelib
 	{
 	}
 
+	shared_ptr<VariableGameLoop> GameStructure::MakeVariableGameLoop() const
+	{
+		return make_shared<VariableGameLoop>(
+			[&](const unsigned long deltaMs) { Update(deltaMs); },
+			[&]() { Draw(0UL); });
+	}
+
 	GameStructure::GameStructure(std::function<void(unsigned long deltaMs)> getInputFunction)
 		: getControllerInputFunction(std::move(getInputFunction)), gameLoop(nullptr)
 	{
 		// We use the old variable game loop if we don't specify a specific one
-		gameLoop =  make_shared<VariableGameLoop>(
-			[&](const unsigned long deltaMs) { Update(deltaMs); },
-			[&]() { Draw(0UL);});		
+		gameLoop =  MakeVariableGameLoop();		
 	}
 	/// <summary>
 	/// Update & Draw until the game ends
 	/// </summary>
 	/// <returns></returns>
-	bool GameStructure::DoGameLoop(const GameWorldData* gameWorldData) const
+	bool GameStructure::DoGameLoop(GameWorldData* gameWorldData) const
 	{
 		gameLoop->Loop(gameWorldData);
 		std::cout << "Game done" << std::endl;
@@ -176,7 +181,7 @@ namespace gamelib
 		
 	}
 
-	vector<shared_ptr<Event>> GameStructure::HandleEvent(std::shared_ptr<Event> the_event, unsigned long deltaMs)
+	vector<shared_ptr<Event>> GameStructure::HandleEvent(const std::shared_ptr<Event>& the_event, const unsigned long deltaMs)
 	{
 		return {};
 	}

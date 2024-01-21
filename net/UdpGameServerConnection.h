@@ -51,7 +51,7 @@ namespace gamelib
 		void SendEventToAllPlayers(std::string serializedEvent) override;
 
 		// Inherited via EventSubscriber
-		std::vector<std::shared_ptr<Event>> HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs) override;
 		std::string GetSubscriberName() override;
 
 		// Inherited via IGameServerConnection

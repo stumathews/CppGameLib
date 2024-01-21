@@ -24,6 +24,7 @@ namespace gamelib
 		StartNetworkLevel,
 		UpdateProcesses,
 		GameWon,
+		SubscriberEventHandled,
 	};
 
 

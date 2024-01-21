@@ -8,6 +8,9 @@
 #include <file/SettingsManager.h>
 #include <sstream>
 #include <string>
+
+#include "EventFactory.h"
+#include "SubscriberHandledEvent.h"
 #include "UpdateAllGameObjectsEvent.h"
 
 using namespace std;
@@ -86,8 +89,30 @@ namespace gamelib
 
 			Logger::Get()->LogThis(message.str());
 
-			eventSubscribers[eventId].push_back(you);			
+			// Prevent same subscriber adding duplicate subscriptions
+			if(std::find(eventSubscribers[eventId].begin(), eventSubscribers[eventId].end(), you) != eventSubscribers[eventId].end())
+			{
+				return;
+			}
+			eventSubscribers[eventId].push_back(you);
 		}
+	}
+
+	void EventManager::Send(const shared_ptr<Event>& event, IEventSubscriber* pSubscriber, const unsigned long deltaMs)
+	{
+		for(const auto &secondaryEvent : pSubscriber->HandleEvent(event, deltaMs))
+		{
+			AddToSecondaryEventQueue(secondaryEvent, pSubscriber);
+		}
+
+		// let subscribers tap/peek into events
+		if(tap) 
+			tap(event, pSubscriber);
+	}
+
+	void EventManager::SetEventTap(const std::function<void(const std::shared_ptr<Event>& event, const IEventSubscriber* pSubscriber)>& tapFn)
+	{
+		tap = tapFn;
 	}
 
 	/// <summary>
@@ -114,10 +139,7 @@ namespace gamelib
 			}					
 			
 			// allow subscriber to process the event
-			for(const auto &secondaryEvent : pSubscriber->HandleEvent(event, deltaMs))
-			{
-				AddToSecondaryEventQueue(secondaryEvent, pSubscriber);
-			}
+			Send(event, pSubscriber, deltaMs);
 
 			eventsDispatched[event->Id]++;			
 		}	
@@ -162,10 +184,7 @@ namespace gamelib
 			if (pSubscriber->GetSubscriberName() != target) { return; }
 						
 			// allow subscriber to process the event
-			for(const auto &secondaryEvent : pSubscriber->HandleEvent(event))
-			{
-				AddToSecondaryEventQueue(secondaryEvent, pSubscriber);
-			}				
+			Send(event, pSubscriber);
 		}
 		event->Processed = true;
 	}
@@ -200,7 +219,7 @@ namespace gamelib
 	/// <summary>
 	/// Handles events that the event manager subscribes to itself
 	/// </summary>
-	std::vector<std::shared_ptr<Event>> EventManager::HandleEvent(std::shared_ptr<Event> evt, unsigned long deltaMs)
+	std::vector<std::shared_ptr<Event>> EventManager::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs)
 	{
 		// Does not handle any events in the event queue itself
 		return {};

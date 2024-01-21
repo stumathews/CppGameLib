@@ -63,7 +63,7 @@ namespace gamelib
 		return isInitialized;
 	}
 
-	vector<shared_ptr<Event>> SceneManager::HandleEvent(const shared_ptr<Event> event, const unsigned long deltaMs)
+	vector<shared_ptr<Event>> SceneManager::HandleEvent(const std::shared_ptr<Event>& event, const unsigned long deltaMs)
 	{
 		vector<shared_ptr<Event>> secondaryEvents;
 

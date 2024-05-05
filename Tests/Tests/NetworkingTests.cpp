@@ -146,7 +146,6 @@ public:
 		EXPECT_TRUE(resultEvent != nullptr);
 		EXPECT_EQ(joinedEvent->Origin, ServerOrigin);
 		EXPECT_EQ(joinedEvent->Player.GetNickName(), playerNick);
-
 	}
 	
 	void EnsurePongTrafficReceivedByClient(const std::vector<shared_ptr<Event>>& clientEmittedEvents, const std::string& messageIdentifier, const std::string& expectedEventOrigin) const
@@ -207,7 +206,7 @@ TEST_F(NetworkingTests, TestConnectToServer)
 	
 	// Wait for the server to respond
 	Sleep(1000);
-	Client->Listen();
+	Client->Read();
 
 	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
 
@@ -233,7 +232,7 @@ TEST_F(NetworkingTests, TestPing)
 	Sleep(1000);
 
 	// Read pong response
-	Client->Listen();
+	Client->Read();
 
 	// Collect events raised
 
@@ -275,9 +274,9 @@ TEST_F(NetworkingTests, MultiPlayerJoinEventsEmittedOnConnect)
 	// Wait for the server to respond
 	Sleep(1000);
 
-	client1->Listen();
-	client2->Listen();
-	client3->Listen();
+	client1->Read();
+	client2->Read();
+	client3->Read();
 	
 	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
 	

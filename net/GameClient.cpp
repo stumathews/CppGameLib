@@ -83,7 +83,7 @@ namespace gamelib
 	}
 
 
-	void GameClient::Listen()
+	void GameClient::Read()
 	{
 		if(this->isDisconnectedFromGameServer)
 		{

@@ -35,7 +35,7 @@ namespace gamelib
 		/// <summary>
 		/// Listen for incoming traffic from the game server
 		/// </summary>
-		void Listen();
+		void Read();
 		
 	private:
 		std::shared_ptr<GameServer> gameServer;

@@ -76,7 +76,7 @@ namespace gamelib
 			}
 			else
 			{
-				Client->Listen();
+				Client->Read();
 			}
 		}
 	}

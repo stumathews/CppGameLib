@@ -63,35 +63,36 @@ public:
 
 	Message* Send(PacketDatum datum)
 	{
-		sequence++;
-		std::vector<PacketDatum> data = {};
+		// increase sequence number for this datum to be sent
+		datum.Sequence = ++sequence;
 
-		// add data to message
-		datum.Sequence = sequence; // stamp the packet with indication of the sequence we will use
-		data.push_back(datum);
+		// Prepare the package of data that will be sent starting with the datum that's intended to be sent
+		std::vector dataToSent = { datum };		
 
 		// add to send buffer
 		sendBuffer.Put(sequence, datum);
-
-		// Prepare a message to send. It may contain other data that was not acked previously
-
-		// we'll send any unacked data that is supposed to have been sent
+		
+		// We'll attach any unacked data that was supposed to have been sent previously
 		for(uint16_t i = 1; i <= sendBuffer.GetBufferSize(); i++)
 		{
-			auto pCurrentPacket = sendBuffer.Get(sequence - i);
+			// Get previous sequence and see if its unacked...
+			const auto pPreviousDatum = sendBuffer.Get(sequence - i);
 
-			if(pCurrentPacket == nullptr) continue;
+			if(pPreviousDatum == nullptr) continue;
 
-			auto currentPacket = *pCurrentPacket;
-			
-			if(!currentPacket.Acked)
+			auto previousDatum = *pPreviousDatum;
+
+			// We have some previous data that was not sent.
+			if(!previousDatum.Acked)
 			{
-				data.push_back(currentPacket);
+				// Add it to what must be sent with this message
+				dataToSent.push_back(previousDatum);
 			}
 		}
 
-		// Send Message
-		sentMessage = new Message(sequence, lastAckededSequence, GenerateAckedBits(), data.size(), data.data());
+		// Send Message, attaching any consecutive data that was not previously sent
+		// also include a reference to what we've received from the sender previously, just in case an ack did not go through to the sender
+		sentMessage = new Message(sequence, lastAckededSequence, GeneratePreviousAckedBits(), dataToSent.size(), dataToSent.data());
 		return sentMessage;
 	}
 
@@ -99,49 +100,49 @@ public:
 	{
 		const auto messageSequence = message.Header.Sequence;
 		
-		// Mark the sender's acked 
+		// Mark the sender's last known message it acked from us as acked, i.e no need to resend 
 		sendBuffer.Put(message.Header.LastAckedSequence, PacketDatum(true));
 			
-		// The sender also may have acked the previous 32 packets, also remove those
-		constexpr uint16_t numBits = sizeof(message.Header.LastAckedBits) * 8;
-		for(uint16_t i = 1; i <= numBits ;i++)
+		// Look through the sender's list of previously acked messages and ensure that we dont re-send them
+		constexpr uint16_t numBits = sizeof message.Header.LastAckedBits * 8;
+		for(uint16_t i = 1; i < numBits ;i++)
 		{
 			if(BitFiddler<uint32_t>::BitCheck(message.Header.LastAckedBits, i))
 			{
-				const uint16_t currentSequence = message.Header.LastAckedSequence - i;
-				sendBuffer.Put(currentSequence, PacketDatum(true));
+				const uint16_t previousSequence = (message.Header.LastAckedSequence - i) + 1;
+				auto datumToUpdate = *sendBuffer.Get(previousSequence); datumToUpdate.Acked = true;
+				sendBuffer.Put(previousSequence, datumToUpdate);
 			}
 		}
 
-		// mark all the containing sequences as having been received too
-		for(auto i = 1; i < message.Data().size()-1; i++)
+		// mark all the containing prior sequences as having been received too
+		for(uint16_t i = 1; i < message.Data().size()-1; i++)
 		{
 			const uint16_t currentSequence = messageSequence - i;
-			auto thisData = message.Data()[currentSequence];
-			thisData.Acked = true;
-			receiveBuffer.Put(currentSequence, thisData);
+			auto datumToUpdate = message.Data()[currentSequence]; datumToUpdate.Acked = true;
+			receiveBuffer.Put(currentSequence, datumToUpdate);
 		}		
 			
-		// mark incoming sequence as received
-		PacketDatum incomingData = message.Data()[0];
-		incomingData.Acked = true;
+		// mark the this incoming sequence as finally received after all previous ones contained in the message
+		PacketDatum incomingData = message.Data()[0]; incomingData.Acked = true;
 		receiveBuffer.Put(messageSequence, incomingData);
-		
+
+		// last mark this as the last acknowledged sequence if we've not seen it before, i.e it larger than waht we've previously seen
 		if(messageSequence > lastAckededSequence)
 		{
 			lastAckededSequence = messageSequence;
 		}
 	}
 
-	uint32_t GenerateAckedBits()
+	uint32_t GeneratePreviousAckedBits()
 	{
-		uint32_t previousAcked {};
+		uint32_t previousAckedBits {};
 
-		previousAcked = BitFiddler<uint32_t>::ClearBit(previousAcked, 0);
+		// Bit 0 is always unset as it represents the current datm, while bit n represents (current - n) ie nth previous datum 
+		previousAckedBits = BitFiddler<uint32_t>::ClearBit(previousAckedBits, 0);
 
-		// get data for the last 32 acked packet sequences not including lastAckedSequence
-		///constexpr uint16_t numBits = sizeof(message.Header.LastAckedBits) * 8;
-		for(uint16_t i = 0; i < 32;i++)
+		// Read the list of already received & acked data.
+		for(uint32_t i = 0; i < sizeof previousAckedBits * 8; i++)
 		{
 			const PacketDatum* pCurrentPacket = receiveBuffer.Get(lastAckededSequence - i);
 
@@ -150,26 +151,24 @@ public:
 				const PacketDatum currentPacket = *pCurrentPacket;
 				if(currentPacket.Acked)
 				{				
-					previousAcked = BitFiddler<uint32_t>::SetBit(previousAcked, i+1);
+					previousAckedBits = BitFiddler<uint32_t>::SetBit(previousAckedBits, i + 1);
 					continue;
 				}
 			}
 
-			previousAcked = BitFiddler<uint32_t>::ClearBit(previousAcked, i+1);		
-			
+			previousAckedBits = BitFiddler<uint32_t>::ClearBit(previousAckedBits, i + 1);					
 		}
-
-		return previousAcked;
+		
+		// NB: we'll tell the receiver that this is what we've already received
+		return previousAckedBits;
 	}
-
-	uint16_t sequence {};
-	uint16_t lastAckededSequence {};
-
-	RingBuffer<PacketDatum> receiveBuffer;
-	RingBuffer<PacketDatum> sendBuffer;
-	Message* sentMessage;
-private:
 	
+	RingBuffer<PacketDatum> receiveBuffer;
+	RingBuffer<PacketDatum> sendBuffer;	
+	uint16_t lastAckededSequence {};
+private:
+	Message* sentMessage{};
+	uint16_t sequence {};	
 };
 
 class ReliableUdpTests : public testing::Test
@@ -267,7 +266,7 @@ TEST_F(ReliableUdpTests, BasicRecieve)
 	EXPECT_EQ(reliableUdp.lastAckededSequence, message3->Header.Sequence);
 	EXPECT_TRUE(reliableUdp.receiveBuffer.Get(message3->Header.Sequence)->Acked);
 
-	auto senderAckedBits = reliableUdp.GenerateAckedBits();
+	auto senderAckedBits = reliableUdp.GeneratePreviousAckedBits();
 
 	EXPECT_FALSE(BitFiddler<uint32_t>::BitCheck(senderAckedBits, 0)); // if bit n is set, means the nth prior sequence was received eg. 3-0 = sequence 3
 	EXPECT_TRUE(BitFiddler<uint32_t>::BitCheck(senderAckedBits, 1));  // if bit n is set, means the nth prior sequence was received eg. 3-1 = sequence 2
@@ -323,23 +322,25 @@ TEST_F(ReliableUdpTests, AliceBobAggregateMessages)
 	ReliableUdp alice;
 	ReliableUdp bob;
 
+	// alice -[a1]-> bob
 	const auto a1SentMessage = *alice.Send(a1); bob.Receive(a1SentMessage);
 	EXPECT_TRUE(bob.receiveBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
 
-	const auto a2SentMessage = *alice.Send(a2); //bob.Receive(a2SentMessage);
-	EXPECT_TRUE(bob.receiveBuffer.Get(a2SentMessage.Header.Sequence) == nullptr); // We didn't get it
+	// alice -[a2]-> bob
+	const auto a2SentMessage = *alice.Send(a2); //bob.Receive(a2SentMessage); // simulate bob not receiving it
+	EXPECT_TRUE(bob.receiveBuffer.Get(a2SentMessage.Header.Sequence) == nullptr); // ensure bob didn't get it
 
+	// alice -[a3]-> bob
 	const auto a3SentMessage = *alice.Send(a3); bob.Receive(a3SentMessage);
-	EXPECT_TRUE(bob.receiveBuffer.Get(a2SentMessage.Header.Sequence)->Acked); // But we sent it as part of message3
+	EXPECT_TRUE(bob.receiveBuffer.Get(a2SentMessage.Header.Sequence)->Acked); // this time we go it, because it was sent as part of message3 (it was sent again)
 	EXPECT_TRUE(bob.receiveBuffer.Get(a3SentMessage.Header.Sequence)->Acked);
 
+	// bob -[b1]-> alice
 	const auto b1 = PacketDatum(false, "b1");
-
-	const auto b1SentMessage = *bob.Send(b1);
-	const auto bobReceivedAcks = BitFiddler<uint32_t>::ToString(b1SentMessage.Header.LastAckedBits);
+	const auto b1SentMessage = *bob.Send(b1); // Bob wil tell alice what it has received so far
 	alice.Receive(b1SentMessage);
 
-	// Alice should know know that only a1 and a3 were received
+	// Bob's message should now be able to inform Alice that he received a1 a2 a3 were received
 
 	EXPECT_TRUE(alice.sendBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
 	EXPECT_TRUE(alice.sendBuffer.Get(a2SentMessage.Header.Sequence)->Acked);

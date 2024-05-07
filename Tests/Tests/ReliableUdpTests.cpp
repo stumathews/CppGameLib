@@ -92,7 +92,7 @@ public:
 
 		// Send Message, attaching any consecutive data that was not previously sent
 		// also include a reference to what we've received from the sender previously, just in case an ack did not go through to the sender
-		sentMessage = new Message(sequence, lastAckededSequence, GeneratePreviousAckedBits(), dataToSent.size(), dataToSent.data());
+		sentMessage = new Message(sequence, lastAckedSequence, GeneratePreviousAckedBits(), dataToSent.size(), dataToSent.data());
 		return sentMessage;
 	}
 
@@ -128,9 +128,9 @@ public:
 		receiveBuffer.Put(messageSequence, incomingData);
 
 		// last mark this as the last acknowledged sequence if we've not seen it before, i.e it larger than waht we've previously seen
-		if(messageSequence > lastAckededSequence)
+		if(messageSequence > lastAckedSequence)
 		{
-			lastAckededSequence = messageSequence;
+			lastAckedSequence = messageSequence;
 		}
 	}
 
@@ -144,7 +144,7 @@ public:
 		// Read the list of already received & acked data.
 		for(uint32_t i = 0; i < sizeof previousAckedBits * 8; i++)
 		{
-			const PacketDatum* pCurrentPacket = receiveBuffer.Get(lastAckededSequence - i);
+			const PacketDatum* pCurrentPacket = receiveBuffer.Get(lastAckedSequence - i);
 
 			if(pCurrentPacket != nullptr)
 			{
@@ -165,7 +165,7 @@ public:
 	
 	RingBuffer<PacketDatum> receiveBuffer;
 	RingBuffer<PacketDatum> sendBuffer;	
-	uint16_t lastAckededSequence {};
+	uint16_t lastAckedSequence {};
 private:
 	Message* sentMessage{};
 	uint16_t sequence {};	
@@ -249,21 +249,21 @@ TEST_F(ReliableUdpTests, BasicRecieve)
 	reliableUdp.Receive(*message1);
 
 	EXPECT_EQ(reliableUdp.receiveBuffer.GetLastAddedSequence(), message1->Header.Sequence);
-	EXPECT_EQ(reliableUdp.lastAckededSequence, message1->Header.Sequence);
+	EXPECT_EQ(reliableUdp.lastAckedSequence, message1->Header.Sequence);
 	EXPECT_TRUE(reliableUdp.receiveBuffer.Get(message1->Header.Sequence)->Acked);
 
 	const auto* message2 = reliableUdp.Send(data2);
 	reliableUdp.Receive(*message2);
 
 	EXPECT_EQ(reliableUdp.receiveBuffer.GetLastAddedSequence(), message2->Header.Sequence);
-	EXPECT_EQ(reliableUdp.lastAckededSequence, message2->Header.Sequence);
+	EXPECT_EQ(reliableUdp.lastAckedSequence, message2->Header.Sequence);
 	EXPECT_TRUE(reliableUdp.receiveBuffer.Get(message2->Header.Sequence)->Acked);
 
 	const auto* message3 = reliableUdp.Send(data3);
 	reliableUdp.Receive(*message3);
 
 	EXPECT_EQ(reliableUdp.receiveBuffer.GetLastAddedSequence(), message3->Header.Sequence);
-	EXPECT_EQ(reliableUdp.lastAckededSequence, message3->Header.Sequence);
+	EXPECT_EQ(reliableUdp.lastAckedSequence, message3->Header.Sequence);
 	EXPECT_TRUE(reliableUdp.receiveBuffer.Get(message3->Header.Sequence)->Acked);
 
 	auto senderAckedBits = reliableUdp.GeneratePreviousAckedBits();

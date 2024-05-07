@@ -317,6 +317,8 @@
     <ClInclude Include="file\SettingDetail.h" />
     <ClInclude Include="file\SettingsManager.h" />
     <ClInclude Include="geometry\Coordinate.h" />
+    <ClInclude Include="utils\BitFiddler.h" />
+    <ClInclude Include="utils\RingBuffer.h" />
     <ClInclude Include="utils\Utils.h" />
     <ClInclude Include="structure\VariableGameLoop.h" />
   </ItemGroup>

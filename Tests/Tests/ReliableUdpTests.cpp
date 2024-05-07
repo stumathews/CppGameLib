@@ -148,7 +148,7 @@ TEST_F(ReliableUdpTests, AliceBobBasic)
 	EXPECT_EQ(a2SentMessage->Data()[0].Sequence, a2SentMessage->Header.Sequence);
 }
 
-TEST_F(ReliableUdpTests, AliceBobAggregateMessages)
+TEST_F(ReliableUdpTests, AliceBobAggregateMessagesDrop1)
 {
 	const auto a1 = ReliableUdp::PacketDatum(false, "a1");
 	const auto a2 = ReliableUdp::PacketDatum(false, "a2");
@@ -167,7 +167,7 @@ TEST_F(ReliableUdpTests, AliceBobAggregateMessages)
 
 	// alice -[a3]-> bob
 	const auto a3SentMessage = *alice.Send(a3); bob.Receive(a3SentMessage);
-	EXPECT_TRUE(bob.receiveBuffer.Get(a2SentMessage.Header.Sequence)->Acked); // this time we go it, because it was sent as part of message3 (it was sent again)
+	EXPECT_TRUE(bob.receiveBuffer.Get(a2SentMessage.Header.Sequence)->Acked); // this time we got it, because it was sent as part of message3 (it was sent again)
 	EXPECT_TRUE(bob.receiveBuffer.Get(a3SentMessage.Header.Sequence)->Acked);
 
 	// bob -[b1]-> alice
@@ -180,5 +180,49 @@ TEST_F(ReliableUdpTests, AliceBobAggregateMessages)
 	EXPECT_TRUE(alice.sendBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
 	EXPECT_TRUE(alice.sendBuffer.Get(a2SentMessage.Header.Sequence)->Acked);
 	EXPECT_TRUE(alice.sendBuffer.Get(a3SentMessage.Header.Sequence)->Acked);
+	
+}
+
+TEST_F(ReliableUdpTests, AliceBobAggregateMessagesDrop3)
+{
+	const auto a1 = ReliableUdp::PacketDatum(false, "a1");
+	const auto a2 = ReliableUdp::PacketDatum(false, "a2");
+	const auto a3 = ReliableUdp::PacketDatum(false, "a3");
+	const auto a4 = ReliableUdp::PacketDatum(false, "a4");
+	const auto a5 = ReliableUdp::PacketDatum(false, "a5");
+
+	ReliableUdp alice;
+	ReliableUdp bob;
+
+	// alice -[a1]-> bob
+	const auto a1SentMessage = *alice.Send(a1); bob.Receive(a1SentMessage);
+
+	// alice -[a2]->X bob
+	const auto a2SentMessage = *alice.Send(a2); //bob.Receive(a2SentMessage); // simulate bob not receiving it
+	EXPECT_TRUE(bob.receiveBuffer.Get(a2SentMessage.Header.Sequence) == nullptr); // ensure bob didn't get it
+
+	// alice -[a3]->X bob
+	const auto a3SentMessage = *alice.Send(a3); //bob.Receive(a3SentMessage);	
+	EXPECT_TRUE(bob.receiveBuffer.Get(a3SentMessage.Header.Sequence) == nullptr); // ensure bob didn't get it
+
+	// alice -[a4]->X bob
+	const auto a4SentMessage = *alice.Send(a4); //bob.Receive(a3SentMessage);	
+	EXPECT_TRUE(bob.receiveBuffer.Get(a4SentMessage.Header.Sequence) == nullptr); // ensure bob didn't get it
+
+	// alice -[a5]-> bob
+	const auto a5SentMessage = *alice.Send(a5); bob.Receive(a5SentMessage);	// bundles a2,a3,a4 in a5
+
+	// bob -[b1]-> alice
+	const auto b1 = ReliableUdp::PacketDatum(false, "b1");
+	const auto b1SentMessage = *bob.Send(b1); // Bob wil tell alice what it has received so far
+	alice.Receive(b1SentMessage);
+
+	// Bob's message should now be able to inform Alice that he received all were received
+
+	EXPECT_TRUE(alice.sendBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(alice.sendBuffer.Get(a2SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(alice.sendBuffer.Get(a3SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(alice.sendBuffer.Get(a4SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(alice.sendBuffer.Get(a5SentMessage.Header.Sequence)->Acked);
 	
 }

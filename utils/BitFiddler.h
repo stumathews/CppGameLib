@@ -32,6 +32,18 @@ namespace gamelib
 		// set bit n or not
 		static T SetBitTo(T number, T n, bool x) {
 			return (number & ~((T)1 << n)) | ((T)x << n);
-		}		
+		}
+
+		static std::string ToString(T number)
+		{
+			const auto maxBits = sizeof(T) * 8;
+			std::stringstream bitString;
+			for(int i = 0; i < maxBits -1; i++)
+			{
+				bitString << BitCheck(number, i) ? "1": "0";	
+			}
+
+			return bitString.str();
+		}
 	};
 }

@@ -18,14 +18,14 @@ namespace gamelib
 
 		}		
 		
-		T Get(const uint16_t sequence)
+		T* Get(const uint16_t sequence)
 		{
 		    const int index = GetSequenceIndex(sequence);
 			if(sequenceBuffer[index] == sequence)
 			{
-				return sequenceBufferData2[index];
+				return sequenceBufferData2.data() + index;
 			}
-		    return {};
+		    return nullptr;
 		}
 
 		void Put(const uint16_t sequence, T data)

@@ -33,15 +33,15 @@ TEST_F(RingBufferTests, RingBufferBasic)
 	buffer.Put(99, data1);
 	buffer.Put(100, data2);
 
-	const auto result1 = buffer.Get(99);
-	const auto result2 = buffer.Get(100);
+	const auto result1 = *buffer.Get(99);
+	const auto result2 = *buffer.Get(100);
 
 	// Overwrite buffer with new data
 	buffer.Put(101, data3);
 	buffer.Put(102, data4);
 	
-	const auto result3 = buffer.Get(101);
-	const auto result4 = buffer.Get(102);
+	const auto result3 = *buffer.Get(101);
+	const auto result4 = *buffer.Get(102);
 
 
 	// Try and use old position indexes
@@ -60,9 +60,9 @@ TEST_F(RingBufferTests, RingBufferBasic)
 	EXPECT_EQ(result4, data4);
 
 	// should only correspond to the new data as that has overwritten the old data
-	EXPECT_EQ(result5, {});
-	EXPECT_EQ(result6, {});
+	EXPECT_EQ(result5, nullptr);
+	EXPECT_EQ(result6, nullptr);
 
 	// Unknown index should return {}
-	EXPECT_EQ(result7, {});
+	EXPECT_EQ(result7, nullptr);
 }

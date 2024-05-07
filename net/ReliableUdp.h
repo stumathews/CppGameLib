@@ -69,8 +69,10 @@ namespace gamelib
 			sendBuffer.Put(sequence, datum);
 			
 			// We'll attach any unacked data that was supposed to have been sent previously
-			for(uint16_t i = 1; i <= sendBuffer.GetBufferSize(); i++)
+			for(uint16_t i = 0; i < sendBuffer.GetBufferSize(); i++)
 			{
+				if(i == 0) continue; // skip getting current sequence
+
 				// Get previous sequence and see if its unacked...
 				const auto pPreviousDatum = sendBuffer.Get(sequence - i);
 
@@ -101,8 +103,10 @@ namespace gamelib
 				
 			// Look through the sender's list of previously acked messages and ensure that we dont re-send them
 			constexpr uint16_t numBits = sizeof message.Header.LastAckedBits * 8;
-			for(uint16_t i = 1; i < numBits ;i++)
+			for(uint16_t i = 0; i < numBits ;i++)
 			{
+				if(i == 0) continue;
+
 				if(BitFiddler<uint32_t>::BitCheck(message.Header.LastAckedBits, i))
 				{
 					const uint16_t previousSequence = (message.Header.LastAckedSequence - i) + 1;
@@ -112,8 +116,10 @@ namespace gamelib
 			}
 
 			// mark all the containing prior sequences as having been received too
-			for(uint16_t i = 1; i < message.Data().size()-1; i++)
+			for(uint16_t i = 0; i < message.Data().size()-1; i++)
 			{
+				if(i == 0) continue; // skip current sequence
+
 				const uint16_t currentSequence = messageSequence - i;
 				auto datumToUpdate = message.Data()[currentSequence]; datumToUpdate.Acked = true;
 				receiveBuffer.Put(currentSequence, datumToUpdate);
@@ -138,21 +144,22 @@ namespace gamelib
 			previousAckedBits = BitFiddler<uint32_t>::ClearBit(previousAckedBits, 0);
 
 			// Read the list of already received & acked data.
-			for(uint32_t i = 0; i < sizeof previousAckedBits * 8; i++)
+			for(uint32_t i = 0; i < sizeof previousAckedBits * 8 - 1; i++) // we only set the last 31 bits. Bit 1 is always 0 meaning current sending sequence is unacked
 			{
-				const PacketDatum* pCurrentPacket = receiveBuffer.Get(lastAckedSequence - i);
+				const auto* pCurrentDatum = receiveBuffer.Get(lastAckedSequence - i);
+				const auto bitPosition = i + 1; // offset bit position by 1 as we've already
 
-				if(pCurrentPacket != nullptr)
+				if(pCurrentDatum != nullptr)
 				{
-					const PacketDatum currentPacket = *pCurrentPacket;
+					const auto currentPacket = *pCurrentDatum;
 					if(currentPacket.Acked)
 					{				
-						previousAckedBits = BitFiddler<uint32_t>::SetBit(previousAckedBits, i + 1);
+						previousAckedBits = BitFiddler<uint32_t>::SetBit(previousAckedBits, bitPosition);
 						continue;
 					}
 				}
 
-				previousAckedBits = BitFiddler<uint32_t>::ClearBit(previousAckedBits, i + 1);					
+				previousAckedBits = BitFiddler<uint32_t>::ClearBit(previousAckedBits, bitPosition);					
 			}
 			
 			// NB: we'll tell the receiver that this is what we've already received

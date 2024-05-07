@@ -4,8 +4,6 @@
 #include "net/NetworkManager.h"
 #include "events/EventManager.h"
 #include "utils/RingBuffer.h"
-#include <stdbool.h>
-
 #include "net/ReliableUdp.h"
 #include "utils/BitFiddler.h"
 
@@ -163,7 +161,7 @@ TEST_F(ReliableUdpTests, AliceBobAggregateMessages)
 	const auto a1SentMessage = *alice.Send(a1); bob.Receive(a1SentMessage);
 	EXPECT_TRUE(bob.receiveBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
 
-	// alice -[a2]-> bob
+	// alice -[a2]->X bob
 	const auto a2SentMessage = *alice.Send(a2); //bob.Receive(a2SentMessage); // simulate bob not receiving it
 	EXPECT_TRUE(bob.receiveBuffer.Get(a2SentMessage.Header.Sequence) == nullptr); // ensure bob didn't get it
 

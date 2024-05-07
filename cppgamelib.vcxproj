@@ -416,6 +416,11 @@
     <None Include="net\udpclient.skel" />
     <None Include="net\udpserver.skel" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\libmonad\lib\lib.vcxproj">
+      <Project>{a63d4542-48ca-4d12-acae-f35a729c40d0}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

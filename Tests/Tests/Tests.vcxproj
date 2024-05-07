@@ -68,8 +68,10 @@
     <ClCompile Include="FSMTests.cpp" />
     <ClCompile Include="NetworkingTests.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="ReliableUdpTests.cpp" />
     <ClCompile Include="ResourceManagerTests.cpp" />
     <ClCompile Include="GraphicAssetFactoryTests.cpp" />
+    <ClCompile Include="RingBufferTests.cpp" />
     <ClCompile Include="SceneGraphTests.cpp" />
     <ClCompile Include="SceneManagerTests.cpp" />
     <ClCompile Include="SDLGraphicsManagerTests.cpp" />

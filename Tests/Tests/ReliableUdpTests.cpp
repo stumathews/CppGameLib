@@ -95,7 +95,7 @@ public:
 		return sentMessage;
 	}
 
-	void Receive(const Message message)
+	void Receive(const Message& message)
 	{
 		const auto messageSequence = message.Header.Sequence;
 		
@@ -103,11 +103,11 @@ public:
 		sendBuffer.Put(message.Header.LastAckedSequence, PacketDatum(true));
 			
 		// The sender also may have acked the previous 32 packets, also remove those
-		for(uint16_t i = 1; i <= 32;i++)
+		for(uint16_t i = 1; i <= sizeof(message.Header.LastAckedBits) * 8 ;i++)
 		{
 			if(BitFiddler<uint32_t>::BitCheck(message.Header.LastAckedBits, i))
 			{
-				const auto currentSequence = messageSequence - i;
+				const uint16_t currentSequence = message.Header.LastAckedSequence - i;
 				sendBuffer.Put(currentSequence, PacketDatum(true));
 			}
 		}
@@ -120,16 +120,12 @@ public:
 		// mark all the containing sequences as having been received too
 		for(auto i = 1; i < message.Data().size()-1; i++)
 		{
-			const auto currentSequence = messageSequence - i;
+			const uint16_t currentSequence = messageSequence - i;
 			auto thisData = message.Data()[currentSequence];
 			thisData.Acked = true;
 			receiveBuffer.Put(currentSequence, thisData);
 		}
-
 		
-
-		
-
 		if(messageSequence > lastAckededSequence)
 		{
 			lastAckededSequence = messageSequence;
@@ -282,14 +278,65 @@ TEST_F(ReliableUdpTests, AliceBobBasic)
 	// alice -[a1]-> bob:
 
 	const auto a1 = PacketDatum( false, "a1");
-	const auto a1SentMessage = *alice.Send(a1);	bob.Receive(a1SentMessage);
 
+	// Send a1 to bob along with any indications that alice has received previously sent from bob,
+	// which would be none as bob as not sent alice anything yet
+	const auto a1SentMessage = *alice.Send(a1);
+
+	// bob receives it and marks that it was received. The next message sent to alice will inform alice that it was received
+	bob.Receive(a1SentMessage);
+
+	// As nothing from bob has been sent to alice to inform alice that bob received anything from alice, alice should still consider what it sent
+	// as having not been acknowledged
 	EXPECT_FALSE(alice.sendBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
 
 	// bob -[a1ack]-> alice:
 
-	const auto a1Ack = PacketDatum( false, "a1ack");	
-	const auto sentA1AckMessage = *bob.Send(a1Ack); alice.Receive(sentA1AckMessage);
+	const auto b1 = PacketDatum( false, "b1");
+
+	// Bob will send something to alice, and say that it knows about the last thing alice sent him, which if it happens to be what alice sent him
+	// which it it, alice can mark off that it was acked
+	const auto sentA1AckMessage = *bob.Send(b1);
+
+	alice.Receive(sentA1AckMessage);
+
+	// Expect that that bob's mesage header contained the last ack sequence, which alice removed from alice's send buffer,
+	EXPECT_TRUE(alice.sendBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
+
+	// Ensure alice does not send it again
+	const auto a2 = PacketDatum(false, "a2");
+	const auto a2SentMessage = alice.Send(a2);
+	EXPECT_TRUE(a2SentMessage->DataCount(), 1);
+	EXPECT_EQ(a2SentMessage->Data()[0].Sequence, a2SentMessage->Header.Sequence);
+}
+
+TEST_F(ReliableUdpTests, AliceBobAggregateMessages)
+{
+	const auto a1 = PacketDatum(false, "a1");
+	const auto a2 = PacketDatum(false, "a2");
+	const auto a3 = PacketDatum(false, "a3");
+
+	ReliableUdp alice;
+	ReliableUdp bob;
+
+	const auto a1SentMessage = *alice.Send(a1);
+	const auto a2SentMessage = *alice.Send(a2);
+	const auto a3SentMessage = *alice.Send(a3);
+
+	bob.Receive(a1SentMessage);
+	bob.Receive(a2SentMessage);
+	bob.Receive(a3SentMessage);
+
+	const auto b1 = PacketDatum(false, "b1");
+
+	const auto b1SentMessage = *bob.Send(b1);
+	const auto bobReceivedAcks = BitFiddler<uint32_t>::ToString(b1SentMessage.Header.LastAckedBits);
+	alice.Receive(b1SentMessage);
+
+	// Alice should know know that only a1 and a3 were received
 
 	EXPECT_TRUE(alice.sendBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
+	EXPECT_FALSE(alice.sendBuffer.Get(a2SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(alice.sendBuffer.Get(a3SentMessage.Header.Sequence)->Acked);
+	
 }

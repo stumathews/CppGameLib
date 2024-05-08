@@ -204,13 +204,17 @@ TEST_F(ReliableUdpTests, AliceBobAggregateMessagesDrop3)
 	// alice -[a3]->X bob
 	const auto a3SentMessage = *alice.Send(a3); //bob.Receive(a3SentMessage);	
 	EXPECT_TRUE(bob.receiveBuffer.Get(a3SentMessage.Header.Sequence) == nullptr); // ensure bob didn't get it
+	EXPECT_TRUE(a3SentMessage.DataCount(), 2); 	// expect a3 to bundle previously unacked a2,a3
 
 	// alice -[a4]->X bob
 	const auto a4SentMessage = *alice.Send(a4); //bob.Receive(a3SentMessage);	
 	EXPECT_TRUE(bob.receiveBuffer.Get(a4SentMessage.Header.Sequence) == nullptr); // ensure bob didn't get it
+	EXPECT_TRUE(a3SentMessage.DataCount(), 3); 	// expect a3 to bundle previously unacked a2,a3, a4
+
 
 	// alice -[a5]-> bob
-	const auto a5SentMessage = *alice.Send(a5); bob.Receive(a5SentMessage);	// bundles a2,a3,a4 in a5
+	const auto a5SentMessage = *alice.Send(a5); bob.Receive(a5SentMessage);
+	EXPECT_TRUE(a5SentMessage.DataCount(), 4); 	// expect a5 to bundle previously unacked a2,a3,a4 in a5
 
 	// bob -[b1]-> alice
 	const auto b1 = ReliableUdp::PacketDatum(false, "b1");

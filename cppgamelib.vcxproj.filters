@@ -441,6 +441,15 @@
     <ClInclude Include="events\SubscriberHandledEvent.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="utils\RingBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\BitFiddler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\ReliableUdp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">

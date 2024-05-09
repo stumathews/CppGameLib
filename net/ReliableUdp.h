@@ -15,9 +15,9 @@ namespace gamelib
 
 		struct MessageHeader
 		{
-		    uint16_t Sequence;
+		    uint16_t Sequence; // current sequence
 		    uint16_t LastAckedSequence;
-		    uint32_t LastAckedBits; // bit n is set means Sequence - n was acked
+		    uint32_t LastAckedBits; // bit n is set means Sequence - n was acked ie the previous n sequence was acked
 		};
 
 		struct PacketDatum

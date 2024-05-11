@@ -210,8 +210,7 @@ TEST_F(ReliableUdpTests, AliceBobAggregateMessagesDrop3)
 	const auto a4SentMessage = *alice.Send(a4); //bob.Receive(a3SentMessage);	
 	EXPECT_TRUE(bob.receiveBuffer.Get(a4SentMessage.Header.Sequence) == nullptr); // ensure bob didn't get it
 	EXPECT_TRUE(a3SentMessage.DataCount(), 3); 	// expect a3 to bundle previously unacked a2,a3, a4
-
-
+	
 	// alice -[a5]-> bob
 	const auto a5SentMessage = *alice.Send(a5); bob.Receive(a5SentMessage);
 	EXPECT_TRUE(a5SentMessage.DataCount(), 4); 	// expect a5 to bundle previously unacked a2,a3,a4 in a5
@@ -229,4 +228,39 @@ TEST_F(ReliableUdpTests, AliceBobAggregateMessagesDrop3)
 	EXPECT_TRUE(alice.sendBuffer.Get(a4SentMessage.Header.Sequence)->Acked);
 	EXPECT_TRUE(alice.sendBuffer.Get(a5SentMessage.Header.Sequence)->Acked);
 	
+}
+
+TEST_F(ReliableUdpTests, AliceBobOutOfOrder)
+{
+	const auto a1 = ReliableUdp::PacketDatum(false, "a1");
+	const auto a2 = ReliableUdp::PacketDatum(false, "a2");
+	const auto a3 = ReliableUdp::PacketDatum(false, "a3");
+
+	ReliableUdp alice;
+	ReliableUdp bob;
+
+	// alice -[a1]-> bob
+	const auto a1SentMessage = *alice.Send(a1); bob.Receive(a1SentMessage);
+
+	// alice -[a2]-> bob
+	const auto a2SentMessage = *alice.Send(a2); 
+
+	// alice -[a3]-> bob
+	const auto a3SentMessage = *alice.Send(a3);
+
+	// receive out of order
+	bob.Receive(a3SentMessage);
+	bob.Receive(a2SentMessage);
+
+	// bob -[b1]-> alice
+	const auto b1 = ReliableUdp::PacketDatum(false, "b1");
+	const auto b1SentMessage = *bob.Send(b1); // Bob wil tell alice what it has received so far
+	alice.Receive(b1SentMessage);
+
+	// Ensure out of order messages do not cause a problem, i.e ordered reliable transmission is guaranteed
+
+	EXPECT_TRUE(alice.sendBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(alice.sendBuffer.Get(a2SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(alice.sendBuffer.Get(a3SentMessage.Header.Sequence)->Acked);
+
 }

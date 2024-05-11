@@ -45,13 +45,13 @@ TEST_F(ReliableUdpTests, BasicSend)
 	const auto* message3 = reliableUdp.Send(data3);	
 	EXPECT_EQ(reliableUdp.sendBuffer.GetLastAddedSequence(), message3->Header.Sequence);
 	
-	EXPECT_TRUE(message1->DataCount(), 1);
+	EXPECT_EQ(message1->DataCount(), 1);
 	EXPECT_EQ(message1->Header.Sequence, 1);
 	EXPECT_STREQ(message1->Data()[0].CustomData, data1.CustomData);
 	EXPECT_EQ(message1->Header.LastAckedBits, 0);
 	EXPECT_EQ(message1->Header.LastAckedSequence, 0);
 	
-	EXPECT_TRUE(message2->DataCount(), 2);
+	EXPECT_EQ(message2->DataCount(), 2);
 	EXPECT_EQ(message2->Header.Sequence, 2);
 	EXPECT_EQ(message2->Header.LastAckedBits, 0);
 	EXPECT_EQ(message2->Header.LastAckedSequence, 0);
@@ -60,7 +60,7 @@ TEST_F(ReliableUdpTests, BasicSend)
 	EXPECT_STREQ(message2->Data()[0].CustomData, data2.CustomData);
 	EXPECT_STREQ(message2->Data()[1].CustomData, data1.CustomData);
 
-	EXPECT_TRUE(message3->DataCount(), 3);
+	EXPECT_FLOAT_EQ(message3->DataCount(), 3);
 	EXPECT_EQ(message3->Header.Sequence, 3);
 	EXPECT_EQ(message3->Header.LastAckedBits, 0);
 	EXPECT_EQ(message3->Header.LastAckedSequence, 0);
@@ -76,9 +76,9 @@ TEST_F(ReliableUdpTests, BasicRecieve)
 {
 	ReliableUdp reliableUdp;
 
-	const auto data1 = ReliableUdp::PacketDatum( false, "data1");
-	const auto data2 = ReliableUdp::PacketDatum( false, "data2");
-	const auto data3 = ReliableUdp::PacketDatum( false, "data3");
+	const auto data1 = ReliableUdp::PacketDatum(false, "data1");
+	const auto data2 = ReliableUdp::PacketDatum(false, "data2");
+	const auto data3 = ReliableUdp::PacketDatum(false, "data3");
 
 	const auto* message1 = reliableUdp.Send(data1);
 	reliableUdp.Receive(*message1);
@@ -144,7 +144,7 @@ TEST_F(ReliableUdpTests, AliceBobBasic)
 	// Ensure alice does not send it again
 	const auto a2 = ReliableUdp::PacketDatum(false, "a2");
 	const auto a2SentMessage = alice.Send(a2);
-	EXPECT_TRUE(a2SentMessage->DataCount(), 1);
+	EXPECT_EQ(a2SentMessage->DataCount(), 1);
 	EXPECT_EQ(a2SentMessage->Data()[0].Sequence, a2SentMessage->Header.Sequence);
 }
 
@@ -204,16 +204,16 @@ TEST_F(ReliableUdpTests, AliceBobAggregateMessagesDrop3)
 	// alice -[a3]->X bob
 	const auto a3SentMessage = *alice.Send(a3); //bob.Receive(a3SentMessage);	
 	EXPECT_TRUE(bob.receiveBuffer.Get(a3SentMessage.Header.Sequence) == nullptr); // ensure bob didn't get it
-	EXPECT_TRUE(a3SentMessage.DataCount(), 2); 	// expect a3 to bundle previously unacked a2,a3
+	EXPECT_EQ(a3SentMessage.DataCount(), 3); 	// expect a3 to bundle previously unacked a1, a2,a3
 
 	// alice -[a4]->X bob
 	const auto a4SentMessage = *alice.Send(a4); //bob.Receive(a3SentMessage);	
 	EXPECT_TRUE(bob.receiveBuffer.Get(a4SentMessage.Header.Sequence) == nullptr); // ensure bob didn't get it
-	EXPECT_TRUE(a3SentMessage.DataCount(), 3); 	// expect a3 to bundle previously unacked a2,a3, a4
+	EXPECT_EQ(a4SentMessage.DataCount(), 4); 	// expect a3 to bundle previously unacked a1,a2,a3, a4
 	
 	// alice -[a5]-> bob
 	const auto a5SentMessage = *alice.Send(a5); bob.Receive(a5SentMessage);
-	EXPECT_TRUE(a5SentMessage.DataCount(), 4); 	// expect a5 to bundle previously unacked a2,a3,a4 in a5
+	EXPECT_EQ(a5SentMessage.DataCount(), 5); 	// expect a5 to bundle previously unacked a2,a3,a4 in a5
 
 	// bob -[b1]-> alice
 	const auto b1 = ReliableUdp::PacketDatum(false, "b1");
@@ -262,5 +262,4 @@ TEST_F(ReliableUdpTests, AliceBobOutOfOrder)
 	EXPECT_TRUE(alice.sendBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
 	EXPECT_TRUE(alice.sendBuffer.Get(a2SentMessage.Header.Sequence)->Acked);
 	EXPECT_TRUE(alice.sendBuffer.Get(a3SentMessage.Header.Sequence)->Acked);
-
 }

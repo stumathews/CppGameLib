@@ -28,7 +28,7 @@ namespace gamelib
 		    bool Acked;
 			uint16_t Sequence {};
 			double SendTime {};
-			const char* CustomData;
+			const char* CustomData{};
 
 		};
 
@@ -90,7 +90,8 @@ namespace gamelib
 
 			// Send Message, attaching any consecutive data that was not previously sent
 			// also include a reference to what we've received from the sender previously, just in case an ack did not go through to the sender
-			sentMessage = new Message(sequence, lastAckedSequence, GeneratePreviousAckedBits(), dataToSent.size(), dataToSent.data());
+			sentMessage = new Message(sequence, lastAckedSequence, GeneratePreviousAckedBits(), dataToSent.size(),
+			                          dataToSent.data());
 			return sentMessage;
 		}
 
@@ -144,7 +145,7 @@ namespace gamelib
 			previousAckedBits = BitFiddler<uint32_t>::ClearBit(previousAckedBits, 0);
 
 			// Read the list of already received & acked data.
-			for(uint32_t i = 0; i < sizeof previousAckedBits * 8 - 1; i++) // we only set the last 31 bits. Bit 1 is always 0 meaning current sending sequence is unacked
+			for(uint16_t i = 0; i < sizeof previousAckedBits * 8 - 1; i++) // we only set the last 31 bits. Bit 1 is always 0 meaning current sending sequence is unacked
 			{
 				const auto* pCurrentDatum = receiveBuffer.Get(lastAckedSequence - i);
 				const auto bitPosition = i + 1; // offset bit position by 1 as we've already

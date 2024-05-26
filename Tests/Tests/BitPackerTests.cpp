@@ -41,9 +41,9 @@ TEST_F(BitPackingTests, BasicBitPacking)
 	    //}
 	};
 
-	uint32_t output {0};
+	uint16_t output[2] {0};
 
-	BitPacker<uint16_t> bitPacker(&output, sizeof(uint32_t));
+	BitPacker<uint16_t> bitPacker(output,2);
 
 	#define BITS_REQUIRED( min, max ) gamelib::BitsRequired<min,max>::result
 
@@ -86,7 +86,7 @@ TEST_F(BitPackingTests, BasicBitPacking)
 	a.Num2 = bitPacker.UnPack(BITS_REQUIRED(0,15)); EXPECT_EQ(a.Num2, 15);
 	a.Num1 = bitPacker.UnPack(BITS_REQUIRED(0,5)); EXPECT_EQ(a.Num1, 5);	
 
-	EXPECT_EQ(BitFiddler<uint16_t>::ToString(bitPacker.GetBuffer()), "0000101111110110");
+	EXPECT_EQ(BitFiddler<uint16_t>::ToString(output[0]), "0000101111110110");
 
 	bitPacker.Reset();
 
@@ -101,12 +101,12 @@ TEST_F(BitPackingTests, BasicBitPacking)
 	bitPacker.Pack(BITS_REQUIRED(0,15), a.Num2); // 1111
 	bitPacker.Pack(BITS_REQUIRED(0,15), a.Num1); // 0101
 
-	EXPECT_EQ(BitFiddler<uint16_t>::ToString(bitPacker.GetBuffer()), "0101111101010010");	
+	EXPECT_EQ(BitFiddler<uint16_t>::ToString(output[0]), "0101111101010010");	
 }
 
 TEST_F(BitPackingTests, OverflowTests)
 {
-	uint32_t output {0};
+	uint16_t output[3] {0};
 
 	#define BITS_REQUIRED( min, max ) gamelib::BitsRequired<min,max>::result
 
@@ -123,17 +123,34 @@ TEST_F(BitPackingTests, OverflowTests)
 	a.Num2 = 15;
 	a.Num1 = 5;
 
-	BitPacker<uint16_t> bitPacker(&output, sizeof(uint32_t));
+	BitPacker bitPacker(output, 3);
 
 	bitPacker.Pack(BITS_REQUIRED(0,20), a.Num4); // 00010 
 	bitPacker.Pack(BITS_REQUIRED(0,20), a.Num3); // 00101
 	bitPacker.Pack(BITS_REQUIRED(0,20), a.Num2); // 01111
-	bitPacker.Pack(BITS_REQUIRED(0,20), a.Num1); // 00101
-	EXPECT_EQ(BitFiddler<uint32_t>::ToString(output), "00000000000000001011110010100010"); // 0010 overflowed: 4 bits
-	bitPacker.Pack(14,0);
-	EXPECT_EQ(BitFiddler<uint32_t>::ToString(output), "00000000000000101011110010100010"); // 0010 overflowed: 4 bits
-	//EXPECT_EQ(BitFiddler<uint16_t>::ToString(bitPacker.GetBuffer()),  "1011110010100010"); // 0010 overflowed: 4 bits
-	//EXPECT_EQ(bitPacker.GetUsedBits(), (sizeof(uint16_t) * 8) + 4);
+	bitPacker.Pack(BITS_REQUIRED(0,20), a.Num1); // 00101 // only first bit(right most bit) can fit, leaves 0010 to overflow into overflow buffer
 
+	// check that that we've got the correct 16 bits
+	EXPECT_EQ(BitFiddler<uint16_t>::ToString(output[0]), "1011110010100010");
 
+	// pack 12 more bits so we dump out the next 16bits to output buffer
+	bitPacker.Pack(12,4095); // 111111111111	
+
+	// check the overflow buffer
+	EXPECT_EQ(BitFiddler<uint16_t>::ToString(output[1]), "1111111111110010");  //make sure 111111111111 is appended to the 4 overflowed bits, 0010
+
+	// Get the the bits as a 32bit block
+	uint32_t all {0};
+
+	// copy 32bits that are in the output to all
+	memcpy_s(&all, sizeof(uint32_t), output, sizeof(uint32_t));
+
+	// ensure that its the same as 2 individual 16bit blocks, and that they are contiguous
+	EXPECT_EQ(BitFiddler<uint32_t>::ToString(all), "11111111111100101011110010100010");
+
+	// Pack another 16bits in
+	bitPacker.Pack(16,65535);
+
+	// and check that the output buffer is growing accordingly
+	EXPECT_EQ(BitFiddler<uint16_t>::ToString(output[2]), "1111111111111111");
 }

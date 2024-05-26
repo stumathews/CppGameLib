@@ -10,29 +10,30 @@ namespace gamelib
 	{
 	public:
 
-		BitPacker(void* flushDestination, int destinationSizeInBytes)
-			: readBitPointer(0), writeBitPointer(0), flushDestination(flushDestination), destinationSizeInBytes(destinationSizeInBytes)
+		BitPacker(T* flushDestination, int element)
+			: readBitPointer(0), writeBitPointer(0), flushDestination(flushDestination), destElement(element)
 		{
-			buffer[0] = buffer[1] = (buffer[0] & 0);
+			buffer = (buffer & 0);
 			bufferSize = sizeof(T)*8;
 		}
 
 		void Pack(size_t numBits, T value)
 		{			
-			buffer[0] = BitFiddler<T>::SetBits(buffer[0], readBitPointer+(numBits-1), numBits, value);
+			buffer = BitFiddler<T>::SetBits(buffer, readBitPointer+(numBits-1), numBits, value);
 			readBitPointer += numBits;
 						
-			if(readBitPointer > bufferSize )
+			if(readBitPointer >= bufferSize)
 			{
+				auto peek = BitFiddler<T>::ToString(buffer);
 				// Write out the buffer to output
-				memcpy_s(flushDestination, destinationSizeInBytes, buffer, bufferSize/8);
+				memcpy_s(flushDestination+(countTimesOverflowed++), bufferSize/8, &buffer, bufferSize/8);
 				
-				buffer[0] = value;				
-				auto peek = BitFiddler<T>::ToString(buffer[0]);
+				buffer = value;				
+				peek = BitFiddler<T>::ToString(buffer);
 								
 				
-				buffer[0] = buffer[0] >> numBits - (readBitPointer - bufferSize);
-				peek = BitFiddler<T>::ToString(buffer[0]);
+				buffer = buffer >> numBits - (readBitPointer - bufferSize);
+				peek = BitFiddler<T>::ToString(buffer);
 				int i = 0;
 				readBitPointer = (readBitPointer - bufferSize);
 			}
@@ -40,25 +41,24 @@ namespace gamelib
 
 		T UnPack(const size_t numBits)
 		{
-			T temp = BitFiddler<T>::GetBitsValue(buffer[0], writeBitPointer + (numBits-1), numBits);
+			T temp = BitFiddler<T>::GetBitsValue(buffer, writeBitPointer + (numBits-1), numBits);
 			writeBitPointer += numBits;
 			return temp;
 		}
 
-		void Reset() { writeBitPointer = readBitPointer = 0; }
-		[[nodiscard]] const T GetBuffer() const { return buffer[0]; }
-		[[nodiscard]] const T* GetPointer() const { return buffer; }
+		void Reset() { writeBitPointer = readBitPointer = countTimesOverflowed = 0; }
 		[[nodiscard]] int GetUsedBits() const { return readBitPointer; }
 		
 		bool HasOverflowed {false};
 
 	private:
-		T buffer[2];
+		T buffer;
 		uint8_t readBitPointer;
 		uint8_t writeBitPointer;		
-		void* flushDestination;
-		int destinationSizeInBytes;		
+		T* flushDestination;
+		int destElement;		
 		size_t bufferSize;
+		uint8_t countTimesOverflowed {0};
 	};
 
 	/**

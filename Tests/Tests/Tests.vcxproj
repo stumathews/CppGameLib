@@ -64,6 +64,8 @@
     <ClCompile Include="AudioManagerTests.cpp" />
     <ClCompile Include="BehaviorTreeBuilderTests.cpp" />
     <ClCompile Include="BehaviorTreeTests.cpp" />
+    <ClCompile Include="BitFiddlerTests.cpp" />
+    <ClCompile Include="BitPackerTests.cpp" />
     <ClCompile Include="FontManagerTests.cpp" />
     <ClCompile Include="FSMTests.cpp" />
     <ClCompile Include="NetworkingTests.cpp" />

@@ -218,6 +218,7 @@
     <ClInclude Include="events\SubscriberHandledEvent.h" />
     <ClInclude Include="graphic\Subscribable.h" />
     <ClInclude Include="graphic\Window.h" />
+    <ClInclude Include="net\BitPacker.h" />
     <ClInclude Include="net\ReliableUdp.h" />
     <ClInclude Include="time\PeriodicTimer.h" />
     <ClInclude Include="events\EventId.h" />

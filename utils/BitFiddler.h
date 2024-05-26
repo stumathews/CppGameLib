@@ -1,13 +1,48 @@
 ﻿#pragma once
 #include <cstdint>
+#include <bitset>
+#include <limits>
 
 namespace gamelib
 {
+	#define GETMASK(index, size) ((((size_t)1 << (size)) - 1) << (index))
+	#define READFROM(data, index, size) (((data) & GETMASK((index), (size))) >> (index))
+	#define WRITETO(data, index, size, value) ((data) = (((data) & (~GETMASK((index), (size)))) | (((value) << (index)) & (GETMASK((index), (size))))))
+
+	template <uint32_t x> struct PopCount
+	{
+	    enum { a = x - ( ( x >> 1 ) & 0x55555555 ),
+	           b = ( ( ( a >> 2 ) & 0x33333333 ) + ( a & 0x33333333 ) ),
+	           c = ( ( ( b >> 4 ) + b ) & 0x0f0f0f0f ),
+	           d = c + ( c >> 8 ),
+	           e = d + ( d >> 16 ),
+	    result = e & 0x0000003f }; 
+	};
+
+	template <uint32_t x> struct Log2
+	{
+	    enum { a = x | ( x >> 1 ),
+	           b = a | ( a >> 2 ),
+	           c = b | ( b >> 4 ),
+	           d = c | ( c >> 8 ),
+	           e = d | ( d >> 16 ),
+	           f = e >> 1,
+	    result = PopCount<f>::result };
+	};
+
+	template <int64_t min, int64_t max> struct BitsRequired
+	{
+	    static const uint32_t result = 
+	        ( min == max ) ? 0 : ( Log2<uint32_t(max-min)>::result + 1 );
+	};
+
+
+
 	template <class T>
 	class BitFiddler
 	{
 	public:
-		// Set bit n on number
+		// Set bit n on number (zero-indexed)
 		static T SetBit(T number, T n)
 		{
 			return number | ((T)1 << n);
@@ -34,11 +69,58 @@ namespace gamelib
 			return (number & ~((T)1 << n)) | ((T)x << n);
 		}
 
-		static std::string ToString(T number)
+		/*static T GetBitsValue(T number, const int startBit, const int numberOfBits)
+		{
+			return READFROM(number, startBit, numberOfBits);
+		}*/
+
+		static T GetBitsValue(T number, const int startBit, const int numBits, const bool zeroIndex = true)
+		{
+			if(startBit > 0 && startBit >= numBits)
+				number = number >> (zeroIndex ? (((startBit+1)-numBits)) : (startBit - numBits)); // shift the bits we are interested to the beginning
+			number = number & (1 << numBits) -1; // unset all but last numBits bits
+			return number;
+		}
+				
+		static T SetBits(T number, const int startBit, const T bitLength, const T newValue)
+		{
+			//return WRITETO(number, startBit, bitLength, newValue);
+			
+			// get a mask that sets all bits in interval concerned
+			uint16_t max = 0;
+			max = ~(max & 0);
+
+			// get a mask that sets all bits in interval concerned
+			uint16_t mask = (max >> (sizeof(uint16_t)*8) - bitLength) 	<< startBit-(bitLength-1);
+
+			// invert the mask so that that interval is all set to 0
+			uint16_t i_mask = ~mask;
+
+			// apply mask to set the interval to all 0
+			number &= i_mask;
+
+			// apply the value in the interval
+			number = number | newValue << startBit-(bitLength-1);
+
+			return number;
+		}
+
+
+		static std::string ToString(T number, bool bigEndian = false)
 		{
 			const auto maxBits = sizeof(T) * 8;
 			std::stringstream bitString;
-			for(int i = 0; i < maxBits -1; i++)
+			if(bigEndian)
+			{
+				for(int i = 0; i < maxBits; i++)
+				{
+					bitString << BitCheck(number, i) ? "1": "0";	
+				}
+
+				return bitString.str();
+			}
+			// little endian
+			for(int i = maxBits-1; i >=0; i--)
 			{
 				bitString << BitCheck(number, i) ? "1": "0";	
 			}

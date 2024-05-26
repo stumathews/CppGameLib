@@ -9,32 +9,56 @@ namespace gamelib
 	class BitPacker
 	{
 	public:
-		BitPacker(): usedBits(0), writePointer(0)
+
+		BitPacker(void* flushDestination, int destinationSizeInBytes)
+			: readBitPointer(0), writeBitPointer(0), flushDestination(flushDestination), destinationSizeInBytes(destinationSizeInBytes)
 		{
-			buffer = (buffer & 0);
+			buffer[0] = buffer[1] = (buffer[0] & 0);
+			bufferSize = sizeof(T)*8;
 		}
 
 		void Pack(size_t numBits, T value)
 		{			
-			buffer = BitFiddler<T>::SetBits(buffer, usedBits+(numBits-1), numBits, value);
-			auto current = BitFiddler<T>::ToString(buffer);
-			usedBits += numBits;
+			buffer[0] = BitFiddler<T>::SetBits(buffer[0], readBitPointer+(numBits-1), numBits, value);
+			readBitPointer += numBits;
+						
+			if(readBitPointer > bufferSize )
+			{
+				// Write out the buffer to output
+				memcpy_s(flushDestination, destinationSizeInBytes, buffer, bufferSize/8);
+				
+				buffer[0] = value;				
+				auto peek = BitFiddler<T>::ToString(buffer[0]);
+								
+				
+				buffer[0] = buffer[0] >> numBits - (readBitPointer - bufferSize);
+				peek = BitFiddler<T>::ToString(buffer[0]);
+				int i = 0;
+				readBitPointer = (readBitPointer - bufferSize);
+			}
 		}
 
 		T UnPack(const size_t numBits)
 		{
-			T temp = BitFiddler<T>::GetBitsValue(buffer, writePointer + (numBits-1), numBits);
-			writePointer += numBits;
+			T temp = BitFiddler<T>::GetBitsValue(buffer[0], writeBitPointer + (numBits-1), numBits);
+			writeBitPointer += numBits;
 			return temp;
 		}
 
-		const T  GetBuffer() const { return buffer; }
-		[[nodiscard]] int GetUsedBits() const { return usedBits; }
+		void Reset() { writeBitPointer = readBitPointer = 0; }
+		[[nodiscard]] const T GetBuffer() const { return buffer[0]; }
+		[[nodiscard]] const T* GetPointer() const { return buffer; }
+		[[nodiscard]] int GetUsedBits() const { return readBitPointer; }
+		
+		bool HasOverflowed {false};
 
 	private:
-		T buffer;
-		int usedBits;
-		int writePointer;
+		T buffer[2];
+		uint8_t readBitPointer;
+		uint8_t writeBitPointer;		
+		void* flushDestination;
+		int destinationSizeInBytes;		
+		size_t bufferSize;
 	};
 
 	/**

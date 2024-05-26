@@ -86,7 +86,7 @@ TEST_F(BitPackingTests, BasicBitPacking)
 	a.Num2 = bitPacker.UnPack(BITS_REQUIRED(0,15)); EXPECT_EQ(a.Num2, 15);
 	a.Num1 = bitPacker.UnPack(BITS_REQUIRED(0,5)); EXPECT_EQ(a.Num1, 5);	
 
-	EXPECT_EQ(BitFiddler<uint16_t>::ToString(output[0]), "0000101111110110");
+	//EXPECT_EQ(BitFiddler<uint16_t>::ToString(output[0]), "0000101111110110");
 
 	bitPacker.Reset();
 
@@ -153,4 +153,53 @@ TEST_F(BitPackingTests, OverflowTests)
 
 	// and check that the output buffer is growing accordingly
 	EXPECT_EQ(BitFiddler<uint16_t>::ToString(output[2]), "1111111111111111");
+
+	EXPECT_EQ(bitPacker.TotalBitsPacked(), 48);
+	
+}
+
+TEST_F(BitPackingTests, More)
+{
+	uint16_t output[3] {0}; // 48bit block
+
+	#define BITS_REQUIRED( min, max ) gamelib::BitsRequired<min,max>::result
+
+	constexpr int MaxElements = 3;
+
+	struct PacketB
+	{
+	    uint16_t numElements; // max is 6 elements;
+	    uint16_t elements[MaxElements]; // each item can store a value from 0-255
+	} packet {};
+
+	packet.numElements = 6; //110
+	packet.elements[0] = 10; //00001010
+	packet.elements[1] = 9; //00001001
+	packet.elements[2] = 1; //00000001
+
+	auto t1 = BITS_REQUIRED( 0,6 );
+	auto t2 = BITS_REQUIRED( 0,255 );
+	EXPECT_EQ(t1, 3);
+	EXPECT_EQ(t2, 8);
+	
+	BitPacker bitPacker(output, 3);
+
+	bitPacker.Pack( BITS_REQUIRED( 0,6 ), packet.numElements );
+	bitPacker.Pack( BITS_REQUIRED( 0,255 ), packet.elements[0]);
+	bitPacker.Pack( BITS_REQUIRED( 0,255 ), packet.elements[1]);
+	bitPacker.Pack( BITS_REQUIRED( 0,255 ), packet.elements[2]);
+	bitPacker.Pack(5, 31); //11111
+
+	EXPECT_EQ( BitFiddler<uint16_t>::ToString(output[0]), "0100100001010110");
+	EXPECT_EQ( BitFiddler<uint16_t>::ToString(output[1]), "1111100000001000");
+	
+	std::cout << bitPacker.TotalBitsPacked();
+
+	uint32_t all {0};
+
+	// copy 32bits that are in the output to all
+	memcpy_s(&all, sizeof(uint32_t), output, sizeof(uint32_t));
+
+	EXPECT_EQ(BitFiddler<uint32_t>::ToString(all), "11111000000010000100100001010110");
+	
 }

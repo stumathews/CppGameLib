@@ -21,7 +21,9 @@ namespace gamelib
 		{			
 			buffer = BitFiddler<T>::SetBits(buffer, readBitPointer+(numBits-1), numBits, value);
 			readBitPointer += numBits;
-						
+
+			bitsPacked += numBits;
+
 			if(readBitPointer >= bufferSize)
 			{
 				auto peek = BitFiddler<T>::ToString(buffer);
@@ -41,14 +43,22 @@ namespace gamelib
 
 		T UnPack(const size_t numBits)
 		{
+			// Unpack from the flushedDestination as the buffer has been flushed there and overwritten if overflow
 			T temp = BitFiddler<T>::GetBitsValue(buffer, writeBitPointer + (numBits-1), numBits);
 			writeBitPointer += numBits;
 			return temp;
 		}
 
+		template <class R>
+		T UnPack2(R value, const size_t startBit, const size_t numBits)
+		{
+			// Unpack from the flushedDestination as the buffer has been flushed there and overwritten if overflow
+			T temp = BitFiddler<T>::GetBitsValue(value, startBit + (numBits-1), numBits);
+			return temp;
+		}
+
 		void Reset() { writeBitPointer = readBitPointer = countTimesOverflowed = 0; }
-		[[nodiscard]] int GetUsedBits() const { return readBitPointer; }
-		
+		T TotalBitsPacked() { return bitsPacked; }
 		bool HasOverflowed {false};
 
 	private:
@@ -59,6 +69,7 @@ namespace gamelib
 		int destElement;		
 		size_t bufferSize;
 		uint8_t countTimesOverflowed {0};
+		T bitsPacked {0};
 	};
 
 	/**

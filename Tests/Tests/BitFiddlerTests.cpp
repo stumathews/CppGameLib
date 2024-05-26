@@ -102,7 +102,7 @@ TEST_F(BitFiddlerTests, SetBits)
 	byte = 0; //00011000
 	EXPECT_EQ(gamelib::BitFiddler<uint8_t>::ToString(gamelib::BitFiddler<uint8_t>::SetBits(byte, 5, 3, 6 )), "00110000");
 
-	constexpr uint16_t packetBuffer = 62139; // 1111001010111011
+	uint16_t packetBuffer = 62139; // 1111001010111011
 	//                                          ^              ^
 	//                                       bit 16          bit 0
 	EXPECT_EQ(gamelib::BitFiddler<uint16_t>::ToString(gamelib::BitFiddler<uint16_t>::SetBits(packetBuffer, 15, 1, 0 )), "0111001010111011");
@@ -110,6 +110,9 @@ TEST_F(BitFiddlerTests, SetBits)
 	EXPECT_EQ(gamelib::BitFiddler<uint16_t>::ToString(gamelib::BitFiddler<uint16_t>::SetBits(packetBuffer, 16, 8, 255 )), "1111111010111011");
 
 	
+	packetBuffer = (packetBuffer & 0); // 0000000000000000
+	
+	EXPECT_EQ(gamelib::BitFiddler<uint16_t>::ToString(BitFiddler<uint16_t>::SetBits(packetBuffer, 1, 2, 2)), "0000000000000010");
 }
 
 TEST_F(BitFiddlerTests, SetBit)
@@ -142,6 +145,8 @@ TEST_F(BitFiddlerTests, SetBit)
 	// set bit 3
 	EXPECT_EQ(gamelib::BitFiddler<uint8_t>::ToString(i << (3-1)), "00000100");
 	EXPECT_EQ(gamelib::BitFiddler<uint8_t>::ToString(gamelib::BitFiddler<uint8_t>::SetBit(i,3-1)), "00000101");
+
+
 }
 
 TEST_F(BitFiddlerTests, ReadMask)
@@ -300,6 +305,18 @@ TEST_F(BitFiddlerTests, SetBiBitFieldTests)
 	field = BitFiddler<uint16_t>::SetBits(field, 1, 2, 2);
 	EXPECT_EQ(gamelib::BitFiddler<uint16_t>::ToString(field), "0101111100010110");
 
-	//uint32_t field = 0x0A0B0C0D; //1010 0000 1011 0000 1100 0000 1101
+	uint32_t fullField = 0x0A0B0C0D; // 1010 0000 1011 0000 1100 0000 1101 (lets assume this is stored little endian)
+	uint32_t field1 = 0x0A; // 1010 0000
+	uint32_t field2 = 0x0B; // 1011 0000
+	uint32_t field3 = 0x0C; // 1100 0000
+	uint32_t field4 = 0x0D; // 1101 0000
+
+	// convert to little endian:
+
+
+
+
+
+
 
 }

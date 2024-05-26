@@ -74,18 +74,17 @@ namespace gamelib
 			return READFROM(number, startBit, numberOfBits);
 		}*/
 
-		static T GetBitsValue(T number, const int startBit, const int numBits, const bool zeroIndex = true)
+		static T GetBitsValue(const T number, const int startBit, const int numBits, const bool zeroIndex = true)
 		{
+			T number1 = number;
 			if(startBit > 0 && startBit >= numBits)
-				number = number >> (zeroIndex ? (((startBit+1)-numBits)) : (startBit - numBits)); // shift the bits we are interested to the beginning
-			number = number & (1 << numBits) -1; // unset all but last numBits bits
-			return number;
+				number1 = number1 >> (zeroIndex ? (((startBit+1)-numBits)) : (startBit - numBits)); // shift the bits we are interested to the beginning
+			number1 = number1 & (1 << numBits) -1; // unset all but last numBits bits
+			return number1;
 		}
 				
 		static T SetBits(T number, const int startBit, const T bitLength, const T newValue)
 		{
-			//return WRITETO(number, startBit, bitLength, newValue);
-			
 			// get a mask that sets all bits in interval concerned
 			uint16_t max = 0;
 			max = ~(max & 0);

@@ -4,7 +4,39 @@
 
 namespace gamelib
 {
-	
+
+	template <class T>
+	class BitPacker
+	{
+	public:
+		BitPacker(): usedBits(0), writePointer(0)
+		{
+			buffer = (buffer & 0);
+		}
+
+		void Pack(size_t numBits, T value)
+		{			
+			buffer = BitFiddler<T>::SetBits(buffer, usedBits+(numBits-1), numBits, value);
+			auto current = BitFiddler<T>::ToString(buffer);
+			usedBits += numBits;
+		}
+
+		T UnPack(const size_t numBits)
+		{
+			T temp = BitFiddler<T>::GetBitsValue(buffer, writePointer + (numBits-1), numBits);
+			writePointer += numBits;
+			return temp;
+		}
+
+		const T  GetBuffer() const { return buffer; }
+		[[nodiscard]] int GetUsedBits() const { return usedBits; }
+
+	private:
+		T buffer;
+		int usedBits;
+		int writePointer;
+	};
+
 	/**
 	 * Write the the bits read off the network into this structure
 	 */
@@ -12,34 +44,31 @@ namespace gamelib
 	class BitWriter
 	{
 		public:
-		BitWriter(const int packetSize, T* pPacket) : scratch_bits(0), word_index(0), m_packetSize(packetSize),
-		                                                 m_pPacket(pPacket)
+		BitWriter(const int packetSize, T* networkBuffer) : scratch_bits(0), word_index(0), m_packetSize(packetSize),
+		                                                 m_pNetworkBuffer(networkBuffer)
 		{
-			//total_bits = packetSize * 8;
+
 		}
 
 		// read numBits from the packet
-		void Write(const int numBits, T* outputPacketDestination)
+		void Write(const int numBits, void* destination)
 		{
 			scratch[0] = scratch[1] = {0};
 			scratch_bits = {0};
 			word_index = {0};
 
 			// pBuffer points to the start of the packet we are writing to
-			pBuffer = static_cast<T*>(outputPacketDestination);
+			pBuffer = static_cast<T*>(destination);
 
 			// write numBits from m_pPacket into scratch
+			T bitValue = BitFiddler<T>::GetBitsValue(*m_pNetworkBuffer, scratch_bits, numBits);
 
-			auto gotBitValue = BitFiddler<T>::GetBitsValue(*m_pPacket, scratch_bits+1, numBits);
+			scratch[0] = BitFiddler<T>::SetBits(scratch[0], scratch_bits, numBits, 
+				bitValue);
 
-			BitFiddler<T>::SetBits(scratch[0], scratch_bits+1, numBits, gotBitValue);
-
-			int i = 0;
-
+			std::cout << scratch[0];
+			
 			scratch_bits += numBits;
-
-			memcpy_s(outputPacketDestination, sizeof(T), &scratch, sizeof(T));
-
 		}
 		private:
 		T scratch[2];
@@ -48,7 +77,7 @@ namespace gamelib
 		T * pBuffer {nullptr};	
 
 		const int m_packetSize {0};
-		T* m_pPacket {0};
+		T* m_pNetworkBuffer {0};
 	};
 
 	/**

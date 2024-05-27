@@ -60,7 +60,7 @@ TEST_F(BitPackingTests, BasicBitPacking)
 	bitPacker.Flush();
 
 	// must unpack in this order
-	BitfieldReader fieldReader(output);
+	BitfieldReader fieldReader(output, 2);
 
 	a.Num4 = fieldReader.ReadNext<uint16_t>(BITS_REQUIRED(0,2)); EXPECT_EQ(a.Num4, 2);	
 	a.Num3 = fieldReader.ReadNext<uint16_t>(BITS_REQUIRED(0,5)); EXPECT_EQ(a.Num3, 5);	
@@ -185,7 +185,7 @@ TEST_F(BitPackingTests, BitfieldReaderTests)
 
 	EXPECT_EQ(BitFiddler<uint32_t>::ToString(all), "11111000000010000100100001010110");
 		
-	BitfieldReader reader(&all);
+	BitfieldReader reader(&all, 1);
 
 	EXPECT_EQ(reader.ReadNext<uint8_t>(3),6);  EXPECT_EQ(reader.ReadInterval<uint8_t>(2,3),6);
 	EXPECT_EQ(reader.ReadNext<uint8_t>(8),10); EXPECT_EQ(reader.ReadInterval<uint8_t>(10,8),10);
@@ -207,7 +207,7 @@ TEST_F(BitPackingTests, BitfieldReaderTests)
 	
 }
 
-TEST_F(BitPackingTests, PacketWritingTests)
+TEST_F(BitPackingTests, BitfieldReaderWithOVerflowSupport)
 {
 	#define BITS_REQUIRED( min, max ) gamelib::BitsRequired<min,max>::result
 
@@ -249,7 +249,7 @@ TEST_F(BitPackingTests, PacketWritingTests)
 	packetB.Elements[1] = 9; // 00001001
 	packetB.Elements[2] = 1; // 00000001
 
-	uint16_t networkBuffer[5] = {0}; // 64 byte network buffer
+	uint16_t networkBuffer[3] = {0}; // 64 byte network buffer
 
 	BitPacker bitPacker(networkBuffer, 3); // packer of 16bits at a time
 
@@ -265,11 +265,19 @@ TEST_F(BitPackingTests, PacketWritingTests)
 		
 	EXPECT_EQ(bitPacker.TotalBitsPacked(), 32);
 
-	BitfieldReader reader(networkBuffer);
+	BitfieldReader reader(networkBuffer, 3);
 
 	EXPECT_EQ(reader.ReadNext<uint8_t>(BITS_REQUIRED( 0, 3 )), 3);
 	EXPECT_EQ(reader.ReadNext<uint8_t>(BITS_REQUIRED( 0, 255 )), 10);
-	EXPECT_EQ(reader.ReadNext<uint8_t>(BITS_REQUIRED( 0, 255 )), 9);
-	EXPECT_EQ(reader.ReadNext<uint8_t>(BITS_REQUIRED( 0, 255 )), 1); //00001001
+	EXPECT_EQ(reader.ReadNext<uint8_t>(BITS_REQUIRED( 0, 255 )), 9); // overflows here
+	EXPECT_EQ(reader.ReadNext<uint8_t>(BITS_REQUIRED( 0, 255 )), 1); 
+	EXPECT_EQ(reader.ReadNext<uint8_t>(BITS_REQUIRED( 0, 63 )), 63);
+	
+	reader.ReadNext<uint8_t>(BITS_REQUIRED( 0, 63 ));
+	reader.ReadNext<uint8_t>(BITS_REQUIRED( 0, 63 ));
+	reader.ReadNext<uint8_t>(BITS_REQUIRED( 0, 63 ));
+
+	// Should detect when we are trying to read beyond the bound of the underlying buffer
+	EXPECT_THROW(reader.ReadNext<uint8_t>(BITS_REQUIRED( 0, 63 )), std::exception);
 
 }

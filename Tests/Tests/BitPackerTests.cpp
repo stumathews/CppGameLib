@@ -281,3 +281,69 @@ TEST_F(BitPackingTests, BitfieldReaderWithOVerflowSupport)
 	EXPECT_THROW(reader.ReadNext<uint8_t>(BITS_REQUIRED( 0, 63 )), std::exception);
 
 }
+
+TEST_F(BitPackingTests, PacketReadingWriting)
+{
+	#define BITS_REQUIRED( min, max ) gamelib::BitsRequired<min,max>::result
+
+	constexpr int MaxElements = 3;
+
+	struct Packet
+	{
+	    int NumElements;
+	    int Elements[MaxElements];
+
+	    void Write(BitPacker<uint16_t>& bitPacker) const
+	    {
+			bitPacker.Pack(BITS_REQUIRED( 0,MaxElements ), NumElements);
+			for(int i = 0; i < NumElements;i++)
+			{
+				bitPacker.Pack(BITS_REQUIRED( 0,255 ), Elements[i]);
+			}
+			bitPacker.Flush();
+	    }
+
+	    void Read(BitfieldReader<uint16_t>& bitfieldReader)
+	    {
+	        NumElements = bitfieldReader.ReadNext<int>(BITS_REQUIRED( 0,MaxElements ));
+			for(int i = 0; i < NumElements;i++)
+			{
+				Elements[i] = bitfieldReader.ReadNext<int>(BITS_REQUIRED( 0,255 ));
+			}
+	    }
+	};
+
+	// This is where we'll write out packet to before sending.
+	uint16_t networkBuffer[2] = {0}; // 32bit buffer
+
+	// This is our bit packer
+	BitPacker bitPacker(networkBuffer, 2);
+
+	// This is our bitfieldReader
+	BitfieldReader reader(networkBuffer, 2);
+
+	// Make a packet and fill it in...
+	Packet packetA {};
+
+	constexpr int numElements = MaxElements;
+	constexpr int element0 = 200;
+	constexpr int element1 = 254;
+	constexpr int element2 = 199;
+
+	packetA.NumElements = numElements;
+	packetA.Elements[0] = element0;
+	packetA.Elements[1] = element1;
+	packetA.Elements[2] = element2;
+
+	// write to network buffer via BitPacker
+	packetA.Write(bitPacker);
+
+	// make a new packet, eg. reconstruct it from the networkBuffer via bitFieldReader
+	Packet packetB {};
+
+	packetB.Read(reader);
+	EXPECT_EQ(packetB.NumElements, numElements);
+	EXPECT_EQ(packetB.Elements[0], element0);
+	EXPECT_EQ(packetB.Elements[1], element1);
+	EXPECT_EQ(packetB.Elements[2], element2);
+}

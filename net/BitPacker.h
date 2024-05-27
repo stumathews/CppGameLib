@@ -74,7 +74,7 @@ namespace gamelib
 	class BitfieldReader
 	{
 	public:
-		explicit BitfieldReader(T* field): field(field), fieldSizeBits(sizeof(T)*8) { }
+		explicit BitfieldReader(T* field): field(field) { }
 
 		/**
 		 * \brief Reads the next set of bits since the last call
@@ -85,11 +85,39 @@ namespace gamelib
 		template <typename OType>
 		OType ReadNext(const size_t numBits)
 		{
-			const auto startBit = (bitsRead + numBits) - 1;
+			auto startBit = (bitsRead + numBits) - 1;
 
-			if(startBit > fieldSizeBits) throw std::exception("Tried to read past bitfield boundary");
+			if(startBit > fieldSizeBits)
+			{
+				countTimesOverflowed++;
 
-			auto bitsValue = BitFiddler<uint32_t>::GetBitsValue(*field, startBit, numBits);
+				// we are going construct a new T from bits from the current block and some bits that overflowed and that exist in the next block
+				T merged = (merged & 0);
+
+				auto rhsLastIndex = (fieldSizeBits-1);
+				// work out how many bits come from the left hand side (lhs) and how many from right hand side (rhs)				
+
+				auto numBitsLhs = startBit - (fieldSizeBits-1);
+				auto numBitsRhs = numBits - numBitsLhs;
+
+				// get the bits from the rhs buffer and put them into the new T
+				merged = BitFiddler<T>::GetBitsValue(*field, rhsLastIndex, numBitsRhs);
+				// put the bits from the next buffer after them in T, so T looks like this |lhsbits|rhsbits|
+				merged = BitFiddler<T>::SetBits(merged, numBitsRhs+1, numBitsLhs, *field+countTimesOverflowed);
+
+				// mask out/unset all other bits to 0
+				merged = merged & (1 << numBits) -1;
+
+				// say that we must start reading from the next block (lhs) after the bits we've already used from it
+				// this is so that the next read, does not re-read the bits we've already borrowed from it to form the new merged T block
+				bitsRead = numBitsLhs;
+
+				// return the merged block, T
+				return merged;
+			}
+
+			auto bitsValue = BitFiddler<T>::GetBitsValue(*(field+countTimesOverflowed), startBit, numBits);
+			auto peek = BitFiddler<T>::ToString(bitsValue);
 			bitsRead += numBits;
 
 			return static_cast<OType>(bitsValue);
@@ -105,7 +133,7 @@ namespace gamelib
 		template<typename OType>
 		OType ReadInterval(const size_t startHighBit, const size_t numBits)
 		{
-			return static_cast<OType>(BitFiddler<uint32_t>::GetBitsValue(*field, startHighBit, numBits));
+			return static_cast<OType>(BitFiddler<T>::GetBitsValue(*field, startHighBit, numBits));
 		}
 
 		/**
@@ -114,9 +142,10 @@ namespace gamelib
 		void Reset() { bitsRead = 0; }
 
 	private:
-		size_t bitsRead = 0;
+		uint8_t bitsRead = 0;
 		T* field;
-		size_t fieldSizeBits {0};
+		uint8_t fieldSizeBits {sizeof(T)*8};
+		uint8_t countTimesOverflowed {0};
 	};
 };
 

@@ -74,6 +74,14 @@ namespace gamelib
 			return READFROM(number, startBit, numberOfBits);
 		}*/
 
+		/**
+		 * \brief 
+		 * \param number 
+		 * \param startBit high bit
+		 * \param numBits number bits towards lower bits to make interval
+		 * \param zeroIndex 
+		 * \return 
+		 */
 		static T GetBitsValue(const T number, const uint8_t startBit, const uint8_t numBits, const bool zeroIndex = true)
 		{
 			T number1 = number;
@@ -82,7 +90,15 @@ namespace gamelib
 			number1 = number1 & (1 << numBits) -1; // unset all but last numBits bits
 			return number1;
 		}
-				
+
+		/**
+		 * \brief 
+		 * \param number 
+		 * \param startBit starting high-bit
+		 * \param bitLength length of interval towards lower bits
+		 * \param newValue 
+		 * \return 
+		 */
 		static T SetBits(T number, const uint8_t startBit, const uint8_t bitLength, const T newValue)
 		{
 			// get a mask that sets all bits in interval concerned

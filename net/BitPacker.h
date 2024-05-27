@@ -18,7 +18,7 @@ namespace gamelib
 		}
 
 		// Pack the bits into the buffer. Buffer will auto flush when its full
-		void Pack(size_t numBits, T value)
+		void Pack(uint8_t numBits, T value)
 		{			
 			buffer = BitFiddler<T>::SetBits(buffer, writeBitPointer+(numBits-1), numBits, value);
 			writeBitPointer += numBits;
@@ -58,7 +58,7 @@ namespace gamelib
 		uint8_t readBitPointer;		
 		T* flushDestination;
 		int destElement;		
-		size_t bufferSize;
+		uint8_t bufferSize;
 		uint8_t countTimesOverflowed {0};
 		T bitsPacked {0};
 	};
@@ -73,6 +73,12 @@ namespace gamelib
 	public:
 		explicit BitfieldReader(T* field): field(field), fieldSizeBits(sizeof(T)*8) { }
 
+		/**
+		 * \brief Reads the next set of bits since the last call
+		 * \tparam OType return type of the value housing the bits read
+		 * \param numBits number of bits more to read
+		 * \return value with bits set
+		 */
 		template <typename OType>
 		OType ReadNext(const size_t numBits)
 		{
@@ -83,17 +89,25 @@ namespace gamelib
 			auto bitsValue = BitFiddler<uint32_t>::GetBitsValue(*field, startBit, numBits);
 			bitsRead += numBits;
 
-			return (OType)bitsValue;
+			return static_cast<OType>(bitsValue);
 		}
 
-		// Returns an interval of bits from starting at high-bit position backwards for numBits bits
+		/**
+		 * \brief Returns an interval of bits from starting at high-bit position backwards for numBits bits
+		 * \tparam OType return type of the value housing the bits read
+		 * \param startHighBit high bit
+		 * \param numBits range of bits before and up to the high-bit
+		 * \return value with bits read from the interval specified
+		 */
 		template<typename OType>
 		OType ReadInterval(const size_t startHighBit, const size_t numBits)
 		{
-			return (OType) BitFiddler<uint32_t>::GetBitsValue(*field, startHighBit, numBits);
+			return static_cast<OType>(BitFiddler<uint32_t>::GetBitsValue(*field, startHighBit, numBits));
 		}
 
-		// Restarts the reader's position at bit 0
+		/**
+		 * \brief Restarts the reader's position at bit 0
+		 */
 		void Reset() { bitsRead = 0; }
 
 	private:
@@ -101,79 +115,6 @@ namespace gamelib
 		T* field;
 		size_t fieldSizeBits {0};
 	};
-
-	/**
-	 * Write the the bits read off the network into this structure
-	 */
-	template <class T>
-	class BitWriter
-	{
-		public:
-		BitWriter(const int packetSize, T* networkBuffer) : scratch_bits(0), word_index(0), m_packetSize(packetSize),
-		                                                 m_pNetworkBuffer(networkBuffer)
-		{
-
-		}
-
-		// read numBits from the packet
-		void Write(const int numBits, void* destination)
-		{
-			scratch[0] = scratch[1] = {0};
-			scratch_bits = {0};
-			word_index = {0};
-
-			// pBuffer points to the start of the packet we are writing to
-			pBuffer = static_cast<T*>(destination);
-
-			// write numBits from m_pPacket into scratch
-			T bitValue = BitFiddler<T>::GetBitsValue(*m_pNetworkBuffer, scratch_bits, numBits);
-
-			scratch[0] = BitFiddler<T>::SetBits(scratch[0], scratch_bits, numBits, 
-				bitValue);
-
-			std::cout << scratch[0];
-			
-			scratch_bits += numBits;
-		}
-		private:
-		T scratch[2];
-		int scratch_bits;
-		int word_index;
-		T * pBuffer {nullptr};	
-
-		const int m_packetSize {0};
-		T* m_pNetworkBuffer {0};
-	};
-
-	/**
-	 * Reads the bits in this structure in order to write those bits to an external structure like a packet
-	 */
-	template <class T>
-	class BitReader
-	{
-	public:
-		
-
-	void WriteBits(BitWriter<T>& writer, int numElements, int numBits = 0)
-	{
-		
-	}
-
-	void ReadBits(BitReader<T>& reader, int numElements, int numBits = 0)
-	{
-		
-	}
-
-		
-	private:
-		uint64_t scratch {0};
-		int scratch_bits {0};
-		int total_bits {0};
-		int num_bits_read {0};
-		int word_index {0};
-		uint32_t * pbuffer {nullptr};
-	};
-
 };
 
 	

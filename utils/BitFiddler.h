@@ -74,7 +74,7 @@ namespace gamelib
 			return READFROM(number, startBit, numberOfBits);
 		}*/
 
-		static T GetBitsValue(const T number, const size_t startBit, const size_t numBits, const bool zeroIndex = true)
+		static T GetBitsValue(const T number, const uint8_t startBit, const uint8_t numBits, const bool zeroIndex = true)
 		{
 			T number1 = number;
 			if(startBit > 0 && startBit >= numBits)
@@ -83,7 +83,7 @@ namespace gamelib
 			return number1;
 		}
 				
-		static T SetBits(T number, const int startBit, const T bitLength, const T newValue)
+		static T SetBits(T number, const uint8_t startBit, const uint8_t bitLength, const T newValue)
 		{
 			// get a mask that sets all bits in interval concerned
 			uint16_t max = 0;

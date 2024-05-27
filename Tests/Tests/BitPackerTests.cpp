@@ -158,7 +158,7 @@ TEST_F(BitPackingTests, OverflowTests)
 	
 }
 
-TEST_F(BitPackingTests, More)
+TEST_F(BitPackingTests, BasicUnpacking)
 {
 	uint16_t output[3] {0}; // 48bit block
 
@@ -177,11 +177,13 @@ TEST_F(BitPackingTests, More)
 	packet.elements[1] = 9; //00001001
 	packet.elements[2] = 1; //00000001
 
-	auto t1 = BITS_REQUIRED( 0,6 );
-	auto t2 = BITS_REQUIRED( 0,255 );
+	// check how many bits the values can fit into
+	constexpr auto t1 = BITS_REQUIRED( 0,6 );
+	constexpr auto t2 = BITS_REQUIRED( 0,255 );
 	EXPECT_EQ(t1, 3);
 	EXPECT_EQ(t2, 8);
-	
+
+	// Prepare our bitpacker to output its packed bits to an output buffer
 	BitPacker bitPacker(output, 3);
 
 	bitPacker.Pack( BITS_REQUIRED( 0,6 ), packet.numElements );
@@ -193,7 +195,7 @@ TEST_F(BitPackingTests, More)
 	EXPECT_EQ( BitFiddler<uint16_t>::ToString(output[0]), "0100100001010110");
 	EXPECT_EQ( BitFiddler<uint16_t>::ToString(output[1]), "1111100000001000");
 	
-	std::cout << bitPacker.TotalBitsPacked();
+	EXPECT_EQ( bitPacker.TotalBitsPacked(), 32);
 
 	uint32_t all {0};
 

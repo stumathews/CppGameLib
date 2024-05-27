@@ -10,7 +10,7 @@ namespace gamelib
 	{
 	public:
 
-		BitPacker(T* flushDestination, int element)
+		BitPacker(T* flushDestination, const int element)
 			: readBitPointer(0), writeBitPointer(0), flushDestination(flushDestination), destElement(element)
 		{
 			buffer = (buffer & 0);
@@ -26,17 +26,16 @@ namespace gamelib
 
 			if(readBitPointer >= bufferSize)
 			{
-				auto peek = BitFiddler<T>::ToString(buffer);
-				// Write out the buffer to output
+				// flush our buffer to the output buffer
 				memcpy_s(flushDestination+(countTimesOverflowed++), bufferSize/8, &buffer, bufferSize/8);
-				
-				buffer = value;				
-				peek = BitFiddler<T>::ToString(buffer);
 								
-				
+				buffer = value;											
+
+				// Determine which bits overflowed - shift off the bits that we were able to read, leaving those left unread in the buffer for the next packing
+				// to append to
 				buffer = buffer >> numBits - (readBitPointer - bufferSize);
-				peek = BitFiddler<T>::ToString(buffer);
-				int i = 0;
+
+				// set that we've read the previously overflowed bits in our buffer now
 				readBitPointer = (readBitPointer - bufferSize);
 			}
 		}

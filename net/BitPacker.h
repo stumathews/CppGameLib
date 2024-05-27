@@ -4,7 +4,10 @@
 
 namespace gamelib
 {
-
+	/**
+	 * \brief Tightly packs a unit of data with bits
+	 * \tparam T type of unit of bit-packed data
+	 */
 	template <class T>
 	class BitPacker
 	{

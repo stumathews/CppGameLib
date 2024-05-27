@@ -79,14 +79,17 @@ TEST_F(BitPackingTests, BasicBitPacking)
 	bitPacker.Pack(BITS_REQUIRED(0,5), a.Num3);  // 101
 	bitPacker.Pack(BITS_REQUIRED(0,15), a.Num2); // 1111
 	bitPacker.Pack(BITS_REQUIRED(0,5), a.Num1);  // 101
+	bitPacker.Flush();
 
 	// must unpack in this order
-	a.Num4 = bitPacker.UnPack(BITS_REQUIRED(0,2)); EXPECT_EQ(a.Num4, 2);	
-	a.Num3 = bitPacker.UnPack(BITS_REQUIRED(0,5)); EXPECT_EQ(a.Num3, 5);	
-	a.Num2 = bitPacker.UnPack(BITS_REQUIRED(0,15)); EXPECT_EQ(a.Num2, 15);
-	a.Num1 = bitPacker.UnPack(BITS_REQUIRED(0,5)); EXPECT_EQ(a.Num1, 5);	
+	BitfieldReader fieldReader(output);
 
-	//EXPECT_EQ(BitFiddler<uint16_t>::ToString(output[0]), "0000101111110110");
+	a.Num4 = fieldReader.ReadNext<uint16_t>(BITS_REQUIRED(0,2)); EXPECT_EQ(a.Num4, 2);	
+	a.Num3 = fieldReader.ReadNext<uint16_t>(BITS_REQUIRED(0,5)); EXPECT_EQ(a.Num3, 5);	
+	a.Num2 = fieldReader.ReadNext<uint16_t>(BITS_REQUIRED(0,15)); EXPECT_EQ(a.Num2, 15);
+	a.Num1 = fieldReader.ReadNext<uint16_t>(BITS_REQUIRED(0,5)); EXPECT_EQ(a.Num1, 5);	
+
+	EXPECT_EQ(BitFiddler<uint16_t>::ToString(output[0]), "0000101111110110");
 
 	bitPacker.Reset();
 
@@ -158,7 +161,7 @@ TEST_F(BitPackingTests, OverflowTests)
 	
 }
 
-TEST_F(BitPackingTests, BasicUnpacking)
+TEST_F(BitPackingTests, BitfieldReaderTests)
 {
 	uint16_t output[3] {0}; // 48bit block
 
@@ -203,5 +206,25 @@ TEST_F(BitPackingTests, BasicUnpacking)
 	memcpy_s(&all, sizeof(uint32_t), output, sizeof(uint32_t));
 
 	EXPECT_EQ(BitFiddler<uint32_t>::ToString(all), "11111000000010000100100001010110");
+		
+	BitfieldReader reader(&all);
+
+	EXPECT_EQ(reader.ReadNext<uint8_t>(3),6);  EXPECT_EQ(reader.ReadInterval<uint8_t>(2,3),6);
+	EXPECT_EQ(reader.ReadNext<uint8_t>(8),10); EXPECT_EQ(reader.ReadInterval<uint8_t>(10,8),10);
+	EXPECT_EQ(reader.ReadNext<uint8_t>(8),9);  EXPECT_EQ(reader.ReadInterval<uint8_t>(18,8),9);
+	EXPECT_EQ(reader.ReadNext<uint8_t>(8),1);  EXPECT_EQ(reader.ReadInterval<uint8_t>(26,8),1);
+	EXPECT_EQ(reader.ReadNext<uint8_t>(5),31); EXPECT_EQ(reader.ReadInterval<uint8_t>(31,5),31);
+
+	reader.Reset();
+
+	packet.numElements = reader.ReadNext<uint8_t>(3); //110
+	packet.elements[0] = reader.ReadNext<uint8_t>(8); //00001010
+	packet.elements[1] = reader.ReadNext<uint8_t>(8); //00001001
+	packet.elements[2] = reader.ReadNext<uint8_t>(8); //00000001
+
+	EXPECT_EQ(packet.numElements,6);
+	EXPECT_EQ(packet.elements[0],10);
+	EXPECT_EQ(packet.elements[1] ,9);
+	EXPECT_EQ(packet.elements[2],1);
 	
 }

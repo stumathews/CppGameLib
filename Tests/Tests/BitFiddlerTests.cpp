@@ -46,7 +46,7 @@ TEST_F(BitFiddlerTests, ToString)
 }
 
 TEST_F(BitFiddlerTests, GetBitsValue)
-{
+{		
 	// git bits from a 8bit field
 	uint8_t byte = 0; // Max 0 to 255
 
@@ -58,8 +58,10 @@ TEST_F(BitFiddlerTests, GetBitsValue)
 	EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 0, 1), 1); EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 1, 1, false), 1);
 	EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 1, 1), 1); EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 2, 1, false), 1);
 	EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 2, 1), 0); EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 3, 1, false), 0);
-	EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 2, 2), 1); EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 3, 2, false), 1); 
-	EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 2, 3), 3); EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 3, 3, false), 3); 
+	EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 2, 2), 1); EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 3, 2, false), 1);
+
+	EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 2, 3), 3); EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 3, 3, false), 3);
+
 	EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 5, 1), 1); EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 6, 1, false), 1);
 	EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 5, 2), 3); EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 6, 2, false), 3);
 	EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 5, 3), 7); EXPECT_EQ(gamelib::BitFiddler<uint8_t>::GetBitsValue(byte, 6, 3, false), 7);
@@ -81,6 +83,7 @@ TEST_F(BitFiddlerTests, GetBitsValue)
 	EXPECT_EQ(gamelib::BitFiddler<uint16_t>::ToString(gamelib::BitFiddler<uint16_t>::GetBitsValue(packetBuffer, 5, 3)), "0000000000000111");
 	EXPECT_EQ(gamelib::BitFiddler<uint16_t>::GetBitsValue(packetBuffer, 1, 2), 3);
 	EXPECT_EQ(gamelib::BitFiddler<uint16_t>::GetBitsValue(packetBuffer, 2, 3), 3);
+
 }
 
 TEST_F(BitFiddlerTests, SetBits)

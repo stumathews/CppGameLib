@@ -74,7 +74,7 @@ namespace gamelib
 			return READFROM(number, startBit, numberOfBits);
 		}*/
 
-		static T GetBitsValue(const T number, const int startBit, const int numBits, const bool zeroIndex = true)
+		static T GetBitsValue(const T number, const size_t startBit, const size_t numBits, const bool zeroIndex = true)
 		{
 			T number1 = number;
 			if(startBit > 0 && startBit >= numBits)

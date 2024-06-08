@@ -79,7 +79,8 @@ namespace gamelib
 		 */
 		static T GetBitsValue(const T number, const uint8_t startBit, const uint8_t numBits, const bool zeroIndex = true)
 		{
-			T number1 = number;
+			std::remove_const_t<T> number1 = number; // note we remove const if T is const to make a non-const T that we can modify
+
 			if(startBit > 0 && startBit >= numBits)
 				number1 = number1 >> (zeroIndex ? (((startBit+1)-numBits)) : (startBit - numBits)); // shift the bits we are interested to the beginning
 			number1 = number1 & (1 << numBits) -1; // unset all but last numBits bits
@@ -97,7 +98,7 @@ namespace gamelib
 		static T SetBits(T number, const uint8_t startBit, const uint8_t bitLength, const T newValue)
 		{
 			// get a mask that sets all bits in interval concerned
-			T max = 0;
+			std::remove_const_t<T> max = 0; // note we remove const if T is const to make a non-const T that we can modify
 			max = ~(max & 0);
 
 			// get a mask that sets all bits in interval concerned
@@ -106,13 +107,15 @@ namespace gamelib
 			// invert the mask so that that interval is all set to 0
 			T i_mask = ~mask;
 
+			std::remove_const_t<T> tempNumber = number; // note we remove const if T is const to make a non-const T that we can modify
+
 			// apply mask to set the interval to all 0
-			number &= i_mask;
+			tempNumber &= i_mask;
 
 			// apply the value in the interval
-			number = number | newValue << startBit-(bitLength-1);
+			tempNumber = tempNumber | newValue << startBit-(bitLength-1);
 
-			return number;
+			return tempNumber;
 		}
 
 

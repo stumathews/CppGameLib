@@ -142,7 +142,7 @@ namespace gamelib
 			//               ^       ^
 
 			// we are going construct a new T from bits from the current block and some bits that overflowed and that exist in the next block
-			T merged = (merged & 0);
+			std::remove_const_t<T> merged = (merged & 0); // note we remove const if T is const to make a non-const T that we can modify
 
 			auto rhsLastIndex = (fieldSizeBits-1);
 			// work out how many bits come from the left hand side (lhs) and how many from right hand side (rhs)				
@@ -151,7 +151,7 @@ namespace gamelib
 			auto numBitsRhs = numBits - numBitsLhs;
 
 			// get the bits from the rhs buffer and put them into the new T
-			merged = BitFiddler<T>::GetBitsValue(*field, rhsLastIndex, numBitsRhs);
+			merged = BitFiddler<T>::GetBitsValue(*(field+countTimesOverflowed-1), rhsLastIndex, numBitsRhs);
 			
 			// put the bits from the next buffer after them in T, so T looks like this |lhsbits|rhsbits|
 			merged = BitFiddler<T>::SetBits(merged, (numBitsRhs+numBitsLhs)-1, numBitsLhs, *(field+countTimesOverflowed));

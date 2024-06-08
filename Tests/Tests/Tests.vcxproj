@@ -58,6 +58,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\common\static_config.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="TestData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\2DGameDev\packages\gmock.1.11.0\lib\native\src\gtest\src\gtest_main.cc" />

@@ -13,6 +13,8 @@
 #include "events/PlayerMovedEvent.h"
 #include "events/StartNetworkLevelEvent.h"
 #include "file/SerializationManager.h"
+#include "net/BitPacker.h"
+#include "TestData.h"
 #pragma comment(lib, "ws2_32.lib")
 
 using namespace std;
@@ -115,18 +117,22 @@ public:
 		return *result;
 	}
 
-	[[nodiscard]] shared_ptr<Event> FindEmittedEvent(const std::vector<shared_ptr<Event>>& events, const EventId& eventId) const
+	[[nodiscard]] shared_ptr<Event> FindEmittedEvent(const std::vector<shared_ptr<Event>>& events, const EventId& eventId, bool findLast = false) const
 	{
-		const auto result = std::find_if(events.begin(), events.end(), 
-	     [&](const shared_ptr<Event> & event)
+		auto pred =  [&](const shared_ptr<Event> & event)
 	     {
 	         if( event->Id == eventId )
 	         {
 	             return true;
 	         }
 	         return false;	
-	     });
-		return *result;
+	     };
+
+		if(!findLast) 
+			return *std::find_if(events.begin(), events.end(), pred);
+
+		return *std::find_if(events.rbegin(), events.rend(), pred);
+		
 	}
 
 	[[nodiscard]] shared_ptr<NetworkPlayerJoinedEvent> FindPlayerJoinedEvent(const std::vector<shared_ptr<Event>>& events, const string& playerNick) const
@@ -248,6 +254,171 @@ TEST_F(NetworkingTests, TestPing)
 	EnsurePlayerPingTrafficReceivedByServer(serverEmittedEvents, ClientNickName, ServerOrigin);	
 	EnsurePongTrafficReceivedByClient(clientEmittedEvents, "Game Server", ClientNickName);
 }
+
+TEST_F(NetworkingTests, TestCustomBinarySend)
+{
+	#define BITS_REQUIRED( min, max ) gamelib::BitsRequired<min,max>::result
+
+	StartNetworkServer();
+
+	Client = make_shared<GameClient>(ClientNickName, false /* using UDP*/);
+	Client->Initialize();
+	Client->Connect(Server);
+
+	// We will serialize bits 16-bits at a time
+	uint16_t buffer[3];
+	BitPacker bitPacker(buffer, 3);
+
+	constexpr uint8_t minBitsFor0 = BITS_REQUIRED(0, 3); // 2
+	constexpr uint8_t minBitsFor6 = BITS_REQUIRED(0, 6); // 3
+	constexpr uint8_t minBitsFor9 = BITS_REQUIRED(0, 9); // 4
+
+	bitPacker.Pack(minBitsFor0, 0); // 00
+	bitPacker.Pack(minBitsFor6, 6); //110
+	bitPacker.Pack(minBitsFor9, 9); // 1001
+	bitPacker.Flush();
+	
+	EXPECT_EQ(BitFiddler<uint16_t>::ToString(buffer[0]), "0000000100111000");
+	
+	const auto expectedBytesSent = ceil(static_cast<double>(bitPacker.TotalBitsPacked()) / static_cast<double>(8));
+	
+	const auto bytesSend = Client->SendBinary(buffer, bitPacker.TotalBitsPacked());
+
+	// Wait for the server to respond
+	Sleep(1000);
+
+	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
+	
+	const auto trafficEvent = To<NetworkTrafficReceivedEvent>(
+		FindEmittedEvent(serverEmittedEvents, NetworkTrafficReceivedEventId, true));
+
+	const auto receivedBuffer = const_cast<char*>(trafficEvent->Message.c_str());
+	
+	EXPECT_EQ(BitFiddler<char>::ToString(receivedBuffer[0]), "00111000");
+	EXPECT_EQ(BitFiddler<char>::ToString(receivedBuffer[1]), "00000001");
+
+	BitfieldReader<char> bitFieldReader(receivedBuffer, trafficEvent->BytesReceived);
+
+	EXPECT_EQ(bitFieldReader.ReadNext<char>(minBitsFor0), 0);
+	EXPECT_EQ(bitFieldReader.ReadNext<char>(minBitsFor6), 6);
+	EXPECT_EQ(bitFieldReader.ReadNext<char>(minBitsFor9), 9);
+
+	EXPECT_EQ(bytesSend, expectedBytesSent);
+}
+
+TEST_F(NetworkingTests, TestBitPacketBinarySend)
+{
+	#define BITS_REQUIRED( min, max ) gamelib::BitsRequired<min,max>::result
+
+	StartNetworkServer();
+
+	Client = make_shared<GameClient>(ClientNickName, false /* using UDP*/);
+	Client->Initialize();
+	Client->Connect(Server);
+
+	TestData::TestNetworkPacket sendPacket;
+
+	sendPacket.NumElements = 3;
+	sendPacket.Elements[0] = 10;
+	sendPacket.Elements[1] = 9;
+	sendPacket.Elements[2] = 1;
+	
+	uint16_t networkBuffer[3];
+
+	BitPacker packer(networkBuffer, 3);
+
+	sendPacket.Write(packer);
+
+	EXPECT_EQ(BitFiddler<uint16_t>::ToString(networkBuffer[0]), "0010010000101011");
+	EXPECT_EQ(BitFiddler<uint16_t>::ToString(networkBuffer[1]), "0000000000000100");
+
+	// 0000000000000100 001001_00001010_11
+
+	const auto bytesSend = Client->SendBinary(networkBuffer, packer.TotalBitsPacked());
+
+	// Wait for the server to respond
+	Sleep(1000);
+
+	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
+	
+	const auto trafficEvent = To<NetworkTrafficReceivedEvent>(
+		FindEmittedEvent(serverEmittedEvents, NetworkTrafficReceivedEventId, true));
+
+	auto receivedBuffer = (char*)(trafficEvent->Message.c_str());
+	
+	BitfieldReader<const char> reader(receivedBuffer, trafficEvent->BytesReceived);
+
+	TestData::TestNetworkPacket receviedPacket {};
+
+	receviedPacket.Read(reader);
+
+	EXPECT_EQ(BitFiddler<char>::ToString(receivedBuffer[0]), "00101011");
+	EXPECT_EQ(BitFiddler<char>::ToString(receivedBuffer[1]), "00100100");
+	EXPECT_EQ(BitFiddler<char>::ToString(receivedBuffer[2]), "00000100");
+	EXPECT_EQ(BitFiddler<char>::ToString(receivedBuffer[3]), "00000000");
+
+	EXPECT_EQ(receviedPacket.NumElements, 3);
+	EXPECT_EQ(receviedPacket.Elements[0], 10);
+	EXPECT_EQ(receviedPacket.Elements[1], 9);
+	EXPECT_EQ(receviedPacket.Elements[2], 1);
+	
+}
+
+TEST_F(NetworkingTests, TestBitPacketBinarySendReadPayload)
+{
+	#define BITS_REQUIRED( min, max ) gamelib::BitsRequired<min,max>::result
+
+	StartNetworkServer();
+
+	Client = make_shared<GameClient>(ClientNickName, false /* using UDP*/);
+	Client->Initialize();
+	Client->Connect(Server);
+
+	// This is the packet we're going to send over the network
+	TestData::TestNetworkPacket sendPacket {};
+	TestData::TestNetworkPacket receivedPacket {};
+
+	sendPacket.NumElements = 3;
+	sendPacket.Elements[0] = 10;
+	sendPacket.Elements[1] = 9;
+	sendPacket.Elements[2] = 1;
+
+	// Output buffer where we're going to output the serialized bits of the packet to
+	uint16_t networkBuffer[3];
+
+	// Hook the bit packer to output buffer, so that it packs to the expected place
+	BitPacker packer(networkBuffer, 3);
+
+	// Serialize to the buffer
+	sendPacket.Write(packer);
+
+	// Bits should all be in the output buffer, lets send it
+	Client->SendBinary(networkBuffer, packer.TotalBitsPacked());
+
+	// Wait for the server to respond
+	Sleep(10);
+
+	// Collect events from Event Manger to see what traffic was captured
+	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();	
+	const auto trafficEvent = To<NetworkTrafficReceivedEvent>(
+		FindEmittedEvent(serverEmittedEvents, NetworkTrafficReceivedEventId, true));
+
+	// Extract the packet received into a receiveBuffer
+	const auto receivedBuffer = trafficEvent->GetPayload();
+
+	// Hook up bitfield reader to the received buffer
+	BitfieldReader reader(receivedBuffer, trafficEvent->BytesReceived);
+
+	// Read the packet's content from the receive buffer
+	receivedPacket.Read(reader);
+
+	// Ensure what we send is what we received.
+	EXPECT_EQ(receivedPacket.NumElements, 3);
+	EXPECT_EQ(receivedPacket.Elements[0], 10);
+	EXPECT_EQ(receivedPacket.Elements[1], 9);
+	EXPECT_EQ(receivedPacket.Elements[2], 1);	
+}
+
 
 TEST_F(NetworkingTests, MultiPlayerJoinEventsEmittedOnConnect)
 {

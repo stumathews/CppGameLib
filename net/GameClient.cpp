@@ -177,6 +177,20 @@ namespace gamelib
 		eventManager->RaiseEventWithNoLogging(eventFactory->CreateNetworkTrafficReceivedEvent(buffer, "Game Server", bytesReceived, this->GetSubscriberName()));
 	}
 
+	int GameClient::InternalSend(const std::string& message) const
+	{
+		return isTcp
+			       ? Networking::netSendVRec(clientSocketToGameSever, message.c_str(), static_cast<int>(message.size()))
+			       : send(clientSocketToGameSever, message.c_str(), static_cast<int>(message.size()), 0);
+	}
+
+	int GameClient::InternalSend(const char* array, const size_t size) const
+	{
+		return isTcp
+			       ? Networking::netSendVRec(clientSocketToGameSever, array, static_cast<int>(size))
+			       : send(clientSocketToGameSever, array, static_cast<int>(size), 0);
+	}
+
 	std::vector<std::shared_ptr<Event>> GameClient::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs)
 	{		
 		std::vector<std::shared_ptr<Event>> createdEvents;
@@ -185,8 +199,7 @@ namespace gamelib
 		Logger::Get()->LogThis(evt->ToString());
 
 		const auto message = serializationManager->Serialize(evt, nickName);
-		const int sendResult = isTcp ? Networking::netSendVRec(clientSocketToGameSever, message.c_str(), static_cast<int>(message.size()))
-			                       : send(clientSocketToGameSever, message.c_str(), static_cast<int>(message.size()), 0);
+		const int sendResult = InternalSend(message);
 
 		Logger::Get()->LogThis(sendResult > 0 ? "Successfully sent." : "Error no data sent");
 
@@ -203,8 +216,7 @@ namespace gamelib
 		Logger::Get()->LogThis("Pinging game server...");
 
 		const auto message = serializationManager->CreatePingMessage();
-		const int sendResult = isTcp ? Networking::netSendVRec(clientSocketToGameSever, message.c_str(), static_cast<int>(message.size()))
-			                       : send(clientSocketToGameSever, message.c_str(), static_cast<int>(message.size()), 0);
+		const int sendResult = InternalSend(message);
 
 		Logger::Get()->LogThis(sendResult > 0 ? "Sent ping request" : "Error, no data sent");
 
@@ -214,6 +226,12 @@ namespace gamelib
 			closesocket(clientSocketToGameSever);
 			WSACleanup();
 		}
+	}
+
+	int GameClient::SendBinary(uint16_t* array, const size_t numBits) const
+	{
+		const auto numBytes = ceil((double)numBits / (double)8);
+		return InternalSend(reinterpret_cast<char*>(array), numBytes);
 	}
 
 	GameClient::~GameClient()

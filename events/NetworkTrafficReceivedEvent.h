@@ -13,6 +13,7 @@ namespace gamelib
 		std::string Identifier;
 		std::string Message;
 		int BytesReceived{};
+		[[nodiscard]] const char* GetPayload() const { return Message.c_str();}
 	};
 }
 

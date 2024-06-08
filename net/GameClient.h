@@ -32,6 +32,9 @@ namespace gamelib
 		void SendPlayerDetails() const;
 		void PingGameServer() const;
 
+		// sends and array of items of type T across the network 
+		int SendBinary(uint16_t* array, size_t numBits) const;
+
 		/// <summary>
 		/// Listen for incoming traffic from the game server
 		/// </summary>
@@ -64,6 +67,8 @@ namespace gamelib
 		void SubscribeToGameEvents();
 		void CheckSocketForTraffic();
 		void RaiseNetworkTrafficReceivedEvent(char  buffer[512], int bytesReceived);
+		int InternalSend(const std::string& message) const;
+		int InternalSend(const char* array, size_t size) const;
 		void ParseReceivedServerPayload(char  buffer[512]) const;
 		std::string GetSubscriberName() override;
 	};

@@ -376,6 +376,8 @@ TEST_F(NetworkingTests, TestBitPacketBinarySendReadPayload)
 
 	// This is the packet we're going to send over the network
 	TestData::TestNetworkPacket sendPacket {};
+
+	// This is the packet we're going to populate with the bits received 
 	TestData::TestNetworkPacket receivedPacket {};
 
 	sendPacket.NumElements = 3;
@@ -404,12 +406,12 @@ TEST_F(NetworkingTests, TestBitPacketBinarySendReadPayload)
 		FindEmittedEvent(serverEmittedEvents, NetworkTrafficReceivedEventId, true));
 
 	// Extract the packet received into a receiveBuffer
-	const auto receivedBuffer = trafficEvent->GetPayload();
+	const char* receivedBuffer = trafficEvent->GetPayload();
 
 	// Hook up bitfield reader to the received buffer
 	BitfieldReader reader(receivedBuffer, trafficEvent->BytesReceived);
 
-	// Read the packet's content from the receive buffer
+	// Read the packet's content from the receive buffer	
 	receivedPacket.Read(reader);
 
 	// Ensure what we send is what we received.

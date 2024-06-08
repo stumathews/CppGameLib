@@ -30,6 +30,9 @@ namespace gamelib
 
 			if(writeBitPointer >= bufferSize)
 			{
+				// Refuse to write passed destination
+				if(countTimesOverflowed == destElement) throw std::exception("Can't write past destination buffer");
+
 				// flush our buffer to the output buffer
 				memcpy_s(flushDestination+(countTimesOverflowed++), bufferSize/8, &buffer, bufferSize/8);
 								

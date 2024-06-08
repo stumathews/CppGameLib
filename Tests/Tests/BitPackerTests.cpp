@@ -258,10 +258,13 @@ TEST_F(BitPackingTests, BitfieldReaderWithOVerflowSupport)
 
 	bitPacker.Pack(6, 63); //111111 (make it auto-flush at we've no got 16 more bits)
 	//bitPacker.Flush();
-
-
+	
 	EXPECT_EQ(BitFiddler<uint16_t>::ToString(networkBuffer[0]), "0010010000101011");
 	EXPECT_EQ(BitFiddler<uint16_t>::ToString(networkBuffer[1]), "1111110000000100");
+
+	// RHS               LHS
+	// 11111100000001_00 001001_00001010_11
+	//              1         9       10  3
 		
 	EXPECT_EQ(bitPacker.TotalBitsPacked(), 32);
 
@@ -286,16 +289,20 @@ TEST_F(BitPackingTests, PacketReadingWriting)
 {
 	#define BITS_REQUIRED( min, max ) gamelib::BitsRequired<min,max>::result
 
-	constexpr int MaxElements = 3;
+	constexpr int maxElements = 3;
+	constexpr int numElements = maxElements;
+	constexpr int element0 = 200;
+	constexpr int element1 = 254;
+	constexpr int element2 = 199;
 
 	struct Packet
 	{
 	    int NumElements;
-	    int Elements[MaxElements];
+	    int Elements[maxElements];
 
 	    void Write(BitPacker<uint16_t>& bitPacker) const
 	    {
-			bitPacker.Pack(BITS_REQUIRED( 0,MaxElements ), NumElements);
+			bitPacker.Pack(BITS_REQUIRED( 0,maxElements ), NumElements);
 			for(int i = 0; i < NumElements;i++)
 			{
 				bitPacker.Pack(BITS_REQUIRED( 0,255 ), Elements[i]);
@@ -305,7 +312,7 @@ TEST_F(BitPackingTests, PacketReadingWriting)
 
 	    void Read(BitfieldReader<uint16_t>& bitfieldReader)
 	    {
-	        NumElements = bitfieldReader.ReadNext<int>(BITS_REQUIRED( 0,MaxElements ));
+	        NumElements = bitfieldReader.ReadNext<int>(BITS_REQUIRED( 0,maxElements ));
 			for(int i = 0; i < NumElements;i++)
 			{
 				Elements[i] = bitfieldReader.ReadNext<int>(BITS_REQUIRED( 0,255 ));
@@ -325,11 +332,6 @@ TEST_F(BitPackingTests, PacketReadingWriting)
 	// Make a packet and fill it in...
 	Packet packetA {};
 
-	constexpr int numElements = MaxElements;
-	constexpr int element0 = 200;
-	constexpr int element1 = 254;
-	constexpr int element2 = 199;
-
 	packetA.NumElements = numElements;
 	packetA.Elements[0] = element0;
 	packetA.Elements[1] = element1;
@@ -346,4 +348,40 @@ TEST_F(BitPackingTests, PacketReadingWriting)
 	EXPECT_EQ(packetB.Elements[0], element0);
 	EXPECT_EQ(packetB.Elements[1], element1);
 	EXPECT_EQ(packetB.Elements[2], element2);
+}
+
+TEST_F(BitPackingTests, SimulateNetworkingUsage)
+{
+	char buffer[3];
+
+	BitPacker bitPacker(buffer, 2);
+
+	const uint8_t minBitsFor0 = BITS_REQUIRED(0, 3); // 2
+	const uint8_t minBitsFor6 = BITS_REQUIRED(0, 6); // 3
+	const uint8_t minBitsFor9 = BITS_REQUIRED(0, 9); // 4
+
+	bitPacker.Pack(minBitsFor0, 0); // 0
+	bitPacker.Pack(minBitsFor6, 6); //0110
+	bitPacker.Pack(minBitsFor9, 9); // 1001
+	bitPacker.Flush();
+
+	// 001101001
+
+	auto show1 = BitFiddler<char>::ToString(buffer[0]); // 00000001 001_110_00
+
+	const double numBytes = static_cast<double>(bitPacker.TotalBitsPacked()) / static_cast<double>(8);
+	const auto expectedBytesSent = ceil(numBytes);
+
+	auto receivedBuffer = reinterpret_cast<char*>(buffer);
+	auto receivedBufferSize = 2;
+
+	EXPECT_EQ(BitFiddler<char>::ToString(receivedBuffer[0]), "00111000");
+	EXPECT_EQ(BitFiddler<char>::ToString(receivedBuffer[1]), "00000001");
+
+	BitfieldReader<char> bitFieldReader(receivedBuffer, receivedBufferSize);
+
+	EXPECT_EQ(bitFieldReader.ReadNext<char>(minBitsFor0), 0);
+	EXPECT_EQ(bitFieldReader.ReadNext<char>(minBitsFor6), 6);
+	EXPECT_EQ(bitFieldReader.ReadNext<char>(minBitsFor9), 9);
+
 }

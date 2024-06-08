@@ -93,7 +93,7 @@ namespace gamelib
 
 			if(countTimesOverflowed >= elements) throw std::exception("Buffer overflow.");
 			
-			if(startBit > fieldSizeBits)
+			if(startBit > fieldSizeBits-1)
 			{							
 				countTimesOverflowed++;
 
@@ -135,6 +135,11 @@ namespace gamelib
 		template <typename OType>
 		OType MakeMergedUnit(const size_t numBits, unsigned long long startBit)
 		{
+			// LHS [1]  RHS [0]
+			// 00000001 001_11000
+			
+			// 1111110000000100 0010010000101011
+			//               ^       ^
 
 			// we are going construct a new T from bits from the current block and some bits that overflowed and that exist in the next block
 			T merged = (merged & 0);
@@ -147,9 +152,9 @@ namespace gamelib
 
 			// get the bits from the rhs buffer and put them into the new T
 			merged = BitFiddler<T>::GetBitsValue(*field, rhsLastIndex, numBitsRhs);
-
+			
 			// put the bits from the next buffer after them in T, so T looks like this |lhsbits|rhsbits|
-			merged = BitFiddler<T>::SetBits(merged, numBitsRhs+1, numBitsLhs, *(field+countTimesOverflowed));
+			merged = BitFiddler<T>::SetBits(merged, (numBitsRhs+numBitsLhs)-1, numBitsLhs, *(field+countTimesOverflowed));
 
 			// mask out/unset all other bits to 0
 			merged = merged & (1 << numBits) -1;

@@ -68,16 +68,11 @@ namespace gamelib
 		static T SetBitTo(T number, T n, bool x) {
 			return (number & ~((T)1 << n)) | ((T)x << n);
 		}
-
-		/*static T GetBitsValue(T number, const int startBit, const int numberOfBits)
-		{
-			return READFROM(number, startBit, numberOfBits);
-		}*/
-
+		
 		/**
 		 * \brief 
 		 * \param number 
-		 * \param startBit high bit
+		 * \param startBit high bit (zero indexed, 0 is the rightmost bit)
 		 * \param numBits number bits towards lower bits to make interval
 		 * \param zeroIndex 
 		 * \return 
@@ -94,7 +89,7 @@ namespace gamelib
 		/**
 		 * \brief 
 		 * \param number 
-		 * \param startBit starting high-bit
+		 * \param startBit starting high-bit (zero indexed, 0 is the rightmost bit)
 		 * \param bitLength length of interval towards lower bits
 		 * \param newValue 
 		 * \return 
@@ -102,14 +97,14 @@ namespace gamelib
 		static T SetBits(T number, const uint8_t startBit, const uint8_t bitLength, const T newValue)
 		{
 			// get a mask that sets all bits in interval concerned
-			uint16_t max = 0;
+			T max = 0;
 			max = ~(max & 0);
 
 			// get a mask that sets all bits in interval concerned
-			uint16_t mask = (max >> (sizeof(uint16_t)*8) - bitLength) 	<< startBit-(bitLength-1);
+			T mask = (max >> (sizeof(T)*8) - bitLength) 	<< startBit-(bitLength-1);
 
 			// invert the mask so that that interval is all set to 0
-			uint16_t i_mask = ~mask;
+			T i_mask = ~mask;
 
 			// apply mask to set the interval to all 0
 			number &= i_mask;

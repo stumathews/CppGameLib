@@ -67,6 +67,7 @@
     <ClCompile Include="BehaviorTreeTests.cpp" />
     <ClCompile Include="BitFiddlerTests.cpp" />
     <ClCompile Include="BitPackerTests.cpp" />
+    <ClCompile Include="CrcTests.cpp" />
     <ClCompile Include="FontManagerTests.cpp" />
     <ClCompile Include="FSMTests.cpp" />
     <ClCompile Include="NetworkingTests.cpp" />

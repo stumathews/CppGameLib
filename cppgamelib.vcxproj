@@ -336,6 +336,7 @@
     <ClCompile Include="character\StatefulMove.cpp" />
     <ClCompile Include="graphic\Subscribable.cpp" />
     <ClCompile Include="graphic\Window.cpp" />
+    <ClCompile Include="net\crc.h" />
     <ClCompile Include="time\PeriodicTimer.cpp" />
     <ClCompile Include="events\EventId.cpp" />
     <ClCompile Include="events\EventFactory.cpp" />

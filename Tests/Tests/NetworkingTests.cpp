@@ -492,24 +492,66 @@ TEST_F(NetworkingTests, ReliableUdpTest)
 	ReliableUdp::Message* lastMessage = reliableUdp.Send(packet);
 	lastMessage->Header.LastAckedSequence = 44;
 	lastMessage->Header.LastAckedBits = 99;
-
-	
+		
 	uint32_t buffer[5] {};
 	BitPacker bitPacker(buffer, 5);
 
 	// write last message out into buffer (binpacked)
 	lastMessage->Write(bitPacker);
-
-	const char* cBuffer = reinterpret_cast<const char*>(buffer);
+	
 	// read out the last message from the buffer (binpacked)
-	BitfieldReader reader(reinterpret_cast<uint32_t*>(buffer), 5);
-
-
+	BitfieldReader reader(buffer, 5);
+	
 	ReliableUdp::Message message3;
 	message3.Read(reader);	
 
 	EXPECT_EQ(message3.Header.Sequence, lastMessage->Header.Sequence);
 	EXPECT_EQ(message3.Header.LastAckedSequence, lastMessage->Header.LastAckedSequence);
 	EXPECT_EQ(message3.Header.LastAckedBits, lastMessage->Header.LastAckedBits);
+
+}
+
+TEST_F(NetworkingTests, ReliableUdpTest2)
+{
+
+	ReliableUdp::Message receivedPacket {};
+	StartNetworkServer();
+
+	const auto player1Nick = "Player1";
+	
+	const auto client1 = make_shared<GameClient>(player1Nick, false);
+	client1->Initialize();
+	client1->Connect(Server);
+
+	ReliableUdp reliableUdp;
+
+	const ReliableUdp::PacketDatum packet(false, "There can be only one.");
+
+	// Send as bitpacked binary
+	auto message1 = reliableUdp.Send(client1, packet);
+	auto message2 = reliableUdp.Send(client1, packet);
+	auto message3 = reliableUdp.Send(client1, packet);
+	
+	// Wait for the server to respond
+	Sleep(10);
+
+	// Collect events from Event Manger to see what traffic was captured
+	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();	
+	const auto trafficEvent = To<NetworkTrafficReceivedEvent>(
+		FindEmittedEvent(serverEmittedEvents, NetworkTrafficReceivedEventId, true)); // <-- find only message 3 (last message)
+
+	// Extract the packet received into a receiveBuffer
+	const char* receivedBuffer = trafficEvent->GetPayload();
+
+	// Hook up bitfield reader to the received buffer
+	BitfieldReader reader((uint32_t*)receivedBuffer, trafficEvent->BytesReceived);
+
+	// Read the packet's content from the receive buffer	
+	receivedPacket.Read(reader);
+
+	// Ensure what we send is what we received.
+	EXPECT_EQ(receivedPacket.Header.Sequence, message3->Header.Sequence);	
+	EXPECT_EQ(receivedPacket.Header.LastAckedBits, message3->Header.LastAckedBits);	
+	EXPECT_EQ(receivedPacket.Header.LastAckedSequence, message3->Header.LastAckedSequence);	
 
 }

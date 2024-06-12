@@ -34,7 +34,7 @@ namespace gamelib
 				bitPacker.Pack(16, Sequence);
 				bitPacker.Pack(16, LastAckedSequence);
 				bitPacker.Pack(32, LastAckedBits);
-				//bitPacker.Flush();
+				bitPacker.Flush();
 		    }
 
 		    void Read(BitfieldReader<uint32_t>& bitfieldReader)
@@ -50,7 +50,7 @@ namespace gamelib
 			PacketDatum(){ Acked = false; }
 			explicit PacketDatum(const bool acked, const char* customData = "") : Acked(acked), Payload(customData) {  }
 
-			void Write(BitPacker<uint16_t>& bitPacker) const
+			void Write(BitPacker<uint32_t>& bitPacker) const
 		    {
 				bitPacker.Pack(BITS_REQUIRED( 0, 1), Acked);
 		    }
@@ -112,6 +112,25 @@ namespace gamelib
 		private:
 			std::vector<PacketDatum> data;
 		};
+
+		Message* Send(const std::shared_ptr<GameClient> client, const PacketDatum datum)
+		{
+			// create temporary buffer
+			uint32_t buffer[8192]; // 256kb buffer
+
+			// Get packet to send
+			const auto message = Send(datum);
+
+			// Pack packet tightly into  buffer
+			BitPacker packer(buffer, 8192);
+			message->Write(packer);
+
+			// Ask the client to sent only the bits we packed into the buffer
+			client->SendBinary(reinterpret_cast<uint16_t*>(buffer), packer.TotalBitsPacked());
+
+			return message;
+
+		}
 
 		Message* Send(PacketDatum datum)
 		{

@@ -165,12 +165,12 @@ namespace gamelib
 			auto numBitsLhs = startBit - (fieldSizeBits-1);
 			auto numBitsRhs = numBits - numBitsLhs;
 
-			// get the bits from the rhs buffer and put them into the new T
-			merged = BitFiddler<T>::GetBitsValue(*(field+countTimesOverflowed-1), rhsLastIndex, numBitsRhs);
+				// get the bits from the rhs buffer and put them into the new T
+				merged = BitFiddler<T>::GetBitsValue(*(field+countTimesOverflowed-1), rhsLastIndex, numBitsRhs);
 			
 			// put the bits from the next buffer after them in T, so T looks like this |lhsbits|rhsbits|
 			merged = BitFiddler<T>::SetBits(merged, (numBitsRhs+numBitsLhs)-1, numBitsLhs, *(field+countTimesOverflowed));
-
+					
 			// If this is exactly a multiple of base type for the buffer, eg bit 61 down to 31 (and base of buffer is uint32_t)
 			// no need to shift as there are 0 bits in the rhs and all thebits in the lhs
 			const auto isMultipleOfT = (startBit-1) % (fieldSizeBits-1) == 0;

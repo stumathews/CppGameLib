@@ -713,6 +713,9 @@
     <ClCompile Include="graphic\Subscribable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="net\crc.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="net\tcpclient.skel" />

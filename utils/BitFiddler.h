@@ -1,13 +1,14 @@
 ﻿#pragma once
 #include <cstdint>
 #include <bitset>
-#include <limits>
 
 namespace gamelib
 {
 	#define GETMASK(index, size) ((((size_t)1 << (size)) - 1) << (index))
 	#define READFROM(data, index, size) (((data) & GETMASK((index), (size))) >> (index))
 	#define WRITETO(data, index, size, value) ((data) = (((data) & (~GETMASK((index), (size)))) | (((value) << (index)) & (GETMASK((index), (size))))))
+
+	#define BITS_REQUIRED( min, max ) gamelib::BitsRequired<min,max>::result
 
 	template <uint32_t x> struct PopCount
 	{

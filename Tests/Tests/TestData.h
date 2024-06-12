@@ -7,7 +7,6 @@ namespace TestData
 {
 	struct TestNetworkPacket
 	{
-		#define BITS_REQUIRED( min, max ) gamelib::BitsRequired<min,max>::result
 		#define MAX_ELEMENTS 3
 	
 	    int NumElements;
@@ -32,4 +31,5 @@ namespace TestData
 			}
 	    }
 	};
+
 }

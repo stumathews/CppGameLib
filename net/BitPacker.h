@@ -58,6 +58,18 @@ namespace gamelib
 		T TotalBitsPacked() { return bitsPacked; }
 		bool HasOverflowed {false};
 
+		static constexpr unsigned BitsToRepresent(uintmax_t n) 
+		{
+		    return n > 0 
+		        ? 1 + BitsToRepresent(n/2)
+		        : 0; 
+		}
+
+		static constexpr unsigned BitsRequired(intmax_t min,intmax_t max)
+		{
+		    return BitsToRepresent(static_cast<uintmax_t>(max) - static_cast<uintmax_t>(min));
+		}
+
 	private:
 		T buffer;
 		uint8_t writeBitPointer;
@@ -66,7 +78,7 @@ namespace gamelib
 		int destElement;		
 		uint8_t bufferSize;
 		uint8_t countTimesOverflowed {0};
-		T bitsPacked {0};
+		T bitsPacked {0};		
 	};
 
 	/**
@@ -159,8 +171,15 @@ namespace gamelib
 			// put the bits from the next buffer after them in T, so T looks like this |lhsbits|rhsbits|
 			merged = BitFiddler<T>::SetBits(merged, (numBitsRhs+numBitsLhs)-1, numBitsLhs, *(field+countTimesOverflowed));
 
-			// mask out/unset all other bits to 0
-			merged = merged & (1 << numBits) -1;
+			// If this is exactly a multiple of base type for the buffer, eg bit 61 down to 31 (and base of buffer is uint32_t)
+			// no need to shift as there are 0 bits in the rhs and all thebits in the lhs
+			const auto isMultipleOfT = (startBit-1) % (fieldSizeBits-1) == 0;
+
+			if(!isMultipleOfT) 
+			{
+				// mask out/unset all other bits to 0
+				merged = merged & (1 << numBits) -1;
+			}
 
 			// say that we must start reading from the next block (lhs) after the bits we've already used from it
 			// this is so that the next read, does not re-read the bits we've already borrowed from it to form the new merged T block

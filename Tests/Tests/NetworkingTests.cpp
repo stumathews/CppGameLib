@@ -15,6 +15,7 @@
 #include "file/SerializationManager.h"
 #include "net/BitPacker.h"
 #include "TestData.h"
+#include "net/ReliableUdp.h"
 #pragma comment(lib, "ws2_32.lib")
 
 using namespace std;
@@ -468,4 +469,47 @@ TEST_F(NetworkingTests, MultiPlayerJoinEventsEmittedOnConnect)
 	
 	EXPECT_EQ(clientEmittedEvents.size(), 0) << "Expected no responses from server on connect, therefore no client events for traffic received";
 	EXPECT_EQ(serverEmittedEvents.size(), 6) << "Should be 3 joined traffic events, and 3 official player joined events - both emitted from server";
+}
+
+TEST_F(NetworkingTests, ReliableUdpTest)
+{
+
+	StartNetworkServer();
+
+	const auto player1Nick = "Player1";
+
+	// Setup client
+	const auto client1 = make_shared<GameClient>(player1Nick, false /* using UDP*/);
+	client1->Initialize();
+	client1->Connect(Server);
+
+	ReliableUdp reliableUdp;
+	const ReliableUdp::PacketDatum packet(false, "There can be only one.");
+	reliableUdp.Send(packet);
+	reliableUdp.Send(packet);
+	reliableUdp.Send(packet);
+	
+	ReliableUdp::Message* lastMessage = reliableUdp.Send(packet);
+	lastMessage->Header.LastAckedSequence = 44;
+	lastMessage->Header.LastAckedBits = 99;
+
+	
+	uint32_t buffer[5] {};
+	BitPacker bitPacker(buffer, 5);
+
+	// write last message out into buffer (binpacked)
+	lastMessage->Write(bitPacker);
+
+	const char* cBuffer = reinterpret_cast<const char*>(buffer);
+	// read out the last message from the buffer (binpacked)
+	BitfieldReader reader(reinterpret_cast<uint32_t*>(buffer), 5);
+
+
+	ReliableUdp::Message message3;
+	message3.Read(reader);	
+
+	EXPECT_EQ(message3.Header.Sequence, lastMessage->Header.Sequence);
+	EXPECT_EQ(message3.Header.LastAckedSequence, lastMessage->Header.LastAckedSequence);
+	EXPECT_EQ(message3.Header.LastAckedBits, lastMessage->Header.LastAckedBits);
+
 }

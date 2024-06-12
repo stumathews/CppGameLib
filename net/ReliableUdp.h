@@ -2,12 +2,22 @@
 #include <cstdint>
 #include <vector>
 
+#include "Tests/Tests/TestData.h"
 #include "utils/BitFiddler.h"
 #include "utils/RingBuffer.h"
 
 namespace gamelib
 {
-	
+
+	/*
+
+		sequence
+		lastAckedSequence
+		lastAckedBits
+		payloadSizeBytes
+		payload
+	 
+	 */
 
 	class ReliableUdp
 	{
@@ -18,17 +28,42 @@ namespace gamelib
 		    uint16_t Sequence; // current sequence
 		    uint16_t LastAckedSequence;
 		    uint32_t LastAckedBits; // bit n is set means Sequence - n was acked ie the previous n sequence was acked
+
+			void Write(BitPacker<uint32_t>& bitPacker) const
+		    {
+				bitPacker.Pack(16, Sequence);
+				bitPacker.Pack(16, LastAckedSequence);
+				bitPacker.Pack(32, LastAckedBits);
+				//bitPacker.Flush();
+		    }
+
+		    void Read(BitfieldReader<uint32_t>& bitfieldReader)
+		    {
+		        Sequence = bitfieldReader.ReadNext<uint16_t>(16);
+		        LastAckedSequence = bitfieldReader.ReadNext<uint16_t>(16);
+		        LastAckedBits = bitfieldReader.ReadNext<uint32_t>(32);
+		    }
 		};
 
 		struct PacketDatum
 		{
 			PacketDatum(){ Acked = false; }
-			explicit PacketDatum(const bool acked, const char* customData = "") : Acked(acked), CustomData(customData) {  }
+			explicit PacketDatum(const bool acked, const char* customData = "") : Acked(acked), Payload(customData) {  }
+
+			void Write(BitPacker<uint16_t>& bitPacker) const
+		    {
+				bitPacker.Pack(BITS_REQUIRED( 0, 1), Acked);
+		    }
+
+		    void Read(BitfieldReader<const char>& bitfieldReader)
+		    {
+		        Acked = bitfieldReader.ReadNext<uint16_t>(16);
+		    }
 
 		    bool Acked;
 			uint16_t Sequence {};
 			double SendTime {};
-			const char* CustomData{};
+			const char* Payload{};
 
 		};
 
@@ -36,6 +71,14 @@ namespace gamelib
 		{
 		public:
 
+			/**
+			 * \brief Creates a new network packet
+			 * \param sequence consecutive sequence number
+			 * \param lastAckedSequence last sequence number that was acknowledged
+			 * \param previousAckedBits 
+			 * \param n number of contained packets (if > 1 this is an aggregated message containing other messages)
+			 * \param inData the contained packets
+			 */
 			explicit Message(const uint16_t sequence, const uint16_t lastAckedSequence, uint32_t previousAckedBits,
 			                 const uint16_t n = 0, const PacketDatum* inData = nullptr)
 			{
@@ -50,9 +93,22 @@ namespace gamelib
 				}
 			}
 
+			Message(){}
+
 			MessageHeader Header{};
 			[[nodiscard]] std::vector<PacketDatum> Data() const { return data; }
 			[[nodiscard]] uint16_t DataCount() const { return data.size(); }
+
+			void Write(BitPacker<uint32_t>& bitPacker) const
+		    {
+				Header.Write(bitPacker);
+		    }
+
+		    void Read(BitfieldReader<uint32_t>& bitfieldReader)
+		    {
+		        Header.Read(bitfieldReader);
+		    }
+
 		private:
 			std::vector<PacketDatum> data;
 		};
@@ -90,8 +146,8 @@ namespace gamelib
 
 			// Send Message, attaching any consecutive data that was not previously sent
 			// also include a reference to what we've received from the sender previously, just in case an ack did not go through to the sender
-			sentMessage = new Message(sequence, lastAckedSequence, GeneratePreviousAckedBits(), dataToSent.size(),
-			                          dataToSent.data());
+			sentMessage = new Message(sequence, lastAckedSequence, GeneratePreviousAckedBits(), dataToSent.size(), dataToSent.data());
+			
 			return sentMessage;
 		}
 

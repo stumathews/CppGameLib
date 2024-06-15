@@ -31,7 +31,7 @@ namespace gamelib
 		~GameStructure() override;
 
 		bool Initialize(int screenWidth, int screenHeight, const std::string& windowTitle, const std::string resourceFilePath, const std::
-		                                     string& gameSettingsFilePath);
+		                                     string& gameSettingsFilePath, std::string sceneFolderPath);
 
 		/// <summary>
 		/// releases resources incl. resource admin and other game subsystems

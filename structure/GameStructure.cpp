@@ -55,7 +55,8 @@ namespace gamelib
 	}
 
 	bool GameStructure::Initialize(int screenWidth, int screenHeight, const string& windowTitle,
-	                                             const string resourceFilePath, const string& gameSettingsFilePath)
+	                                             const string resourceFilePath, const string& gameSettingsFilePath,
+		const string sceneFolderPath)
 	{
 		// Read config about the game's settings
 		const auto settingsInitialized = SettingsManager::Get()->Load(gameSettingsFilePath);
@@ -87,7 +88,7 @@ namespace gamelib
 				                             "Could not initialize event manager")) ||
 				IsFailedOrFalse(LogOnFailure(ResourceManager::Get()->Initialize(resourceFilePath),
 				                             "Could not initialize resource manager")) ||
-				IsFailedOrFalse(LogOnFailure(SceneManager::Get()->Initialize(),
+				IsFailedOrFalse(LogOnFailure(SceneManager::Get()->Initialize(sceneFolderPath),
 				                             "Could not initialize scene manager")) ||
 				IsFailedOrFalse(settingsInitialized)) { return false; }
 

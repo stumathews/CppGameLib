@@ -27,7 +27,7 @@ namespace gamelib
 		SceneManager& operator=(SceneManager &&) = delete;
 
 		void SetSceneFolder(const std::string& inSceneFolder);
-		bool Initialize(std::string sceneFolder = "game/");
+		bool Initialize(std::string sceneFolder);
 		void StartScene(int sceneId);
 		[[nodiscard]] std::list<std::shared_ptr<Layer>> GetLayers() const;
 

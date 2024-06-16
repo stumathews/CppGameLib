@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include <cstdint>
 
 #include "net/BitPacker.h"
 

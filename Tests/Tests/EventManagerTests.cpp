@@ -1,7 +1,8 @@
-#include "pch.h"
 #include "events/UpdateAllGameObjectsEvent.h"
 #include "events/EventManager.h"
 #include <events/EventSubscriber.h>
+
+#include "gtest/gtest.h"
 using namespace std;
 using namespace gamelib;
 
@@ -116,6 +117,6 @@ TEST_F(EventManagerTests, CantSubscribeAgain)
 
 	auto& all_event_subscribers = EventManager::Get()->GetSubscriptions();
 
-	EXPECT_TRUE(all_event_subscribers[Id].size(), 1);
+	EXPECT_EQ(all_event_subscribers[Id].size(), 1);
 
 }

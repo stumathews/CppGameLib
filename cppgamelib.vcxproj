@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(SolutionDir)Build\common.targets" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -73,9 +74,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <SourcePath>$(ProjectDir);C:\tinyxml2-master;$(SourcePath)</SourcePath>
-    <IncludePath>$(ProjectDir);C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;C:\tinyxml2-master;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;C:\SDL\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(ProjectDir);$(SDL2_TinyXml_RootDir);$(SourcePath)</SourcePath>
+    <IncludePath>$(CommonIncludePath);$(VC_IncludePath_x64);$(WindowsSdk_IncludePath);$(IncludePath)</IncludePath>
+    <LibraryPath>$(CommonLibraryPath);$(WindowsSdk_LibraryPath_x64);$(VC_LibraryPath_x64);$(LibraryPath)</LibraryPath>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
   </PropertyGroup>
@@ -83,20 +84,23 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>$(ProjectDir);C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;C:\tinyxml2-master;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;$(LibraryPath)</LibraryPath>
-    <SourcePath>$(ProjectDir);C:\tinyxml2-master;$(SourcePath)</SourcePath>
+    <IncludePath>$(CommonIncludePath);$(VC_IncludePath_x64);$(WindowsSdk_IncludePath);$(IncludePath)</IncludePath>
+    <LibraryPath>$(CommonLibraryPath);$(WindowsSdk_LibraryPath_x64);$(VC_LibraryPath_x64);$(LibraryPath)</LibraryPath>
+    <SourcePath>$(ProjectDir);$(SDL2_TinyXml_RootDir);$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir);C:\tinyxml2-master;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\SDL\SDL2\lib\$(platform);$(LibraryPath)</LibraryPath>
-    <SourcePath>$(ProjectDir);C:\tinyxml2-master;$(SourcePath)</SourcePath>
+    <IncludePath>$(CommonIncludePath);$(VC_IncludePath_x64);$(WindowsSdk_IncludePath);$(IncludePath)</IncludePath>
+    <LibraryPath>$(CommonLibraryPath);$(WindowsSdk_LibraryPath_x64);$(VC_LibraryPath_x64);$(LibraryPath)</LibraryPath>
+    <SourcePath>$(ProjectDir);$(SDL2_TinyXml_RootDir);$(SourcePath)</SourcePath>
     <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(CommonIncludePath);$(VC_IncludePath_x64);$(WindowsSdk_IncludePath);$(IncludePath)</IncludePath>
+    <LibraryPath>$(CommonLibraryPath);$(WindowsSdk_LibraryPath_x64);$(VC_LibraryPath_x64);$(LibraryPath)</LibraryPath>
+    <SourcePath>$(ProjectDir);$(SDL2_TinyXml_RootDir);$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -107,7 +111,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\SDL\SDL2\include;C:\SDL\SDL2_image-2.0.4\include;C:\SDL\SDL2_mixer-devel-2.0.4-VC\SDL2_mixer-2.0.4\include;C:\SDL\SDL2_ttf-2.0.15\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CommonIncludePath);$(VC_IncludePath_x64);$(WindowsSdk_IncludePath);$(IncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -130,7 +134,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\SDL\SDL2\include;C:\SDL\SDL2_image-2.0.4\include;C:\SDL\SDL2_mixer-devel-2.0.4-VC\SDL2_mixer-2.0.4\include;C:\SDL\SDL2_ttf-2.0.15\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CommonIncludePath);$(VC_IncludePath_x64);$(WindowsSdk_IncludePath);$(IncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -148,7 +152,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\SDL\SDL2\include;C:\SDL\SDL2_image-2.0.4\include;C:\SDL\SDL2_mixer-devel-2.0.4-VC\SDL2_mixer-2.0.4\include;C:\SDL\SDL2_ttf-2.0.15\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CommonIncludePath);$(VC_IncludePath_x64);$(WindowsSdk_IncludePath);$(IncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -156,6 +160,9 @@
       </SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>SDL2.lib</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -165,8 +172,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -175,6 +183,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>SDL2.lib</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ai\InlineActionBehavior.h" />

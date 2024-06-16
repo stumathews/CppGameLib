@@ -1,8 +1,8 @@
-﻿#include "pch.h"
-#include "events/AddGameObjectToCurrentSceneEvent.h"
+﻿#include "events/AddGameObjectToCurrentSceneEvent.h"
 #include "events/EventManager.h"
 #include "events/SceneChangedEvent.h"
 #include "graphic/SDLGraphicsManager.h"
+#include "gtest/gtest.h"
 #include "objects/GameObject.h"
 #include "resource/ResourceManager.h"
 #include "scene/SceneManager.h"
@@ -45,7 +45,7 @@ TEST_F(SceneManagerTests, get_scene_layers)
 	sceneManager->StartScene(1);
 	EventManager::Get()->ProcessAllEvents();
 	
-	auto& layers = sceneManager->GetLayers();
+	auto layers = sceneManager->GetLayers();
 	auto& layer = layers.front();
 	auto& game_object = layer->Objects.front();
 	

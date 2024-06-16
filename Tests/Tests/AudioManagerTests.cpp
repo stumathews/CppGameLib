@@ -1,8 +1,8 @@
 ﻿#include "pch.h"
 
-#include "audio/AudioManager.h"
-#include "resource/ResourceManager.h"
-#include "objects/GameObject.h"
+#include <audio/AudioManager.h>
+#include <resource/ResourceManager.h>
+#include <objects/GameObject.h>
 
 using namespace std;
 using namespace gamelib;

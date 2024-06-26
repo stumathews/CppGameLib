@@ -102,6 +102,10 @@
     <LibraryPath>$(CommonLibraryPath);$(WindowsSdk_LibraryPath_x64);$(VC_LibraryPath_x64);$(LibraryPath)</LibraryPath>
     <SourcePath>$(ProjectDir);$(SDL2_TinyXml_RootDir);$(SourcePath)</SourcePath>
   </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>false</VcpkgEnableManifest>
+    <VcpkgEnabled>false</VcpkgEnabled>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -405,7 +409,9 @@
     <ClCompile Include="objects\GameObject.cpp" />
     <ClCompile Include="objects\GameObjectFactory.cpp" />
     <ClCompile Include="character\AnimatedSprite.cpp" />
-    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="net\PeerInfo.cpp" />
     <ClCompile Include="events\NetworkTrafficReceivedEvent.cpp" />
     <ClCompile Include="processes\ProcessManager.cpp" />

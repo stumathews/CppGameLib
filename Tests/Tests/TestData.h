@@ -1,4 +1,6 @@
 ﻿#pragma once
+#ifndef TESTDATA_H
+#define TESTDATA_H
 
 #include "net/BitPacker.h"
 
@@ -32,3 +34,5 @@ namespace TestData
 	};
 
 }
+
+#endif

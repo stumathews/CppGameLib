@@ -1,4 +1,6 @@
 #pragma once
+#ifndef GAMEOBJECT_H
+#define GAMEOBJECT_H
 
 #include <map>
 #include <SDL.h>
@@ -65,3 +67,5 @@ namespace gamelib
 		void SetDefaults(bool isVisible, int x, int y);
 	};
 }
+
+#endif

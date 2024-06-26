@@ -1,4 +1,6 @@
 #pragma once
+#ifndef IEVENTSUBSCRIBER_H
+#define IEVENTSUBSCRIBER_H
 #include <memory>
 #include <vector>
 #include <string>
@@ -36,3 +38,4 @@ namespace gamelib
 	};
 }
 
+#endif

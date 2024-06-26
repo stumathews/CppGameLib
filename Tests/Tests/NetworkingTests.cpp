@@ -16,6 +16,7 @@
 #include "net/BitPacker.h"
 #include "TestData.h"
 #include "net/ReliableUdp.h"
+
 #pragma comment(lib, "ws2_32.lib")
 
 using namespace std;
@@ -87,7 +88,7 @@ public:
 
 		while(!events.empty())
 		{
-			const auto event = events.front();
+			const auto& event = events.front();
 			if(event->Origin == ServerOrigin)
 			{
 				serverEmittedEvents.push_back(event);
@@ -110,7 +111,7 @@ public:
 	         if( event->Id == NetworkTrafficReceivedEventId)
 	         {
 	             const auto trafficReceivedEvent = To<NetworkTrafficReceivedEvent>(event);
-	             const auto messageType = SerializationManager::Get()->GetMessageHeader(trafficReceivedEvent->Message).MessageType;
+				 const auto& messageType = SerializationManager::Get()->GetMessageHeader(trafficReceivedEvent->Message).MessageType;
 	             return messageType == requiredMessageType && trafficReceivedEvent->Identifier == trafficEventIdentifier;
 	         }
 	         return false;	
@@ -267,7 +268,7 @@ TEST_F(NetworkingTests, TestCustomBinarySend)
 	Client->Connect(Server);
 
 	// We will serialize bits 16-bits at a time
-	uint16_t buffer[3];
+	uint16_t buffer[3]{};
 	BitPacker bitPacker(buffer, 3);
 
 	constexpr uint8_t minBitsFor0 = BITS_REQUIRED(0, 3); // 2
@@ -317,14 +318,14 @@ TEST_F(NetworkingTests, TestBitPacketBinarySend)
 	Client->Initialize();
 	Client->Connect(Server);
 
-	TestData::TestNetworkPacket sendPacket;
+	TestData::TestNetworkPacket sendPacket{};
 
 	sendPacket.NumElements = 3;
 	sendPacket.Elements[0] = 10;
 	sendPacket.Elements[1] = 9;
 	sendPacket.Elements[2] = 1;
 	
-	uint16_t networkBuffer[3];
+	uint16_t networkBuffer[3]{};
 
 	BitPacker packer(networkBuffer, 3);
 

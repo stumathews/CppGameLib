@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "events/UpdateAllGameObjectsEvent.h"
 #include "events/EventManager.h"
 #include <events/EventSubscriber.h>

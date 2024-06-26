@@ -1,4 +1,6 @@
 #pragma once
+#ifndef EVENTNUMBERS_H
+#define EVENTNUMBERS_H
 
 namespace gamelib
 {
@@ -26,9 +28,6 @@ namespace gamelib
 		GameWon,
 		SubscriberEventHandled,
 	};
-
-
-	 
-
-	
 }
+
+#endif

@@ -1,4 +1,6 @@
 ﻿#pragma once
+#ifndef RELIABLEUDP_H
+#define RELIABLEUDP_H
 #include <cstdint>
 #include <vector>
 
@@ -250,3 +252,5 @@ namespace gamelib
 		uint16_t sequence {};	
 	};
 }
+
+#endif

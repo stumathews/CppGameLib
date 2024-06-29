@@ -17,40 +17,48 @@ namespace gamelib
 			: writeBitPointer(0), readBitPointer(0), flushDestination(flushDestination), destElement(element)
 		{
 			buffer = (buffer & 0);
-			bufferSize = sizeof(T)*8;
+			bufferSizeBits = sizeof(T)*8;
 		}
 
 		// Pack the bits into the buffer. Buffer will auto flush when its full
 		void Pack(uint8_t numBits, T value)
-		{			
+		{
+			if(numBits > bufferSizeBits) 
+			{
+				std::stringstream message;
+				message << "can't write " << std::to_string(numBits) << " bits to a " << std::to_string(bufferSizeBits) << " bit bitfield" << std::endl;
+				throw std::exception(message.str().c_str());
+			}
+
 			buffer = BitFiddler<T>::SetBits(buffer, writeBitPointer+(numBits-1), numBits, value);
+			auto peek = BitFiddler<T>::ToString(buffer);
 			writeBitPointer += numBits;
 
 			bitsPacked += numBits;
 
-			if(writeBitPointer >= bufferSize)
+			if(writeBitPointer >= bufferSizeBits)
 			{
 				// Refuse to write passed destination
 				if(countTimesOverflowed == destElement) throw std::exception("Can't write past destination buffer");
 
 				// flush our buffer to the output buffer
-				memcpy_s(flushDestination+(countTimesOverflowed++), bufferSize/8, &buffer, bufferSize/8);
+				memcpy_s(flushDestination+(countTimesOverflowed++), bufferSizeBits/8, &buffer, bufferSizeBits/8);
 								
 				buffer = value;											
 
 				// Determine which bits overflowed - shift off the bits that we were able to read, leaving those left unread in the buffer for the next packing
 				// to append to
-				buffer = buffer >> numBits - (writeBitPointer - bufferSize);
+				buffer = buffer >> numBits - (writeBitPointer - bufferSizeBits);
 
 				// set that we've read the previously overflowed bits in our buffer now
-				writeBitPointer = (writeBitPointer - bufferSize);
+				writeBitPointer = (writeBitPointer - bufferSizeBits);
 			}
 		}
 
 		// Writes the last buffered 16bits to destination and clears the buffer
 		void Flush()
 		{
-			memcpy_s(flushDestination+(countTimesOverflowed++), bufferSize/8, &buffer, bufferSize/8);
+			memcpy_s(flushDestination+(countTimesOverflowed++), bufferSizeBits/8, &buffer, bufferSizeBits/8);
 			buffer = (buffer & 0);
 		}
 		
@@ -70,13 +78,15 @@ namespace gamelib
 		    return BitsToRepresent(static_cast<uintmax_t>(max) - static_cast<uintmax_t>(min));
 		}
 
+
+
 	private:
 		T buffer;
 		uint8_t writeBitPointer;
 		uint8_t readBitPointer;		
 		T* flushDestination;
 		int destElement;		
-		uint8_t bufferSize;
+		uint8_t bufferSizeBits;
 		uint8_t countTimesOverflowed {0};
 		T bitsPacked {0};		
 	};
@@ -89,7 +99,7 @@ namespace gamelib
 	class BitfieldReader
 	{
 	public:
-		explicit BitfieldReader(T* field, const uint8_t elements): field(field), elements(elements) { }
+		explicit BitfieldReader(T* field, const size_t elements): field(field), elements(elements) { }
 
 		
 
@@ -193,8 +203,64 @@ namespace gamelib
 		T* field;
 		uint8_t fieldSizeBits {sizeof(T)*8};
 		uint8_t countTimesOverflowed {0};
-		const uint8_t elements;
+		const size_t elements;
 	};
+
+	namespace bit_packing_types
+	{
+		struct String
+	{
+		enum
+		{
+			MaxChars = 512
+		};
+
+		int NumElements{};
+	    char Elements[MaxChars] {0};
+
+		[[nodiscard]] char* c_str() const { return const_cast<char*>(Elements); }
+
+		String(std::string value) { Initialize(value); }
+		String(const char* value) { Initialize(value); }
+		String() : String(""){}
+
+	    void Write(BitPacker<uint16_t>& bitPacker, const std::string& value)
+	    {
+			NumElements = static_cast<int>(value.length());
+	    	bitPacker.Pack(16, static_cast<uint16_t>(NumElements));
+			
+			for(int i = 0; i < NumElements;i++)
+			{
+				bitPacker.Pack(8, value[i]);
+			}
+	    }
+
+	    void Read(BitfieldReader<uint16_t>& bitfieldReader)
+	    {
+	        NumElements = bitfieldReader.ReadNext<int>(16);
+			for(int i = 0; i < NumElements;i++)
+			{
+				Elements[i] = bitfieldReader.ReadNext<char>(8);
+			}
+	    }
+
+		void Initialize(const std::string& string)
+	    {
+		    NumElements = static_cast<int>(string.length());
+			//std::fill_n(Elements, MaxChars-1, '\0');
+			strcpy(Elements,  string.c_str());
+	    }
+
+		void Initialize(const char* string)
+	    {
+		    NumElements = static_cast<int>(strlen(string));
+			//std::fill_n(Elements, MaxChars-1, '\0');
+			strcpy(Elements,  string);
+	    }
+
+	};
+	}
+
 };
 
 	

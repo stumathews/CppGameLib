@@ -367,3 +367,109 @@ TEST_F(BitPackingTests, SimulateNetworkingUsage)
 	EXPECT_EQ(bitFieldReader.ReadNext<char>(minBitsFor9), 9);
 
 }
+
+TEST_F(BitPackingTests, BitPackingTypes_String)
+{	
+	
+
+	// Number of units in the buffer
+	constexpr int numBufferUnits = 256; // enough for 512 character string
+
+	// Pack bits into this buffer:
+	uint16_t destBuffer[numBufferUnits]{};		
+
+	// This is our bit-packer we're going to use
+	auto bitPacker = BitPacker(destBuffer, numBufferUnits);
+
+	// This is our Bit reader
+	auto bitReader = BitfieldReader(destBuffer, numBufferUnits);
+
+	// This is the string we want to pack into bit-packer
+	const auto sampleString = "Hello world, I'm back!! My name is arnie shawaszenegger";
+
+	// This is our String type we're going to serialise/deserialize
+	bit_packing_types::String string = sampleString;
+
+	// lets serialize to buffer
+	string.Write(bitPacker, sampleString);
+	bitPacker.Flush();
+
+	// lets deserialize to into another packet
+	bit_packing_types::String anotherPacket {};
+	anotherPacket.Read(bitReader);
+
+	EXPECT_STREQ(anotherPacket.c_str(), sampleString);
+}
+
+TEST_F(BitPackingTests, BitPackingCharacters)
+{
+
+	struct Person
+	{
+		bit_packing_types::String Name;
+		bit_packing_types::String Surname;
+		int Age {};
+
+		Person(const std::string& name, const std::string& surname, const int age)
+		{
+			Name.Initialize(name);
+			Surname.Initialize(surname);
+			Age = age;
+		}
+
+		Person() : Person("","",0) 	{ }
+
+		void Write(BitPacker<uint16_t>& bitPacker)
+		{
+			Name.Write(bitPacker, Name.Elements);
+			Surname.Write(bitPacker, Surname.Elements);
+			bitPacker.Pack(BITS_REQUIRED(1,100), Age); // person can only be aged between 1 and 100
+		}
+
+		void Read(BitfieldReader<uint16_t>& bitfieldReader)
+	    {
+			Name.Read(bitfieldReader);
+			Surname.Read(bitfieldReader);
+			Age = bitfieldReader.ReadNext<int>(BITS_REQUIRED(1,100));
+
+		}
+	};
+	
+	// Number of units in the buffer
+	constexpr int numBufferUnits = 256; // enough for 512 character string
+
+	// Pack bits into this buffer:
+	uint16_t destBuffer[numBufferUnits]{};	
+	
+	// This is our bitpacker we're going to use
+	auto bitPacker = BitPacker(destBuffer, numBufferUnits);
+
+	// This is our Bit reader
+	auto bitReader = BitfieldReader(destBuffer, numBufferUnits);
+
+	// This is our packet we're going to serialise/deserialize
+	const auto name = "Stuart";
+	const auto surname = "Mathews";
+	constexpr auto age = 40;
+
+	Person person1(name, surname, age);
+
+	// lets serialize to buffer
+	person1.Write(bitPacker);
+	bitPacker.Flush();
+
+	// lets deserialize to into another packet
+	Person person2 {};
+	person2.Read(bitReader);
+
+	EXPECT_STREQ(person1.Name.Elements, person2.Name.Elements);
+	EXPECT_STREQ(person1.Surname.Elements, person2.Surname.Elements);
+	EXPECT_EQ(person1.Age, person2.Age);
+	
+	
+
+
+
+
+
+}

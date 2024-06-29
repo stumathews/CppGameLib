@@ -383,13 +383,13 @@ TEST_F(BitPackingTests, BitPackingTypes_String)
 	auto bitReader = BitfieldReader(destBuffer, numBufferUnits);
 
 	// This is the string we want to pack into bit-packer
-	const auto sampleString = "Hello world, I'm back!! My name is arnie shawaszenegger";
+	const auto sampleString = "Hello world, I'm back!! My name is arnie shawaszenegger"; //55 elements, 1 null terminator = 56
 
 	// This is our String type we're going to serialize/deserialize
 	bit_packing_types::String string = sampleString;
 
 	// lets serialize to buffer
-	string.Write(bitPacker, sampleString);
+	string.Write(bitPacker);
 
 	bitPacker.Finish(); // after writing to the bit-packer make sure it has flushed everything to the buffer
 
@@ -398,12 +398,18 @@ TEST_F(BitPackingTests, BitPackingTypes_String)
 	anotherPacket.Read(bitReader);
 
 	EXPECT_STREQ(anotherPacket.c_str(), sampleString);
+	EXPECT_EQ(string.NumBits(), 456);
 }
 
 TEST_F(BitPackingTests, BitPackingStrings)
 {
-	// This test packs a two strings 
+	// This test packs a two strings
 
+	const auto name = "Stuart";
+	const auto surname = "Mathews";
+	constexpr auto age = 40;
+
+	// this is the structure we're going to serialize, it composes multiple strings
 	struct Person
 	{
 		bit_packing_types::String Name;
@@ -421,9 +427,9 @@ TEST_F(BitPackingTests, BitPackingStrings)
 
 		void Write(BitPacker<uint16_t>& bitPacker)
 		{			
-			Name.Write(bitPacker, Name.c_str());
-			Surname.Write(bitPacker, Surname.c_str());
-			bitPacker.Pack(BITS_REQUIRED(1,100), Age); // person can only be aged between 1 and 100
+			Name.Write(bitPacker);
+			Surname.Write(bitPacker);
+			bitPacker.Pack(BITS_REQUIRED(1,100), static_cast<uint16_t>(Age)); // person can only be aged between 1 and 100
 		}
 
 		void Read(BitfieldReader<uint16_t>& bitfieldReader)
@@ -432,7 +438,6 @@ TEST_F(BitPackingTests, BitPackingStrings)
 			Name.Read(bitfieldReader);
 			Surname.Read(bitfieldReader);
 			Age = bitfieldReader.ReadNext<int>(BITS_REQUIRED(1,100));
-
 		}
 	};
 	
@@ -442,18 +447,16 @@ TEST_F(BitPackingTests, BitPackingStrings)
 	// Pack bits into this buffer:
 	uint16_t destBuffer[numBufferUnits]{};	
 	
-	// This is our bitpacker we're going to use
+	// This is our bit-packer we're going to use
 	auto bitPacker = BitPacker(destBuffer, numBufferUnits);
 
 	// This is our Bit reader
 	auto bitReader = BitfieldReader(destBuffer, numBufferUnits);
 
 	// This is our packet we're going to serialize/deserialize
-	const auto name = "Stuart";
-	const auto surname = "Mathews";
-	constexpr auto age = 40;
-
+	
 	Person person1(name, surname, age);
+	
 
 	// lets serialize to buffer
 	person1.Write(bitPacker);
@@ -467,6 +470,50 @@ TEST_F(BitPackingTests, BitPackingStrings)
 	EXPECT_STREQ(person1.Name.c_str(), person2.Name.c_str());
 	EXPECT_STREQ(person1.Surname.c_str(), person2.Surname.c_str());
 	EXPECT_EQ(person1.Age, person2.Age);
+}
+
+TEST_F(BitPackingTests, BitPackingArrayOfStrings)
+{	
+	// Number of units in the buffer
+	constexpr int numBufferUnits = 256; // enough for 512 character string
+
+	// Pack bits into this buffer:
+	uint16_t destBuffer[numBufferUnits]{};	
+	
+	// This is our bit-packer we're going to use
+	auto bitPacker = BitPacker(destBuffer, numBufferUnits);
+
+	// This is our Bit reader
+	auto bitReader = BitfieldReader(destBuffer, numBufferUnits);
+
+	std::string array1[7];
+
+	array1[0] = "Monday";
+	array1[1] = "Tuesday";	
+	array1[2] = "Wednesday";
+	array1[3] = "Thursday";
+	array1[4] = "Friday";
+	array1[5] ="Saturday";
+	array1[6] = "Sunday";
+
+	// This is our packet we're going to serialize/deserialize
+
+	bit_packing_types::ArrayOfStrings strings(array1, 7);
+	strings.Write(bitPacker);	
+
+	bitPacker.Finish(); // once finished with bit packer flush it to make sure its all sent to buffer
+
+	// lets deserialize to into another packet
+	bit_packing_types::ArrayOfStrings array2 {};
+	array2.Read(bitReader);
+
+	EXPECT_STREQ(array1[0].c_str(), array2[0].c_str());
+	EXPECT_STREQ(array1[1].c_str(), array2[1].c_str());
+	EXPECT_STREQ(array1[2].c_str(), array2[2].c_str());
+	EXPECT_STREQ(array1[3].c_str(), array2[3].c_str());
+	EXPECT_STREQ(array1[4].c_str(), array2[4].c_str());
+	EXPECT_STREQ(array1[5].c_str(), array2[5].c_str());
+	EXPECT_STREQ(array1[6].c_str(), array2[6].c_str());
 	
 	
 

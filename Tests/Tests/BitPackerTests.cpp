@@ -24,7 +24,7 @@ TEST_F(BitPackingTests, BasicBitPacking)
 {
 	uint16_t output[2] {0};
 
-	BitPacker<uint16_t> bitPacker(output,2);
+	BitPacker bitPacker(output,2);
 
 	#define BITS_REQUIRED( min, max ) gamelib::BitsRequired<min,max>::result
 
@@ -359,7 +359,7 @@ TEST_F(BitPackingTests, SimulateNetworkingUsage)
 	EXPECT_EQ(BitFiddler<char>::ToString(receivedBuffer[0]), "00111000");
 	EXPECT_EQ(BitFiddler<char>::ToString(receivedBuffer[1]), "00000001");
 
-	BitfieldReader<char> bitFieldReader(receivedBuffer, receivedBufferSize);
+	BitfieldReader bitFieldReader(receivedBuffer, receivedBufferSize);
 
 	EXPECT_EQ(bitFieldReader.ReadNext<char>(minBitsFor0), 0);
 	EXPECT_EQ(bitFieldReader.ReadNext<char>(minBitsFor6), 6);

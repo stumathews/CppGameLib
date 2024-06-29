@@ -402,6 +402,7 @@ TEST_F(BitPackingTests, BitPackingTypes_String)
 
 TEST_F(BitPackingTests, BitPackingStrings)
 {
+	// This test packs a two strings 
 
 	struct Person
 	{
@@ -409,17 +410,17 @@ TEST_F(BitPackingTests, BitPackingStrings)
 		bit_packing_types::String Surname;
 		int Age {};
 
+		Person() : Person("","",0) 	{ }
+
 		Person(const std::string& name, const std::string& surname, const int age)
 		{
 			Name.Initialize(name);
 			Surname.Initialize(surname);
 			Age = age;
-		}
-
-		Person() : Person("","",0) 	{ }
+		}		
 
 		void Write(BitPacker<uint16_t>& bitPacker)
-		{
+		{			
 			Name.Write(bitPacker, Name.c_str());
 			Surname.Write(bitPacker, Surname.c_str());
 			bitPacker.Pack(BITS_REQUIRED(1,100), Age); // person can only be aged between 1 and 100
@@ -427,6 +428,7 @@ TEST_F(BitPackingTests, BitPackingStrings)
 
 		void Read(BitfieldReader<uint16_t>& bitfieldReader)
 	    {
+			// Read in the same order as when writing
 			Name.Read(bitfieldReader);
 			Surname.Read(bitfieldReader);
 			Age = bitfieldReader.ReadNext<int>(BITS_REQUIRED(1,100));
@@ -446,7 +448,7 @@ TEST_F(BitPackingTests, BitPackingStrings)
 	// This is our Bit reader
 	auto bitReader = BitfieldReader(destBuffer, numBufferUnits);
 
-	// This is our packet we're going to serialise/deserialize
+	// This is our packet we're going to serialize/deserialize
 	const auto name = "Stuart";
 	const auto surname = "Mathews";
 	constexpr auto age = 40;

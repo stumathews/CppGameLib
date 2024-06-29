@@ -269,7 +269,7 @@ namespace gamelib
 
 		private:
 
-		void CheckLimits(int count) const
+		static void CheckLimits(const int count)
 		{
 			if(count > MaxChars) 
 			{

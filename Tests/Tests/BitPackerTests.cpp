@@ -4,6 +4,7 @@
 #include <net/BitPacker.h>
 
 #include "gtest/gtest.h"
+#include "net/BitPackingTypes.h"
 
 using namespace gamelib;
 
@@ -75,7 +76,7 @@ TEST_F(BitPackingTests, BasicBitPacking)
 	bitPacker.Reset();
 
 	// lets pack all numbers as 4 bits instead of uneven sizes
-	const auto t5 = BITS_REQUIRED(0,15);
+	constexpr auto t5 = BITS_REQUIRED(0,15);
 	EXPECT_EQ(t5, 4);
 
 	// this does however mean that we can only set each field up to value 15 (inclusive)
@@ -167,7 +168,7 @@ TEST_F(BitPackingTests, BitfieldReaderTests)
 	EXPECT_EQ(t1, 3);
 	EXPECT_EQ(t2, 8);
 
-	// Prepare our bitpacker to output its packed bits to an output buffer
+	// Prepare our bit-packer to output its packed bits to an output buffer
 	BitPacker bitPacker(output, 3);
 
 	bitPacker.Pack( BITS_REQUIRED( 0,6 ), packet.NumElements );
@@ -338,9 +339,9 @@ TEST_F(BitPackingTests, SimulateNetworkingUsage)
 
 	BitPacker bitPacker(buffer, 2);
 
-	const uint8_t minBitsFor0 = BITS_REQUIRED(0, 3); // 2
-	const uint8_t minBitsFor6 = BITS_REQUIRED(0, 6); // 3
-	const uint8_t minBitsFor9 = BITS_REQUIRED(0, 9); // 4
+	constexpr uint8_t minBitsFor0 = BITS_REQUIRED(0, 3); // 2
+	constexpr uint8_t minBitsFor6 = BITS_REQUIRED(0, 6); // 3
+	constexpr uint8_t minBitsFor9 = BITS_REQUIRED(0, 9); // 4
 
 	bitPacker.Pack(minBitsFor0, 0); // 0
 	bitPacker.Pack(minBitsFor6, 6); //0110
@@ -354,8 +355,8 @@ TEST_F(BitPackingTests, SimulateNetworkingUsage)
 	const double numBytes = static_cast<double>(bitPacker.TotalBitsPacked()) / static_cast<double>(8);
 	const auto expectedBytesSent = ceil(numBytes);
 
-	auto receivedBuffer = reinterpret_cast<char*>(buffer);
-	auto receivedBufferSize = 2;
+	const auto receivedBuffer = reinterpret_cast<char*>(buffer);
+	constexpr auto receivedBufferSize = 2;
 
 	EXPECT_EQ(BitFiddler<char>::ToString(receivedBuffer[0]), "00111000");
 	EXPECT_EQ(BitFiddler<char>::ToString(receivedBuffer[1]), "00000001");

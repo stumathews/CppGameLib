@@ -453,6 +453,9 @@
     <ClInclude Include="net\BitPacker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="net\BitPackingTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">

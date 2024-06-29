@@ -20,7 +20,8 @@ namespace gamelib
 {
 	SDL_Window* SdlGraphicsManager::CreateSdlWindow(const int screenWidth, const int screenHeight, const char* windowTitle)
 	{
-		const auto outWindow = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight,SDL_WINDOW_SHOWN);	
+		const auto outWindow = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+			screenWidth, screenHeight, SDL_WINDOW_RESIZABLE);
 
 		if (outWindow == nullptr)
 		{

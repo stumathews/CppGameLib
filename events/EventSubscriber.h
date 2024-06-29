@@ -1,4 +1,7 @@
 #pragma once
+#ifndef EVENTSUBSCRIBER_H
+#define EVENTSUBSCRIBER_H
+
 #include <list>
 
 #include "IEventSubscriber.h"
@@ -18,3 +21,4 @@ namespace gamelib
 	};
 }
 
+#endif

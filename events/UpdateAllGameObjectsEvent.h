@@ -1,4 +1,7 @@
 #pragma once
+#ifndef UPDATEALLGAMEOBJECTEVENT_H
+#define UPDATEALLGAMEOBJECTEVENT_H
+
 #include "Event.h"
 #include "EventNumbers.h"
 
@@ -24,3 +27,5 @@ namespace gamelib
 		std::string ToString() override;
 	};
 }
+
+#endif

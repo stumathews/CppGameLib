@@ -1,4 +1,8 @@
 #pragma once
+#ifndef EVENT_H
+#define EVENT_H
+
+
 #include <string>
 #include <sstream>
 #include "EventId.h"
@@ -28,6 +32,8 @@ namespace gamelib
 
 	std::string operator+(const std::string& str, const EventId& id);	
 }
+
+#endif
 
 
 

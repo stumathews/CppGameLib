@@ -9,11 +9,11 @@ using namespace gamelib;
 
 class AudioManagerTests : public testing::Test 
 {
- protected:
+ public:
   void SetUp() override
   {
   	const shared_ptr<AudioAsset> ptr(new AudioAsset(0, resourceName, resourcePath, resourceType, resourceScene, *ResourceManager::Get()));
-  	audioAssetPtr = dynamic_pointer_cast<Asset>(ptr);
+    audioAssetPtr = dynamic_pointer_cast<Asset>(ptr);
   }
     
   //void TearDown() override {}

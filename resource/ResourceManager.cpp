@@ -126,7 +126,7 @@ namespace gamelib
 					if (element)
 					{
 						shared_ptr<Asset> theAsset = nullptr;
-						const char* ptrAssetType;
+						const char* ptrAssetType{};
 
 						element->QueryStringAttribute("type", &ptrAssetType);
 						theAsset = CreateAssetFromElement(ptrAssetType, theAsset, element);

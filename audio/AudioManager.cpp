@@ -31,9 +31,9 @@ namespace gamelib
 	shared_ptr<Asset> AudioManager::CreateAsset(const tinyxml2::XMLElement * assetXmlElement, ResourceManager& resourceManager)
 	{
 		int uuid;
-		const char* type;
-		const char* path;
-		const char* name;
+		const char* type{};
+		const char* path{};
+		const char* name{};
 		int scene;
 
 		assetXmlElement->QueryIntAttribute("uid", &uuid); // 8

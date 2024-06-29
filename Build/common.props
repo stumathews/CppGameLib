@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmls="https//schemas.micorsoft.com/develop/msbuild/2003">
+	
+	<PropertyGroup>
+		<ReposRoot>C:\repos</ReposRoot>
+	</PropertyGroup>
+
+	<!-- 2DGameDev -->
+  <PropertyGroup>
+    <GameDevRoot>$(ReposRoot)\2DGameDev</GameDevRoot>
+	  <SolutionFileName>$(GameDevRoot)\2dGameDev.sln</SolutionFileName>
+    <ThirdPartyDir>$(GameDevRoot)\ThirdParty</ThirdPartyDir>
+   <GameDev_BinDir>$(GameDevRoot)\$(Platform)\$(Configuration)</GameDev_BinDir>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<ThirdpartyDlls Include="$(ThirdPartyDir)\*.dll"/>
+	</ItemGroup>
+
+	<PropertyGroup>
+		<SolutionNugetPackages>$(GameDevRoot)\packages</SolutionNugetPackages>
+	</PropertyGroup>
+	
+	<!-- 2DGameDevLib -->
+	<PropertyGroup>
+		<GameDevLib_RootDir>$(GameDevRoot)\2DGameDevLib</GameDevLib_RootDir>
+		<GameDevLib_IncludeDir>$(GameDevLib_RootDir)</GameDevLib_IncludeDir>
+		<GameDevLib_BinDir>$(GameDevLib_RootDir)\$(Platform)\$(Configuration)</GameDevLib_BinDir>
+		<GameDevLib_LibDir>$(GameDev_BinDir)</GameDevLib_LibDir>
+		<GameDevLib_OutputDir>$(GameDev_BinDir)</GameDevLib_OutputDir>
+	</PropertyGroup>
+
+	<!-- 2DGameDevLib Tests -->
+	<PropertyGroup>
+		<GameDevLibTests_RootDir>$(GameDevRoot)\2DGameDevLibTests</GameDevLibTests_RootDir>
+		<GameDevLibTests_IncludeDir>$(GameDevLibTests_RootDir)</GameDevLibTests_IncludeDir>
+		<GameDevLibTests_LibDir>$(GameDev_BinDir)</GameDevLibTests_LibDir>
+		<GameDevLibTests_OutputDir>$(GameDev_BinDir)</GameDevLibTests_OutputDir>
+	</PropertyGroup>
+	
+	<!--GameLib -->
+	<PropertyGroup>
+		<GameLib_RootDir>$(ReposRoot)\cppgamelib</GameLib_RootDir>
+		<GameLib_IncludeDir>$(GameLib_RootDir)</GameLib_IncludeDir>
+		<GameLib_SrcDir>$(GameLib_RootDir)</GameLib_SrcDir>
+		<GameLib_BinDir>$(GameLib_SrcDir)\$(Platform)\$(Configuration)</GameLib_BinDir>
+		<GameLib_OutputDir>$(GameLib_BinDir)</GameLib_OutputDir>
+		<!-- Tests -->
+		<GameLibTests_RootDir>$(GameLib_RootDir)\Tests\Tests\</GameLibTests_RootDir>
+		<GameLibTests_BinDir>$(GameLibTests_RootDir)\$(Platform)\$(Configuration)</GameLibTests_BinDir>
+		<GameLibTests_OutputDir>$(GameDev_BinDir)</GameLibTests_OutputDir>
+	</PropertyGroup>
+
+	<!--CppLibExpectation -->
+	<PropertyGroup>
+		<LibExpectation_RootDir>$(ReposRoot)\expectationlib</LibExpectation_RootDir>
+		<LibExpectation_SrcDir>$(LibExpectation_RootDir)\Src\CppLibExpectation</LibExpectation_SrcDir>
+		<LibExpectation_IncludeDir>$(LibExpectation_RootDir)\Src\CppLibExpectation</LibExpectation_IncludeDir>
+		<LibExpectation_OutputDir>$(GameDev_BinDir)</LibExpectation_OutputDir>
+		<LibExpectationTests_RootDir>$(LibExpectation_RootDir)\Tests\CppUnitTests</LibExpectationTests_RootDir>
+		<LibExpectationTests_BinDir>$(LibExpectationTests_RootDir)\$(Platform)\$(Configuration)\</LibExpectationTests_BinDir>
+		<LibExpectationTests_OutputDir>$(GameDev_BinDir)</LibExpectationTests_OutputDir>
+	</PropertyGroup>
+
+	<!-- GameEditor -->
+	<PropertyGroup>
+		<GameEditor_RootDir>$(GameDevRoot)\GameEditor\GameEditor</GameEditor_RootDir>
+		<GameEditor_BinDir>$(GameEditor_RootDir)\$(Configuration)</GameEditor_BinDir>
+	</PropertyGroup>
+
+	<!-- GameEditor Tests-->
+	<PropertyGroup>
+		<GameEditorTests_RootDir>$(GameDevRoot)\GameEditorTests</GameEditorTests_RootDir>
+		<GameEditorTests_BinDir>$(GameEditorTests_RootDir)\bin\$(Configuration)\net6.0\</GameEditorTests_BinDir>
+	</PropertyGroup>
+
+	<!-- Installer -->
+	<PropertyGroup>
+		<Installer_RootDir>$(GameDevRoot)\Installer</Installer_RootDir>
+		<Installer_BinDir>$(Installer_RootDir)\bin\$(Platform)\$(Configuration)\en-US</Installer_BinDir>
+	</PropertyGroup>
+
+	<!--LibCausality -->
+	<PropertyGroup>
+		<LibCausality_RootDir>$(ReposRoot)\libcausality</LibCausality_RootDir>
+		<LibCausality_SrcDir>$(LibCausality_RootDir)\src</LibCausality_SrcDir>
+		<LibCausality_IncludeDir>$(LibCausality_RootDir)\src</LibCausality_IncludeDir>
+		<LibCausality_OutputDir>$(GameDev_BinDir)</LibCausality_OutputDir>
+		<LibCausalityTests_RootDir>$(LibCausality_SrcDir)\tests\LibCausalityTests</LibCausalityTests_RootDir>
+		<LibCausalityTests_BinDir>$(LibCausality_SrcDir)\tests\LibCausalityTests\$(Platform)\$(Configuration)</LibCausalityTests_BinDir>
+		<LibCausalityTests_OutputDir>$(GameDev_BinDir)</LibCausalityTests_OutputDir>
+		<LibCausality_LibDir>$(LibCausality_RootDir)\lib</LibCausality_LibDir>
+		<LibCausality_BinDir>$(LibCausality_RootDir)\$(Platform)\$(Configuration)</LibCausality_BinDir>	
+		<LibCausality_ArtifactName>libcausality.lib</LibCausality_ArtifactName>	
+		<LibCausality_ArtifactPath>$(LibCausality_BinDir)\$(LibCausality_ArtifactName)</LibCausality_ArtifactPath>	
+	</PropertyGroup>
+
+	<!-- Libmonad -->
+	<PropertyGroup>
+		<LibMonad_RootDir>$(ReposRoot)\libmonad</LibMonad_RootDir>
+		<LibMonad_LibDir>$(LibMonad_RootDir)\lib</LibMonad_LibDir>
+		<LibMonad_SrcDir>$(LibMonad_LibDir)</LibMonad_SrcDir>
+		<LibMonad_IncludeDir>$(LibMonad_LibDir)</LibMonad_IncludeDir>
+		<LibMonad_BinDir>$(LibMonad_LibDir)\$(Platform)\$(Configuration)</LibMonad_BinDir>
+		<LibMonadTests_RootDir>$(LibMonad_RootDir)\Tests</LibMonadTests_RootDir>
+		<LibMonadTests_BinDir>$(LibMonadTests_RootDir)\$(Platform)\$(Configuration)</LibMonadTests_BinDir>
+	</PropertyGroup>
+
+	<!--TestLinking -->
+	<PropertyGroup>
+		<TestLinking_RootDir>$(GameLib_RootDir)\TestLinking</TestLinking_RootDir>
+		<TestLinking_BinDir>$(GameLib_RootDir)\TestLinking\$(Platform)\$(Configuration)</TestLinking_BinDir>
+		<TestLinking_OututDir>$(GameDev_BinDir)</TestLinking_OututDir>
+	</PropertyGroup>
+
+	<!-- SDL2 -->
+  	<PropertyGroup>
+	  <SDL2_RootDir>$(ThirdPartyDir)\SDL23</SDL2_RootDir>
+	  <SDL2_LibDir>$(SDL2_RootDir)\lib\$(Platform)</SDL2_LibDir>
+	  <SDL2_IncludeDir>$(SDL2_RootDir)\include</SDL2_IncludeDir>
+  	</PropertyGroup>
+
+	<!-- SDL2_Image -->
+	<PropertyGroup>
+		<SDL2_Image_RootDir>$(ThirdPartyDir)\SDL2_image-2.8.2</SDL2_Image_RootDir>
+		<SDL2_Image_LibDir>$(SDL2_Image_RootDir)\lib\$(Platform)</SDL2_Image_LibDir>
+		<SDL2_Image_IncludeDir>$(SDL2_Image_RootDir)\include</SDL2_Image_IncludeDir>
+	</PropertyGroup>
+
+	<!-- SDL2_Mixer -->
+	<PropertyGroup>
+		<SDL2_Mixer_RootDir>$(ThirdPartyDir)\SDL2_mixer-2.8.0</SDL2_Mixer_RootDir>
+		<SDL2_Mixer_LibDir>$(SDL2_Mixer_RootDir)\lib\$(Platform)</SDL2_Mixer_LibDir>
+		<SDL2_Mixer_IncludeDir>$(SDL2_Mixer_RootDir)\include</SDL2_Mixer_IncludeDir>
+	</PropertyGroup>
+
+	<!-- SDL2_TTF -->
+	<PropertyGroup>
+		<SDL2_TTF_RootDir>$(ThirdPartyDir)\SDL2_ttf-2.22.0</SDL2_TTF_RootDir>
+		<SDL2_TTF_LibDir>$(SDL2_TTF_RootDir)\lib\$(Platform)</SDL2_TTF_LibDir>
+		<SDL2_TTF_IncludeDir>$(SDL2_TTF_RootDir)\include</SDL2_TTF_IncludeDir>
+	</PropertyGroup>
+
+	<!-- TinyXml -->
+	<PropertyGroup>
+		<SDL2_TinyXml_RootDir>$(ThirdPartyDir)\tinyxml2-master</SDL2_TinyXml_RootDir>
+		<SDL2_TinyXml_IncludeDir>$(SDL2_TinyXml_RootDir)</SDL2_TinyXml_IncludeDir>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<tglib_RootDir>$(ReposRoot)\tglib</tglib_RootDir>
+		<tglib_IncludeDir>$(tglib_RootDir)\tglib_cpp\src</tglib_IncludeDir>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<CommonIncludePath>$(GameDevLib_IncludeDir);$(GameLib_IncludeDir);$(LibExpectation_IncludeDir);$(LibCausality_IncludeDir);$(LibMonad_IncludeDir);$(tglib_IncludeDir);$(SDL2_Mixer_IncludeDir);$(SDL2_Image_IncludeDir);$(SDL2_IncludeDir);$(SDL2_TTF_IncludeDir);</CommonIncludePath>
+		<CommonLibraryPath>$(GameDevLib_OutputDir);$(SDL2_TTF_LibDir);$(SDL2_Mixer_LibDir);$(SDL2_Image_LibDir);$(SDL2_LibDir);$(GameLib_BinDir);$(GameDevLib_BinDir);$(GameDev_BinDir);$(LibCausality_BinDir);</CommonLibraryPath>
+	</PropertyGroup>
+
+
+</Project>

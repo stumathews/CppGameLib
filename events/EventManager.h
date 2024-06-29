@@ -1,4 +1,7 @@
 #pragma once
+#ifndef EVENTMANAGER_H
+#define EVENTMANAGER_H
+
 #include <vector>
 #include <memory>
 #include "EventSubscriber.h"
@@ -55,10 +58,12 @@ namespace gamelib
 		int badSubscribersDuringDispatch {};
 		int noSubscribersDuringDispatch {};
 		int dispatchCalledTimes {};
-		unsigned long elapsedTimeMs {}
-;		bool logEvents;
+		unsigned long elapsedTimeMs {};
+		bool logEvents;
 		bool printStatistics;
 		std::function<void(const std::shared_ptr<Event>& event, IEventSubscriber* pSubscriber)> tap = nullptr;
 	};
 }
+
+#endif
 

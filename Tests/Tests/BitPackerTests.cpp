@@ -370,8 +370,6 @@ TEST_F(BitPackingTests, SimulateNetworkingUsage)
 
 TEST_F(BitPackingTests, BitPackingTypes_String)
 {	
-	
-
 	// Number of units in the buffer
 	constexpr int numBufferUnits = 256; // enough for 512 character string
 
@@ -387,12 +385,13 @@ TEST_F(BitPackingTests, BitPackingTypes_String)
 	// This is the string we want to pack into bit-packer
 	const auto sampleString = "Hello world, I'm back!! My name is arnie shawaszenegger";
 
-	// This is our String type we're going to serialise/deserialize
+	// This is our String type we're going to serialize/deserialize
 	bit_packing_types::String string = sampleString;
 
 	// lets serialize to buffer
 	string.Write(bitPacker, sampleString);
-	bitPacker.Flush();
+
+	bitPacker.Finish(); // after writing to the bit-packer make sure it has flushed everything to the buffer
 
 	// lets deserialize to into another packet
 	bit_packing_types::String anotherPacket {};
@@ -401,7 +400,7 @@ TEST_F(BitPackingTests, BitPackingTypes_String)
 	EXPECT_STREQ(anotherPacket.c_str(), sampleString);
 }
 
-TEST_F(BitPackingTests, BitPackingCharacters)
+TEST_F(BitPackingTests, BitPackingStrings)
 {
 
 	struct Person
@@ -421,8 +420,8 @@ TEST_F(BitPackingTests, BitPackingCharacters)
 
 		void Write(BitPacker<uint16_t>& bitPacker)
 		{
-			Name.Write(bitPacker, Name.Elements);
-			Surname.Write(bitPacker, Surname.Elements);
+			Name.Write(bitPacker, Name.c_str());
+			Surname.Write(bitPacker, Surname.c_str());
 			bitPacker.Pack(BITS_REQUIRED(1,100), Age); // person can only be aged between 1 and 100
 		}
 
@@ -456,14 +455,15 @@ TEST_F(BitPackingTests, BitPackingCharacters)
 
 	// lets serialize to buffer
 	person1.Write(bitPacker);
-	bitPacker.Flush();
+
+	bitPacker.Finish(); // once finished with bit packer flush it to make sure its all sent to buffer
 
 	// lets deserialize to into another packet
 	Person person2 {};
 	person2.Read(bitReader);
 
-	EXPECT_STREQ(person1.Name.Elements, person2.Name.Elements);
-	EXPECT_STREQ(person1.Surname.Elements, person2.Surname.Elements);
+	EXPECT_STREQ(person1.Name.c_str(), person2.Name.c_str());
+	EXPECT_STREQ(person1.Surname.c_str(), person2.Surname.c_str());
 	EXPECT_EQ(person1.Age, person2.Age);
 	
 	

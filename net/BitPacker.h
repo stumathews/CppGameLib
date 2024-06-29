@@ -61,6 +61,11 @@ namespace gamelib
 			memcpy_s(flushDestination+(countTimesOverflowed++), bufferSizeBits/8, &buffer, bufferSizeBits/8);
 			buffer = (buffer & 0);
 		}
+
+		void Finish()
+		{
+			Flush();
+		}
 		
 		void Reset() { readBitPointer = writeBitPointer = countTimesOverflowed = 0; }
 		T TotalBitsPacked() { return bitsPacked; }
@@ -215,8 +220,6 @@ namespace gamelib
 			MaxChars = 512
 		};
 
-		int NumElements{};
-	    char Elements[MaxChars] {0};
 
 		[[nodiscard]] char* c_str() const { return const_cast<char*>(Elements); }
 
@@ -257,6 +260,10 @@ namespace gamelib
 			//std::fill_n(Elements, MaxChars-1, '\0');
 			strcpy(Elements,  string);
 	    }
+
+		private:
+		int NumElements{};
+	    char Elements[MaxChars] {0};
 
 	};
 	}

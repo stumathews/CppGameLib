@@ -20,7 +20,6 @@ namespace TestData
 			{
 				bitPacker.Pack(BITS_REQUIRED( 0,255 ), Elements[i]);
 			}
-			bitPacker.Flush();
 	    }
 
 	    void Read(gamelib::BitfieldReader<const char>& bitfieldReader)

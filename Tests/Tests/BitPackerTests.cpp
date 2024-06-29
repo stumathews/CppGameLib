@@ -2,7 +2,6 @@
 #include "TestData.h"
 #include <utils/BitFiddler.h>
 #include <net/BitPacker.h>
-
 #include "gtest/gtest.h"
 #include "net/BitPackingTypes.h"
 
@@ -220,7 +219,7 @@ TEST_F(BitPackingTests, BitfieldReaderWithOVerflowSupport)
 	EXPECT_EQ(t1, 2);
 	EXPECT_EQ(t2, 8);
 
-	TestData::TestNetworkPacket packetB;
+	TestData::TestNetworkPacket packetB{};
 
 	packetB.NumElements = 3; // 11
 	packetB.Elements[0] = 10;// 00001010
@@ -234,7 +233,7 @@ TEST_F(BitPackingTests, BitfieldReaderWithOVerflowSupport)
 	BitPacker bitPacker(networkBuffer, 3); // packer of 16bits at a time
 
 	// Write to networkBuffer via bitPacker
-	packetB.Write(bitPacker);
+	packetB.Write(bitPacker); bitPacker.Finish();
 
 	//bitPacker.Pack(6, 63); //111111 (make it auto-flush at we've no got 16 more bits)
 	//bitPacker.Flush();
@@ -290,7 +289,6 @@ TEST_F(BitPackingTests, PacketReadingWriting)
 			{
 				bitPacker.Pack(BITS_REQUIRED( 0,255 ), Elements[i]);
 			}
-			bitPacker.Flush();
 	    }
 
 	    void Read(BitfieldReader<uint16_t>& bitfieldReader)
@@ -321,7 +319,7 @@ TEST_F(BitPackingTests, PacketReadingWriting)
 	packetA.Elements[2] = element2;
 
 	// write to network buffer via BitPacker
-	packetA.Write(bitPacker);
+	packetA.Write(bitPacker); bitPacker.Finish();
 
 	// make a new packet, eg. reconstruct it from the networkBuffer via bitFieldReader
 	Packet packetB {};

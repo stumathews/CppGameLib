@@ -5,7 +5,6 @@ void gamelib::ReliableUdpMessageHeader::Write(BitPacker<uint32_t>& bitPacker) co
 	bitPacker.Pack(16, Sequence);
 	bitPacker.Pack(16, LastAckedSequence);
 	bitPacker.Pack(32, LastAckedBits);
-	bitPacker.Flush();
 }
 
 void gamelib::ReliableUdpMessageHeader::Read(BitfieldReader<uint32_t>& bitfieldReader)

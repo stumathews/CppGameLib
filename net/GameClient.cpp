@@ -134,6 +134,8 @@ namespace gamelib
 			{
 				// Connection closed. Server died.
 				this->isDisconnectedFromGameServer = true;
+
+				Logger::Get()->LogThis("Connection closed. Server died.");
 			}
 		}
 	}
@@ -148,8 +150,8 @@ namespace gamelib
 		{
 			const auto response = SerializationManager::CreateRequestPlayerDetailsMessageResponse(nickName);
 
-			isTcp ? Networking::netSendVRec(clientSocketToGameSever, response.c_str(), static_cast<int>(static_cast<int>(response.size())))
-				: send(clientSocketToGameSever, response.c_str(), static_cast<int>(static_cast<int>(response.size())), 0);
+			isTcp ? Networking::netSendVRec(clientSocketToGameSever, response.c_str(), static_cast<int>(response.size()))
+				: send(clientSocketToGameSever, response.c_str(), static_cast<int>(response.size()), 0);
 			return;
 		}
 		

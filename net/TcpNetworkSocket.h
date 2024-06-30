@@ -11,17 +11,13 @@ namespace gamelib
 	{
 	public:
 		explicit TcpNetworkSocket(const SOCKET socket): socket(socket) {  }
-		bool IsTcp() override {return true;}
-		int Send(const char* data, const int dataLength) const override
-		{
-			return gamelib::Networking::netSendVRec(socket, data, dataLength);
-		}
-		int Receive(const char* readBuffer, const int bufLength) const override
-		{
-			return gamelib::Networking::netReadVRec(socket, const_cast<char*>(readBuffer), bufLength);
-		}
+		bool IsTcp() override;
+		int Send(const char* data, const int dataLength) const override;
+
+		int Receive(const char* readBuffer, const int bufLength) const override;
 		bool IsValid() override { return socket; }
-		[[nodiscard]] SOCKET GetRawSocket() const override { return socket;}
+		[[nodiscard]] SOCKET GetRawSocket() const override;
+		~TcpNetworkSocket() override =default;
 
 	private:
 		SOCKET socket = -1;

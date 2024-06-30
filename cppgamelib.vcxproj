@@ -359,6 +359,7 @@
     <ClCompile Include="graphic\Window.cpp" />
     <ClCompile Include="net\NetworkConnectionFactory.cpp" />
     <ClCompile Include="net\crc.h" />
+    <ClCompile Include="net\TcpNetworkSocket.cpp" />
     <ClCompile Include="net\UdpNetworkSocket.cpp" />
     <ClCompile Include="time\PeriodicTimer.cpp" />
     <ClCompile Include="events\EventId.cpp" />

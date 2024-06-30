@@ -16,6 +16,7 @@ namespace gamelib
 		int Receive(const char* readBuffer, int bufLength) const override;
 		bool IsValid() override;
 		[[nodiscard]] SOCKET GetRawSocket() const override;
+		~UdpNetworkSocket() override = default;
 
 	private:
 		SOCKET socket = -1;

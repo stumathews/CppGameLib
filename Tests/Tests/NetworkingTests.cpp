@@ -73,8 +73,8 @@ public:
 		// finish listening thread
 		ListeningThread.join();		
 		
-		Client = nullptr;
-		Server = nullptr;
+		//Client = nullptr;
+		//Server = nullptr;
 		EventManager::Get()->Reset();
 		EventManager::Get()->ClearSubscribers();
 	}
@@ -330,6 +330,7 @@ TEST_F(NetworkingTests, TestBitPacketBinarySend)
 	BitPacker packer(networkBuffer, 3);
 
 	sendPacket.Write(packer);
+	packer.Finish();
 
 	EXPECT_EQ(BitFiddler<uint16_t>::ToString(networkBuffer[0]), "0010010000101011");
 	EXPECT_EQ(BitFiddler<uint16_t>::ToString(networkBuffer[1]), "0000000000000100");
@@ -394,7 +395,7 @@ TEST_F(NetworkingTests, TestBitPacketBinarySendReadPayload)
 	BitPacker packer(networkBuffer, 3);
 
 	// Serialize to the buffer
-	sendPacket.Write(packer);
+	sendPacket.Write(packer); packer.Finish();
 
 	// Bits should all be in the output buffer, lets send it
 	Client->SendBinary(networkBuffer, packer.TotalBitsPacked());

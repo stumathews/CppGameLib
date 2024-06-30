@@ -12,7 +12,6 @@ bool gamelib::UdpNetworkSocket::IsTcp()
 
 int gamelib::UdpNetworkSocket::Send(const char* data, const int dataLength)
 {
-
 	return send(socket, data, dataLength, 0);
 }
 

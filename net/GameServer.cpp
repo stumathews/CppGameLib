@@ -7,6 +7,8 @@
 #include <net/IGameServerConnection.h>
 #include <net/TcpGameServerConnection.h>
 #include <net/UdpGameServerConnection.h>
+
+#include "GameServerConnectionFactory.h"
 #include "events/StartNetworkLevelEvent.h"
 #include "utils/Utils.h"
 
@@ -36,9 +38,8 @@ namespace gamelib
 		Logger::Get()->LogThis(this->isTcp ? "Using TCP" : "Using UDP");
 
 		// Create a new server socket connection, either TCP or UDP depending on game configuration
-		gameServerConnection = this->isTcp ? To<IGameServerConnection>(std::make_shared<TcpGameServerConnection>(Address, Port))
-										   : To<IGameServerConnection>(std::make_shared<UdpGameServerConnection>(Address, Port));
-		
+		gameServerConnection = GameServerConnectionFactory::Create(isTcp, Address, Port);
+
 		gameServerConnection->Initialize();
 		gameServerConnection->Create();
 		

@@ -12,10 +12,9 @@ namespace gamelib
 	public:
 		explicit TcpNetworkSocket(const SOCKET socket): socket(socket) {  }
 		bool IsTcp() override;
-		int Send(const char* data, const int dataLength) const override;
-
-		int Receive(const char* readBuffer, const int bufLength) const override;
-		bool IsValid() override { return socket; }
+		int Send(const char* data, int dataLength) override;
+		int Receive(const char* readBuffer, int bufLength) override;
+		bool IsValid() override;
 		[[nodiscard]] SOCKET GetRawSocket() const override;
 		~TcpNetworkSocket() override =default;
 

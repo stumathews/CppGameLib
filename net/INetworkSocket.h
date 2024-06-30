@@ -10,8 +10,8 @@ namespace gamelib
 	public:
 		virtual ~INetworkSocket() = default;
 		virtual bool IsTcp() = 0;
-		virtual int Send(const char* data, int dataLength) const = 0;
-		virtual int Receive(const char* readBuffer, int bufLength) const = 0;
+		virtual int Send(const char* data, int dataLength) = 0;
+		virtual int Receive(const char* readBuffer, int bufLength) = 0;
 		[[nodiscard]] virtual SOCKET GetRawSocket() const = 0;
 		virtual bool IsValid() = 0;
 	};

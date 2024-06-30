@@ -487,22 +487,22 @@ TEST_F(NetworkingTests, ReliableUdpTest)
 
 	ReliableUdp reliableUdp;
 	const PacketDatum packet(false, "There can be only one.");
-	reliableUdp.Send(packet);
-	reliableUdp.Send(packet);
-	reliableUdp.Send(packet);
+	reliableUdp.MarkSent(packet);
+	reliableUdp.MarkSent(packet);
+	reliableUdp.MarkSent(packet);
 	
-	Message* lastMessage = reliableUdp.Send(packet);
+	Message* lastMessage = reliableUdp.MarkSent(packet);
 	lastMessage->Header.LastAckedSequence = 44;
 	lastMessage->Header.LastAckedBits = 99;
 		
-	uint32_t buffer[5] {};
-	BitPacker bitPacker(buffer, 5);
+	uint32_t buffer[10] {};
+	BitPacker bitPacker(buffer, 10);
 
 	// write last message out into buffer (binpacked)
 	lastMessage->Write(bitPacker);
 	
 	// read out the last message from the buffer (binpacked)
-	BitfieldReader reader(buffer, 5);
+	BitfieldReader reader(buffer, 10);
 	
 	Message message3;
 	message3.Read(reader);	

@@ -385,7 +385,7 @@ TEST_F(BitPackingTests, BitPackingTypes_String)
 	const auto sampleString = "Hello world, I'm back!! My name is arnie shawaszenegger"; //55 elements, 1 null terminator = 56
 
 	// This is our String type we're going to serialize/deserialize
-	bit_packing_types::String string = sampleString;
+	bit_packing_types::String<uint16_t> string = sampleString;
 
 	// lets serialize to buffer
 	string.Write(bitPacker);
@@ -393,7 +393,7 @@ TEST_F(BitPackingTests, BitPackingTypes_String)
 	bitPacker.Finish(); // after writing to the bit-packer make sure it has flushed everything to the buffer
 
 	// lets deserialize to into another packet
-	bit_packing_types::String anotherPacket {};
+	bit_packing_types::String<uint16_t> anotherPacket {};
 	anotherPacket.Read(bitReader);
 
 	EXPECT_STREQ(anotherPacket.c_str(), sampleString);
@@ -411,8 +411,8 @@ TEST_F(BitPackingTests, BitPackingStrings)
 	// this is the structure we're going to serialize, it composes multiple strings
 	struct Person
 	{
-		bit_packing_types::String Name;
-		bit_packing_types::String Surname;
+		bit_packing_types::String<uint16_t> Name;
+		bit_packing_types::String<uint16_t> Surname;
 		int Age {};
 
 		Person() : Person("","",0) 	{ }
@@ -497,13 +497,13 @@ TEST_F(BitPackingTests, BitPackingArrayOfStrings)
 
 	// This is our packet we're going to serialize/deserialize
 
-	bit_packing_types::ArrayOfStrings strings(array1, 7);
+	bit_packing_types::ArrayOfStrings<uint16_t> strings(array1, 7);
 	strings.Write(bitPacker);	
 
 	bitPacker.Finish(); // once finished with bit packer flush it to make sure its all sent to buffer
 
 	// lets deserialize to into another packet
-	bit_packing_types::ArrayOfStrings array2 {};
+	bit_packing_types::ArrayOfStrings<uint16_t> array2 {};
 	array2.Read(bitReader);
 
 	EXPECT_STREQ(array1[0].c_str(), array2[0].c_str());

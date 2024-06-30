@@ -486,12 +486,12 @@ TEST_F(NetworkingTests, ReliableUdpTest)
 	client1->Connect(Server);
 
 	ReliableUdp reliableUdp;
-	const ReliableUdp::PacketDatum packet(false, "There can be only one.");
+	const PacketDatum packet(false, "There can be only one.");
 	reliableUdp.Send(packet);
 	reliableUdp.Send(packet);
 	reliableUdp.Send(packet);
 	
-	ReliableUdp::Message* lastMessage = reliableUdp.Send(packet);
+	Message* lastMessage = reliableUdp.Send(packet);
 	lastMessage->Header.LastAckedSequence = 44;
 	lastMessage->Header.LastAckedBits = 99;
 		
@@ -504,7 +504,7 @@ TEST_F(NetworkingTests, ReliableUdpTest)
 	// read out the last message from the buffer (binpacked)
 	BitfieldReader reader(buffer, 5);
 	
-	ReliableUdp::Message message3;
+	Message message3;
 	message3.Read(reader);	
 
 	EXPECT_EQ(message3.Header.Sequence, lastMessage->Header.Sequence);
@@ -516,7 +516,7 @@ TEST_F(NetworkingTests, ReliableUdpTest)
 TEST_F(NetworkingTests, ReliableUdpTest2)
 {
 
-	ReliableUdp::Message receivedPacket {};
+	Message receivedPacket {};
 	StartNetworkServer();
 
 	const auto player1Nick = "Player1";
@@ -527,7 +527,7 @@ TEST_F(NetworkingTests, ReliableUdpTest2)
 
 	ReliableUdp reliableUdp;
 
-	const ReliableUdp::PacketDatum packet(false, "There can be only one.");
+	const PacketDatum packet(false, "There can be only one.");
 
 	// Send as bitpacked binary
 	auto message1 = reliableUdp.Send(client1, packet);

@@ -234,6 +234,9 @@
     <ClInclude Include="events\SubscriberHandledEvent.h" />
     <ClInclude Include="graphic\Subscribable.h" />
     <ClInclude Include="graphic\Window.h" />
+    <ClInclude Include="net\Message.h" />
+    <ClInclude Include="net\ReliableUdpMessageHeader.h" />
+    <ClInclude Include="net\BitfieldReader.h" />
     <ClInclude Include="net\GameServerConnectionFactory.h" />
     <ClInclude Include="net\INetworkSocket.h" />
     <ClInclude Include="net\NetworkConnectionFactory.h" />
@@ -242,6 +245,7 @@
     <ClInclude Include="net\ReliableUdp.h" />
     <ClInclude Include="net\TcpNetworkSocket.h" />
     <ClInclude Include="net\UdpNetworkSocket.h" />
+    <ClInclude Include="net\PacketDatum.h" />
     <ClInclude Include="time\PeriodicTimer.h" />
     <ClInclude Include="events\EventId.h" />
     <ClInclude Include="events\EventFactory.h" />
@@ -358,10 +362,13 @@
     <ClCompile Include="character\StatefulMove.cpp" />
     <ClCompile Include="graphic\Subscribable.cpp" />
     <ClCompile Include="graphic\Window.cpp" />
+    <ClCompile Include="net\Message.cpp" />
+    <ClCompile Include="net\ReliableUdpMessageHeader.cpp" />
     <ClCompile Include="net\NetworkConnectionFactory.cpp" />
     <ClCompile Include="net\crc.h" />
     <ClCompile Include="net\TcpNetworkSocket.cpp" />
     <ClCompile Include="net\UdpNetworkSocket.cpp" />
+    <ClCompile Include="net\PacketDatum.cpp" />
     <ClCompile Include="time\PeriodicTimer.cpp" />
     <ClCompile Include="events\EventId.cpp" />
     <ClCompile Include="events\EventFactory.cpp" />
@@ -374,7 +381,6 @@
     <ClCompile Include="json\JsonEventSerializationManager.cpp" />
     <ClCompile Include="json\json11.cpp" />
     <ClCompile Include="character\MovementAtSpeed.cpp" />
-    <ClCompile Include="net\MessageHeader.cpp" />
     <ClCompile Include="net\NetworkPlayer.cpp" />
     <ClCompile Include="net\TcpNetworkPlayer.cpp" />
     <ClCompile Include="net\GameClient.cpp" />

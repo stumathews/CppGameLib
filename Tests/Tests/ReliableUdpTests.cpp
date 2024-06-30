@@ -30,9 +30,9 @@ TEST_F(ReliableUdpTests, BasicSend)
 {
 	ReliableUdp reliableUdp;
 
-	const auto data1 = ReliableUdp::PacketDatum( false, "data1");
-	const auto data2 = ReliableUdp::PacketDatum( false, "data2");
-	const auto data3 = ReliableUdp::PacketDatum( false, "data3");
+	const auto data1 = PacketDatum( false, "data1");
+	const auto data2 = PacketDatum( false, "data2");
+	const auto data3 = PacketDatum( false, "data3");
 		
 	// Send
 
@@ -76,9 +76,9 @@ TEST_F(ReliableUdpTests, BasicRecieve)
 {
 	ReliableUdp reliableUdp;
 
-	const auto data1 = ReliableUdp::PacketDatum(false, "data1");
-	const auto data2 = ReliableUdp::PacketDatum(false, "data2");
-	const auto data3 = ReliableUdp::PacketDatum(false, "data3");
+	const auto data1 = PacketDatum(false, "data1");
+	const auto data2 = PacketDatum(false, "data2");
+	const auto data3 = PacketDatum(false, "data3");
 
 	const auto* message1 = reliableUdp.Send(data1);
 	reliableUdp.Receive(*message1);
@@ -115,7 +115,7 @@ TEST_F(ReliableUdpTests, AliceBobBasic)
 
 	// alice -[a1]-> bob:
 
-	const auto a1 = ReliableUdp::PacketDatum( false, "a1");
+	const auto a1 = PacketDatum( false, "a1");
 
 	// Send a1 to bob along with any indications that alice has received previously sent from bob,
 	// which would be none as bob as not sent alice anything yet
@@ -130,7 +130,7 @@ TEST_F(ReliableUdpTests, AliceBobBasic)
 
 	// bob -[a1ack]-> alice:
 
-	const auto b1 = ReliableUdp::PacketDatum( false, "b1");
+	const auto b1 = PacketDatum( false, "b1");
 
 	// Bob will send something to alice, and say that it knows about the last thing alice sent him, which if it happens to be what alice sent him
 	// which it it, alice can mark off that it was acked
@@ -142,7 +142,7 @@ TEST_F(ReliableUdpTests, AliceBobBasic)
 	EXPECT_TRUE(alice.sendBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
 
 	// Ensure alice does not send it again
-	const auto a2 = ReliableUdp::PacketDatum(false, "a2");
+	const auto a2 = PacketDatum(false, "a2");
 	const auto a2SentMessage = alice.Send(a2);
 	EXPECT_EQ(a2SentMessage->DataCount(), 1);
 	EXPECT_EQ(a2SentMessage->Data()[0].Sequence, a2SentMessage->Header.Sequence);
@@ -150,9 +150,9 @@ TEST_F(ReliableUdpTests, AliceBobBasic)
 
 TEST_F(ReliableUdpTests, AliceBobAggregateMessagesDrop1)
 {
-	const auto a1 = ReliableUdp::PacketDatum(false, "a1");
-	const auto a2 = ReliableUdp::PacketDatum(false, "a2");
-	const auto a3 = ReliableUdp::PacketDatum(false, "a3");
+	const auto a1 = PacketDatum(false, "a1");
+	const auto a2 = PacketDatum(false, "a2");
+	const auto a3 = PacketDatum(false, "a3");
 
 	ReliableUdp alice;
 	ReliableUdp bob;
@@ -171,7 +171,7 @@ TEST_F(ReliableUdpTests, AliceBobAggregateMessagesDrop1)
 	EXPECT_TRUE(bob.receiveBuffer.Get(a3SentMessage.Header.Sequence)->Acked);
 
 	// bob -[b1]-> alice
-	const auto b1 = ReliableUdp::PacketDatum(false, "b1");
+	const auto b1 = PacketDatum(false, "b1");
 	const auto b1SentMessage = *bob.Send(b1); // Bob wil tell alice what it has received so far
 	alice.Receive(b1SentMessage);
 
@@ -185,11 +185,11 @@ TEST_F(ReliableUdpTests, AliceBobAggregateMessagesDrop1)
 
 TEST_F(ReliableUdpTests, AliceBobAggregateMessagesDrop3)
 {
-	const auto a1 = ReliableUdp::PacketDatum(false, "a1");
-	const auto a2 = ReliableUdp::PacketDatum(false, "a2");
-	const auto a3 = ReliableUdp::PacketDatum(false, "a3");
-	const auto a4 = ReliableUdp::PacketDatum(false, "a4");
-	const auto a5 = ReliableUdp::PacketDatum(false, "a5");
+	const auto a1 = PacketDatum(false, "a1");
+	const auto a2 = PacketDatum(false, "a2");
+	const auto a3 = PacketDatum(false, "a3");
+	const auto a4 = PacketDatum(false, "a4");
+	const auto a5 = PacketDatum(false, "a5");
 
 	ReliableUdp alice;
 	ReliableUdp bob;
@@ -216,7 +216,7 @@ TEST_F(ReliableUdpTests, AliceBobAggregateMessagesDrop3)
 	EXPECT_EQ(a5SentMessage.DataCount(), 5); 	// expect a5 to bundle previously unacked a2,a3,a4 in a5
 
 	// bob -[b1]-> alice
-	const auto b1 = ReliableUdp::PacketDatum(false, "b1");
+	const auto b1 = PacketDatum(false, "b1");
 	const auto b1SentMessage = *bob.Send(b1); // Bob wil tell alice what it has received so far
 	alice.Receive(b1SentMessage);
 
@@ -232,9 +232,9 @@ TEST_F(ReliableUdpTests, AliceBobAggregateMessagesDrop3)
 
 TEST_F(ReliableUdpTests, AliceBobOutOfOrder)
 {
-	const auto a1 = ReliableUdp::PacketDatum(false, "a1");
-	const auto a2 = ReliableUdp::PacketDatum(false, "a2");
-	const auto a3 = ReliableUdp::PacketDatum(false, "a3");
+	const auto a1 = PacketDatum(false, "a1");
+	const auto a2 = PacketDatum(false, "a2");
+	const auto a3 = PacketDatum(false, "a3");
 
 	ReliableUdp alice;
 	ReliableUdp bob;
@@ -253,7 +253,7 @@ TEST_F(ReliableUdpTests, AliceBobOutOfOrder)
 	bob.Receive(a2SentMessage);
 
 	// bob -[b1]-> alice
-	const auto b1 = ReliableUdp::PacketDatum(false, "b1");
+	const auto b1 = PacketDatum(false, "b1");
 	const auto b1SentMessage = *bob.Send(b1); // Bob wil tell alice what it has received so far
 	alice.Receive(b1SentMessage);
 

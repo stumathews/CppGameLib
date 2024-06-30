@@ -471,6 +471,18 @@
     <ClInclude Include="net\GameServerConnectionFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="net\ReliableUdpMessageHeader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\PacketDatum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\Message.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\BitfieldReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -656,9 +668,6 @@
     <ClCompile Include="file\SerializationManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="net\MessageHeader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="net\TcpGameServerConnection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -741,6 +750,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="net\TcpNetworkSocket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="net\ReliableUdpMessageHeader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="net\PacketDatum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="net\Message.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

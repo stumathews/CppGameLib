@@ -2,6 +2,7 @@
 #ifndef TESTDATA_H
 #define TESTDATA_H
 
+#include "net/BitfieldReader.h"
 #include "net/BitPacker.h"
 
 namespace TestData

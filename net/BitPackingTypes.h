@@ -6,6 +6,7 @@
 #include <ostream>
 #include <sstream>
 
+#include "BitfieldReader.h"
 #include "BitPacker.h"
 
 namespace gamelib
@@ -56,7 +57,7 @@ namespace gamelib
 				}
 		    }
 
-		    void Read(gamelib::BitfieldReader<uint16_t>& bitfieldReader)
+		    void Read(BitfieldReader<uint16_t>& bitfieldReader)
 		    {
 		        numElements = bitfieldReader.ReadNext<int>(16);
 				for(int i = 0; i < numElements;i++)

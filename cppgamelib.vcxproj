@@ -234,6 +234,7 @@
     <ClInclude Include="events\SubscriberHandledEvent.h" />
     <ClInclude Include="graphic\Subscribable.h" />
     <ClInclude Include="graphic\Window.h" />
+    <ClInclude Include="net\GameServerConnectionFactory.h" />
     <ClInclude Include="net\INetworkSocket.h" />
     <ClInclude Include="net\NetworkConnectionFactory.h" />
     <ClInclude Include="net\BitPacker.h" />

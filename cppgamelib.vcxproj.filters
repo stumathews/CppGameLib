@@ -468,6 +468,9 @@
     <ClInclude Include="net\UdpNetworkSocket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="net\GameServerConnectionFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">

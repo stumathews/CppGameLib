@@ -5,6 +5,7 @@
 #include <events/EventSubscriber.h>
 
 #include "INetworkSocket.h"
+#include "ReliableUdp.h"
 
 namespace gamelib
 {
@@ -67,10 +68,10 @@ namespace gamelib
 		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs) override;
 		void SubscribeToGameEvents();
 		void CheckSocketForTraffic();
-		void RaiseNetworkTrafficReceivedEvent(char  buffer[512], int bytesReceived);
+		void RaiseNetworkTrafficReceivedEvent(const char* buffer, const int bytesReceived);
 		int InternalSend(const std::string& message) const;
 		int InternalSend(const char* array, size_t size) const;
-		void ParseReceivedServerPayload(char  buffer[512]) const;
+		void ParseReceivedServerPayload(const char*  buffer) const;
 		std::string GetSubscriberName() override;
 	};
 }

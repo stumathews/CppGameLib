@@ -72,7 +72,7 @@ namespace gamelib
 		Logger::Get()->LogThis("Registering client with game server.");
 
 		const auto response = SerializationManager::CreateRequestPlayerDetailsMessageResponse(nickName);
-
+		
 		const int sendResult = connection->Send(response.c_str(), response.size());
 		
 		Logger::Get()->LogThis(sendResult == 0 ? "Error: 0 bytes sent." : "client/player details successfully sent.");
@@ -126,16 +126,16 @@ namespace gamelib
 				this->isDisconnectedFromGameServer = false;
 			}
 			else if (bytesReceived == SOCKET_ERROR && WSAGetLastError() == WSAECONNRESET)
-			{
-				// Connection closed. Server died.
-				this->isDisconnectedFromGameServer = true;
+				{
+					// Connection closed. Server died.
+					this->isDisconnectedFromGameServer = true;
 
-				Logger::Get()->LogThis("Connection closed. Server died.");
-			}
+					Logger::Get()->LogThis("Connection closed. Server died.");
+				}
 		}
 	}
 
-	void GameClient::ParseReceivedServerPayload(char buffer[512]) const
+	void GameClient::ParseReceivedServerPayload(const char* buffer) const
 	{
 		const auto msgHeader = serializationManager->GetMessageHeader(buffer);
 		const auto messageType = msgHeader.MessageType;
@@ -169,7 +169,7 @@ namespace gamelib
 		}
 	}
 
-	void GameClient::RaiseNetworkTrafficReceivedEvent(char  buffer[512], const int bytesReceived)
+	void GameClient::RaiseNetworkTrafficReceivedEvent(const char* buffer, const int bytesReceived)
 	{
 		eventManager->RaiseEventWithNoLogging(eventFactory->CreateNetworkTrafficReceivedEvent(buffer, "Game Server", bytesReceived, this->GetSubscriberName()));
 	}

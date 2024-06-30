@@ -3,6 +3,7 @@
 #define MESSAGE_H
 #include <vector>
 
+#include "BitPackingTypes.h"
 #include "ReliableUdpMessageHeader.h"
 #include "PacketDatum.h"
 
@@ -21,7 +22,7 @@ namespace gamelib
 		 * \param inData the contained packets
 		 */
 		explicit Message(const uint16_t sequence, const uint16_t lastAckedSequence, uint32_t previousAckedBits,
-		                 const uint16_t n = 0, const PacketDatum* inData = nullptr);
+		                 const uint16_t n, const std::vector<PacketDatum>& inData);
 
 		Message() = default;
 
@@ -30,11 +31,12 @@ namespace gamelib
 		[[nodiscard]] uint16_t DataCount() const;
 
 		void Write(BitPacker<uint32_t>& bitPacker) const;
-
 		void Read(BitfieldReader<uint32_t>& bitfieldReader);
+				
+		bit_packing_types::String<uint32_t> FirstPacket;
 
 	private:
-		std::vector<PacketDatum> data;
+		std::vector<PacketDatum> packets;
 	};
 }
 #endif

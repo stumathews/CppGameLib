@@ -13,7 +13,7 @@ namespace gamelib
 {
 	namespace bit_packing_types
 	{
-
+		template <typename T>
 		struct String
 		{
 			enum { MaxChars = 512 };
@@ -37,7 +37,10 @@ namespace gamelib
 
 		public:		
 
-			[[nodiscard]] char* c_str() const { return const_cast<char*>(elements); }
+			[[nodiscard]] char* c_str() const
+			{
+				return const_cast<char*>(elements);
+			}
 
 			// ReSharper disable once CppNonExplicitConvertingConstructor
 			String(const std::string& value) { Initialize(value); }
@@ -47,9 +50,9 @@ namespace gamelib
 
 			String() : String(""){}
 
-		    void Write(gamelib::BitPacker<uint16_t>& bitPacker) const
+		    void Write(gamelib::BitPacker<T>& bitPacker) const
 		    {
-	    		bitPacker.Pack(16, static_cast<uint16_t>(numElements));
+	    		bitPacker.Pack(sizeof(T)*8, static_cast<T>(numElements));
 				
 				for(int i = 0; i < numElements;i++)
 				{
@@ -57,13 +60,14 @@ namespace gamelib
 				}
 		    }
 
-		    void Read(BitfieldReader<uint16_t>& bitfieldReader)
+		    void Read(BitfieldReader<T>& bitfieldReader)
 		    {
-		        numElements = bitfieldReader.ReadNext<int>(16);
+		        numElements = bitfieldReader.ReadNext<int>(sizeof(T)*8);
 				for(int i = 0; i < numElements;i++)
 				{
 					elements[i] = bitfieldReader.ReadNext<char>(8);
 				}
+				elements[numElements] = '\0';
 				numBits = NumBits();
 		    }
 
@@ -72,7 +76,7 @@ namespace gamelib
 				CheckLimits(static_cast<int>(string.length()));
 
 			    numElements = static_cast<int>(string.length());
-				strcpy(elements,  string.c_str());
+				strcpy_s(elements,  string.c_str());
 				numBits = NumBits();
 		    }
 
@@ -81,15 +85,16 @@ namespace gamelib
 				CheckLimits(static_cast<int>(strlen(string)));
 
 			    numElements = static_cast<int>(strlen(string));
-				strcpy(elements,  string);
+				strcpy_s(elements,  string);
 				numBits = NumBits();
 		    }
 
-			[[nodiscard]] int NumBits() const { return 16 + (numElements * 8);}
+			[[nodiscard]] int NumBits() const { return sizeof(T)*8 + (numElements * 8);}
 
 
 		};
 
+		template <typename T>
 		struct ArrayOfStrings
 		{		
 			enum
@@ -98,14 +103,14 @@ namespace gamelib
 			};
 			
 
-			ArrayOfStrings(const std::string* buffer, const uint16_t numElements)
+			ArrayOfStrings(const std::string* buffer, const T numElements)
 			{
 				Initialize(buffer, numElements);
 			}
 
 			ArrayOfStrings() = default;
 
-			void Initialize(const std::string* buffer, const uint16_t count)
+			void Initialize(const std::string* buffer, const T count)
 			{
 				if(count > MaxElements) 
 				{
@@ -121,7 +126,7 @@ namespace gamelib
 				}			
 			}
 
-			void Write(BitPacker<uint16_t>& bitPacker) const
+			void Write(BitPacker<T>& bitPacker) const
 			{
 				bitPacker.Pack(BITS_REQUIRED(0, MaxElements), numElements);
 				for (int i = 0 ; i < numElements; i++)
@@ -130,7 +135,7 @@ namespace gamelib
 				}
 			}
 
-			void Read(BitfieldReader<uint16_t>& bitfieldReader)
+			void Read(BitfieldReader<T>& bitfieldReader)
 		    {
 				numElements = bitfieldReader.ReadNext<uint16_t>(BITS_REQUIRED(0, MaxElements));
 				for (int i = 0 ; i < numElements; i++)
@@ -139,13 +144,13 @@ namespace gamelib
 				}
 			}
 
-			bit_packing_types::String operator[](const uint8_t index) const
+			String<T> operator[](const uint8_t index) const
 			{
 				return elements[index];
 			}
 
 		private:
-			bit_packing_types::String elements[MaxElements];
+			String<T> elements[MaxElements];
 			uint16_t numElements{};
 		};
 

@@ -5,7 +5,7 @@ gamelib::PacketDatum::PacketDatum()
 	Acked = false;
 }
 
-gamelib::PacketDatum::PacketDatum(const bool acked, const char* customData): Acked(acked), Payload(customData)
+gamelib::PacketDatum::PacketDatum(const bool acked, const char* customData): Acked(acked), data(customData)
 {
 	
 }

@@ -12,16 +12,17 @@ namespace gamelib
 	struct PacketDatum
 	{
 		PacketDatum();
-		explicit PacketDatum(const bool acked, const char* customData = "");
+		explicit PacketDatum(bool acked, const char* customData = "");
 
-		void Write(gamelib::BitPacker<uint32_t>& bitPacker) const;
+		void Write(BitPacker<uint32_t>& bitPacker) const;
 
 		void Read(BitfieldReader<const char>& bitfieldReader);
 
 		bool Acked;
 		uint16_t Sequence {};
 		double SendTime {};
-		const char* Payload{};
+		const char* data{};
+
 
 	};
 }

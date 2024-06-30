@@ -4,6 +4,7 @@
 #include <WinSock2.h>
 #include <events/EventSubscriber.h>
 
+#include "INetworkSocket.h"
 
 namespace gamelib
 {
@@ -46,7 +47,7 @@ namespace gamelib
 		/// <summary>
 		/// The socket the game client will use to communicate with the game server
 		/// </summary>
-		SOCKET clientSocketToGameSever;
+		std::shared_ptr<INetworkSocket> connection;
 		fd_set readfds{};
 		bool isDisconnectedFromGameServer;
 

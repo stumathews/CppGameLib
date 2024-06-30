@@ -6,6 +6,8 @@
 #include <json/json11.h>
 #include <events/EventFactory.h>
 #include <file/SerializationManager.h>
+
+#include "NetworkConnectionFactory.h"
 #include "events/StartNetworkLevelEvent.h"
 
 using namespace json11;
@@ -16,8 +18,7 @@ namespace gamelib
 	{
 		readBufferLength = 512;				
 		noDataTimeout.tv_sec = 0;
-		noDataTimeout.tv_usec = 0;	
-		clientSocketToGameSever = -1;
+		noDataTimeout.tv_usec = 0;
 		isDisconnectedFromGameServer = true;
 		readfds = {0,{0}};
 		eventManager = nullptr;
@@ -55,15 +56,13 @@ namespace gamelib
 		std::stringstream message; message << "Connecting to game server: " << inGameServer->Address << ":" << inGameServer->Port;
 		Logger::Get()->LogThis(message.str());
 		
-		clientSocketToGameSever = this->isTcp 
-			? networking->netTcpClient(inGameServer->Address.c_str(), inGameServer->Port.c_str())
-			: networking->netConnectedUdpClient(inGameServer->Address.c_str(), inGameServer->Port.c_str());
+		connection = NetworkConnectionFactory::Connect(this->isTcp, inGameServer->Address.c_str(), inGameServer->Port.c_str());
 		
 		Logger::Get()->LogThis("Server socket created. Connected to server.");
 		
 		SendPlayerDetails();
 						
-		if(clientSocketToGameSever)
+		if(connection->IsValid())
 		{
 			this->isDisconnectedFromGameServer = false;
 		}
@@ -74,9 +73,7 @@ namespace gamelib
 
 		const auto response = SerializationManager::CreateRequestPlayerDetailsMessageResponse(nickName);
 
-		const int sendResult = isTcp
-			                       ? Networking::netSendVRec(clientSocketToGameSever, response.c_str(), static_cast<int>(response.size()))
-			                       : send(clientSocketToGameSever, response.c_str(), static_cast<int>(response.size()), 0);
+		const int sendResult = connection->Send(response.c_str(), response.size());
 		
 		Logger::Get()->LogThis(sendResult == 0 ? "Error: 0 bytes sent." : "client/player details successfully sent.");
 		
@@ -96,7 +93,7 @@ namespace gamelib
 		FD_ZERO(&readfds);
 		
 		// Add it to the list of file descriptors to listen for readability
-		FD_SET(clientSocketToGameSever, &readfds);
+		FD_SET(connection->GetRawSocket(), &readfds);
 				
 		// Check monitored sockets for incoming 'readable' data
 		const auto dataIsAvailable = select(maxSockets, &readfds, nullptr, nullptr, &noDataTimeout) > 0;
@@ -110,7 +107,7 @@ namespace gamelib
 	void GameClient::CheckSocketForTraffic()
 	{
 		// Process network data coming from the game server
-		if (FD_ISSET(clientSocketToGameSever, &readfds))
+		if (FD_ISSET(connection->GetRawSocket(), &readfds))
 		{
 			constexpr int maxBufferLength = 512;
 
@@ -119,9 +116,7 @@ namespace gamelib
 			ZeroMemory(readBuffer, bufferLength);
 
 			// Read the payload off the network, wait for all the data
-			const int bytesReceived = isTcp 
-				                          ? Networking::netReadVRec(clientSocketToGameSever, readBuffer, bufferLength)
-				                          : recv(clientSocketToGameSever, readBuffer, bufferLength, 0); 
+			const int bytesReceived = connection->Receive(readBuffer, bufferLength);
 
 			if (bytesReceived > 0)
 			{
@@ -150,8 +145,8 @@ namespace gamelib
 		{
 			const auto response = SerializationManager::CreateRequestPlayerDetailsMessageResponse(nickName);
 
-			isTcp ? Networking::netSendVRec(clientSocketToGameSever, response.c_str(), static_cast<int>(response.size()))
-				: send(clientSocketToGameSever, response.c_str(), static_cast<int>(response.size()), 0);
+			connection->Send(response.c_str(), static_cast<int>(response.size()));
+
 			return;
 		}
 		
@@ -181,16 +176,12 @@ namespace gamelib
 
 	int GameClient::InternalSend(const std::string& message) const
 	{
-		return isTcp
-			       ? Networking::netSendVRec(clientSocketToGameSever, message.c_str(), static_cast<int>(message.size()))
-			       : send(clientSocketToGameSever, message.c_str(), static_cast<int>(message.size()), 0);
+		return connection->Send(message.c_str(), static_cast<int>(message.size()));
 	}
 
 	int GameClient::InternalSend(const char* array, const size_t size) const
 	{
-		return isTcp
-			       ? Networking::netSendVRec(clientSocketToGameSever, array, static_cast<int>(size))
-			       : send(clientSocketToGameSever, array, static_cast<int>(size), 0);
+		return connection->Send(array, static_cast<int>(size));
 	}
 
 	std::vector<std::shared_ptr<Event>> GameClient::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs)
@@ -225,7 +216,7 @@ namespace gamelib
 		if (sendResult == SOCKET_ERROR) 
 		{
 			Networking::netError(0,0, "Ping Game server connect failed. Shutting down client");
-			closesocket(clientSocketToGameSever);
+			closesocket(connection->GetRawSocket());
 			WSACleanup();
 		}
 	}
@@ -238,9 +229,9 @@ namespace gamelib
 
 	GameClient::~GameClient()
 	{
-		if (shutdown(clientSocketToGameSever, SD_SEND) == SOCKET_ERROR) 
+		if (shutdown(connection->GetRawSocket(), SD_SEND) == SOCKET_ERROR) 
 		{
-			closesocket(clientSocketToGameSever);
+			closesocket(connection->GetRawSocket());
 			WSACleanup();
 		}
 	}

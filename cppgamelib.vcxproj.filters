@@ -456,6 +456,18 @@
     <ClInclude Include="net\BitPackingTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="net\NetworkConnectionFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\INetworkSocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\TcpNetworkSocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\UdpNetworkSocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -717,6 +729,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="net\crc.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="net\NetworkConnectionFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="net\UdpNetworkSocket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

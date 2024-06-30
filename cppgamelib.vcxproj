@@ -363,6 +363,7 @@
     <ClCompile Include="graphic\Subscribable.cpp" />
     <ClCompile Include="graphic\Window.cpp" />
     <ClCompile Include="net\Message.cpp" />
+    <ClCompile Include="net\ReliableUdp.cpp" />
     <ClCompile Include="net\ReliableUdpMessageHeader.cpp" />
     <ClCompile Include="net\NetworkConnectionFactory.cpp" />
     <ClCompile Include="net\crc.h" />

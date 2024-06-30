@@ -12,10 +12,6 @@ bool gamelib::UdpNetworkSocket::IsTcp()
 
 int gamelib::UdpNetworkSocket::Send(const char* data, const int dataLength)
 {
-	/*ReliableUdp::Message* trackedMessageToSend = reliableUdp.Send(ReliableUdp::PacketDatum(false, data));
-	uint32_t buffer[64] {0};
-	BitPacker bitPacker(buffer, 64);
-	trackedMessageToSend->Write(bitPacker); bitPacker.Finish();*/
 
 	return send(socket, data, dataLength, 0);
 }

@@ -53,7 +53,7 @@ namespace gamelib
 		ZeroMemory(buffer, bufferLength);
 				
 		PeerInfo fromClient; // Identifier who the client sending the data is
-
+				
 		// Read all incoming data		
 		const int bytesReceived = recvfrom(listeningSocket, buffer, bufferLength, 0, (sockaddr*) &fromClient.Address, &fromClient.Length);
 
@@ -81,6 +81,11 @@ namespace gamelib
 		eventManager->RaiseEventWithNoLogging(event);
 	}
 
+	int UdpGameServerConnection::InternalSend(SOCKET socket, const char* buf, int len, int flags,  const sockaddr* to, int tolen)
+	{		
+		return sendto(socket, buf, len, flags, to, tolen);
+	}
+
 	void UdpGameServerConnection::SendToConnectedPlayersExceptToSender(const std::string& senderNickname, const std::string
 	                                                                   & serializedMessage) const
 	{
@@ -92,7 +97,8 @@ namespace gamelib
 				continue;
 			}
 
-			sendto(listeningSocket, serializedMessage.c_str(), static_cast<int>(serializedMessage.length()), 0, (sockaddr*) &player.PeerInfo.Address, player.PeerInfo.Length);
+			InternalSend(listeningSocket, serializedMessage.c_str(), static_cast<int>(serializedMessage.length()), 0, (sockaddr*) &player.PeerInfo.Address, player.PeerInfo.Length);
+			
 		}
 	}
 
@@ -125,7 +131,7 @@ namespace gamelib
 	void UdpGameServerConnection::ProcessPingMessage(PeerInfo fromClient) const
 	{
 		const auto data = serializationManager->CreatePongMessage();
-		sendto(listeningSocket, data.c_str(), static_cast<int>(data.length()), 0, (sockaddr*) &fromClient.Address, fromClient.Length);
+		InternalSend(listeningSocket, data.c_str(), static_cast<int>(data.length()), 0, (sockaddr*) &fromClient.Address, fromClient.Length);
 	}
 
 
@@ -154,7 +160,7 @@ namespace gamelib
 	{
 		for (auto player : players)
 		{
-			sendto(listeningSocket, serializedEvent.c_str(), static_cast<int>(serializedEvent.size()), 0, (sockaddr*) &player.PeerInfo.Address, player.PeerInfo.Length);
+			InternalSend(listeningSocket, serializedEvent.c_str(), static_cast<int>(serializedEvent.size()), 0, (sockaddr*) &player.PeerInfo.Address, player.PeerInfo.Length);
 		}
 	}
 

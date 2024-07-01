@@ -33,6 +33,7 @@ namespace gamelib
 		// Inherited via IGameServerConnection
 		void CheckForPlayerTraffic() override;
 		void RaiseNetworkTrafficReceivedEvent(char buffer[512], int bytesReceived, PeerInfo fromClient);
+		static int InternalSend(SOCKET socket, const char* buf, int len, int flags, const sockaddr* to, int tolen);
 		void SendToConnectedPlayersExceptToSender(const std::string& senderNickname, const std::string&
 		                                          serializedMessage) const;
 		timeval timeout{};

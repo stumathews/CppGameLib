@@ -37,13 +37,13 @@ TEST_F(ReliableUdpTests, BasicSend)
 	// Send
 
 	const auto* message1 = reliableUdp.MarkSent(data1);	
-	EXPECT_EQ(reliableUdp.sendBuffer.GetLastAddedSequence(), message1->Header.Sequence);
+	EXPECT_EQ(reliableUdp.SendBuffer.GetLastAddedSequence(), message1->Header.Sequence);
 
 	const auto* message2 = reliableUdp.MarkSent(data2);	
-	EXPECT_EQ(reliableUdp.sendBuffer.GetLastAddedSequence(), message2->Header.Sequence);
+	EXPECT_EQ(reliableUdp.SendBuffer.GetLastAddedSequence(), message2->Header.Sequence);
 
 	const auto* message3 = reliableUdp.MarkSent(data3);	
-	EXPECT_EQ(reliableUdp.sendBuffer.GetLastAddedSequence(), message3->Header.Sequence);
+	EXPECT_EQ(reliableUdp.SendBuffer.GetLastAddedSequence(), message3->Header.Sequence);
 	
 	EXPECT_EQ(message1->DataCount(), 1);
 	EXPECT_EQ(message1->Header.Sequence, 1);
@@ -83,23 +83,23 @@ TEST_F(ReliableUdpTests, BasicRecieve)
 	const auto* message1 = reliableUdp.MarkSent(data1);
 	reliableUdp.MarkReceived(*message1);
 
-	EXPECT_EQ(reliableUdp.receiveBuffer.GetLastAddedSequence(), message1->Header.Sequence);
+	EXPECT_EQ(reliableUdp.ReceiveBuffer.GetLastAddedSequence(), message1->Header.Sequence);
 	EXPECT_EQ(reliableUdp.lastAckedSequence, message1->Header.Sequence);
-	EXPECT_TRUE(reliableUdp.receiveBuffer.Get(message1->Header.Sequence)->Acked);
+	EXPECT_TRUE(reliableUdp.ReceiveBuffer.Get(message1->Header.Sequence)->Acked);
 
 	const auto* message2 = reliableUdp.MarkSent(data2);
 	reliableUdp.MarkReceived(*message2);
 
-	EXPECT_EQ(reliableUdp.receiveBuffer.GetLastAddedSequence(), message2->Header.Sequence);
+	EXPECT_EQ(reliableUdp.ReceiveBuffer.GetLastAddedSequence(), message2->Header.Sequence);
 	EXPECT_EQ(reliableUdp.lastAckedSequence, message2->Header.Sequence);
-	EXPECT_TRUE(reliableUdp.receiveBuffer.Get(message2->Header.Sequence)->Acked);
+	EXPECT_TRUE(reliableUdp.ReceiveBuffer.Get(message2->Header.Sequence)->Acked);
 
 	const auto* message3 = reliableUdp.MarkSent(data3);
 	reliableUdp.MarkReceived(*message3);
 
-	EXPECT_EQ(reliableUdp.receiveBuffer.GetLastAddedSequence(), message3->Header.Sequence);
+	EXPECT_EQ(reliableUdp.ReceiveBuffer.GetLastAddedSequence(), message3->Header.Sequence);
 	EXPECT_EQ(reliableUdp.lastAckedSequence, message3->Header.Sequence);
-	EXPECT_TRUE(reliableUdp.receiveBuffer.Get(message3->Header.Sequence)->Acked);
+	EXPECT_TRUE(reliableUdp.ReceiveBuffer.Get(message3->Header.Sequence)->Acked);
 
 	auto senderAckedBits = reliableUdp.GeneratePreviousAckedBits();
 
@@ -126,7 +126,7 @@ TEST_F(ReliableUdpTests, AliceBobBasic)
 
 	// As nothing from bob has been sent to alice to inform alice that bob received anything from alice, alice should still consider what it sent
 	// as having not been acknowledged
-	EXPECT_FALSE(alice.sendBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
+	EXPECT_FALSE(alice.SendBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
 
 	// bob -[a1ack]-> alice:
 
@@ -139,7 +139,7 @@ TEST_F(ReliableUdpTests, AliceBobBasic)
 	alice.MarkReceived(sentA1AckMessage);
 
 	// Expect that that bob's mesage header contained the last ack sequence, which alice removed from alice's send buffer,
-	EXPECT_TRUE(alice.sendBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(alice.SendBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
 
 	// Ensure alice does not send it again
 	const auto a2 = PacketDatum(false, "a2");
@@ -159,16 +159,16 @@ TEST_F(ReliableUdpTests, AliceBobAggregateMessagesDrop1)
 
 	// alice -[a1]-> bob
 	const auto a1SentMessage = *alice.MarkSent(a1); bob.MarkReceived(a1SentMessage);
-	EXPECT_TRUE(bob.receiveBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(bob.ReceiveBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
 
 	// alice -[a2]->X bob
 	const auto a2SentMessage = *alice.MarkSent(a2); //bob.Receive(a2SentMessage); // simulate bob not receiving it
-	EXPECT_TRUE(bob.receiveBuffer.Get(a2SentMessage.Header.Sequence) == nullptr); // ensure bob didn't get it
+	EXPECT_TRUE(bob.ReceiveBuffer.Get(a2SentMessage.Header.Sequence) == nullptr); // ensure bob didn't get it
 
 	// alice -[a3]-> bob
 	const auto a3SentMessage = *alice.MarkSent(a3); bob.MarkReceived(a3SentMessage);
-	EXPECT_TRUE(bob.receiveBuffer.Get(a2SentMessage.Header.Sequence)->Acked); // this time we got it, because it was sent as part of message3 (it was sent again)
-	EXPECT_TRUE(bob.receiveBuffer.Get(a3SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(bob.ReceiveBuffer.Get(a2SentMessage.Header.Sequence)->Acked); // this time we got it, because it was sent as part of message3 (it was sent again)
+	EXPECT_TRUE(bob.ReceiveBuffer.Get(a3SentMessage.Header.Sequence)->Acked);
 
 	// bob -[b1]-> alice
 	const auto b1 = PacketDatum(false, "b1");
@@ -177,9 +177,9 @@ TEST_F(ReliableUdpTests, AliceBobAggregateMessagesDrop1)
 
 	// Bob's message should now be able to inform Alice that he received a1 a2 a3 were received
 
-	EXPECT_TRUE(alice.sendBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
-	EXPECT_TRUE(alice.sendBuffer.Get(a2SentMessage.Header.Sequence)->Acked);
-	EXPECT_TRUE(alice.sendBuffer.Get(a3SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(alice.SendBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(alice.SendBuffer.Get(a2SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(alice.SendBuffer.Get(a3SentMessage.Header.Sequence)->Acked);
 	
 }
 
@@ -199,16 +199,16 @@ TEST_F(ReliableUdpTests, AliceBobAggregateMessagesDrop3)
 
 	// alice -[a2]->X bob
 	const auto a2SentMessage = *alice.MarkSent(a2); //bob.Receive(a2SentMessage); // simulate bob not receiving it
-	EXPECT_TRUE(bob.receiveBuffer.Get(a2SentMessage.Header.Sequence) == nullptr); // ensure bob didn't get it
+	EXPECT_TRUE(bob.ReceiveBuffer.Get(a2SentMessage.Header.Sequence) == nullptr); // ensure bob didn't get it
 
 	// alice -[a3]->X bob
 	const auto a3SentMessage = *alice.MarkSent(a3); //bob.Receive(a3SentMessage);	
-	EXPECT_TRUE(bob.receiveBuffer.Get(a3SentMessage.Header.Sequence) == nullptr); // ensure bob didn't get it
+	EXPECT_TRUE(bob.ReceiveBuffer.Get(a3SentMessage.Header.Sequence) == nullptr); // ensure bob didn't get it
 	EXPECT_EQ(a3SentMessage.DataCount(), 3); 	// expect a3 to bundle previously unacked a1, a2,a3
 
 	// alice -[a4]->X bob
 	const auto a4SentMessage = *alice.MarkSent(a4); //bob.Receive(a3SentMessage);	
-	EXPECT_TRUE(bob.receiveBuffer.Get(a4SentMessage.Header.Sequence) == nullptr); // ensure bob didn't get it
+	EXPECT_TRUE(bob.ReceiveBuffer.Get(a4SentMessage.Header.Sequence) == nullptr); // ensure bob didn't get it
 	EXPECT_EQ(a4SentMessage.DataCount(), 4); 	// expect a3 to bundle previously unacked a1,a2,a3, a4
 	
 	// alice -[a5]-> bob
@@ -222,11 +222,11 @@ TEST_F(ReliableUdpTests, AliceBobAggregateMessagesDrop3)
 
 	// Bob's message should now be able to inform Alice that he received all were received
 
-	EXPECT_TRUE(alice.sendBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
-	EXPECT_TRUE(alice.sendBuffer.Get(a2SentMessage.Header.Sequence)->Acked);
-	EXPECT_TRUE(alice.sendBuffer.Get(a3SentMessage.Header.Sequence)->Acked);
-	EXPECT_TRUE(alice.sendBuffer.Get(a4SentMessage.Header.Sequence)->Acked);
-	EXPECT_TRUE(alice.sendBuffer.Get(a5SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(alice.SendBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(alice.SendBuffer.Get(a2SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(alice.SendBuffer.Get(a3SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(alice.SendBuffer.Get(a4SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(alice.SendBuffer.Get(a5SentMessage.Header.Sequence)->Acked);
 	
 }
 
@@ -259,7 +259,7 @@ TEST_F(ReliableUdpTests, AliceBobOutOfOrder)
 
 	// Ensure out of order messages do not cause a problem, i.e ordered reliable transmission is guaranteed
 
-	EXPECT_TRUE(alice.sendBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
-	EXPECT_TRUE(alice.sendBuffer.Get(a2SentMessage.Header.Sequence)->Acked);
-	EXPECT_TRUE(alice.sendBuffer.Get(a3SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(alice.SendBuffer.Get(a1SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(alice.SendBuffer.Get(a2SentMessage.Header.Sequence)->Acked);
+	EXPECT_TRUE(alice.SendBuffer.Get(a3SentMessage.Header.Sequence)->Acked);
 }

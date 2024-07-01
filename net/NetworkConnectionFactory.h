@@ -2,12 +2,8 @@
 #ifndef NETWORKSOCKETFACTORY_H
 #define NETWORKSOCKETFACTORY_H
 
-#include <WinSock2.h>
-
-#include "net/Networking.h"
-#include "net/NetworkManager.h"
 #include "TcpNetworkSocket.h"
-#include "UdpNetworkSocket.h"
+#include "UdpConnectedNetworkSocket.h"
 #include <memory>
 
 
@@ -17,16 +13,19 @@ namespace gamelib
 	class NetworkConnectionFactory
 	{
 	public:
-		static std::shared_ptr<INetworkSocket> Connect(const bool isTcp, const char* address, const char* port)
+
+		// Creates either a tcp or udp 'connected' socket 
+		static std::shared_ptr<IConnectedNetworkSocket> Connect(const bool isTcp, const char* address, const char* port)
 		{
-			auto* networking = Networking::Get();
+			auto networkSocket =  
+				isTcp
+				? std::dynamic_pointer_cast<IConnectedNetworkSocket>(std::make_shared<TcpNetworkSocket>(TcpNetworkSocket()))
+				: std::dynamic_pointer_cast<IConnectedNetworkSocket>(std::make_shared<UdpConnectedNetworkSocket>(UdpConnectedNetworkSocket()));
 
+			// Associate socket with address/port combination for the duration of its use
+			networkSocket->Connect(address, port);
 
-			const SOCKET socket = isTcp ? networking->netTcpClient(address, port)
-				                      : networking->netConnectedUdpClient(address, port);
-
-			return isTcp ? std::dynamic_pointer_cast<INetworkSocket>(std::make_shared<TcpNetworkSocket>(TcpNetworkSocket(socket)))
-				: std::dynamic_pointer_cast<INetworkSocket>(std::make_shared<UdpNetworkSocket>(UdpNetworkSocket(socket)));
+			return networkSocket;
 		}
 	};
 }

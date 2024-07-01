@@ -459,13 +459,13 @@
     <ClInclude Include="net\NetworkConnectionFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="net\INetworkSocket.h">
+    <ClInclude Include="net\IConnectedNetworkSocket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="net\TcpNetworkSocket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="net\UdpNetworkSocket.h">
+    <ClInclude Include="net\UdpConnectedNetworkSocket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="net\GameServerConnectionFactory.h">
@@ -487,6 +487,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="net\ReliableUdpGameServerConnection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UdpConnectionlessNetworkSocket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -752,7 +755,7 @@
     <ClCompile Include="net\NetworkConnectionFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="net\UdpNetworkSocket.cpp">
+    <ClCompile Include="net\UdpConnectedNetworkSocket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="net\TcpNetworkSocket.cpp">

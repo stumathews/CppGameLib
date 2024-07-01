@@ -1,22 +1,24 @@
 ﻿#pragma once
 #ifndef TCPNETWORKSOCKET_H
 #define TCPNETWORKSOCKET_H
-#include "INetworkSocket.h"
+#include "IConnectedNetworkSocket.h"
 #include "Networking.h"
 
 namespace gamelib
 {
 
-	class TcpNetworkSocket final : public INetworkSocket
+	class TcpNetworkSocket final : public IConnectedNetworkSocket
 	{
 	public:
-		explicit TcpNetworkSocket(const SOCKET socket): socket(socket) {  }
+		explicit TcpNetworkSocket(): socket(0) {  }
+
 		bool IsTcp() override;
 		int Send(const char* data, int dataLength) override;
 		int Receive(const char* readBuffer, int bufLength) override;
 		bool IsValid() override;
 		[[nodiscard]] SOCKET GetRawSocket() const override;
 		~TcpNetworkSocket() override =default;
+		void Connect(const char* address, const char* port) override;
 
 	private:
 		SOCKET socket = -1;

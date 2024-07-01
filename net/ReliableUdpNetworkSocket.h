@@ -3,12 +3,12 @@
 #define RELIABLEUDPNETWORKSOCKET_H
 
 #include <WinSock2.h>
-#include "net/INetworkSocket.h"
+#include "net/IConnectedNetworkSocket.h"
 #include "net/ReliableUdp.h"
 
 namespace gamelib
 {
-	class ReliableUdpNetworkSocket final : public INetworkSocket
+	class ReliableUdpNetworkSocket final : public IConnectedNetworkSocket
 	{
 	public:
 		explicit ReliableUdpNetworkSocket(const SOCKET socket);

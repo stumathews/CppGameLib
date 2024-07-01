@@ -1,8 +1,7 @@
 #include "ReliableUdpNetworkSocket.h"
 
 #include "Option.h"
-#include "net/INetworkSocket.h"
-#include "net/UdpNetworkSocket.h"
+#include "net/UdpConnectedNetworkSocket.h"
 
 gamelib::ReliableUdpNetworkSocket::ReliableUdpNetworkSocket(const SOCKET socket): socket(socket)
 {

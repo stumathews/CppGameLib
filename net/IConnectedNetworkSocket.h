@@ -5,10 +5,11 @@
 
 namespace gamelib
 {
-	class INetworkSocket
+	class IConnectedNetworkSocket
 	{
 	public:
-		virtual ~INetworkSocket() = default;
+		virtual ~IConnectedNetworkSocket() = default;
+		virtual void Connect(const char* address, const char* port) = 0;
 		virtual bool IsTcp() = 0;
 		virtual int Send(const char* data, int dataLength) = 0;
 		virtual int Receive(const char* readBuffer, int bufLength) = 0;

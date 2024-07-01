@@ -24,3 +24,9 @@ SOCKET gamelib::TcpNetworkSocket::GetRawSocket() const
 {
 	return socket;
 }
+
+void gamelib::TcpNetworkSocket::Connect(const char* address, const char* port)
+{
+	auto* networking = Networking::Get();
+	socket = networking->netTcpClient(address, port);
+}

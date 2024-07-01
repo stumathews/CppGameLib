@@ -238,13 +238,13 @@
     <ClInclude Include="net\ReliableUdpMessageHeader.h" />
     <ClInclude Include="net\BitfieldReader.h" />
     <ClInclude Include="net\GameServerConnectionFactory.h" />
-    <ClInclude Include="net\INetworkSocket.h" />
+    <ClInclude Include="net\IConnectedNetworkSocket.h" />
     <ClInclude Include="net\NetworkConnectionFactory.h" />
     <ClInclude Include="net\BitPacker.h" />
     <ClInclude Include="net\BitPackingTypes.h" />
     <ClInclude Include="net\ReliableUdp.h" />
     <ClInclude Include="net\TcpNetworkSocket.h" />
-    <ClInclude Include="net\UdpNetworkSocket.h" />
+    <ClInclude Include="net\UdpConnectedNetworkSocket.h" />
     <ClInclude Include="net\PacketDatum.h" />
     <ClInclude Include="net\ReliableUdpGameServerConnection.h" />
     <ClInclude Include="net\ReliableUdpNetworkSocket.h" />
@@ -347,6 +347,7 @@
     <ClInclude Include="file\SettingDetail.h" />
     <ClInclude Include="file\SettingsManager.h" />
     <ClInclude Include="geometry\Coordinate.h" />
+    <ClInclude Include="UdpConnectionlessNetworkSocket.h" />
     <ClInclude Include="utils\BitFiddler.h" />
     <ClInclude Include="utils\RingBuffer.h" />
     <ClInclude Include="utils\Utils.h" />
@@ -370,7 +371,7 @@
     <ClCompile Include="net\NetworkConnectionFactory.cpp" />
     <ClCompile Include="net\crc.h" />
     <ClCompile Include="net\TcpNetworkSocket.cpp" />
-    <ClCompile Include="net\UdpNetworkSocket.cpp" />
+    <ClCompile Include="net\UdpConnectedNetworkSocket.cpp" />
     <ClCompile Include="net\PacketDatum.cpp" />
     <ClCompile Include="net\ReliableUdpGameServerConnection.cpp" />
     <ClCompile Include="net\ReliableUdpNetworkSocket.cpp" />

@@ -3,25 +3,25 @@
 #define UDPNETWORKSOCKET_H
 
 #include <WinSock2.h>
-#include "INetworkSocket.h"
-//#include "ReliableUdp.h"
+#include "IConnectedNetworkSocket.h"
 
 namespace gamelib
 {
-	class UdpNetworkSocket final : public INetworkSocket
+	class UdpConnectedNetworkSocket final : public IConnectedNetworkSocket
 	{
 	public:
-		explicit UdpNetworkSocket(const SOCKET socket);
+		explicit UdpConnectedNetworkSocket();
+
+		void Connect(const char* address, const char* port) override;
 		bool IsTcp() override;
 		int Send(const char* data, int dataLength) override;
 		int Receive(const char* readBuffer, int bufLength) override;
 		bool IsValid() override;
 		[[nodiscard]] SOCKET GetRawSocket() const override;
-		~UdpNetworkSocket() override = default;
+		~UdpConnectedNetworkSocket() override = default;
 
 	private:
 		SOCKET socket = -1;
-		//const ReliableUdp reliableUdp;
 	};
 }
 

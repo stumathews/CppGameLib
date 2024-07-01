@@ -27,6 +27,17 @@ namespace gamelib
 		this->eventManager = EventManager::Get();
 		this->serializationManager = SerializationManager::Get();
 		
+	}	
+
+	void UdpGameServerConnection::Create()
+	{
+		listeningSocket = networking->netUdpServer(host.c_str(), port.c_str());
+	}
+
+	void UdpGameServerConnection::Disconnect()
+	{		
+		closesocket(listeningSocket);
+		WSACleanup();
 	}
 
 	void UdpGameServerConnection::Listen()
@@ -175,16 +186,5 @@ namespace gamelib
 		std::stringstream subscriberName;
 		subscriberName << host << ":" << port;
 		return subscriberName.str();
-	}
-
-	void UdpGameServerConnection::Create()
-	{
-		listeningSocket = networking->netUdpServer(host.c_str(), port.c_str());
-	}
-
-	void UdpGameServerConnection::Disconnect()
-	{		
-		closesocket(listeningSocket);
-		WSACleanup();
 	}
 }

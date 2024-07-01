@@ -4,7 +4,6 @@
 #include <cstdint>
 #include <memory>
 
-#include "INetworkSocket.h"
 #include "Message.h"
 #include "PacketDatum.h"
 #include "utils/RingBuffer.h"

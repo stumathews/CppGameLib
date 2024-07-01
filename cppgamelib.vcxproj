@@ -246,6 +246,8 @@
     <ClInclude Include="net\TcpNetworkSocket.h" />
     <ClInclude Include="net\UdpNetworkSocket.h" />
     <ClInclude Include="net\PacketDatum.h" />
+    <ClInclude Include="net\ReliableUdpGameServerConnection.h" />
+    <ClInclude Include="net\ReliableUdpNetworkSocket.h" />
     <ClInclude Include="time\PeriodicTimer.h" />
     <ClInclude Include="events\EventId.h" />
     <ClInclude Include="events\EventFactory.h" />
@@ -370,6 +372,8 @@
     <ClCompile Include="net\TcpNetworkSocket.cpp" />
     <ClCompile Include="net\UdpNetworkSocket.cpp" />
     <ClCompile Include="net\PacketDatum.cpp" />
+    <ClCompile Include="net\ReliableUdpGameServerConnection.cpp" />
+    <ClCompile Include="net\ReliableUdpNetworkSocket.cpp" />
     <ClCompile Include="time\PeriodicTimer.cpp" />
     <ClCompile Include="events\EventId.cpp" />
     <ClCompile Include="events\EventFactory.cpp" />

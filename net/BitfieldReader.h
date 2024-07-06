@@ -36,35 +36,42 @@ namespace gamelib
 			if(numBits >= (fieldSizeBits * 2)) throw std::exception("Can't read more than the double the buffer size.");
 
 			if(countTimesOverflowed >= elements) throw std::exception("Buffer overflow.");
-			
+
+			// Trying to read outside the buffer, we'll need to read some from previous buffer and this buffer
+			// to make a buffer that crosses both - a merged buffer unit
 			if(startBit > maxStartBit)
 			{							
-				countTimesOverflowed++;
-				segmentsRead++;
+				countTimesOverflowed++; segmentsRead++;
 				return MakeMergedUnit<OType>(numBits, startBit);
 			}
+
+			// The range of bits falls within the buffer unit size (T)
 			auto bitsValue = BitFiddler<T>::GetBitsValue(*(field+countTimesOverflowed), startBit, numBits);
+
+			// How many bits were read off the buffer
 			bitsRead += numBits;
 
+			// Track the total number of bits we've read fo far
 			totalBitsRead += numBits;
-			
+
+			// How many bits still left in the buffer unit segment
 			bitsLeftInSegment = fieldSizeBits - bitsRead;
 
+			// If we read up to the boundary, consider that we need to increase the overflow counter
+			// this will enable us to read the next buffer unit.
 			if(bitsRead % fieldSizeBits == 0)
 			{
-				countTimesOverflowed++;
-				segmentsRead++;
+				countTimesOverflowed++; segmentsRead++;
 				bitsLeftInSegment = fieldSizeBits;
 				bitsRead = 0;
 			}
 			return static_cast<OType>(bitsValue);
 		}
 
-		void FetchBytes(char* outBuffer, int outBufferSize)
+		void FetchBytes(char* outBuffer, const int outBufferSize)
 		{
 			memcpy_s(outBuffer, outBufferSize, field+countTimesOverflowed, outBufferSize);			
 		}
-
 
 		/**
 		 * \brief Returns an interval of bits from starting at high-bit position backwards for numBits bits

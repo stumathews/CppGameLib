@@ -283,7 +283,6 @@
     <ClInclude Include="ai\FSMState.h" />
     <ClInclude Include="ai\FSMTransition.h" />
     <ClInclude Include="graphic\ColourKey.h" />
-    <ClInclude Include="graphic\GraphicAssetFactory.h" />
     <ClInclude Include="character\Inventory.h" />
     <ClInclude Include="graphic\KeyFrame.h" />
     <ClInclude Include="geometry\Line.h" />
@@ -338,7 +337,7 @@
     <ClInclude Include="asset\SpriteAsset.h" />
     <ClInclude Include="net\TcpGameServerConnection.h" />
     <ClInclude Include="structure\IGameLoopStrategy.h" />
-    <ClInclude Include="Tests\Tests\GraphicAssetFactory.h" />
+    <ClInclude Include="graphic\GraphicAssetFactory.h" />
     <ClInclude Include="time\Timer.h" />
     <ClInclude Include="file\tinyxml2.h" />
     <ClInclude Include="net\UdpGameServerConnection.h" />
@@ -347,7 +346,6 @@
     <ClInclude Include="file\SettingDetail.h" />
     <ClInclude Include="file\SettingsManager.h" />
     <ClInclude Include="geometry\Coordinate.h" />
-    <ClInclude Include="UdpConnectionlessNetworkSocket.h" />
     <ClInclude Include="utils\BitFiddler.h" />
     <ClInclude Include="utils\RingBuffer.h" />
     <ClInclude Include="utils\Utils.h" />

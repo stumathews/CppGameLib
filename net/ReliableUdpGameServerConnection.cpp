@@ -31,7 +31,7 @@ namespace gamelib
 
 	void ReliableUdpGameServerConnection::Listen()
 	{
-		const auto maxSockets = 5; // Number of pending connections to have in the queue at any one moment
+		constexpr auto maxSockets = 5; // Number of pending connections to have in the queue at any one moment
 		
 		FD_ZERO(&readfds); // Clear the list of sockets that we are listening for/on			
 		FD_SET(listeningSocket, &readfds); // Add it to the list of file descriptors to listen for readability					
@@ -47,26 +47,27 @@ namespace gamelib
 
 	void ReliableUdpGameServerConnection::CheckForPlayerTraffic()
 	{
-		const int DEFAULT_BUFLEN = 512;
-		char buffer[DEFAULT_BUFLEN];
-		const int bufferLength = DEFAULT_BUFLEN;
-		ZeroMemory(buffer, bufferLength);
+		// Identifier who the client sending the data is
+		PeerInfo fromClient; 
 				
-		PeerInfo fromClient; // Identifier who the client sending the data is
-				
-		// Read all incoming data		
-		const int bytesReceived = recvfrom(listeningSocket, buffer, bufferLength, 0, (sockaddr*) &fromClient.Address, &fromClient.Length);
+		// Read all incoming data into readBuffer		
+		const int bytesReceived = recvfrom(listeningSocket, receiveBuffer, ReceiveBufferMaxElements, 0,
+		                                   reinterpret_cast<sockaddr*>(&fromClient.Address), &fromClient.Length);
 
-		// Hook up bitfield reader to the received buffer
-		BitfieldReader reader((uint32_t*)buffer, bytesReceived);
+		// Hook up to a 32-bit bitfield reader to the received buffer. This will read 32-bits at a time
+		const auto count32BitBlocks = bytesReceived * 8 /32;
+		BitfieldReader reader(reinterpret_cast<uint32_t*>(receiveBuffer), count32BitBlocks);
 
-		Message m; m.Read(reader);
-		const auto sizeInBytesOfFirstPacket = m.FirstPacket.NumBits()/8;
+		// Where to store the message
+		Message message;
+
+		// Unpack receive buffer into message
+		message.Read(reader);		
 
 		if (bytesReceived > 0)
 		{
-			ParseReceivedPlayerPayload(m.FirstPacket.c_str(), sizeInBytesOfFirstPacket, fromClient);
-			RaiseNetworkTrafficReceivedEvent(m.FirstPacket.c_str(),sizeInBytesOfFirstPacket, fromClient);
+			ParseReceivedPlayerPayload(message.FirstPacket.c_str(), bytesReceived, fromClient);
+			RaiseNetworkTrafficReceivedEvent(message.FirstPacket.c_str(),bytesReceived, fromClient);
 		}
 	}
 
@@ -87,24 +88,22 @@ namespace gamelib
 		eventManager->RaiseEventWithNoLogging(event);
 	}
 
-	int ReliableUdpGameServerConnection::InternalSend(SOCKET socket, const char* buf, int len, int flags,  const sockaddr* to, int tolen)
+	int ReliableUdpGameServerConnection::InternalSend(const SOCKET socket, const char* buf, int len, const int flags,  const sockaddr* to, int toLen)
 	{
-		// create temporary buffer
-		uint32_t buffer[8192]; // 256kb buffer
-
 		// Get packet to send
 		const auto message = reliableUdp.MarkSent(PacketDatum(false, buf));
+		
+		BitPacker packer(packingBuffer, PackingBufferElements);
 
-		// Pack packet tightly into  buffer
-		BitPacker packer(buffer, 8192);
+		// Pack packet tightly into  buffer before sending
 		message->Write(packer); packer.Finish();
 
-		// Ask the client to sent only the bits we packed into the buffer
-		const auto numBytes = ceil((double)packer.TotalBitsPacked() / (double)8);
+		// Count only as much as what was packed
+		const auto countBytesToSend = static_cast<int>(ceil(static_cast<double>(packer.TotalBitsPacked()) / static_cast<double>(8)));
 		
 		// Send over udp
 		
-		return sendto(socket, (char*)buffer, numBytes, flags, to, tolen);
+		return sendto(socket, reinterpret_cast<char*>(packingBuffer), countBytesToSend, flags, to, toLen);
 	}
 
 	void ReliableUdpGameServerConnection::SendToConnectedPlayersExceptToSender(const std::string& senderNickname, const std::string

@@ -13,6 +13,9 @@
 #include "net/IGameServerConnection.h"
 #include "net/ReliableUdp.h"
 
+constexpr auto PackingBufferElements = 8192;
+constexpr auto ReceiveBufferMaxElements = 512;
+
 namespace gamelib
 {
 	class Networking;
@@ -39,7 +42,7 @@ namespace gamelib
 		// Inherited via IGameServerConnection
 		void CheckForPlayerTraffic() override;
 		void RaiseNetworkTrafficReceivedEvent(char buffer[512], int bytesReceived, PeerInfo fromClient);
-		int InternalSend(SOCKET socket, const char* buf, int len, int flags, const sockaddr* to, int tolen);
+		int InternalSend(SOCKET socket, const char* buf, int len, int flags, const sockaddr* to, int toLen);
 		void SendToConnectedPlayersExceptToSender(const std::string& senderNickname, const std::string&
 		                                          serializedMessage);
 		timeval timeout{};
@@ -63,6 +66,9 @@ namespace gamelib
 
 		// Inherited via IGameServerConnection
 		void Create() override;
+				
+		uint32_t packingBuffer[PackingBufferElements];
+		char receiveBuffer[ReceiveBufferMaxElements];
 
 	public:
 		void Disconnect() override;

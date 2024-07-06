@@ -82,6 +82,8 @@ namespace gamelib
 		{
 			std::remove_const_t<T> number1 = number; // note we remove const if T is const to make a non-const T that we can modify
 
+			if(numBits == sizeof(T)*8) return number;
+
 			if(startBit > 0 && startBit >= numBits)
 				number1 = number1 >> (zeroIndex ? (((startBit+1)-numBits)) : (startBit - numBits)); // shift the bits we are interested to the beginning
 			number1 = number1 & (1 << numBits) -1; // unset all but last numBits bits

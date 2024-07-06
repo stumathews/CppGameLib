@@ -37,7 +37,7 @@ namespace gamelib
 			auto startBit = writeBitPointer+(numBits-1);
 			auto maxStartBit = bufferSizeBits-1;
 
-			// How much have we got left to pack into?
+			// How much have we got left of internal buffer uint (T) to pack into?
 			bitsLeftInSegment = bufferSizeBits - writeBitPointer;
 
 			if(startBit > maxStartBit)
@@ -46,24 +46,24 @@ namespace gamelib
 
 				// set the bitsLeftInSegment to what we can from the value. 
 				buffer = BitFiddler<T>::SetBits(buffer, maxStartBit, bitsLeftInSegment, value);
+
 				//The segment is now full, flush it 
 				memcpy_s(flushDestination+(countTimesOverflowed++), bufferSizeBits/8, &buffer, bufferSizeBits/8);
+
 				bitsPacked += bitsLeftInSegment;
 				segmentsWritten++;
 				bitsLeftInSegment = bufferSizeBits - bitsLeftInSegment;
 
-				// use a new empty segment
+				// Take the remaining bits of the value we could not set (as the did not fix), and write them in a new buffer instead:
 				buffer = (buffer & 0);
-
-				// Take the remaining bits of the value we could not set and write them in the new buffer
+				
 				auto extraBits = numBits - (bufferSizeBits - writeBitPointer);
 				auto newStartBit = (numBits - (bufferSizeBits - writeBitPointer))-1;
 				
-				auto remainder  = BitFiddler<T>::GetBitsValue(value, numBits-1, extraBits);
-				buffer = BitFiddler<T>::SetBits(buffer, newStartBit, extraBits, remainder);
+				auto remainingBits  = BitFiddler<T>::GetBitsValue(value, numBits-1, extraBits);
+				buffer = BitFiddler<T>::SetBits(buffer, newStartBit, extraBits, remainingBits);
 				bitsPacked += extraBits;
 				writeBitPointer = newStartBit+1;
-
 			}
 			else
 			{
@@ -72,41 +72,23 @@ namespace gamelib
 				
 				// indicate that we packed that many bits into the buffer
 				bitsPacked += numBits;
-
+								
 				if(bitsPacked % bufferSizeBits == 0)
 				{
+					// we packed up to a bit boundary, we'll need to increase overflow so we can access the next unit segment in the buffer.
+					// We will do this and write the buffer at the same time
 					memcpy_s(flushDestination+(countTimesOverflowed++), bufferSizeBits/8, &buffer, bufferSizeBits/8);
 					segmentsWritten++;
 					bitsLeftInSegment = bufferSizeBits;
 					writeBitPointer = 0;
 				}
 				else
-				{				
-					
+				{
 					// move writeBitPointer up 1 past where we started
 					writeBitPointer += numBits;
 					bitsLeftInSegment = bufferSizeBits - writeBitPointer;
 				}
 			}
-
-			//if(writeBitPointer >= bufferSizeBits)
-			//{
-			//	// Refuse to write passed destination
-			//	if(countTimesOverflowed == destElements) throw std::exception("Can't write past destination buffer");
-
-			//	// flush our buffer to the output buffer
-			//	Flush(false);
-			//	buffer = value;											
-
-			//	// Determine which bits overflowed - shift off the bits that we were able to read, leaving those left unread in the buffer for the next packing
-			//	// to append to
-			//	buffer = buffer >> numBits - (writeBitPointer - bufferSizeBits);
-
-			//	// set that we've read the previously overflowed bits in our buffer now
-			//	writeBitPointer = (writeBitPointer - bufferSizeBits);
-			//}
-			
-			//bitsLeftInSegment = bufferSizeBits - writeBitPointer;
 		}
 
 		void PushBytes(const char* pushBuffer, const int pushBufferSize)
@@ -128,13 +110,11 @@ namespace gamelib
 		{
 			memcpy_s(flushDestination+(countTimesOverflowed++), bufferSizeBits/8, &buffer, bufferSizeBits/8);
 			buffer = (buffer & 0);
-
 			
-				// consider the remaining bits in the segment as being written as we flushed the whole segment to memory
-				bitsPacked += bitsLeftInSegment;
-				
-				writeBitPointer = 0;
+			// consider the remaining bits in the segment as being written as we flushed the whole segment to memory
+			bitsPacked += bitsLeftInSegment;
 			
+			writeBitPointer = 0;			
 
 			// having flushed the whole segment, we should have all the bits unread in the new segment
 			bitsLeftInSegment = bufferSizeBits - writeBitPointer;

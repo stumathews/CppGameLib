@@ -12,7 +12,6 @@
 #include <cppgamelib/graphic.h>
 #include <cppgamelib/json.h>
 #include <cppgamelib/logging.h>
-#include <cppgamelib/movement.h>
 #include <cppgamelib/net.h>
 #include <cppgamelib/objects.h>
 #include <cppgamelib/processes.h>

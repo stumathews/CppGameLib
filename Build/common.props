@@ -16,10 +16,6 @@
 	<ItemGroup>
 		<ThirdpartyDlls Include="$(ThirdPartyDir)\*.dll"/>
 	</ItemGroup>
-
-	<PropertyGroup>
-		<SolutionNugetPackages>$(GameDevRoot)\packages</SolutionNugetPackages>
-	</PropertyGroup>
 	
 	<!-- 2DGameDevLib -->
 	<PropertyGroup>

@@ -1,4 +1,7 @@
 ﻿#include "pch.h"
+
+#include <gtest/gtest.h>
+
 #include "events/EventManager.h"
 #include "events/SceneChangedEvent.h"
 #include "font/FontManager.h"

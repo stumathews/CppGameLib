@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "utils/BitFiddler.h"
 #include <limits>
+#include <gtest/gtest.h>
 
 using namespace gamelib;
 
@@ -313,13 +314,4 @@ TEST_F(BitFiddlerTests, SetBiBitFieldTests)
 	uint32_t field2 = 0x0B; // 1011 0000
 	uint32_t field3 = 0x0C; // 1100 0000
 	uint32_t field4 = 0x0D; // 1101 0000
-
-	// convert to little endian:
-
-
-
-
-
-
-
 }

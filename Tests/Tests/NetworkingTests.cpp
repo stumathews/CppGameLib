@@ -3,6 +3,7 @@
 #include <net/Networking.h>
 #include "net/NetworkManager.h"
 #include <thread>
+#include <gtest/gtest.h>
 
 #include "events/ControllerMoveEvent.h"
 #include "events/EventManager.h"

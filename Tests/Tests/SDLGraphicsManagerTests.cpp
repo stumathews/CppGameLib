@@ -5,6 +5,7 @@
 #include "graphic/SDLGraphicsManager.h"
 #include "resource/ResourceManager.h"
 #include "scene/SceneManager.h"
+#include <gtest/gtest.h>
 
 using namespace std;
 using namespace gamelib;

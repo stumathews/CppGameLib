@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 
 #include <audio/AudioManager.h>
+#include <gtest/gtest.h>
 #include <resource/ResourceManager.h>
 #include <objects/GameObject.h>
 

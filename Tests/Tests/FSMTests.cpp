@@ -3,6 +3,7 @@
 #include "ai/FSMTransition.h"
 #include "ai/FSMState.h"
 #include <functional>
+#include <gtest/gtest.h>
 
 using namespace std;
 using namespace gamelib;

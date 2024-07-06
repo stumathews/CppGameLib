@@ -4,6 +4,7 @@
 #include "file/tinyxml2.h"
 #include <graphic/KeyFrame.h>
 #include <graphic/GraphicAssetFactory.h>
+#include <gtest/gtest.h>
 
 using namespace tinyxml2;
 using namespace std;

@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 //#include <gtest/gtest.h>
 
+#include <gtest/gtest.h>
+
 #include "utils/RingBuffer.h"
 
 using namespace gamelib;

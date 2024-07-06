@@ -1,5 +1,8 @@
 ﻿
 #include "pch.h"
+
+#include <gtest/gtest.h>
+
 #include "net/crc.h"
 
 using namespace gamelib;

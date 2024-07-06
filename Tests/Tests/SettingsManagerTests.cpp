@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include <file/SettingsManager.h>
+#include <gtest/gtest.h>
 using namespace gamelib;
 using namespace std;
 

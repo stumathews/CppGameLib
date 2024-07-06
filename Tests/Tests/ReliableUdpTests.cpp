@@ -1,5 +1,7 @@
 ﻿
 #include "pch.h"
+
+#include <gtest/gtest.h>
 #include <net/Networking.h>
 #include "net/NetworkManager.h"
 #include "events/EventManager.h"

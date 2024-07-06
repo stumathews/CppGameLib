@@ -42,31 +42,35 @@ namespace gamelib
 				return const_cast<char*>(elements);
 			}
 
-			// ReSharper disable once CppNonExplicitConvertingConstructor
-			String(const std::string& value) { Initialize(value); }
+			explicit String(const std::string& value) { Initialize(value); }
 
-			// ReSharper disable once CppNonExplicitConvertingConstructor
-			String(const char* value) { Initialize(value); }
+			explicit String(const char* value) { Initialize(value); }
 
 			String() : String(""){}
 
-		    void Write(gamelib::BitPacker<T>& bitPacker) const
+		    void Write(BitPacker<T>& bitPacker) const
 		    {
+				// Write how many elements are in this string
 	    		bitPacker.Pack(sizeof(T)*8, static_cast<T>(numElements));
-				
-				for(int i = 0; i < numElements;i++)
+
+				// Push bytes into bitpacker's buffer directly
+				bitPacker.PushBytes(elements, numElements);
+
+				// Pack each character individually
+				/*for(int i = 0; i < numElements;i++)
 				{
 					bitPacker.Pack(8, elements[i]);
-				}
+				}*/
 		    }
 
 		    void Read(BitfieldReader<T>& bitfieldReader)
 		    {
+				// read how many elemments in this string
 		        numElements = bitfieldReader.ReadNext<int>(sizeof(T)*8);
-				for(int i = 0; i < numElements;i++)
-				{
-					elements[i] = bitfieldReader.ReadNext<char>(8);
-				}
+
+				// Read byte directly from the reader's buffer
+				bitfieldReader.FetchBytes(elements, numElements);
+
 				elements[numElements] = '\0';
 				numBits = NumBits();
 		    }
@@ -128,7 +132,10 @@ namespace gamelib
 
 			void Write(BitPacker<T>& bitPacker) const
 			{
+				// Store that there will be x elements in this array - we can't store/address more than MaxElements but can store less
 				bitPacker.Pack(BITS_REQUIRED(0, MaxElements), numElements);
+
+				// Now write each string
 				for (int i = 0 ; i < numElements; i++)
 				{
 					elements[i].Write(bitPacker);
@@ -137,6 +144,7 @@ namespace gamelib
 
 			void Read(BitfieldReader<T>& bitfieldReader)
 		    {
+				// Read how many elements there will be
 				numElements = bitfieldReader.ReadNext<uint16_t>(BITS_REQUIRED(0, MaxElements));
 				for (int i = 0 ; i < numElements; i++)
 				{

@@ -21,22 +21,30 @@ namespace gamelib
 		 * \param n number of contained packets (if > 1 this is an aggregated message containing other messages)
 		 * \param inData the contained packets
 		 */
-		explicit Message(const uint16_t sequence, const uint16_t lastAckedSequence, uint32_t previousAckedBits,
-		                 const uint16_t n, const std::vector<PacketDatum>& inData);
+		Message(uint16_t sequence, const uint16_t lastAckedSequence, uint32_t previousAckedBits,
+		                 uint16_t n, const std::vector<PacketDatum>& inData);
 
 		Message() = default;
 
-		ReliableUdpMessageHeader Header{};
+		// Contains sequence number and list of previously acked messages encoded in 32-bit field
+		ReliableUdpMessageHeader Header {};
+
+		// Aggregate messages that were not previously acknowledged
 		[[nodiscard]] std::vector<PacketDatum> Data() const;
+
+		// Number of aggregate messages
 		[[nodiscard]] uint16_t DataCount() const;
 
+		// Pack into bitPacker's associated buffer
 		void Write(BitPacker<uint32_t>& bitPacker) const;
+
+		// Unpack into bitfieldReader's associated buffer
 		void Read(BitfieldReader<uint32_t>& bitfieldReader);
 				
 		bit_packing_types::String<uint32_t> FirstPacket;
 
 	private:
-		std::vector<PacketDatum> packets;
+		std::vector<PacketDatum> packets{};
 	};
 }
 #endif

@@ -153,9 +153,6 @@
     <ClInclude Include="graphic\KeyFrame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tests\Tests\GraphicAssetFactory.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="graphic\GraphicAssetFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -487,9 +484,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="net\ReliableUdpGameServerConnection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UdpConnectionlessNetworkSocket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

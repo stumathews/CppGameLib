@@ -13,49 +13,47 @@ bool gamelib::ReliableUdpNetworkSocket::IsTcp()
 	return false;
 }
 
-int gamelib::ReliableUdpNetworkSocket::Send(const char* data, const int dataLength)
+int gamelib::ReliableUdpNetworkSocket::Send(const char* callersSendBuffer, const int dataLength)
 {
-	// create temporary buffer
-	uint32_t buffer[8192]; // 256kb buffer
+	BitPacker packer(packingBuffer, PackingBufferElements);
 
-	// Get packet to send
-	const auto message = reliableUdp.MarkSent(PacketDatum(false, data));
+	// Track/store message as sent
+	const auto message = reliableUdp.MarkSent(PacketDatum(false, callersSendBuffer));
 
-	// Pack packet tightly into  buffer
-	BitPacker packer(buffer, 8192);
+	// Write to the packingBuffer via the BitPacker	
 	message->Write(packer); packer.Finish();
 
-	// Ask the client to sent only the bits we packed into the buffer
-	const auto numBytes = ceil((double)packer.TotalBitsPacked() / (double)8);
+	// Count only as much as what was packed
+	const auto countBytesToSend = static_cast<int>(ceil(static_cast<double>(packer.TotalBitsPacked()) / static_cast<double>(8)));
 	
-	// Send over udp
-	return send(socket, reinterpret_cast<char*>(buffer), numBytes, 0);
+	// Send only as much of the packedBuffer that was utilized
+	return send(socket, reinterpret_cast<char*>(packingBuffer), countBytesToSend, 0);
 }
 
-int gamelib::ReliableUdpNetworkSocket::Receive(const char* networkReadBuffer,
-                                       const int bufLength)
-{
-	constexpr int maxBufferLength = 512;
-
-	char readBuffer[maxBufferLength];
-	constexpr int bufferLength = maxBufferLength;
-	ZeroMemory(readBuffer, bufferLength);
-	
+int gamelib::ReliableUdpNetworkSocket::Receive(const char* callersReceiveBuffer, const int bufLength)
+{	
 	// Read the payload off the network, wait for all the data
-	const int bytesReceived = recv(socket, const_cast<char*>(networkReadBuffer), bufLength, 0); 
+	const int bytesReceived = recv(socket, const_cast<char*>(callersReceiveBuffer), bufLength, 0); 
 
 	if(bytesReceived < 0)
 	{
 		return bytesReceived;
 	}
 
-	// Hook up bitfield reader to the received buffer
-	BitfieldReader reader((uint32_t*)readBuffer, bytesReceived);
-
-	Message m; m.Read(reader);
-	libmonad::Option optionalMessage = m;
+	// Hook up to a 32-bit bitfield reader to the received buffer. This will read 32-bits at a time
+	const auto count32BitBlocks = bytesReceived * 8 /32;
 	
-	strcpy_s((char*)networkReadBuffer, bufLength, m.FirstPacket.c_str());
+	BitfieldReader packedBufferReader(reinterpret_cast<uint32_t*>(readBuffer), count32BitBlocks);
+
+	// Where the unpacked message will be stored
+	Message message;
+
+	// Unpack message
+	message.Read(packedBufferReader);
+
+	// Copy contents to caller's receive buffer to expose the contents of the message
+	strcpy_s(const_cast<char*>(callersReceiveBuffer), bufLength, message.FirstPacket.c_str());
+
 	return bytesReceived;
 }
 

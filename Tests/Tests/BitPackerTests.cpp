@@ -145,7 +145,7 @@ TEST_F(BitPackingTests, OverflowTests)
 
 	EXPECT_EQ(bitPacker.TotalBitsPacked(), 20);
 	EXPECT_EQ(bitPacker.TotalSegmentsWritten(), 1);
-	EXPECT_EQ(bitPacker.BitsLeftInCurrentSegment(), 15); // 12 bits left in 16bit segment
+	EXPECT_EQ(bitPacker.BitsLeftInCurrentSegment(), 12); // 12 bits left in 16bit segment
 
 	// check that that we've got the correct 16 bits
 	EXPECT_EQ(BitFiddler<uint16_t>::ToString(output[0]), "1011110010100010");
@@ -480,23 +480,6 @@ TEST_F(BitPackingTests, BitPackingTypes_String)
 	EXPECT_EQ(string.NumBits(), 456);
 }
 
-TEST_F(BitPackingTests, OneString)
-{
-	bit_packing_types::String<uint16_t> Name("Stu");
-	uint16_t buffer[32];
-	BitPacker packer(buffer, 32);
-
-	Name.Write(packer);
-
-	BitfieldReader reader(buffer, 32);
-
-	bit_packing_types::String<uint16_t> tempName;
-	tempName.Read(reader);
-	
-	EXPECT_STREQ(Name.c_str(), tempName.c_str());
-
-}
-
 TEST_F(BitPackingTests, PushBuffer)
 {
 	uint32_t buffer[512];  // 16kib
@@ -520,4 +503,126 @@ TEST_F(BitPackingTests, PushBuffer)
 	EXPECT_EQ(reader.ReadNext<int>(maxBitsPerNumber), 99);
 	EXPECT_EQ(reader.ReadNext<int>(maxBitsPerNumber), 100);
 
+}
+
+TEST_F(BitPackingTests, PackStrings)
+{
+	uint16_t buffer[32];
+	
+	BitPacker packer(buffer, 32);
+	BitfieldReader reader(buffer, 32);
+
+	// Need to write these
+	const bit_packing_types::String<uint16_t> Name("Stuart");	
+	const bit_packing_types::String<uint16_t> NickName("Stu");
+	const bit_packing_types::String<uint16_t> SurnameName("Mathews");
+	constexpr int age38 = 38;
+	constexpr int age39 = 39;
+	constexpr int age40 = 40;
+
+	// Need to read these
+
+	bit_packing_types::String<uint16_t> tempName;
+	bit_packing_types::String<uint16_t> tempNickName;
+	bit_packing_types::String<uint16_t> tempSurnameName;
+	
+	// Write:
+		
+	Name.Write(packer); packer.Finish();
+	packer.Pack(BITS_REQUIRED(0,40), age38); // pack behind it
+	packer.Pack(BITS_REQUIRED(0,40), age39); // pack behind it
+	packer.Pack(BITS_REQUIRED(0,40), age40); // pack behind it
+	packer.Finish(); // flush any bits still in segment buffer to memory
+	
+	// Read:
+
+	tempName.Read(reader); reader.Finish(); // mimic the packer's finish after writing name
+	EXPECT_EQ(reader.ReadNext<int>(BITS_REQUIRED(0,40)), age38);
+	EXPECT_EQ(reader.ReadNext<int>(BITS_REQUIRED(0,40)), age39);
+	EXPECT_EQ(reader.ReadNext<int>(BITS_REQUIRED(0,40)), age40);
+	reader.Finish();
+
+	EXPECT_STREQ(Name.c_str(), tempName.c_str());
+
+	// Write some more
+
+	NickName.Write(packer);
+
+	// Read some more
+	tempNickName.Read(reader);
+	
+	EXPECT_STREQ(tempNickName.c_str(), NickName.c_str());
+
+	// Write some more 
+	SurnameName.Write(packer);
+
+	// Read some more
+	tempSurnameName.Read(reader);
+		
+	EXPECT_STREQ(tempSurnameName.c_str(), SurnameName.c_str());
+
+}
+
+TEST_F(BitPackingTests, PackString)
+{
+	uint16_t buffer[32];
+	
+	BitPacker packer(buffer, 32);
+	BitfieldReader reader(buffer, 32);
+
+	// Need to write these
+	const bit_packing_types::String<uint16_t> Name("Stuart Mathews");	
+	const bit_packing_types::String<uint16_t> NickName("Stu");
+	constexpr int age38 = 38;
+	constexpr int age39 = 39;
+	constexpr int age40 = 40;
+
+	// Need to read these
+
+	bit_packing_types::String<uint16_t> tempName;
+	bit_packing_types::String<uint16_t> tempNickName;
+	
+	// Write: //
+		
+	Name.Write(packer);
+		EXPECT_EQ(packer.TotalBitsPacked(), 128);
+		EXPECT_EQ(packer.BitsLeftInCurrentSegment(), 16);
+	packer.Finish(); // write and start on a new segment
+		EXPECT_EQ(packer.TotalBitsPacked(), 144);
+		EXPECT_EQ(packer.BitsLeftInCurrentSegment(), 16);
+	packer.Pack(BITS_REQUIRED(0,40), age38); // pack behind it
+		EXPECT_EQ(packer.TotalBitsPacked(), 150);
+		EXPECT_EQ(packer.BitsLeftInCurrentSegment(), 10);
+	packer.Pack(BITS_REQUIRED(0,40), age39); // pack behind it
+		EXPECT_EQ(packer.TotalBitsPacked(), 156);
+		EXPECT_EQ(packer.BitsLeftInCurrentSegment(), 4);
+	packer.Pack(BITS_REQUIRED(0,40), age40); // pack behind it
+		EXPECT_EQ(packer.TotalBitsPacked(), 162);
+		EXPECT_EQ(packer.BitsLeftInCurrentSegment(), 14);
+	packer.Finish(); // flush any bits still in segment buffer to memory
+		EXPECT_EQ(packer.TotalBitsPacked(), 176);
+
+	
+	// Read: //
+
+	tempName.Read(reader);
+		EXPECT_EQ(reader.TotalBitsRead(), 128);	
+		EXPECT_EQ(reader.BitsLeftInSegment(), 16);
+	reader.Finish(); // mimic the packer's finish after writing name
+		EXPECT_EQ(reader.TotalBitsRead(), 144);
+		EXPECT_EQ(reader.BitsLeftInSegment(), 16);
+	EXPECT_EQ(reader.ReadNext<int>(BITS_REQUIRED(0,40)), age38);
+		EXPECT_EQ(reader.TotalBitsRead(), 150);
+		EXPECT_EQ(reader.BitsLeftInSegment(), 10);
+	EXPECT_EQ(reader.ReadNext<int>(BITS_REQUIRED(0,40)), age39);
+		EXPECT_EQ(reader.TotalBitsRead(), 156);
+		EXPECT_EQ(reader.BitsLeftInSegment(), 4);
+	EXPECT_EQ(reader.ReadNext<int>(BITS_REQUIRED(0,40)), age40);
+		EXPECT_EQ(reader.TotalBitsRead(), 162);	
+		EXPECT_EQ(reader.BitsLeftInSegment(), 14);
+	reader.Finish();
+		EXPECT_EQ(reader.TotalBitsRead(), 176);
+
+	EXPECT_STREQ(Name.c_str(), tempName.c_str());
+	
 }

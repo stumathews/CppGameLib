@@ -70,7 +70,20 @@ namespace gamelib
 
 		void FetchBytes(char* outBuffer, const int outBufferSize)
 		{
-			memcpy_s(outBuffer, outBufferSize, field+countTimesOverflowed, outBufferSize);			
+			if(bitsLeftInSegment != fieldSizeBits)
+			{				
+				countTimesOverflowed++; segmentsRead++;
+				totalBitsRead += bitsLeftInSegment;
+				bitsLeftInSegment = fieldSizeBits;
+				bitsRead = 0;
+			}
+
+			memcpy_s(outBuffer, outBufferSize, field+countTimesOverflowed, outBufferSize);
+			segmentsRead += (outBufferSize*8)/fieldSizeBits;
+			bitsRead += (outBufferSize*8) % fieldSizeBits;
+			totalBitsRead += (outBufferSize*8);
+			countTimesOverflowed = segmentsRead;
+			bitsLeftInSegment = fieldSizeBits - bitsRead;
 		}
 
 		/**
@@ -99,7 +112,10 @@ namespace gamelib
 		 */
 		void Reset() { bitsRead = bitsLeftInSegment = countTimesOverflowed = 0; }
 
-		uint8_t BitsLeftInSegment() const { return bitsLeftInSegment; }
+		uint8_t BitsLeftInSegment() const
+		{
+			return bitsLeftInSegment;
+		}
 		uint8_t SegmentsRead() const { return segmentsRead; }
 		T TotalBitsRead() { return totalBitsRead;} 
 

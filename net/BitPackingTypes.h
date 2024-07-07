@@ -55,12 +55,6 @@ namespace gamelib
 
 				// Push bytes into bitpacker's buffer directly
 				bitPacker.PushBytes(elements, numElements);
-
-				// Pack each character individually
-				/*for(int i = 0; i < numElements;i++)
-				{
-					bitPacker.Pack(8, elements[i]);
-				}*/
 		    }
 
 		    void Read(BitfieldReader<T>& bitfieldReader)

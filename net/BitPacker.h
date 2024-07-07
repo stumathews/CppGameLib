@@ -52,7 +52,6 @@ namespace gamelib
 
 				bitsPacked += bitsLeftInSegment;
 				segmentsWritten++;
-				bitsLeftInSegment = bufferSizeBits - bitsLeftInSegment;
 
 				// Take the remaining bits of the value we could not set (as the did not fix), and write them in a new buffer instead:
 				buffer = (buffer & 0);
@@ -64,6 +63,8 @@ namespace gamelib
 				buffer = BitFiddler<T>::SetBits(buffer, newStartBit, extraBits, remainingBits);
 				bitsPacked += extraBits;
 				writeBitPointer = newStartBit+1;
+				
+				bitsLeftInSegment = bufferSizeBits - extraBits;
 			}
 			else
 			{
@@ -93,16 +94,19 @@ namespace gamelib
 
 		void PushBytes(const char* pushBuffer, const int pushBufferSize)
 		{
-				// skip bits until next segment, which should be a byte boundary
+			// skip bits until next segment, which should be a byte boundary
 			if(bitsLeftInSegment != bufferSizeBits)
 			{
-				writeBitPointer += bitsLeftInSegment;
 				Flush();
 			}
 
 			// copy the string directly into the buffer - no bit packing
 			memcpy_s(flushDestination+countTimesOverflowed, (destElements * bufferSizeBits)/8, pushBuffer, pushBufferSize);
-
+			writeBitPointer = (pushBufferSize*8) % bufferSizeBits;			
+			bitsPacked += (pushBufferSize*8);
+			bitsLeftInSegment = bufferSizeBits - writeBitPointer;
+			segmentsWritten += (pushBufferSize*8)/bufferSizeBits;
+			countTimesOverflowed = segmentsWritten;
 		}
 
 		// Writes the last buffered 16bits to destination and clears the buffer

@@ -625,3 +625,112 @@ TEST_F(BitPackingTests, PackMultipleAlignedStrings)
 	EXPECT_STREQ(tempSurnameName.c_str(), SurnameName.c_str());
 
 }
+
+TEST_F(BitPackingTests, PackMultipleMisAlignedStrings)
+{
+	uint16_t buffer[32];
+	
+	BitPacker packer(buffer, 32);
+	BitfieldReader reader(buffer, 32);
+
+	// Need to write these
+	const bit_packing_types::String<uint16_t> A("A"); // misaligned with 16bit buffer
+	const bit_packing_types::String<uint16_t> AB("AB");
+	const bit_packing_types::String<uint16_t> ABC("ABC");
+
+	A.Write(packer); // should pack a 16bit value (1) and 8bits for the character A
+
+	EXPECT_EQ(packer.TotalBitsPacked(), 24);
+	EXPECT_EQ(packer.BitsLeftInCurrentSegment(), 8);
+
+	bit_packing_types::String<uint16_t> readA;
+	readA.Read(reader); // should read 16 bits for number 1, followed by 8 bits with 8 bits left over
+
+	EXPECT_EQ(reader.TotalBitsRead(), 24); //test 
+	EXPECT_EQ(reader.BitsLeftInSegment(), 8); // test
+	EXPECT_STREQ(readA.c_str(), A.c_str());
+
+	AB.Write(packer); // tries to pack 16 bits for the length 2 into remaining 8 bits, can't so packs half into it and writes the reamining 8 in the next
+	// segment, so 24 + 8 + 8 = 40 with 8 left over. So when we try pack the 2 character string, it realizes its not at a buffer boundary and flushes it
+	// so we are at 48bits before eriting the characters. So 48+16 = 64
+
+	EXPECT_EQ(packer.TotalBitsPacked(), 64);
+	EXPECT_EQ(packer.BitsLeftInCurrentSegment(), 16); // new segment
+	
+
+	bit_packing_types::String<uint16_t> readAB;
+	readAB.Read(reader); // should reader 16 bits but find that 8 bits left in current segment, so it should
+
+	EXPECT_EQ(reader.TotalBitsRead(), 64);
+	EXPECT_EQ(reader.BitsLeftInSegment(), 16); // test
+	EXPECT_STREQ(readAB.c_str(), AB.c_str());
+
+	ABC.Write(packer);
+
+	bit_packing_types::String<uint16_t> readABC;
+	readABC.Read(reader);
+
+	EXPECT_STREQ(readABC.c_str(), ABC.c_str());	
+}
+
+TEST_F(BitPackingTests, ManyPackTypesOfStrings)
+{
+	uint16_t buffer[32];
+	
+	BitPacker packer(buffer, 32);
+	BitfieldReader reader(buffer, 32);
+
+	const bit_packing_types::String<uint16_t> england("England"); // 7 chars is 56 which is misaligned
+	const bit_packing_types::String<uint16_t> are("are"); // 3 chars is 24 bits which is misaligned
+	const bit_packing_types::String<uint16_t> in("in"); // 2 chars are 16 bits which is aligned
+	const bit_packing_types::String<uint16_t> to("to"); // ''
+	const bit_packing_types::String<uint16_t> the("the"); // see are
+	const bit_packing_types::String<uint16_t> semi("semi"); // 4 chars are 32 which is aligned
+	const bit_packing_types::String<uint16_t> finals("finals"); // 6 chars are 48 which is aligned
+
+	england.Write(packer);
+
+	bit_packing_types::String<uint16_t> tempEngland;
+	tempEngland.Read(reader);
+	
+	are.Write(packer);
+
+	bit_packing_types::String<uint16_t> tempAre;
+	tempAre.Read(reader);
+
+	in.Write(packer);
+
+	bit_packing_types::String<uint16_t> tempIn;
+	tempIn.Read(reader);
+
+	to.Write(packer);
+
+	bit_packing_types::String<uint16_t> tempTo;
+	tempTo.Read(reader);
+
+	the.Write(packer);
+
+	bit_packing_types::String<uint16_t> tempThe;
+	tempThe.Read(reader);
+
+	semi.Write(packer);
+
+	bit_packing_types::String<uint16_t> tempSemi;
+	tempSemi.Read(reader);
+
+	finals.Write(packer);
+
+	bit_packing_types::String<uint16_t> tempFinals;
+	tempFinals.Read(reader);
+
+
+	EXPECT_STREQ(tempEngland.c_str(), england.c_str());
+	EXPECT_STREQ(tempAre.c_str(), are.c_str());
+	EXPECT_STREQ(tempIn.c_str(), in.c_str());
+	EXPECT_STREQ(tempTo.c_str(), to.c_str());
+	EXPECT_STREQ(tempThe.c_str(), the.c_str());
+	EXPECT_STREQ(tempSemi.c_str(), semi.c_str());
+	EXPECT_STREQ(tempFinals.c_str(), finals.c_str());
+
+
+}

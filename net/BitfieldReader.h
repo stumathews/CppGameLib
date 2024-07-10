@@ -74,16 +74,23 @@ namespace gamelib
 			{				
 				countTimesOverflowed++; segmentsRead++;
 				totalBitsRead += bitsLeftInSegment;
-				bitsLeftInSegment = fieldSizeBits;
-				bitsRead = 0;
+				bitsRead = bitsLeftInSegment;
+				bitsLeftInSegment = fieldSizeBits;				
 			}
 
 			memcpy_s(outBuffer, outBufferSize, field+countTimesOverflowed, outBufferSize);
 			segmentsRead += (outBufferSize*8)/fieldSizeBits;
-			bitsRead += (outBufferSize*8) % fieldSizeBits;
-			totalBitsRead += (outBufferSize*8);
+			bitsRead = (outBufferSize*8);
+			totalBitsRead += bitsRead;
+			bitsRead = (outBufferSize*8) % fieldSizeBits; // its possible that we read more than our buffer size which is not normally the case, but as we've used memcpy, so we need to wrap around to get the right value
 			countTimesOverflowed = segmentsRead;
-			bitsLeftInSegment = fieldSizeBits - bitsRead;
+			bitsLeftInSegment = bitsRead % fieldSizeBits;
+			if(bitsLeftInSegment == 0 ) 
+			{
+				bitsLeftInSegment = fieldSizeBits;
+				bitsRead = 0;
+			}
+			
 		}
 
 		/**

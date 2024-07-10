@@ -568,7 +568,7 @@ TEST_F(BitPackingTests, PackString)
 }
 
 
-TEST_F(BitPackingTests, PackMultipleAlignedStrings)
+TEST_F(BitPackingTests, PackMixNumbersAndStrings)
 {
 	uint16_t buffer[32];
 	
@@ -673,7 +673,7 @@ TEST_F(BitPackingTests, PackMultipleMisAlignedStrings)
 	EXPECT_STREQ(readABC.c_str(), ABC.c_str());	
 }
 
-TEST_F(BitPackingTests, ManyPackTypesOfStrings)
+TEST_F(BitPackingTests, ManyPackLangthsOfStrings)
 {
 	uint16_t buffer[32];
 	

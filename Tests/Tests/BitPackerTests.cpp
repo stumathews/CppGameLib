@@ -449,7 +449,31 @@ TEST_F(BitPackingTests, SimulateNetworkingUsage)
 
 }
 
-TEST_F(BitPackingTests, BitPackingTypes_String)
+TEST_F(BitPackingTests, PushBuffer)
+{
+	uint32_t buffer[512];  // 16kib
+	BitPacker packer(buffer, 512);
+
+	constexpr auto maxBitsPerNumber = BITS_REQUIRED( 0, 200);
+
+	packer.Pack(maxBitsPerNumber, 98);
+	packer.Pack(maxBitsPerNumber, 99);
+	packer.Pack(maxBitsPerNumber, 100);
+
+	const auto stuart = "Stuart";
+
+	packer.PushBytes(stuart, strlen(stuart));
+
+	packer.Finish();
+
+	BitfieldReader reader(buffer, 512);
+
+	EXPECT_EQ(reader.ReadNext<int>(maxBitsPerNumber), 98);
+	EXPECT_EQ(reader.ReadNext<int>(maxBitsPerNumber), 99);
+	EXPECT_EQ(reader.ReadNext<int>(maxBitsPerNumber), 100);
+}
+
+TEST_F(BitPackingTests, OneLongString)
 {	
 	// Number of units in the buffer
 	constexpr int numBufferUnits = 256; // enough for 512 character string
@@ -480,32 +504,71 @@ TEST_F(BitPackingTests, BitPackingTypes_String)
 	EXPECT_EQ(string.NumBits(), 456);
 }
 
-TEST_F(BitPackingTests, PushBuffer)
+
+TEST_F(BitPackingTests, PackString)
 {
-	uint32_t buffer[512];  // 16kib
-	BitPacker packer(buffer, 512);
+	uint16_t buffer[32];
+	
+	BitPacker packer(buffer, 32);
+	BitfieldReader reader(buffer, 32);
 
-	constexpr auto maxBitsPerNumber = BITS_REQUIRED( 0, 200);
+	// Need to write these
+	const bit_packing_types::String<uint16_t> Name("Stuart Mathews");	
+	constexpr int age38 = 38;
+	constexpr int age39 = 39;
+	constexpr int age40 = 40;
 
-	packer.Pack(maxBitsPerNumber, 98);
-	packer.Pack(maxBitsPerNumber, 99);
-	packer.Pack(maxBitsPerNumber, 100);
+	// Need to read these
 
-	const auto stuart = "Stuart";
+	bit_packing_types::String<uint16_t> tempName;
+	
+	// Write: //
+		
+	Name.Write(packer);
+		EXPECT_EQ(packer.TotalBitsPacked(), 128);
+		EXPECT_EQ(packer.BitsLeftInCurrentSegment(), 16);
+	packer.Finish(); // write and start on a new segment
+		EXPECT_EQ(packer.TotalBitsPacked(), 144);
+		EXPECT_EQ(packer.BitsLeftInCurrentSegment(), 16);
+	packer.Pack(BITS_REQUIRED(0,40), age38); // pack behind it
+		EXPECT_EQ(packer.TotalBitsPacked(), 150);
+		EXPECT_EQ(packer.BitsLeftInCurrentSegment(), 10);
+	packer.Pack(BITS_REQUIRED(0,40), age39); // pack behind it
+		EXPECT_EQ(packer.TotalBitsPacked(), 156);
+		EXPECT_EQ(packer.BitsLeftInCurrentSegment(), 4);
+	packer.Pack(BITS_REQUIRED(0,40), age40); // pack behind it
+		EXPECT_EQ(packer.TotalBitsPacked(), 162);
+		EXPECT_EQ(packer.BitsLeftInCurrentSegment(), 14);
+	packer.Finish(); // flush any bits still in segment buffer to memory
+		EXPECT_EQ(packer.TotalBitsPacked(), 176);
 
-	packer.PushBytes(stuart, strlen(stuart));
+	
+	// Read: //
 
-	packer.Finish();
+	tempName.Read(reader);
+		EXPECT_EQ(reader.TotalBitsRead(), 128);	
+		EXPECT_EQ(reader.BitsLeftInSegment(), 16);
+	reader.Finish(); // mimic the packer's finish after writing name
+		EXPECT_EQ(reader.TotalBitsRead(), 144);
+		EXPECT_EQ(reader.BitsLeftInSegment(), 16);
+	EXPECT_EQ(reader.ReadNext<int>(BITS_REQUIRED(0,40)), age38);
+		EXPECT_EQ(reader.TotalBitsRead(), 150);
+		EXPECT_EQ(reader.BitsLeftInSegment(), 10);
+	EXPECT_EQ(reader.ReadNext<int>(BITS_REQUIRED(0,40)), age39);
+		EXPECT_EQ(reader.TotalBitsRead(), 156);
+		EXPECT_EQ(reader.BitsLeftInSegment(), 4);
+	EXPECT_EQ(reader.ReadNext<int>(BITS_REQUIRED(0,40)), age40);
+		EXPECT_EQ(reader.TotalBitsRead(), 162);	
+		EXPECT_EQ(reader.BitsLeftInSegment(), 14);
+	reader.Finish();
+		EXPECT_EQ(reader.TotalBitsRead(), 176);
 
-	BitfieldReader reader(buffer, 512);
-
-	EXPECT_EQ(reader.ReadNext<int>(maxBitsPerNumber), 98);
-	EXPECT_EQ(reader.ReadNext<int>(maxBitsPerNumber), 99);
-	EXPECT_EQ(reader.ReadNext<int>(maxBitsPerNumber), 100);
-
+	EXPECT_STREQ(Name.c_str(), tempName.c_str());
+	
 }
 
-TEST_F(BitPackingTests, PackStrings)
+
+TEST_F(BitPackingTests, PackMultipleAlignedStrings)
 {
 	uint16_t buffer[32];
 	
@@ -561,68 +624,4 @@ TEST_F(BitPackingTests, PackStrings)
 		
 	EXPECT_STREQ(tempSurnameName.c_str(), SurnameName.c_str());
 
-}
-
-TEST_F(BitPackingTests, PackString)
-{
-	uint16_t buffer[32];
-	
-	BitPacker packer(buffer, 32);
-	BitfieldReader reader(buffer, 32);
-
-	// Need to write these
-	const bit_packing_types::String<uint16_t> Name("Stuart Mathews");	
-	const bit_packing_types::String<uint16_t> NickName("Stu");
-	constexpr int age38 = 38;
-	constexpr int age39 = 39;
-	constexpr int age40 = 40;
-
-	// Need to read these
-
-	bit_packing_types::String<uint16_t> tempName;
-	bit_packing_types::String<uint16_t> tempNickName;
-	
-	// Write: //
-		
-	Name.Write(packer);
-		EXPECT_EQ(packer.TotalBitsPacked(), 128);
-		EXPECT_EQ(packer.BitsLeftInCurrentSegment(), 16);
-	packer.Finish(); // write and start on a new segment
-		EXPECT_EQ(packer.TotalBitsPacked(), 144);
-		EXPECT_EQ(packer.BitsLeftInCurrentSegment(), 16);
-	packer.Pack(BITS_REQUIRED(0,40), age38); // pack behind it
-		EXPECT_EQ(packer.TotalBitsPacked(), 150);
-		EXPECT_EQ(packer.BitsLeftInCurrentSegment(), 10);
-	packer.Pack(BITS_REQUIRED(0,40), age39); // pack behind it
-		EXPECT_EQ(packer.TotalBitsPacked(), 156);
-		EXPECT_EQ(packer.BitsLeftInCurrentSegment(), 4);
-	packer.Pack(BITS_REQUIRED(0,40), age40); // pack behind it
-		EXPECT_EQ(packer.TotalBitsPacked(), 162);
-		EXPECT_EQ(packer.BitsLeftInCurrentSegment(), 14);
-	packer.Finish(); // flush any bits still in segment buffer to memory
-		EXPECT_EQ(packer.TotalBitsPacked(), 176);
-
-	
-	// Read: //
-
-	tempName.Read(reader);
-		EXPECT_EQ(reader.TotalBitsRead(), 128);	
-		EXPECT_EQ(reader.BitsLeftInSegment(), 16);
-	reader.Finish(); // mimic the packer's finish after writing name
-		EXPECT_EQ(reader.TotalBitsRead(), 144);
-		EXPECT_EQ(reader.BitsLeftInSegment(), 16);
-	EXPECT_EQ(reader.ReadNext<int>(BITS_REQUIRED(0,40)), age38);
-		EXPECT_EQ(reader.TotalBitsRead(), 150);
-		EXPECT_EQ(reader.BitsLeftInSegment(), 10);
-	EXPECT_EQ(reader.ReadNext<int>(BITS_REQUIRED(0,40)), age39);
-		EXPECT_EQ(reader.TotalBitsRead(), 156);
-		EXPECT_EQ(reader.BitsLeftInSegment(), 4);
-	EXPECT_EQ(reader.ReadNext<int>(BITS_REQUIRED(0,40)), age40);
-		EXPECT_EQ(reader.TotalBitsRead(), 162);	
-		EXPECT_EQ(reader.BitsLeftInSegment(), 14);
-	reader.Finish();
-		EXPECT_EQ(reader.TotalBitsRead(), 176);
-
-	EXPECT_STREQ(Name.c_str(), tempName.c_str());
-	
 }

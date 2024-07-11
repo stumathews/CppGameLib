@@ -61,10 +61,16 @@ namespace gamelib
 				
 				auto remainingBits  = BitFiddler<T>::GetBitsValue(value, numBits-1, extraBits);
 				buffer = BitFiddler<T>::SetBits(buffer, newStartBit, extraBits, remainingBits);
+
+				// we've set some bits  in the new current segment, write it to memory so the reader can read it.
+				// otherwise the reader wont know about it until its auto flushed by completing the segment through more writes
+				// which may not happen if this is the last write/pack
+				memcpy_s(flushDestination+(countTimesOverflowed), bufferSizeBits/8, &buffer, bufferSizeBits/8);
+
 				bitsPacked += extraBits;
-				writeBitPointer = newStartBit+1;
-				
-				bitsLeftInSegment = bufferSizeBits - extraBits;
+				writeBitPointer = newStartBit+1;				
+				bitsLeftInSegment = bufferSizeBits - extraBits;			
+
 			}
 			else
 			{

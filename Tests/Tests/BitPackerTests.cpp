@@ -784,3 +784,31 @@ TEST_F(BitPackingTests, ManyPackLangthsOfStringsReadLate)
 
 
 }
+
+TEST_F(BitPackingTests, PackACustomFormat)
+{
+	uint16_t buffer[50];
+	
+	BitPacker packer(buffer, 32);
+	BitfieldReader reader(buffer, 32);
+
+	constexpr auto numberBits = 16;
+
+	packer.Pack(numberBits, 1);
+
+	const bit_packing_types::String<uint16_t> Name("Stu");
+	Name.Write(packer);
+
+	packer.Pack(numberBits, 4);
+
+	EXPECT_EQ(reader.ReadNext<int>(numberBits), 1);
+
+	bit_packing_types::String<uint16_t> readName;
+	readName.Read(reader);
+
+	EXPECT_EQ(reader.ReadNext<int>(numberBits), 4);
+
+	EXPECT_STREQ(readName.c_str(), Name.c_str());
+
+
+}

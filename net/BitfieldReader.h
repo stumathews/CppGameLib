@@ -77,7 +77,7 @@ namespace gamelib
 				bitsRead = bitsLeftInSegment;
 				bitsLeftInSegment = fieldSizeBits;				
 			}
-
+				
 			memcpy_s(outBuffer, outBufferSize, field+countTimesOverflowed, outBufferSize);
 			segmentsRead += (outBufferSize*8)/fieldSizeBits;
 			bitsRead = (outBufferSize*8);

@@ -722,8 +722,58 @@ TEST_F(BitPackingTests, ManyPackLangthsOfStrings)
 
 	bit_packing_types::String<uint16_t> tempFinals;
 	tempFinals.Read(reader);
+	
+	EXPECT_STREQ(tempEngland.c_str(), england.c_str());
+	EXPECT_STREQ(tempAre.c_str(), are.c_str());
+	EXPECT_STREQ(tempIn.c_str(), in.c_str());
+	EXPECT_STREQ(tempTo.c_str(), to.c_str());
+	EXPECT_STREQ(tempThe.c_str(), the.c_str());
+	EXPECT_STREQ(tempSemi.c_str(), semi.c_str());
+	EXPECT_STREQ(tempFinals.c_str(), finals.c_str());
 
 
+}
+
+TEST_F(BitPackingTests, ManyPackLangthsOfStringsReadLate)
+{
+	uint16_t buffer[32];
+	
+	BitPacker packer(buffer, 32);
+	BitfieldReader reader(buffer, 32);
+
+	const bit_packing_types::String<uint16_t> england("Eng"); // 7 chars is 56 which is misaligned
+	const bit_packing_types::String<uint16_t> are("are"); // 3 chars is 24 bits which is misaligned
+	const bit_packing_types::String<uint16_t> in("in"); // 2 chars are 16 bits which is aligned
+	const bit_packing_types::String<uint16_t> to("to"); // ''
+	const bit_packing_types::String<uint16_t> the("the"); // see are
+	const bit_packing_types::String<uint16_t> semi("semi"); // 4 chars are 32 which is aligned
+	const bit_packing_types::String<uint16_t> finals("finals"); // 6 chars are 48 which is aligned
+
+
+	bit_packing_types::String<uint16_t> tempEngland;
+	bit_packing_types::String<uint16_t> tempAre;	
+	bit_packing_types::String<uint16_t> tempIn;
+	bit_packing_types::String<uint16_t> tempTo;
+	bit_packing_types::String<uint16_t> tempThe;
+	bit_packing_types::String<uint16_t> tempSemi;
+	bit_packing_types::String<uint16_t> tempFinals;
+
+	england.Write(packer);
+	are.Write(packer);
+	in.Write(packer);
+	to.Write(packer);
+	the.Write(packer);
+	semi.Write(packer);
+	finals.Write(packer);
+
+	tempEngland.Read(reader);	
+	tempAre.Read(reader);	
+	tempIn.Read(reader);
+	tempTo.Read(reader);
+	tempThe.Read(reader);
+	tempSemi.Read(reader);
+	tempFinals.Read(reader);
+	
 	EXPECT_STREQ(tempEngland.c_str(), england.c_str());
 	EXPECT_STREQ(tempAre.c_str(), are.c_str());
 	EXPECT_STREQ(tempIn.c_str(), in.c_str());

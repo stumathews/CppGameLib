@@ -102,11 +102,18 @@ namespace gamelib
 
 			// copy the string directly into the buffer - no bit packing
 			memcpy_s(flushDestination+countTimesOverflowed, (destElements * bufferSizeBits)/8, pushBuffer, pushBufferSize);
+						
 			writeBitPointer = (pushBufferSize*8) % bufferSizeBits;			
 			bitsPacked += (pushBufferSize*8);
 			bitsLeftInSegment = bufferSizeBits - writeBitPointer;
 			segmentsWritten += (pushBufferSize*8)/bufferSizeBits;
 			countTimesOverflowed = segmentsWritten;
+
+			// Set the current buffer to the last segment we wrote with memcpy
+			// because on subsequent packs it assumes the buffer contains the last segment written
+			// which has changed as we've written many segments with memcpy
+			memcpy_s(&buffer, bufferSizeBits/8, flushDestination+countTimesOverflowed, bufferSizeBits/8);
+
 		}
 
 		// Writes the last buffered 16bits to destination and clears the buffer

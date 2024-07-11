@@ -120,7 +120,7 @@ namespace gamelib
 				numElements = count;
 				for(int i = 0; i < count;i++)
 				{
-					elements[i].Initialize(buffer[i]);
+					elements.push_back(String<T>(buffer[i]));
 				}			
 			}
 
@@ -142,7 +142,9 @@ namespace gamelib
 				numElements = bitfieldReader.ReadNext<uint16_t>(BITS_REQUIRED(0, MaxElements));
 				for (int i = 0 ; i < numElements; i++)
 				{
-					elements[i].Read(bitfieldReader);
+					String<T> string;
+					string.Read(bitfieldReader);
+					elements.push_back(string);
 				}
 			}
 
@@ -151,8 +153,10 @@ namespace gamelib
 				return elements[index];
 			}
 
+			uint8_t NumElements() const { return elements.size(); }
+
 		private:
-			String<T> elements[MaxElements];
+			std::vector<String<T>> elements;
 			uint16_t numElements{};
 		};
 

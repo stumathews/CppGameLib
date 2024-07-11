@@ -816,6 +816,34 @@ TEST_F(BitPackingTests, PackACustomFormat)
 	EXPECT_EQ(reader.ReadNext<int>(numberBits), 4);
 
 	EXPECT_STREQ(readName.c_str(), Name.c_str());
+}
+
+TEST_F(BitPackingTests, ArrayOfStrings)
+{
+	uint16_t buffer[50];
+	
+	BitPacker packer(buffer, 32);
+	BitfieldReader reader(buffer, 32);
+
+	bit_packing_types::ArrayOfStrings<uint16_t> arrayOfStrings;
+
+	const std::string array[5] = { "Stuart"," Mathews", "was", "here", "!"}; 
+
+	arrayOfStrings.Initialize(array, 5);
+
+	arrayOfStrings.Write(packer);
+
+	bit_packing_types::ArrayOfStrings<uint16_t> readArray;
+
+	readArray.Read(reader);
+
+	EXPECT_EQ(readArray.NumElements(), arrayOfStrings.NumElements());
+
+	EXPECT_STREQ(readArray[0].c_str(), arrayOfStrings[0].c_str());
+	EXPECT_STREQ(readArray[1].c_str(), arrayOfStrings[1].c_str());
+	EXPECT_STREQ(readArray[2].c_str(), arrayOfStrings[2].c_str());
+	EXPECT_STREQ(readArray[3].c_str(), arrayOfStrings[3].c_str());
+	EXPECT_STREQ(readArray[4].c_str(), arrayOfStrings[4].c_str());
 
 
 }

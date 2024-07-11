@@ -680,6 +680,9 @@ TEST_F(BitPackingTests, ManyPackLangthsOfStrings)
 	BitPacker packer(buffer, 32);
 	BitfieldReader reader(buffer, 32);
 
+	// Write finals|semi|the|to|in|are|Eng
+	// read after each write
+
 	const bit_packing_types::String<uint16_t> england("England"); // 7 chars is 56 which is misaligned
 	const bit_packing_types::String<uint16_t> are("are"); // 3 chars is 24 bits which is misaligned
 	const bit_packing_types::String<uint16_t> in("in"); // 2 chars are 16 bits which is aligned
@@ -741,6 +744,9 @@ TEST_F(BitPackingTests, ManyPackLangthsOfStringsReadLate)
 	BitPacker packer(buffer, 32);
 	BitfieldReader reader(buffer, 32);
 
+	// Write finals|semi|the|to|in|are|Eng
+	// Wait to read once everything is written to reader's buffer
+
 	const bit_packing_types::String<uint16_t> england("Eng"); // 7 chars is 56 which is misaligned
 	const bit_packing_types::String<uint16_t> are("are"); // 3 chars is 24 bits which is misaligned
 	const bit_packing_types::String<uint16_t> in("in"); // 2 chars are 16 bits which is aligned
@@ -781,12 +787,13 @@ TEST_F(BitPackingTests, ManyPackLangthsOfStringsReadLate)
 	EXPECT_STREQ(tempThe.c_str(), the.c_str());
 	EXPECT_STREQ(tempSemi.c_str(), semi.c_str());
 	EXPECT_STREQ(tempFinals.c_str(), finals.c_str());
-
-
 }
 
 TEST_F(BitPackingTests, PackACustomFormat)
 {
+
+	// Write: 4|Stu|1
+
 	uint16_t buffer[50];
 	
 	BitPacker packer(buffer, 32);

@@ -20,7 +20,8 @@ namespace gamelib
 		{
 			bitPacker.Pack(BITS_REQUIRED( 0, 1), Acked);
 			bitPacker.Pack(16, Sequence);
-			bit_packing_types::String<T>(dataString).Write(bitPacker);
+			bit_packing_types::String<T> temp(dataString);
+			temp.Write(bitPacker);
 		}
 
 		template <typename T>

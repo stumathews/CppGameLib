@@ -46,7 +46,8 @@ void gamelib::Message::Read(BitfieldReader<uint32_t>& bitfieldReader)
 	const auto arraySize = bitfieldReader.ReadNext<int>(16);
 	for(int i = 0 ; i < arraySize; i++)
 	{
-		PacketDatum temp; temp.Read(bitfieldReader);
+		PacketDatum temp;
+		temp.Read(bitfieldReader);
 		packets.push_back(temp);
 	}
 }

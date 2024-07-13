@@ -533,16 +533,14 @@ TEST_F(NetworkingTests, ReliableUdpTest)
 
 TEST_F(NetworkingTests, ReliableUdpNetworkTest)
 {
+	// The game server connection will unpack/process our protocol messages
+	const auto gameServerConnection = std::make_shared<ReliableUdpGameServerConnection>(ServerAddress, ListeningPort);
 
-	Message receivedPacket {};
-
-	auto gameServerConnection = std::make_shared<ReliableUdpGameServerConnection>(ServerAddress, ListeningPort);
-	auto gameClientConnection = std::make_shared<ReliableUdpNetworkSocket>();
+	// The game client connection will pack/send our protocol messages
+	const auto gameClientConnection = std::make_shared<ReliableUdpNetworkSocket>();
 	
 	StartNetworkServer(gameServerConnection);
-
-	ReliableUdp reliableUdp;
-
+	
 	auto data1 = "There can be only one.";
 	auto data2 = "There can be only two.";
 	auto data3 = "There can be only three.";
@@ -552,6 +550,8 @@ TEST_F(NetworkingTests, ReliableUdpNetworkTest)
 	const PacketDatum packet3(false, data3);
 	
 	gameClientConnection->Connect(ServerAddress, ListeningPort);
+
+	// Send data reliably with aggregated message support if not acknowledgment received
 	gameClientConnection->Send(data1, strlen(data1));
 	gameClientConnection->Send(data2, strlen(data2));
 	gameClientConnection->Send(data3, strlen(data3));
@@ -563,8 +563,8 @@ TEST_F(NetworkingTests, ReliableUdpNetworkTest)
 	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
 	
 	EXPECT_EQ(serverEmittedEvents.size(), 6); // six packets in total 3 sends, 3 unacknowledged re-sends
-			
-	int countData1 = ranges::count_if(serverEmittedEvents, [data1](shared_ptr<Event> event)
+
+	const int countData1 = ranges::count_if(serverEmittedEvents, [data1](shared_ptr<Event> event)
 	{
 		if(event->Id == NetworkTrafficReceivedEventId)
 		{
@@ -574,7 +574,7 @@ TEST_F(NetworkingTests, ReliableUdpNetworkTest)
 		}
 		return false;
 	});
-	int countData2 = ranges::count_if(serverEmittedEvents, [data2](shared_ptr<Event> event)
+	const int countData2 = ranges::count_if(serverEmittedEvents, [data2](shared_ptr<Event> event)
 	{
 		if(event->Id == NetworkTrafficReceivedEventId)
 		{
@@ -583,7 +583,7 @@ TEST_F(NetworkingTests, ReliableUdpNetworkTest)
 		}
 		return false;
 	});
-	int countData3 = ranges::count_if(serverEmittedEvents, [data3](shared_ptr<Event> event)
+	const int countData3 = ranges::count_if(serverEmittedEvents, [data3](shared_ptr<Event> event)
 	{
 		if(event->Id == NetworkTrafficReceivedEventId)
 		{

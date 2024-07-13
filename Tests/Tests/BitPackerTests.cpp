@@ -4,6 +4,7 @@
 #include <net/BitPacker.h>
 #include "gtest/gtest.h"
 #include "net/BitPackingTypes.h"
+#include "net/PacketDatum.h"
 
 using namespace gamelib;
 
@@ -935,4 +936,48 @@ TEST_F(BitPackingTests, ArrayOfByteArray)
 		EXPECT_EQ(tempArrayOfBytes[2].data()[i], array3[i]);
 	}
 	
+}
+
+TEST_F(BitPackingTests, PacketDatumSerilization)
+{
+	uint16_t buffer[32];
+	
+	BitPacker packer(buffer, 32);
+	BitfieldReader reader(buffer, 32);
+
+	const char* data1 = "data1";
+	const char* data2 = "data2";
+	const char* data3 = "data3";
+
+	PacketDatum d1(false, data1);
+	PacketDatum d2(false, data2);
+	PacketDatum d3(false, data3);
+
+	d1.Write(packer);
+	d2.Write(packer);
+	d3.Write(packer);
+
+	PacketDatum tempD1;
+	tempD1.Read(reader);
+
+	EXPECT_EQ(tempD1.Sequence, d1.Sequence);
+	EXPECT_EQ(tempD1.Acked, d1.Acked);
+	EXPECT_STREQ(tempD1.Data(), d1.Data());
+
+	PacketDatum tempD2;
+	tempD2.Read(reader);
+
+	EXPECT_EQ(tempD2.Sequence, d2.Sequence);
+	EXPECT_EQ(tempD2.Acked, d2.Acked);
+	EXPECT_STREQ(tempD2.Data(), d2.Data());
+
+	PacketDatum tempD3;
+	tempD3.Read(reader);
+
+	EXPECT_EQ(tempD3.Sequence, d3.Sequence);
+	EXPECT_EQ(tempD3.Acked, d3.Acked);
+	EXPECT_STREQ(tempD3.Data(), d3.Data());
+
+
+
 }

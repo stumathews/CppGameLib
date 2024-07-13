@@ -49,7 +49,7 @@ TEST_F(ReliableUdpTests, BasicSend)
 	
 	EXPECT_EQ(message1->DataCount(), 1);
 	EXPECT_EQ(message1->Header.Sequence, 1);
-	EXPECT_STREQ(message1->Data()[0].data, data1.data);
+	EXPECT_STREQ(message1->Data()[0].Data(), data1.Data());
 	EXPECT_EQ(message1->Header.LastAckedBits, 0);
 	EXPECT_EQ(message1->Header.LastAckedSequence, 0);
 	
@@ -59,8 +59,8 @@ TEST_F(ReliableUdpTests, BasicSend)
 	EXPECT_EQ(message2->Header.LastAckedSequence, 0);
 
 	// Should also contain message 1 as it it not acked
-	EXPECT_STREQ(message2->Data()[0].data, data2.data);
-	EXPECT_STREQ(message2->Data()[1].data, data1.data);
+	EXPECT_STREQ(message2->Data()[0].Data(), data2.Data());
+	EXPECT_STREQ(message2->Data()[1].Data(), data1.Data());
 
 	EXPECT_FLOAT_EQ(message3->DataCount(), 3);
 	EXPECT_EQ(message3->Header.Sequence, 3);
@@ -68,9 +68,9 @@ TEST_F(ReliableUdpTests, BasicSend)
 	EXPECT_EQ(message3->Header.LastAckedSequence, 0);
 
 	// should also contain message1, message2 as they are also not acked
-	EXPECT_STREQ(message3->Data()[0].data, data3.data);
-	EXPECT_STREQ(message3->Data()[1].data, data2.data);
-	EXPECT_STREQ(message3->Data()[2].data, data1.data);
+	EXPECT_STREQ(message3->Data()[0].Data(), data3.Data());
+	EXPECT_STREQ(message3->Data()[1].Data(), data2.Data());
+	EXPECT_STREQ(message3->Data()[2].Data(), data1.Data());
 
 }
 

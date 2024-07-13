@@ -495,15 +495,17 @@ TEST_F(NetworkingTests, ReliableUdpTest)
 	Message* lastMessage = reliableUdp.MarkSent(packet);
 	lastMessage->Header.LastAckedSequence = 44;
 	lastMessage->Header.LastAckedBits = 99;
-		
-	uint32_t buffer[10] {};
-	BitPacker bitPacker(buffer, 10);
+
+	constexpr int bufferSize = 512;
+
+	uint32_t buffer[bufferSize] {};
+	BitPacker bitPacker(buffer, bufferSize);
 
 	// write last message out into buffer (binpacked)
 	lastMessage->Write(bitPacker);
 	
 	// read out the last message from the buffer (binpacked)
-	BitfieldReader reader(buffer, 10);
+	BitfieldReader reader(buffer, bufferSize);
 	
 	Message message3;
 	message3.Read(reader);	

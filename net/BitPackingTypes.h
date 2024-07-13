@@ -16,30 +16,18 @@ namespace gamelib
 		template <typename T>
 		struct String
 		{
-			enum { MaxChars = 512 };
-
 			private:
 
 			// We store a fixed length 512 character string in memory
-		    char elements[MaxChars] {0};
+		    std::vector<char> elements;
 			int numElements{};
 			int numBits {0};
-
-			static void CheckLimits(const int count)
-			{
-				if(count > MaxChars) 
-				{
-					std::stringstream msg;
-					msg << "Can only support " << MaxChars << " characters per string" << std::endl;
-					throw std::exception(msg.str().c_str());
-				}
-			}
 
 		public:		
 
 			[[nodiscard]] char* c_str() const
 			{
-				return const_cast<char*>(elements);
+				return const_cast<char*>(&elements[0]);
 			}
 
 			explicit String(const std::string& value) { Initialize(value); }
@@ -54,7 +42,7 @@ namespace gamelib
 	    		bitPacker.Pack(sizeof(T)*8, static_cast<T>(numElements));
 
 				// Push bytes into bitpacker's buffer directly
-				bitPacker.PushBytes(elements, numElements);
+				bitPacker.PushBytes(&elements[0], numElements);
 		    }
 
 		    void Read(BitfieldReader<T>& bitfieldReader)
@@ -62,28 +50,31 @@ namespace gamelib
 				// read how many elemments in this string
 		        numElements = bitfieldReader.ReadNext<int>(sizeof(T)*8);
 
-				// Read byte directly from the reader's buffer
-				bitfieldReader.FetchBytes(elements, numElements);
+				elements.resize(numElements);
 
-				elements[numElements] = '\0';
+				// Read byte directly from the reader's buffer
+				bitfieldReader.FetchBytes(&elements[0], numElements);
+
+				elements.push_back('\0');
 				numBits = NumBits();
 		    }
 
 			void Initialize(const std::string& string)
 		    {
-				CheckLimits(static_cast<int>(string.length()));
+				
+				numElements = static_cast<int>(string.length());
+				elements.resize(numElements);
 
-			    numElements = static_cast<int>(string.length());
-				strcpy_s(elements,  string.c_str());
+				elements.assign(string.begin(), string.end());
+				elements.push_back('\0');
 				numBits = NumBits();
 		    }
 
 			void Initialize(const char* string)
 		    {
-				CheckLimits(static_cast<int>(strlen(string)));
-
-			    numElements = static_cast<int>(strlen(string));
-				strcpy_s(elements,  string);
+				numElements = static_cast<int>(strlen(string));
+				elements.insert(elements.end(), string, string+numElements);
+				elements.push_back('\0');
 				numBits = NumBits();
 		    }
 

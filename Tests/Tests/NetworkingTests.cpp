@@ -487,12 +487,15 @@ TEST_F(NetworkingTests, ReliableUdpTest)
 	client1->Connect(Server);
 
 	ReliableUdp reliableUdp;
-	const PacketDatum packet(false, "There can be only one.");
-	reliableUdp.MarkSent(packet);
-	reliableUdp.MarkSent(packet);
-	reliableUdp.MarkSent(packet);
+	const PacketDatum packet1(false, "There can be only one.");
+	const PacketDatum packet2(false, "There can be only two.");
+	const PacketDatum packet3(false, "There can be only three.");
+	const PacketDatum packet4(false, "There can be only four.");
+	reliableUdp.MarkSent(packet1);
+	reliableUdp.MarkSent(packet2);
+	reliableUdp.MarkSent(packet3);
 	
-	Message* lastMessage = reliableUdp.MarkSent(packet);
+	Message* lastMessage = reliableUdp.MarkSent(packet4);
 	lastMessage->Header.LastAckedSequence = 44;
 	lastMessage->Header.LastAckedBits = 99;
 
@@ -513,7 +516,13 @@ TEST_F(NetworkingTests, ReliableUdpTest)
 	EXPECT_EQ(message3.Header.Sequence, lastMessage->Header.Sequence);
 	EXPECT_EQ(message3.Header.LastAckedSequence, lastMessage->Header.LastAckedSequence);
 	EXPECT_EQ(message3.Header.LastAckedBits, lastMessage->Header.LastAckedBits);
+	EXPECT_EQ(message3.DataCount(), 4);
 
+	// Not too sure why this is reversed but at least its containing consistent data
+	EXPECT_STREQ(message3.Data()[0].Data(), packet4.Data());
+	EXPECT_STREQ(message3.Data()[1].Data(), packet3.Data());
+	EXPECT_STREQ(message3.Data()[2].Data(), packet2.Data());
+	EXPECT_STREQ(message3.Data()[3].Data(), packet1.Data());
 }
 
 TEST_F(NetworkingTests, ReliableUdpTest2)

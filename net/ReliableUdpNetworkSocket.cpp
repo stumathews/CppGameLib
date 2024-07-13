@@ -1,5 +1,6 @@
 #include "ReliableUdpNetworkSocket.h"
 
+#include "Networking.h"
 #include "Option.h"
 #include "net/UdpConnectedNetworkSocket.h"
 
@@ -8,10 +9,9 @@ gamelib::ReliableUdpNetworkSocket::ReliableUdpNetworkSocket(const SOCKET socket)
 	
 }
 
-bool gamelib::ReliableUdpNetworkSocket::IsTcp()
-{
-	return false;
-}
+gamelib::ReliableUdpNetworkSocket::ReliableUdpNetworkSocket() = default;
+
+bool gamelib::ReliableUdpNetworkSocket::IsTcp() { return false; }
 
 int gamelib::ReliableUdpNetworkSocket::Send(const char* callersSendBuffer, const int dataLength)
 {
@@ -21,7 +21,7 @@ int gamelib::ReliableUdpNetworkSocket::Send(const char* callersSendBuffer, const
 	const auto message = reliableUdp.MarkSent(PacketDatum(false, callersSendBuffer));
 
 	// Write to the packingBuffer via the BitPacker	
-	message->Write(packer); packer.Finish();
+	message->Write(packer);
 
 	// Count only as much as what was packed
 	const auto countBytesToSend = static_cast<int>(ceil(static_cast<double>(packer.TotalBitsPacked()) / static_cast<double>(8)));
@@ -52,7 +52,13 @@ int gamelib::ReliableUdpNetworkSocket::Receive(const char* callersReceiveBuffer,
 	message.Read(packedBufferReader);
 
 	// Copy contents to caller's receive buffer to expose the contents of the message
-	strcpy_s(const_cast<char*>(callersReceiveBuffer), bufLength, message.FirstPacket.c_str());
+	std::stringstream ss;
+	for(auto& packet : message.Data())
+	{
+		ss << packet.Data();
+	}
+		
+	strcpy_s(const_cast<char*>(callersReceiveBuffer), bufLength, ss.str().c_str());
 
 	return bytesReceived;
 }
@@ -65,4 +71,10 @@ bool gamelib::ReliableUdpNetworkSocket::IsValid()
 SOCKET gamelib::ReliableUdpNetworkSocket::GetRawSocket() const
 {
 	return socket;
+}
+
+void gamelib::ReliableUdpNetworkSocket::Connect(const char* address, const char* port)
+{
+	auto* networking = Networking::Get();
+	socket = networking->netConnectedUdpClient(address, port);
 }

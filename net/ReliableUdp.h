@@ -25,8 +25,7 @@ namespace gamelib
 	class ReliableUdp
 	{
 	public:		
-
-		Message* Send(std::shared_ptr<GameClient> client, PacketDatum datum);
+		
 		Message* MarkSent(PacketDatum datum);
 		void MarkReceived(const Message& message);
 

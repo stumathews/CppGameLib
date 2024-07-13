@@ -2,26 +2,6 @@
 #include "GameClient.h"
 #include "Option.h"
 
-gamelib::Message* gamelib::ReliableUdp::Send(const std::shared_ptr<GameClient> client, const PacketDatum datum)
-{
-	// create temporary buffer
-	uint32_t buffer[8192]; // 256kb buffer
-
-	// Get packet to send
-	const auto message = MarkSent(datum);
-
-	// Pack packet tightly into  buffer
-	BitPacker packer(buffer, 8192);
-	message->Write(packer);
-
-	// Ask the client to sent only the bits we packed into the buffer
-	client->SendBinary(reinterpret_cast<uint16_t*>(buffer), packer.TotalBitsPacked());
-
-	return message;
-}
-
-
-
 gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum)
 {
 	// increase sequence number for this datum to be sent

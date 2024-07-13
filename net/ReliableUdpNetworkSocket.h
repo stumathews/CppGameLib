@@ -6,8 +6,7 @@
 #include "net/IConnectedNetworkSocket.h"
 #include "net/ReliableUdp.h"
 
-constexpr auto PackingBufferElements = 8192;
-constexpr auto ReceiveBufferMaxElements = 512;
+
 
 namespace gamelib
 {
@@ -15,18 +14,22 @@ namespace gamelib
 	{
 	public:
 		explicit ReliableUdpNetworkSocket(const SOCKET socket);
+		ReliableUdpNetworkSocket();
 		bool IsTcp() override;
 		int Send(const char* callersSendBuffer, int dataLength) override;
 		int Receive(const char* callersReceiveBuffer, int bufLength) override;
 		bool IsValid() override;
 		[[nodiscard]] SOCKET GetRawSocket() const override;
 		~ReliableUdpNetworkSocket() override = default;
+		void Connect(const char* address, const char* port) override;
 
 	private:
+		constexpr static auto PackingBufferElements = 8192;
+		constexpr static auto ReceiveBufferMaxElements = 512;
 		SOCKET socket = -1;
 		ReliableUdp reliableUdp;
-		uint32_t packingBuffer[PackingBufferElements];
-		char readBuffer[ReceiveBufferMaxElements];
+		uint32_t packingBuffer[PackingBufferElements]{};
+		char readBuffer[ReceiveBufferMaxElements]{};
 	};
 }
 

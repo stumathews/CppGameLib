@@ -19,6 +19,8 @@
 #include "net/GameServerConnectionFactory.h"
 #include "net/NetworkConnectionFactory.h"
 #include "net/ReliableUdp.h"
+#include "net/ReliableUdpGameServerConnection.h"
+#include "net/ReliableUdpNetworkSocket.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -36,15 +38,15 @@ public:
 	const char* ServerNickName = "Bob";	
 	const string ServerOrigin = ServerAddress + string(":") + ListeningPort;
 
-	void StartNetworkServer()
+	void StartNetworkServer(std::shared_ptr<IGameServerConnection> inGameServerConnection = nullptr)
 	{
 		Networking::Get()->InitializeWinSock();
 		ServerListening = true;
 		ListeningThread = thread([&]()
 		{
 			// Make a new server connection
-			auto connection = GameServerConnectionFactory::Create(false /* UDP */, ServerAddress, ListeningPort); 
-			Server = std::make_shared<GameServer>(ServerAddress, ListeningPort, connection);
+			auto defaultConnection = GameServerConnectionFactory::Create(false /* UDP */, ServerAddress, ListeningPort); 
+			Server = std::make_shared<GameServer>(ServerAddress, ListeningPort, inGameServerConnection != nullptr ? inGameServerConnection : defaultConnection);
 			Server->Initialize();
 
 			// Wait for connections
@@ -528,47 +530,70 @@ TEST_F(NetworkingTests, ReliableUdpTest)
 	EXPECT_STREQ(message3.Data()[3].Data(), packet1.Data());
 }
 
-TEST_F(NetworkingTests, ReliableUdpTest2)
+
+TEST_F(NetworkingTests, ReliableUdpNetworkTest)
 {
 
 	Message receivedPacket {};
-	StartNetworkServer();
 
-	const auto player1Nick = "Player1";
+	auto gameServerConnection = std::make_shared<ReliableUdpGameServerConnection>(ServerAddress, ListeningPort);
+	auto gameClientConnection = std::make_shared<ReliableUdpNetworkSocket>();
 	
-	const auto client1 = make_shared<GameClient>(player1Nick, NetworkConnectionFactory::Create(false));
-	client1->Initialize();
-	client1->Connect(Server);
+	StartNetworkServer(gameServerConnection);
 
 	ReliableUdp reliableUdp;
 
-	const PacketDatum packet(false, "There can be only one.");
+	auto data1 = "There can be only one.";
+	auto data2 = "There can be only two.";
+	auto data3 = "There can be only three.";
 
-	// Send as bitpacked binary
-	auto message1 = reliableUdp.Send(client1, packet);
-	auto message2 = reliableUdp.Send(client1, packet);
-	auto message3 = reliableUdp.Send(client1, packet);
+	const PacketDatum packet1(false, data1);
+	const PacketDatum packet2(false, data2);
+	const PacketDatum packet3(false, data3);
+	
+	gameClientConnection->Connect(ServerAddress, ListeningPort);
+	gameClientConnection->Send(data1, strlen(data1));
+	gameClientConnection->Send(data2, strlen(data2));
+	gameClientConnection->Send(data3, strlen(data3));
 	
 	// Wait for the server to respond
-	Sleep(10);
-
+	Sleep(1000);
+		
 	// Collect events from Event Manger to see what traffic was captured
-	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();	
-	const auto trafficEvent = To<NetworkTrafficReceivedEvent>(
-		FindEmittedEvent(serverEmittedEvents, NetworkTrafficReceivedEventId, true)); // <-- find only message 3 (last message)
+	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
+	
+	EXPECT_EQ(serverEmittedEvents.size(), 6); // six packets in total 3 sends, 3 unacknowledged re-sends
+			
+	int countData1 = ranges::count_if(serverEmittedEvents, [data1](shared_ptr<Event> event)
+	{
+		if(event->Id == NetworkTrafficReceivedEventId)
+		{
+			const auto trafficEvent = To<NetworkTrafficReceivedEvent>(event);
+			const auto result =  strcmp(trafficEvent->GetPayload(), data1) == 0;
+			return result;
+		}
+		return false;
+	});
+	int countData2 = ranges::count_if(serverEmittedEvents, [data2](shared_ptr<Event> event)
+	{
+		if(event->Id == NetworkTrafficReceivedEventId)
+		{
+			const auto trafficEvent = To<NetworkTrafficReceivedEvent>(event);
+			return strcmp(trafficEvent->GetPayload(), data2) == 0;
+		}
+		return false;
+	});
+	int countData3 = ranges::count_if(serverEmittedEvents, [data3](shared_ptr<Event> event)
+	{
+		if(event->Id == NetworkTrafficReceivedEventId)
+		{
+			const auto trafficEvent = To<NetworkTrafficReceivedEvent>(event);
+			return strcmp(trafficEvent->GetPayload(), data3) == 0;
+		}
+		return false;
+	});
 
-	// Extract the packet received into a receiveBuffer
-	const char* receivedBuffer = trafficEvent->GetPayload();
-
-	// Hook up bitfield reader to the received buffer
-	BitfieldReader reader((uint32_t*)receivedBuffer, trafficEvent->BytesReceived);
-
-	// Read the packet's content from the receive buffer	
-	receivedPacket.Read(reader);
-
-	// Ensure what we send is what we received.
-	EXPECT_EQ(receivedPacket.Header.Sequence, message3->Header.Sequence);	
-	EXPECT_EQ(receivedPacket.Header.LastAckedBits, message3->Header.LastAckedBits);	
-	EXPECT_EQ(receivedPacket.Header.LastAckedSequence, message3->Header.LastAckedSequence);	
-
+	EXPECT_EQ(countData1, 3); // we expect data1 to be sent once, with 2 retries
+	EXPECT_EQ(countData2, 2); // we expect data2 to be sent once, with 1 retry
+	EXPECT_EQ(countData3, 1); // we expect data3 to be sent once
 }

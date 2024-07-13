@@ -52,26 +52,31 @@ namespace gamelib
 				
 		// Read all incoming data into readBuffer		
 		const int bytesReceived = recvfrom(listeningSocket, receiveBuffer, ReceiveBufferMaxElements, 0,
-		                                   reinterpret_cast<sockaddr*>(&fromClient.Address), &fromClient.Length);
-
-		// Hook up to a 32-bit bitfield reader to the received buffer. This will read 32-bits at a time
-		const auto count32BitBlocks = bytesReceived * 8 /32;
-		BitfieldReader reader(reinterpret_cast<uint32_t*>(receiveBuffer), count32BitBlocks);
-
-		// Where to store the message
-		Message message;
-
-		// Unpack receive buffer into message
-		message.Read(reader);		
+		                                   reinterpret_cast<sockaddr*>(&fromClient.Address), &fromClient.Length);				
 
 		if (bytesReceived > 0)
 		{
-			ParseReceivedPlayerPayload(message.FirstPacket.c_str(), bytesReceived, fromClient);
-			RaiseNetworkTrafficReceivedEvent(message.FirstPacket.c_str(),bytesReceived, fromClient);
+			// Hook up to a 32-bit bitfield reader to the received buffer. This will read 32-bits at a time
+			const auto count32BitBlocks = bytesReceived * 8 /32;
+			BitfieldReader reader(reinterpret_cast<uint32_t*>(receiveBuffer), count32BitBlocks);
+
+			// Where to store the message
+			Message message;
+
+			// Unpack receive buffer into message
+			message.Read(reader);
+
+			// for the case were received multiple messages (aggregate)
+			for( auto& payload : message.Data())
+			{
+				const char* data = payload.Data();
+				ParseReceivedPlayerPayload(data, strlen(data), fromClient);
+				RaiseNetworkTrafficReceivedEvent(data, strlen(data), fromClient);
+			}
 		}
 	}
 
-	void ReliableUdpGameServerConnection::RaiseNetworkTrafficReceivedEvent(char buffer[512], const int bytesReceived, const PeerInfo fromClient) 
+	void ReliableUdpGameServerConnection::RaiseNetworkTrafficReceivedEvent(const char* buffer, const int bytesReceived, const PeerInfo fromClient) 
 	{
 		std::string identifier = "unknown";
 		for(auto player : players)

@@ -22,7 +22,7 @@ namespace gamelib
 		 * \param inData the contained packets
 		 */
 		Message(uint16_t sequence, const uint16_t lastAckedSequence, uint32_t previousAckedBits,
-		                 uint16_t n, const std::vector<PacketDatum>& inData);
+		                 uint16_t n, const std::vector<PacketDatum >& inData);
 
 		Message() = default;
 
@@ -40,9 +40,8 @@ namespace gamelib
 
 		// Unpack into bitfieldReader's associated buffer
 		void Read(BitfieldReader<uint32_t>& bitfieldReader);
-				
-		bit_packing_types::String<uint32_t> FirstPacket;
-
+			
+		
 	private:
 		std::vector<PacketDatum> packets{};
 	};

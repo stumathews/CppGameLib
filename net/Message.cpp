@@ -9,15 +9,10 @@ gamelib::Message::Message(const uint16_t sequence, const uint16_t lastAckedSeque
 	Header.LastAckedBits = previousAckedBits;
 
 	// Store list of previously unsent messages
-	std::vector<std::string> text;
 	for(auto i = 0; i < n; i++)
 	{
 		packets.push_back(inData[i]);
-		text.emplace_back(inData[i].data);
 	}
-
-	// Currently we don't support message aggregation, only the current unsacked message is sent
-	FirstPacket.Initialize(text[0]);
 }
 
 std::vector<gamelib::PacketDatum> gamelib::Message::Data() const
@@ -35,8 +30,12 @@ void gamelib::Message::Write(BitPacker<uint32_t>& bitPacker) const
 	// Pack the header
 	Header.Write(bitPacker);
 
-	// Pack the first packet
-	//FirstPacket.Write(bitPacker);
+	bitPacker.Pack(16, packets.size());
+
+	for (const auto& packetDatum : packets)
+	{
+		packetDatum.Write(bitPacker);
+	}	
 }
 
 void gamelib::Message::Read(BitfieldReader<uint32_t>& bitfieldReader)
@@ -44,6 +43,10 @@ void gamelib::Message::Read(BitfieldReader<uint32_t>& bitfieldReader)
 	// Unpack into bitField reader's associated buffer
 	Header.Read(bitfieldReader);
 
-	// Unpack into bitField's associated buffer
-	//FirstPacket.Read(bitfieldReader);
+	const auto arraySize = bitfieldReader.ReadNext<int>(16);
+	for(int i = 0 ; i < arraySize; i++)
+	{
+		PacketDatum temp; temp.Read(bitfieldReader);
+		packets.push_back(temp);
+	}
 }

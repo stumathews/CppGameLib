@@ -30,10 +30,10 @@ int gamelib::ReliableUdpNetworkSocket::Send(const char* callersSendBuffer, const
 	return send(socket, reinterpret_cast<char*>(packingBuffer), countBytesToSend, 0);
 }
 
-int gamelib::ReliableUdpNetworkSocket::Receive(const char* callersReceiveBuffer, const int bufLength)
+int gamelib::ReliableUdpNetworkSocket::Receive(char* callersReceiveBuffer, const int bufLength)
 {	
 	// Read the payload off the network, wait for all the data
-	const int bytesReceived = recv(socket, const_cast<char*>(callersReceiveBuffer), bufLength, 0); 
+	const int bytesReceived = recv(socket, callersReceiveBuffer, bufLength, 0); 
 
 	if(bytesReceived < 0)
 	{
@@ -43,13 +43,14 @@ int gamelib::ReliableUdpNetworkSocket::Receive(const char* callersReceiveBuffer,
 	// Hook up to a 32-bit bitfield reader to the received buffer. This will read 32-bits at a time
 	const auto count32BitBlocks = bytesReceived * 8 /32;
 	
-	BitfieldReader packedBufferReader(reinterpret_cast<uint32_t*>(readBuffer), count32BitBlocks);
+	BitfieldReader packedBufferReader(reinterpret_cast<uint32_t*>(callersReceiveBuffer), count32BitBlocks);
 
 	// Where the unpacked message will be stored
 	Message message;
 
 	// Unpack message
 	message.Read(packedBufferReader);
+	reliableUdp.MarkReceived(message);
 
 	// Copy contents to caller's receive buffer to expose the contents of the message
 	std::stringstream ss;
@@ -58,7 +59,7 @@ int gamelib::ReliableUdpNetworkSocket::Receive(const char* callersReceiveBuffer,
 		ss << packet.Data();
 	}
 		
-	strcpy_s(const_cast<char*>(callersReceiveBuffer), bufLength, ss.str().c_str());
+	strcpy_s(callersReceiveBuffer, bufLength, ss.str().c_str());
 
 	return bytesReceived;
 }

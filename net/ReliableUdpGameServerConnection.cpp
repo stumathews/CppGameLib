@@ -65,11 +65,13 @@ namespace gamelib
 
 			// Unpack receive buffer into message
 			message.Read(reader);
+			reliableUdp.MarkReceived(message);
 
 			// for the case were received multiple messages (aggregate)
 			for( auto& payload : message.Data())
 			{
 				const char* data = payload.Data();
+				InternalSend(listeningSocket, data, strlen(data), 0, (sockaddr* )&fromClient.Address, fromClient.Length);
 				ParseReceivedPlayerPayload(data, strlen(data), fromClient);
 				RaiseNetworkTrafficReceivedEvent(data, strlen(data), fromClient);
 			}
@@ -101,13 +103,12 @@ namespace gamelib
 		BitPacker packer(packingBuffer, PackingBufferElements);
 
 		// Pack packet tightly into  buffer before sending
-		message->Write(packer); packer.Finish();
+		message->Write(packer);
 
 		// Count only as much as what was packed
 		const auto countBytesToSend = static_cast<int>(ceil(static_cast<double>(packer.TotalBitsPacked()) / static_cast<double>(8)));
 		
-		// Send over udp
-		
+		// Send over udp		
 		return sendto(socket, reinterpret_cast<char*>(packingBuffer), countBytesToSend, flags, to, toLen);
 	}
 

@@ -17,7 +17,7 @@ namespace gamelib
 		ReliableUdpNetworkSocket();
 		bool IsTcp() override;
 		int Send(const char* callersSendBuffer, int dataLength) override;
-		int Receive(const char* callersReceiveBuffer, int bufLength) override;
+		int Receive(char* callersReceiveBuffer, int bufLength) override;
 		bool IsValid() override;
 		[[nodiscard]] SOCKET GetRawSocket() const override;
 		~ReliableUdpNetworkSocket() override = default;
@@ -29,7 +29,7 @@ namespace gamelib
 		SOCKET socket = -1;
 		ReliableUdp reliableUdp;
 		uint32_t packingBuffer[PackingBufferElements]{};
-		char readBuffer[ReceiveBufferMaxElements]{};
+		uint32_t readBuffer[ReceiveBufferMaxElements]{};
 	};
 }
 

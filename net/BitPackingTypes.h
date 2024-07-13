@@ -134,7 +134,7 @@ namespace gamelib
 			[[nodiscard]] int NumBits() const { return sizeof(T)*8 + (numElements * 8);}
 		};
 
-		template <typename T>
+		template <typename T>		
 		struct ArrayOfStrings
 		{		
 			enum
@@ -192,6 +192,62 @@ namespace gamelib
 
 		private:
 			std::vector<String<T>> elements;
+			uint16_t numElements{};
+		};
+
+		template <typename T>
+		struct ArrayOfBytes
+		{		
+			enum
+			{
+				// We support storing up to 12 variable length byte arrays. Should be enough
+				MaxElements = 12
+			};
+			
+			ArrayOfBytes() = default;
+
+			void Initialize(const ByteArray<T>* buffer, const T count)
+			{
+				numElements = count;
+				for(int i = 0; i < count;i++)
+				{
+					elements.push_back(buffer[i]);
+				}			
+			}
+
+			void Write(BitPacker<T>& bitPacker) const
+			{
+				// Store that there will be x elements in this array - we can't store/address more than MaxElements but can store less
+				bitPacker.Pack(BITS_REQUIRED(0, MaxElements), numElements);
+
+				// Now write each string
+				for (int i = 0 ; i < numElements; i++)
+				{
+					elements[i].Write(bitPacker);
+				}
+			}
+
+			void Read(BitfieldReader<T>& bitfieldReader)
+		    {
+				// Read how many elements there will be
+				numElements = bitfieldReader.ReadNext<uint16_t>(BITS_REQUIRED(0, MaxElements));
+				for (int i = 0 ; i < numElements; i++)
+				{
+					ByteArray<T> byteArray;
+					byteArray.Read(bitfieldReader);
+					elements.push_back(byteArray);
+				}
+			}
+
+			ByteArray<T> operator[](const uint8_t index) const
+			{
+				return elements[index];
+			}
+
+			uint8_t NumElements() const { return elements.size(); }
+
+		private:
+			std::vector<ByteArray<T>> elements;
 			uint16_t numElements{};
 		};
 

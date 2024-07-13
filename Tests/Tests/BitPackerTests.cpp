@@ -883,3 +883,56 @@ TEST_F(BitPackingTests, ByteArray)
 	EXPECT_EQ(tempArray.Size(), size);
 
 }
+
+TEST_F(BitPackingTests, ArrayOfByteArray)
+{
+	uint16_t buffer[32];
+	
+	BitPacker packer(buffer, 32);
+	BitfieldReader reader(buffer, 32);
+
+	constexpr int size1 = 6;
+	constexpr int size2 = 7;
+	constexpr int size3 = 8;
+
+	constexpr char array1[size1] = { 'a', 'b', 'c', 'd', 'e', 'f'};
+	constexpr char array2[size2] = { 'g', 'h', 'i', 'j', 'k', 'l', 'm'};
+	constexpr char array3[size3] = { 'n', 'o', 'p', 'q', 'r', 's', 't', 'u'};
+
+	// 3 byte arrays
+	bit_packing_types::ByteArray<uint16_t> byteArray[3];
+	byteArray[0] = bit_packing_types::ByteArray<uint16_t>(array1, size1);
+	byteArray[1] = bit_packing_types::ByteArray<uint16_t>(array2, size1);
+	byteArray[2] = bit_packing_types::ByteArray<uint16_t>(array3, size1);
+
+	// and array of byte arrays
+	bit_packing_types::ArrayOfBytes<uint16_t> arrayOfBytes;
+
+	// init
+	arrayOfBytes.Initialize(byteArray, 3);
+
+	EXPECT_EQ(arrayOfBytes.NumElements(), 3);
+
+	// write to buffer
+	arrayOfBytes.Write(packer);
+
+	// read from buffer
+	bit_packing_types::ArrayOfBytes<uint16_t> tempArrayOfBytes;
+	tempArrayOfBytes.Read(reader);
+
+	// still everything looks ok?
+
+	for(int i =0; i < tempArrayOfBytes[0].Size();i++)
+	{
+		EXPECT_EQ(tempArrayOfBytes[0].data()[i], array1[i]);
+	}
+	for(int i =0; i < tempArrayOfBytes[1].Size();i++)
+	{
+		EXPECT_EQ(tempArrayOfBytes[1].data()[i], array2[i]);
+	}
+	for(int i =0; i < tempArrayOfBytes[2].Size();i++)
+	{
+		EXPECT_EQ(tempArrayOfBytes[2].data()[i], array3[i]);
+	}
+	
+}

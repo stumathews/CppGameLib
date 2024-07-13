@@ -160,7 +160,8 @@ namespace gamelib
 			if(!isMultipleOfT) 
 			{
 				// mask out/unset all other bits to 0
-				merged = merged & (1 << numBits) -1;
+				//merged = merged & (1 << numBits) -1;
+				merged = BitFiddler<T>::GetBitsValue(merged,(numBitsRhs+numBitsLhs)-1, numBits);
 			}
 
 			// say that we must start reading from the next block (lhs) after the bits we've already used from it

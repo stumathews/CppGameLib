@@ -945,9 +945,9 @@ TEST_F(BitPackingTests, PacketDatumSerilization)
 	BitPacker packer(buffer, 32);
 	BitfieldReader reader(buffer, 32);
 
-	const char* data1 = "data1";
-	const char* data2 = "data2";
-	const char* data3 = "data3";
+	auto data1 = "data1";
+	auto data2 = "data2";
+	auto data3 = "data3";
 
 	PacketDatum d1(false, data1);
 	PacketDatum d2(false, data2);
@@ -957,27 +957,23 @@ TEST_F(BitPackingTests, PacketDatumSerilization)
 	d2.Write(packer);
 	d3.Write(packer);
 
-	PacketDatum tempD1;
+	PacketDatum tempD1;	
+	PacketDatum tempD2;	
+	PacketDatum tempD3;
+
 	tempD1.Read(reader);
+	tempD2.Read(reader);
+	tempD3.Read(reader);
 
 	EXPECT_EQ(tempD1.Sequence, d1.Sequence);
 	EXPECT_EQ(tempD1.Acked, d1.Acked);
-	EXPECT_STREQ(tempD1.Data(), d1.Data());
-
-	PacketDatum tempD2;
-	tempD2.Read(reader);
+	EXPECT_STREQ(tempD1.Data(), d1.Data());	
 
 	EXPECT_EQ(tempD2.Sequence, d2.Sequence);
 	EXPECT_EQ(tempD2.Acked, d2.Acked);
-	EXPECT_STREQ(tempD2.Data(), d2.Data());
-
-	PacketDatum tempD3;
-	tempD3.Read(reader);
+	EXPECT_STREQ(tempD2.Data(), d2.Data());	
 
 	EXPECT_EQ(tempD3.Sequence, d3.Sequence);
 	EXPECT_EQ(tempD3.Acked, d3.Acked);
 	EXPECT_STREQ(tempD3.Data(), d3.Data());
-
-
-
 }

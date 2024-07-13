@@ -2,6 +2,9 @@
 #include <file/SettingsManager.h>
 #include <net/Networking.h>
 
+#include "GameServerConnectionFactory.h"
+#include "NetworkConnectionFactory.h"
+
 namespace gamelib
 {
 	NetworkManager::NetworkManager()
@@ -23,8 +26,9 @@ namespace gamelib
 	bool NetworkManager::Initialize()
 	{
 		Networking::Get()->InitializeWinSock();
-		
-		Server = std::make_shared<GameServer>(gameServerAddress, gameServerPort, isTcp, nickName);
+
+		auto connection = GameServerConnectionFactory::Create(isTcp, gameServerAddress, gameServerPort);
+		Server = std::make_shared<GameServer>(gameServerAddress, gameServerPort, connection, nickName);
 
 		if(isGameServer)
 		{			
@@ -32,7 +36,8 @@ namespace gamelib
 		}
 		else
 		{
-			Client = std::make_shared<GameClient>(nickName, isTcp);
+			auto connection = NetworkConnectionFactory::Create(isTcp);
+			Client = std::make_shared<GameClient>(nickName, connection);
 			Client->Initialize();
 			Client->Connect(Server);
 		}

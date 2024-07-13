@@ -14,7 +14,7 @@ using namespace json11;
 
 namespace gamelib
 {
-	GameClient::GameClient(const std::string& nickName, const bool isTcp)
+	GameClient::GameClient(const std::string& nickName, const std::shared_ptr<IConnectedNetworkSocket>& inConnection)
 	{
 		readBufferLength = 512;				
 		noDataTimeout.tv_sec = 0;
@@ -25,8 +25,9 @@ namespace gamelib
 		serializationManager = nullptr;
 		networking = nullptr;
 		eventFactory = nullptr;
-		this->isTcp = isTcp;
 		this->nickName = nickName;
+		this->connection = inConnection;
+		this->isTcp = connection->IsTcp();
 	}
 
 	void GameClient::Initialize()
@@ -55,8 +56,8 @@ namespace gamelib
 	{
 		std::stringstream message; message << "Connecting to game server: " << inGameServer->Address << ":" << inGameServer->Port;
 		Logger::Get()->LogThis(message.str());
-		
-		connection = NetworkConnectionFactory::Connect(this->isTcp, inGameServer->Address.c_str(), inGameServer->Port.c_str());
+
+		connection->Connect(inGameServer->Address.c_str(), inGameServer->Port.c_str());
 		
 		Logger::Get()->LogThis("Server socket created. Connected to server.");
 		

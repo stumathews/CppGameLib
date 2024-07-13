@@ -18,7 +18,7 @@ namespace gamelib
 	{
 	public:
 		~GameClient() override;
-		GameClient(const std::string& nickName, bool isTcp);
+		GameClient(const std::string& nickName, const std::shared_ptr<IConnectedNetworkSocket>& connection);
 		GameClient(const GameClient& other) = delete;
 		GameClient(const GameClient&& other) = delete;
 		const GameClient& operator=(const GameClient& other) = delete;

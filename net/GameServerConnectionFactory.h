@@ -17,7 +17,7 @@ namespace gamelib
 		static [[nodiscard]] std::shared_ptr<IGameServerConnection> Create(const bool isTcp, const std::string& address, const std::string& port)
 		{
 			return isTcp ? To<IGameServerConnection>(std::make_shared<TcpGameServerConnection>(address, port))
-										   : To<IGameServerConnection>(std::make_shared<UdpGameServerConnection>(address, port));
+						 : To<IGameServerConnection>(std::make_shared<UdpGameServerConnection>(address, port));
 		}
 	};
 }

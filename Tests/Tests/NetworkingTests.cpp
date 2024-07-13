@@ -16,6 +16,8 @@
 #include "file/SerializationManager.h"
 #include "net/BitPacker.h"
 #include "TestData.h"
+#include "net/GameServerConnectionFactory.h"
+#include "net/NetworkConnectionFactory.h"
 #include "net/ReliableUdp.h"
 
 #pragma comment(lib, "ws2_32.lib")
@@ -41,7 +43,8 @@ public:
 		ListeningThread = thread([&]()
 		{
 			// Make a new server connection
-			Server = std::make_shared<GameServer>(ServerAddress, ListeningPort, false /* using UDP*/);
+			auto connection = GameServerConnectionFactory::Create(false /* UDP */, ServerAddress, ListeningPort); 
+			Server = std::make_shared<GameServer>(ServerAddress, ListeningPort, connection);
 			Server->Initialize();
 
 			// Wait for connections
@@ -209,7 +212,7 @@ TEST_F(NetworkingTests, TestConnectToServer)
 	StartNetworkServer();
 
 	// Setup client
-	Client = make_shared<GameClient>(ClientNickName, false /* using UDP*/);
+	Client = make_shared<GameClient>(ClientNickName, NetworkConnectionFactory::Create(false) /* using UDP*/);
 	Client->Initialize();
 	Client->Connect(Server);
 	
@@ -230,7 +233,7 @@ TEST_F(NetworkingTests, TestPing)
 	StartNetworkServer();
 
 	// Setup client
-	Client = make_shared<GameClient>(ClientNickName, false /* using UDP*/);
+	Client = make_shared<GameClient>(ClientNickName, NetworkConnectionFactory::Create(false) /* using UDP*/);
 	Client->Initialize();
 	Client->Connect(Server);
 	
@@ -264,7 +267,7 @@ TEST_F(NetworkingTests, TestCustomBinarySend)
 
 	StartNetworkServer();
 
-	Client = make_shared<GameClient>(ClientNickName, false /* using UDP*/);
+	Client = make_shared<GameClient>(ClientNickName, NetworkConnectionFactory::Create(false) /* using UDP*/);
 	Client->Initialize();
 	Client->Connect(Server);
 
@@ -315,7 +318,7 @@ TEST_F(NetworkingTests, TestBitPacketBinarySend)
 
 	StartNetworkServer();
 
-	Client = make_shared<GameClient>(ClientNickName, false /* using UDP*/);
+	Client = make_shared<GameClient>(ClientNickName, NetworkConnectionFactory::Create(false) /* using UDP*/);
 	Client->Initialize();
 	Client->Connect(Server);
 
@@ -374,7 +377,7 @@ TEST_F(NetworkingTests, TestBitPacketBinarySendReadPayload)
 
 	StartNetworkServer();
 
-	Client = make_shared<GameClient>(ClientNickName, false /* using UDP*/);
+	Client = make_shared<GameClient>(ClientNickName, NetworkConnectionFactory::Create(false) /* using UDP*/);
 	Client->Initialize();
 	Client->Connect(Server);
 
@@ -436,15 +439,15 @@ TEST_F(NetworkingTests, MultiPlayerJoinEventsEmittedOnConnect)
 	const auto player3Nick = "Player3";
 
 	// Setup client
-	const auto client1 = make_shared<GameClient>(player1Nick, false /* using UDP*/);
+	const auto client1 = make_shared<GameClient>(player1Nick, NetworkConnectionFactory::Create(false) /* using UDP*/);
 	client1->Initialize();
 	client1->Connect(Server);
 
-	const auto client2 = make_shared<GameClient>(player2Nick, false /* using UDP*/);
+	const auto client2 = make_shared<GameClient>(player2Nick, NetworkConnectionFactory::Create(false) /* using UDP*/);
 	client2->Initialize();
 	client2->Connect(Server);
 
-	const auto client3 = make_shared<GameClient>(player3Nick, false /* using UDP*/);
+	const auto client3 = make_shared<GameClient>(player3Nick, NetworkConnectionFactory::Create(false) /* using UDP*/);
 	client3->Initialize();
 	client3->Connect(Server);
 	
@@ -482,7 +485,7 @@ TEST_F(NetworkingTests, ReliableUdpTest)
 	const auto player1Nick = "Player1";
 
 	// Setup client
-	const auto client1 = make_shared<GameClient>(player1Nick, false /* using UDP*/);
+	const auto client1 = make_shared<GameClient>(player1Nick, NetworkConnectionFactory::Create(false) /* using UDP*/);
 	client1->Initialize();
 	client1->Connect(Server);
 
@@ -533,7 +536,7 @@ TEST_F(NetworkingTests, ReliableUdpTest2)
 
 	const auto player1Nick = "Player1";
 	
-	const auto client1 = make_shared<GameClient>(player1Nick, false);
+	const auto client1 = make_shared<GameClient>(player1Nick, NetworkConnectionFactory::Create(false));
 	client1->Initialize();
 	client1->Connect(Server);
 

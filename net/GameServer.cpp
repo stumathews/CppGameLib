@@ -17,13 +17,13 @@ using namespace json11;
 
 namespace gamelib
 {
-	GameServer::GameServer(const std::string& address, const std::string& port, const bool useTcp = true, const std::string& nickName )
-	{
-		this->Address = address;
-		this->Port = port;			
-		this->isTcp = useTcp;
-		this->gameServerConnection = nullptr;
+	GameServer::GameServer(const std::string& address, const std::string& port, const std::shared_ptr<IGameServerConnection> gameServerConnection,
+	                       const std::string& nickName)
+	{		
+		this->gameServerConnection = gameServerConnection;
 		this->nickname = nickName;
+		this->Address = address;
+		this->Port = port;
 	}
 
 	void GameServer::Initialize()
@@ -34,12 +34,7 @@ namespace gamelib
 		eventManager = EventManager::Get();
 		networking = Networking::Get();
 		eventFactory = EventFactory::Get();
-
-		Logger::Get()->LogThis(this->isTcp ? "Using TCP" : "Using UDP");
-
-		// Create a new server socket connection, either TCP or UDP depending on game configuration
-		gameServerConnection = GameServerConnectionFactory::Create(isTcp, Address, Port);
-
+		
 		gameServerConnection->Initialize();
 		gameServerConnection->Create();
 		

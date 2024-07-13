@@ -17,7 +17,8 @@ namespace gamelib
 	class GameServer final : public EventSubscriber
 	{
 	public:
-		GameServer(const std::string& address, const std::string& port, const bool useTcp, const std::string& nickName = "Server");
+		GameServer(const std::string& address, const std::string& port,
+		           std::shared_ptr<IGameServerConnection> gameServerConnection, const std::string& nickName = "Server");
 		GameServer(const GameServer& other) = delete;
 		GameServer(const GameServer&& other) = delete;
 		GameServer& operator=(GameServer& other) = delete;
@@ -31,13 +32,12 @@ namespace gamelib
 		/// Checks to see if there is any data waiting to be read or written.
 		/// </summary>
 		void Listen() const;
-
 		
 		void Disconnect() const;
 
+		[[nodiscard]] std::shared_ptr<IGameServerConnection> Connection() const { return gameServerConnection; }
 		std::string Address;
 		std::string Port;
-
 	private:
 				
 		// Game server connection can either be in TCP or UDP
@@ -62,7 +62,6 @@ namespace gamelib
 		EventManager* eventManager{};
 		Networking* networking{};
 		EventFactory* eventFactory{};
-		bool isTcp;
 
 	};
 }

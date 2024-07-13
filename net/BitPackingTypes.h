@@ -4,7 +4,7 @@
 
 #include <cstdint>
 #include <ostream>
-#include <sstream>
+#include <vector>
 
 #include "BitfieldReader.h"
 #include "BitPacker.h"

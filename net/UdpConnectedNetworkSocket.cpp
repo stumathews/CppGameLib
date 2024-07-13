@@ -23,9 +23,9 @@ int gamelib::UdpConnectedNetworkSocket::Send(const char* data, const int dataLen
 	return send(socket, data, dataLength, 0);
 }
 
-int gamelib::UdpConnectedNetworkSocket::Receive(const char* readBuffer, const int bufLength)
+int gamelib::UdpConnectedNetworkSocket::Receive(char* readBuffer, const int bufLength)
 {
-	return recv(socket, const_cast<char*>(readBuffer), bufLength, 0); 
+	return recv(socket, readBuffer, bufLength, 0); 
 }
 
 bool gamelib::UdpConnectedNetworkSocket::IsValid()

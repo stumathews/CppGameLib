@@ -10,9 +10,9 @@ int gamelib::TcpNetworkSocket::Send(const char* data, const int dataLength)
 	return Networking::netSendVRec(socket, data, dataLength);
 }
 
-int gamelib::TcpNetworkSocket::Receive(const char* readBuffer, const int bufLength)
+int gamelib::TcpNetworkSocket::Receive(char* readBuffer, const int bufLength)
 {
-	return Networking::netReadVRec(socket, const_cast<char*>(readBuffer), bufLength);
+	return Networking::netReadVRec(socket, readBuffer, bufLength);
 }
 
 bool gamelib::TcpNetworkSocket::IsValid()

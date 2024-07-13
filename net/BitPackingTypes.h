@@ -17,8 +17,7 @@ namespace gamelib
 		struct String
 		{
 			private:
-
-			// We store a fixed length 512 character string in memory
+				
 		    std::vector<char> elements;
 			int numElements{};
 			int numBits {0};
@@ -79,8 +78,60 @@ namespace gamelib
 		    }
 
 			[[nodiscard]] int NumBits() const { return sizeof(T)*8 + (numElements * 8);}
+		};
 
+		template <typename T>
+		struct ByteArray
+		{
+			
+			private:
+				
+		    std::vector<char> elements;
+			int numElements{};
+			int numBits {0};
 
+		public:		
+
+			[[nodiscard]] char* data() const { return const_cast<char*>(&elements[0]);}
+			[[nodiscard]] size_t Size() const { return numElements;}
+			
+			explicit ByteArray(const char* value, int length) { Initialize(value, length); }
+
+			ByteArray() : ByteArray("", 0)
+			{
+				
+			}
+
+		    void Write(BitPacker<T>& bitPacker) const
+		    {
+				// Write how many elements are in this string
+	    		bitPacker.Pack(sizeof(T)*8, static_cast<T>(numElements));
+
+				// Push bytes into bitpacker's buffer directly
+				bitPacker.PushBytes(&elements[0], numElements);
+		    }
+
+		    void Read(BitfieldReader<T>& bitfieldReader)
+		    {
+				// read how many elemments in this string
+		        numElements = bitfieldReader.ReadNext<int>(sizeof(T)*8);
+
+				elements.resize(numElements);
+
+				// Read byte directly from the reader's buffer
+				bitfieldReader.FetchBytes(&elements[0], numElements);
+				
+				numBits = NumBits();
+		    }
+
+			void Initialize(const char* string, const int size)
+		    {
+				numElements = size;
+				elements.insert(elements.end(), string, string+numElements);
+				numBits = NumBits();
+		    }
+
+			[[nodiscard]] int NumBits() const { return sizeof(T)*8 + (numElements * 8);}
 		};
 
 		template <typename T>
@@ -88,10 +139,10 @@ namespace gamelib
 		{		
 			enum
 			{
+				// We support storing up to 12 variable length strings. Should be enough
 				MaxElements = 12
 			};
 			
-
 			ArrayOfStrings(const std::string* buffer, const T numElements)
 			{
 				Initialize(buffer, numElements);
@@ -101,13 +152,6 @@ namespace gamelib
 
 			void Initialize(const std::string* buffer, const T count)
 			{
-				if(count > MaxElements) 
-				{
-					std::stringstream msg;
-					msg << "Can only support " << MaxElements << " strings in this array" << std::endl;
-					throw std::exception(msg.str().c_str());
-				}
-
 				numElements = count;
 				for(int i = 0; i < count;i++)
 				{

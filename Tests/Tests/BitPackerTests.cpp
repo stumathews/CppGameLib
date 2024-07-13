@@ -820,7 +820,7 @@ TEST_F(BitPackingTests, PackACustomFormat)
 
 TEST_F(BitPackingTests, ArrayOfStrings)
 {
-	uint16_t buffer[50];
+	uint16_t buffer[32];
 	
 	BitPacker packer(buffer, 32);
 	BitfieldReader reader(buffer, 32);
@@ -844,6 +844,42 @@ TEST_F(BitPackingTests, ArrayOfStrings)
 	EXPECT_STREQ(readArray[2].c_str(), arrayOfStrings[2].c_str());
 	EXPECT_STREQ(readArray[3].c_str(), arrayOfStrings[3].c_str());
 	EXPECT_STREQ(readArray[4].c_str(), arrayOfStrings[4].c_str());
+}
 
+TEST_F(BitPackingTests, ByteArray)
+{
+	uint16_t buffer[32];
+	
+	BitPacker packer(buffer, 32);
+	BitfieldReader reader(buffer, 32);
+
+	constexpr int size = 6;
+
+	char array[size] = { 'a', 'b', 'c', 'd', 'e', 'f'};
+
+	const bit_packing_types::ByteArray<uint16_t> byteArray(array, size);
+
+	EXPECT_EQ(byteArray.Size(), size);
+
+	EXPECT_EQ(byteArray.data()[0], 'a');
+	EXPECT_EQ(byteArray.data()[1], 'b');
+	EXPECT_EQ(byteArray.data()[2], 'c');
+	EXPECT_EQ(byteArray.data()[3], 'd');
+	EXPECT_EQ(byteArray.data()[4], 'e');
+	EXPECT_EQ(byteArray.data()[5], 'f');
+
+	byteArray.Write(packer);
+
+	bit_packing_types::ByteArray<uint16_t> tempArray;
+	tempArray.Read(reader);
+
+	EXPECT_EQ(tempArray.data()[0], 'a');
+	EXPECT_EQ(tempArray.data()[1], 'b');
+	EXPECT_EQ(tempArray.data()[2], 'c');
+	EXPECT_EQ(tempArray.data()[3], 'd');
+	EXPECT_EQ(tempArray.data()[4], 'e');
+	EXPECT_EQ(tempArray.data()[5], 'f');
+
+	EXPECT_EQ(tempArray.Size(), size);
 
 }

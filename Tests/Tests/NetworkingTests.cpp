@@ -46,7 +46,10 @@ public:
 		{
 			// Make a new server connection
 			auto defaultConnection = GameServerConnectionFactory::Create(false /* UDP */, ServerAddress, ListeningPort); 
-			Server = std::make_shared<GameServer>(ServerAddress, ListeningPort, inGameServerConnection != nullptr ? inGameServerConnection : defaultConnection);
+			Server = std::make_shared<GameServer>(ServerAddress, ListeningPort,
+			                                      inGameServerConnection != nullptr
+				                                      ? inGameServerConnection
+				                                      : defaultConnection);
 			Server->Initialize();
 
 			// Wait for connections
@@ -552,12 +555,12 @@ TEST_F(NetworkingTests, ReliableUdpNetworkTest)
 	gameClientConnection->Connect(ServerAddress, ListeningPort);
 
 	// Send data reliably with aggregated message support if not acknowledgment received
-	gameClientConnection->Send(data1, strlen(data1));
+	gameClientConnection->Send(data1, strlen(data1)); 
 	gameClientConnection->Send(data2, strlen(data2));
 	gameClientConnection->Send(data3, strlen(data3));
 	
 	// Wait for the server to respond
-	Sleep(1000);
+	Sleep(1000);	
 		
 	// Collect events from Event Manger to see what traffic was captured
 	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();

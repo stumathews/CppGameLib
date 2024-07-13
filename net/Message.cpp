@@ -36,7 +36,7 @@ void gamelib::Message::Write(BitPacker<uint32_t>& bitPacker) const
 	Header.Write(bitPacker);
 
 	// Pack the first packet
-	FirstPacket.Write(bitPacker);
+	//FirstPacket.Write(bitPacker);
 }
 
 void gamelib::Message::Read(BitfieldReader<uint32_t>& bitfieldReader)
@@ -45,5 +45,5 @@ void gamelib::Message::Read(BitfieldReader<uint32_t>& bitfieldReader)
 	Header.Read(bitfieldReader);
 
 	// Unpack into bitField's associated buffer
-	FirstPacket.Read(bitfieldReader);
+	//FirstPacket.Read(bitfieldReader);
 }

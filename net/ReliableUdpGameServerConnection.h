@@ -3,17 +3,10 @@
 #pragma once
 #include <string>
 #include <WinSock2.h>
-#include <net/MessageHeader.h>
-#include <vector>
-#include <net/UdpNetworkPlayer.h>
-#include <net/PeerInfo.h>
-#include <events/EventSubscriber.h>
-#include <events/Event.h>
-
-#include "net/IGameServerConnection.h"
+#include "UdpGameServerConnection.h"
 #include "net/ReliableUdp.h"
 
-constexpr auto PackingBufferElements = 8192;
+constexpr auto PackingBufferElements = 512;
 constexpr auto ReceiveBufferMaxElements = 512;
 
 namespace gamelib
@@ -23,55 +16,18 @@ namespace gamelib
 	class SerializationManager;
 	class EventFactory;
 
-	class ReliableUdpGameServerConnection final : public IGameServerConnection, public EventSubscriber
+	class ReliableUdpGameServerConnection final : public UdpGameServerConnection
 	{
 	public:
 		ReliableUdpGameServerConnection(const std::string& host, const std::string& port);
-		// Inherited via IGameServerConnection
-		void Initialize() override;
 	private:
-		SOCKET listeningSocket{};
-		std::string host, port;
+	
+		void CheckForPlayerTraffic() override;		
+		int InternalSend(SOCKET socket, const char* buf, int len, int flags, const sockaddr* to, int toLen) override;		
 
-		SerializationManager* serializationManager;
-		EventManager* eventManager;
-		Networking* networking;
-		EventFactory* eventFactory;
 		ReliableUdp reliableUdp;
-
-		// Inherited via IGameServerConnection
-		void CheckForPlayerTraffic() override;
-		void RaiseNetworkTrafficReceivedEvent(const char* buffer, const int bytesReceived, const PeerInfo fromClient);
-		int InternalSend(SOCKET socket, const char* buf, int len, int flags, const sockaddr* to, int toLen);
-		void SendToConnectedPlayersExceptToSender(const std::string& senderNickname, const std::string&
-		                                          serializedMessage);
-		timeval timeout{};
-		fd_set readfds{};
-
-		// Inherited via IGameServerConnection
-		void Listen() override;
-
-		// Inherited via IGameServerConnection
-		void ProcessPingMessage(PeerInfo fromClient);
-		void ProcessRequestPlayerDetailsMessage(const MessageHeader& messageHeader, const PeerInfo fromClient);
-		void ParseReceivedPlayerPayload(const char* inPayload, int payloadLength, PeerInfo fromClient);
-		std::vector<UdpNetworkPlayer> players;
-
-		// Inherited via IGameServerConnection
-		void SendEventToAllPlayers(std::string serializedEvent) override;
-
-		// Inherited via EventSubscriber
-		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs) override;
-		std::string GetSubscriberName() override;
-
-		// Inherited via IGameServerConnection
-		void Create() override;
-				
-		uint32_t packingBuffer[PackingBufferElements];
-		char receiveBuffer[ReceiveBufferMaxElements];
-
-	public:
-		void Disconnect() override;
+		uint32_t packingBuffer[PackingBufferElements]{};
+		char receiveBuffer[ReceiveBufferMaxElements]{};
 	};
 }
 

@@ -13,7 +13,7 @@ namespace gamelib
 	class ReliableUdpNetworkSocket final : public IConnectedNetworkSocket
 	{
 	public:
-		explicit ReliableUdpNetworkSocket(const SOCKET socket);
+		explicit ReliableUdpNetworkSocket(SOCKET socket);
 		ReliableUdpNetworkSocket();
 		bool IsTcp() override;
 		int Send(const char* callersSendBuffer, int dataLength) override;
@@ -24,10 +24,11 @@ namespace gamelib
 		void Connect(const char* address, const char* port) override;
 
 	private:
-		constexpr static auto PackingBufferElements = 8192;
-		constexpr static auto ReceiveBufferMaxElements = 512;
 		SOCKET socket = -1;
 		ReliableUdp reliableUdp;
+		
+		constexpr static auto PackingBufferElements = 512;
+		constexpr static auto ReceiveBufferMaxElements = 512;
 		uint32_t packingBuffer[PackingBufferElements]{};
 		uint32_t readBuffer[ReceiveBufferMaxElements]{};
 	};

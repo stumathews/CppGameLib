@@ -2,12 +2,9 @@
 
 #include "Networking.h"
 #include "Option.h"
-#include "net/UdpConnectedNetworkSocket.h"
 
 gamelib::ReliableUdpNetworkSocket::ReliableUdpNetworkSocket(const SOCKET socket): socket(socket)
-{
-	
-}
+{}
 
 gamelib::ReliableUdpNetworkSocket::ReliableUdpNetworkSocket() = default;
 

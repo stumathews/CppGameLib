@@ -22,42 +22,59 @@ namespace gamelib
 		if (bytesReceived > 0)
 		{
 			// Hook up to a 32-bit bitfield reader to the received buffer. This will read 32-bits at a time
+
 			const auto count32BitBlocks = bytesReceived * 8 /32;
 			BitfieldReader reader(reinterpret_cast<uint32_t*>(receiveBuffer), count32BitBlocks);
-
-			// Where to store the message
-			Message message;
-
+						
 			// Unpack receive buffer into message
-			message.Read(reader);
+			Message message; message.Read(reader);
+
+			// Mark this sequence as having been received
 			reliableUdp.MarkReceived(message);
 
-			// for the case were received multiple messages (aggregate)
+			// Send a acknowledgment that message was received
+			SendAck(message, fromClient);
+
+			// For the case were received multiple messages (aggregate)
 			for( auto& payload : message.Data())
 			{
-				const char* data = payload.Data();
-				ParseReceivedPlayerPayload(data, strlen(data), fromClient);
-				RaiseNetworkTrafficReceivedEvent(data, strlen(data), fromClient);
+				const char* payloadData = payload.Data();
+				const int dataSize = static_cast<int>(strlen(payloadData));
+
+				ParseReceivedPlayerPayload(payloadData, dataSize, fromClient);
+				RaiseNetworkTrafficReceivedEvent(payloadData, dataSize, fromClient);
 			}
 		}
 	}
 
+	void ReliableUdpGameServerConnection::SendAck(const Message& message, PeerInfo& to)
+	{
+		std::stringstream ackMessage;
+		ackMessage << "server ack seq:" << message.Header.Sequence;
+		
+		InternalSend(listeningSocket, ackMessage.str().c_str(), static_cast<int>(strlen(ackMessage.str().c_str())), 0,
+		             reinterpret_cast<sockaddr*>(&to.Address), to.Length);
+	}
+
 	
 	int ReliableUdpGameServerConnection::InternalSend(const SOCKET socket, const char* buf, int len, const int flags,  const sockaddr* to, int toLen)
-	{
-		// Get packet to send
-		const auto message = reliableUdp.MarkSent(PacketDatum(false, buf));
-		
-		BitPacker packer(packingBuffer, PackingBufferElements);
+	{		
+		BitPacker packer(networkBuffer, NetworkBufferSize);
+				
+		// Prepare data to be sent
+		const auto data = PacketDatum(false, buf);
 
-		// Pack packet tightly into  buffer before sending
+		// Add data to message and mark message as having been sent (we sent it later)
+		const auto message = reliableUdp.MarkSent(data);
+
+		// Write message to network buffer		
 		message->Write(packer);
 
 		// Count only as much as what was packed
 		const auto countBytesToSend = static_cast<int>(ceil(static_cast<double>(packer.TotalBitsPacked()) / static_cast<double>(8)));
 		
-		// Send over udp		
-		return sendto(socket, reinterpret_cast<char*>(packingBuffer), countBytesToSend, flags, to, toLen);
+		// Send network buffer over udp		
+		return sendto(socket, reinterpret_cast<char*>(networkBuffer), countBytesToSend, flags, to, toLen);
 	}
 
 	

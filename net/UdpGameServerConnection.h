@@ -15,14 +15,17 @@ namespace gamelib
 	class SerializationManager;
 	class EventFactory;
 
-	class UdpGameServerConnection final : public IGameServerConnection, public EventSubscriber
+	class UdpGameServerConnection : public IGameServerConnection, public EventSubscriber
 	{
 	public:
 		UdpGameServerConnection(const std::string& host, const std::string& port);
 		// Inherited via IGameServerConnection
 		void Initialize() override;
-	private:
+	protected:		
 		SOCKET listeningSocket{};
+		void RaiseNetworkTrafficReceivedEvent(const char buffer[], const int bytesReceived, const PeerInfo fromClient);
+		void ParseReceivedPlayerPayload(const char* inPayload, int payloadLength, PeerInfo fromClient);
+	private:
 		std::string host, port;
 
 		SerializationManager* serializationManager;
@@ -31,11 +34,11 @@ namespace gamelib
 		EventFactory* eventFactory;
 
 		// Inherited via IGameServerConnection
-		void CheckForPlayerTraffic() override;
-		void RaiseNetworkTrafficReceivedEvent(char buffer[512], int bytesReceived, PeerInfo fromClient);
-		static int InternalSend(SOCKET socket, const char* buf, int len, int flags, const sockaddr* to, int tolen);
+		virtual void CheckForPlayerTraffic() override;
+		
+		virtual int InternalSend(SOCKET socket, const char* buf, int len, int flags, const sockaddr* to, int tolen);
 		void SendToConnectedPlayersExceptToSender(const std::string& senderNickname, const std::string&
-		                                          serializedMessage) const;
+		                                          serializedMessage);
 		timeval timeout{};
 		fd_set readfds{};
 
@@ -43,9 +46,9 @@ namespace gamelib
 		void Listen() override;
 
 		// Inherited via IGameServerConnection
-		void ProcessPingMessage(PeerInfo fromClient) const;
+		void ProcessPingMessage(PeerInfo fromClient);
 		void ProcessRequestPlayerDetailsMessage(const MessageHeader& messageHeader, const PeerInfo fromClient);
-		void ParseReceivedPlayerPayload(const char* inPayload, int payloadLength, PeerInfo fromClient);
+		
 		std::vector<UdpNetworkPlayer> players;
 
 		// Inherited via IGameServerConnection

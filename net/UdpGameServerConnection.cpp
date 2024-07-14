@@ -75,7 +75,7 @@ namespace gamelib
 		}
 	}
 
-	void UdpGameServerConnection::RaiseNetworkTrafficReceivedEvent(char buffer[512], const int bytesReceived, const PeerInfo fromClient) 
+	void UdpGameServerConnection::RaiseNetworkTrafficReceivedEvent(const char buffer[512], const int bytesReceived, const PeerInfo fromClient) 
 	{
 		std::string identifier = "unknown";
 		for(auto player : players)
@@ -98,7 +98,7 @@ namespace gamelib
 	}
 
 	void UdpGameServerConnection::SendToConnectedPlayersExceptToSender(const std::string& senderNickname, const std::string
-	                                                                   & serializedMessage) const
+	                                                                   & serializedMessage)
 	{
 		// Loop through all the known players we have and send them this message
 		for(auto player : players)
@@ -139,7 +139,7 @@ namespace gamelib
 		}
 	}
 
-	void UdpGameServerConnection::ProcessPingMessage(PeerInfo fromClient) const
+	void UdpGameServerConnection::ProcessPingMessage(PeerInfo fromClient)
 	{
 		const auto data = serializationManager->CreatePongMessage();
 		InternalSend(listeningSocket, data.c_str(), static_cast<int>(data.length()), 0, (sockaddr*) &fromClient.Address, fromClient.Length);

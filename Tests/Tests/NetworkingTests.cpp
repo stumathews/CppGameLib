@@ -558,7 +558,7 @@ TEST_F(NetworkingTests, ReliableUdpNetworkTest)
 	gameClientConnection->Send(data1, strlen(data1)); 
 	gameClientConnection->Send(data2, strlen(data2));
 	gameClientConnection->Send(data3, strlen(data3));
-	
+		
 	// Wait for the server to respond
 	Sleep(1000);	
 		

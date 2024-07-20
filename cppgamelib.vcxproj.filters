@@ -486,6 +486,9 @@
     <ClInclude Include="net\ReliableUdpGameServerConnection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ReliableUdpPacketReceivedEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -771,6 +774,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="net\ReliableUdpGameServerConnection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ReliableUdpPacketReceivedEvent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

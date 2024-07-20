@@ -13,8 +13,7 @@ namespace gamelib
 			this->bufferSize = bufferSize;
 
 			sequenceBuffer = new uint32_t[bufferSize];
-			sequenceBufferData = new T[bufferSize];
-			sequenceBufferData2 = std::vector<T>(bufferSize);
+			sequenceBufferData = std::vector<T>(bufferSize);
 
 		}		
 		
@@ -23,7 +22,7 @@ namespace gamelib
 		    const int index = GetSequenceIndex(sequence);
 			if(sequenceBuffer[index] == sequence)
 			{
-				return sequenceBufferData2.data() + index;
+				return sequenceBufferData.data() + index;
 			}
 		    return nullptr;
 		}
@@ -32,7 +31,7 @@ namespace gamelib
 		{
 			const int index = GetSequenceIndex(sequence);
 			sequenceBuffer[index] = sequence;
-			sequenceBufferData2[index] = data;
+			sequenceBufferData[index] = data;
 			lastAddedSequence = sequence;
 		}
 
@@ -40,7 +39,7 @@ namespace gamelib
 
 		[[nodiscard]] uint16_t GetBufferSize() const { return bufferSize; }
 
-		[[nodiscard]] std::vector<T> GetDataBuffer() const { return sequenceBufferData2.data(); }
+		[[nodiscard]] std::vector<T> GetDataBuffer() const { return sequenceBufferData.data(); }
 
 		[[nodiscard]] uint16_t GetSequenceIndex(const uint16_t sequence) const
 		{
@@ -54,7 +53,6 @@ namespace gamelib
 
 		int bufferSize{};
 		uint32_t* sequenceBuffer = {};
-		std::vector<T> sequenceBufferData2 = {};
-		T* sequenceBufferData = {}; // remove when ready
+		std::vector<T> sequenceBufferData = {};
 	};
 }

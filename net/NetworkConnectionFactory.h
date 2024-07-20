@@ -6,6 +6,8 @@
 #include "UdpConnectedNetworkSocket.h"
 #include <memory>
 
+#include "ReliableUdpNetworkSocket.h"
+
 
 namespace gamelib
 {
@@ -14,12 +16,14 @@ namespace gamelib
 	{
 	public:
 
-		static std::shared_ptr<IConnectedNetworkSocket> Create(const bool isTcp)
+		static std::shared_ptr<IConnectedNetworkSocket> Create(const bool isTcp, const bool useReliableUdp = false)
 		{
 			auto networkSocket =  
 				isTcp
 				? std::dynamic_pointer_cast<IConnectedNetworkSocket>(std::make_shared<TcpNetworkSocket>(TcpNetworkSocket()))
-				: std::dynamic_pointer_cast<IConnectedNetworkSocket>(std::make_shared<UdpConnectedNetworkSocket>(UdpConnectedNetworkSocket()));
+				: useReliableUdp
+					? std::dynamic_pointer_cast<IConnectedNetworkSocket>(std::make_shared<ReliableUdpNetworkSocket>(ReliableUdpNetworkSocket()))
+					: std::dynamic_pointer_cast<IConnectedNetworkSocket>(std::make_shared<UdpConnectedNetworkSocket>(UdpConnectedNetworkSocket()));
 
 			return networkSocket;
 		}		

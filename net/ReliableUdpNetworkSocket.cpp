@@ -2,6 +2,7 @@
 
 #include "Networking.h"
 #include "Option.h"
+#include "events/EventFactory.h"
 
 gamelib::ReliableUdpNetworkSocket::ReliableUdpNetworkSocket(const SOCKET socket): socket(socket)
 {}
@@ -16,6 +17,12 @@ int gamelib::ReliableUdpNetworkSocket::Send(const char* callersSendBuffer, const
 
 	// Track/store message as sent
 	const auto message = reliableUdp.MarkSent(PacketDatum(false, callersSendBuffer));
+
+	// Packet loss detected as we have unacknowledged data in send buffer that we are resending
+	if(message->DataCount() > 1)
+	{		
+		this->RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketLossDetectedEvent(std::make_shared<Message>(*message)));
+	}
 
 	// Write to the packingBuffer via the BitPacker	
 	message->Write(packer);
@@ -75,4 +82,21 @@ void gamelib::ReliableUdpNetworkSocket::Connect(const char* address, const char*
 {
 	auto* networking = Networking::Get();
 	socket = networking->netConnectedUdpClient(address, port);
+}
+
+std::string gamelib::ReliableUdpNetworkSocket::GetSubscriberName()
+{
+	return "ReliableUdpNetworkSocket";
+}
+
+std::vector<std::shared_ptr<gamelib::Event>> gamelib::ReliableUdpNetworkSocket::HandleEvent(
+	const std::shared_ptr<Event>& evt, const unsigned long deltaMs)
+{
+	// handling no events yet
+	return {};
+}
+
+int gamelib::ReliableUdpNetworkSocket::GetSubscriberId()
+{
+	return EventSubscriber::GetSubscriberId();
 }

@@ -28,7 +28,8 @@ namespace gamelib
 		GameWon,
 		SubscriberEventHandled,
 		ReliableUdpPacketReceived,
-		ReliableUdpCheckSumFailed
+		ReliableUdpCheckSumFailed,
+		ReliableUdpPacketLossDetected
 	};
 }
 

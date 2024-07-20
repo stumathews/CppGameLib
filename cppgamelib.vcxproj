@@ -363,6 +363,7 @@
     <ClCompile Include="ai\BehaviorTreeBuilder.cpp" />
     <ClCompile Include="character\DirectionUtils.cpp" />
     <ClCompile Include="character\StatefulMove.cpp" />
+    <ClCompile Include="events\ReliableUdpPacketLossDetectedEvent.h" />
     <ClCompile Include="graphic\Subscribable.cpp" />
     <ClCompile Include="graphic\Window.cpp" />
     <ClCompile Include="net\Message.cpp" />

@@ -11,6 +11,7 @@
 #include "IEventSubscriber.h"
 #include "ReliableUdpCheckSumFailedEvent.h"
 #include "ReliableUdpPacketReceivedEvent.h"
+#include "ReliableUdpPacketLossDetectedEvent.h"
 #include "UpdateAllGameObjectsEvent.h"
 #include "UpdateProcessesEvent.h"
 #include "net/Message.h"
@@ -52,6 +53,7 @@ namespace gamelib
 		[[nodiscard]] std::shared_ptr<Event> CreateSubscriberHandledEvent(IEventSubscriber* value, const std::shared_ptr<Event>& event, unsigned long deltaMs) const;
 		[[nodiscard]] std::shared_ptr<ReliableUdpPacketReceivedEvent> CreateReliableUdpPacketReceived(std::shared_ptr<Message> message) const;
 		[[nodiscard]] std::shared_ptr<ReliableUdpCheckSumFailedEvent> CreateReliableUdpCheckSumFailedEvent(std::shared_ptr<Message> failedMessage) const;
+		[[nodiscard]] std::shared_ptr<ReliableUdpPacketLossDetectedEvent> CreateReliableUdpPacketLossDetectedEvent(const std::shared_ptr<Message>& messageBundle) const;
 		[[nodiscard]] static std::shared_ptr<AddGameObjectToCurrentSceneEvent> CreateAddToSceneEvent(const std::shared_ptr<GameObject>& obj);
 		[[nodiscard]] std::shared_ptr<SceneChangedEvent> CreateSceneChangedEventEvent(int newLevel) const;
 		[[nodiscard]] std::shared_ptr<Event> CreateGenericEvent(const EventId& id, const std::string& origin) const;

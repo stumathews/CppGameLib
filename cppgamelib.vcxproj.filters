@@ -782,6 +782,9 @@
     <ClCompile Include="events\ReliableUdpPacketReceivedEvent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="events\ReliableUdpPacketLossDetectedEvent.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="net\tcpclient.skel" />

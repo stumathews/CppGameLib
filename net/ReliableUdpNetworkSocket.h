@@ -3,6 +3,8 @@
 #define RELIABLEUDPNETWORKSOCKET_H
 
 #include <WinSock2.h>
+
+#include "events/EventSubscriber.h"
 #include "net/IConnectedNetworkSocket.h"
 #include "net/ReliableUdp.h"
 
@@ -10,7 +12,7 @@
 
 namespace gamelib
 {
-	class ReliableUdpNetworkSocket final : public IConnectedNetworkSocket
+	class ReliableUdpNetworkSocket final : public EventSubscriber, public IConnectedNetworkSocket
 	{
 	public:
 		explicit ReliableUdpNetworkSocket(SOCKET socket);
@@ -22,6 +24,9 @@ namespace gamelib
 		[[nodiscard]] SOCKET GetRawSocket() const override;
 		~ReliableUdpNetworkSocket() override = default;
 		void Connect(const char* address, const char* port) override;
+		std::string GetSubscriberName() override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs) override;
+		int GetSubscriberId() override;
 
 	private:
 		SOCKET socket = -1;

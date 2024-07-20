@@ -756,7 +756,6 @@ TEST_F(BitPackingTests, ManyPackLangthsOfStringsReadLate)
 	const bit_packing_types::String<uint16_t> semi("semi"); // 4 chars are 32 which is aligned
 	const bit_packing_types::String<uint16_t> finals("finals"); // 6 chars are 48 which is aligned
 
-
 	bit_packing_types::String<uint16_t> tempEngland;
 	bit_packing_types::String<uint16_t> tempAre;	
 	bit_packing_types::String<uint16_t> tempIn;
@@ -788,6 +787,67 @@ TEST_F(BitPackingTests, ManyPackLangthsOfStringsReadLate)
 	EXPECT_STREQ(tempThe.c_str(), the.c_str());
 	EXPECT_STREQ(tempSemi.c_str(), semi.c_str());
 	EXPECT_STREQ(tempFinals.c_str(), finals.c_str());
+}
+
+TEST_F(BitPackingTests, EmptyStrings)
+{
+	uint16_t buffer[50];
+	
+	BitPacker packer(buffer, 32);
+	BitfieldReader reader(buffer, 32);
+
+	constexpr auto numberBits = 16;
+
+	// write 1
+	packer.Pack(numberBits, 1);
+
+	// write Stu
+	const bit_packing_types::String<uint16_t> Name("Stu");
+	Name.Write(packer);
+
+	// Write 2
+	packer.Pack(numberBits, 2);
+
+	// Write empty string
+	const bit_packing_types::String<uint16_t> Surname("");
+	Surname.Write(packer);
+
+	// write Robert Charles
+	const bit_packing_types::String<uint16_t> Middle("Robert Charles");
+	Middle.Write(packer);
+
+	// write 3
+	packer.Pack(numberBits, 3);
+	
+	// read 1
+	EXPECT_EQ(reader.ReadNext<int>(numberBits), 1);
+	
+	// read Stu
+	bit_packing_types::String<uint16_t> readName;
+	readName.Read(reader);
+
+	// Read 2
+	EXPECT_EQ(reader.ReadNext<int>(numberBits), 2);
+
+	// Ready Empty string
+	bit_packing_types::String<uint16_t> readSurname;
+	readSurname.Read(reader);
+
+
+	// Read middle name
+
+	bit_packing_types::String<uint16_t> readMiddle;
+	readMiddle.Read(reader);
+
+	// read 3
+
+	EXPECT_EQ(reader.ReadNext<int>(numberBits), 3);
+
+	EXPECT_STREQ(readName.c_str(), Name.c_str());
+	EXPECT_STREQ(readSurname.c_str(), Surname.c_str());
+	EXPECT_STREQ(readMiddle.c_str(), Middle.c_str());
+
+
 }
 
 TEST_F(BitPackingTests, PackACustomFormat)

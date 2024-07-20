@@ -40,22 +40,26 @@ namespace gamelib
 				// Write how many elements are in this string
 	    		bitPacker.Pack(sizeof(T)*8, static_cast<T>(numElements));
 
+				if(numElements == 0) return; // empty string
+
 				// Push bytes into bitpacker's buffer directly
 				bitPacker.PushBytes(&elements[0], numElements);
 		    }
 
 		    void Read(BitfieldReader<T>& bitfieldReader)
 		    {
-				// read how many elemments in this string
+				// read how many elements in this string
 		        numElements = bitfieldReader.ReadNext<int>(sizeof(T)*8);
+				numBits = NumBits();
+
+				if(numElements == 0) return; // Empty string
 
 				elements.resize(numElements);
 
 				// Read byte directly from the reader's buffer
 				bitfieldReader.FetchBytes(&elements[0], numElements);
 
-				elements.push_back('\0');
-				numBits = NumBits();
+				elements.push_back('\0');				
 		    }
 
 			void Initialize(const std::string& string)

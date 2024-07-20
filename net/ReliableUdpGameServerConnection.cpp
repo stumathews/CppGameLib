@@ -12,12 +12,7 @@ namespace gamelib
 		UdpGameServerConnection(host, port)
 	{
 	}
-
-	std::vector<std::shared_ptr<Event>> ReliableUdpGameServerConnection::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs)
-	{
-		return {};
-	}
-
+	
 	void ReliableUdpGameServerConnection::CheckForPlayerTraffic()
 	{
 		// Identifier who the client sending the data is

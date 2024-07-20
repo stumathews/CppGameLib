@@ -9,8 +9,10 @@
 #include <net/NetworkPlayer.h>
 
 #include "IEventSubscriber.h"
+#include "ReliableUdpPacketReceivedEvent.h"
 #include "UpdateAllGameObjectsEvent.h"
 #include "UpdateProcessesEvent.h"
+#include "net/Message.h"
 
 namespace gamelib
 {
@@ -47,6 +49,7 @@ namespace gamelib
 		[[nodiscard]] std::shared_ptr<Event> CreateNetworkPlayerJoinedEvent(const NetworkPlayer& player) const;
 		[[nodiscard]] std::shared_ptr<ControllerMoveEvent> CreateControllerMoveEvent(Direction direction, ControllerMoveEvent::KeyState keyState) const;
 		[[nodiscard]] std::shared_ptr<Event> CreateSubscriberHandledEvent(IEventSubscriber* value, const std::shared_ptr<Event>& event, unsigned long deltaMs) const;
+		[[nodiscard]] std::shared_ptr<ReliableUdpPacketReceivedEvent> CreateReliableUdpPacketReceived(std::shared_ptr<Message> message) const;
 		[[nodiscard]] static std::shared_ptr<AddGameObjectToCurrentSceneEvent> CreateAddToSceneEvent(const std::shared_ptr<GameObject>& obj);
 		[[nodiscard]] std::shared_ptr<SceneChangedEvent> CreateSceneChangedEventEvent(int newLevel) const;
 		[[nodiscard]] std::shared_ptr<Event> CreateGenericEvent(const EventId& id, const std::string& origin) const;

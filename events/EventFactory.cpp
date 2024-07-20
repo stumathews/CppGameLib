@@ -11,6 +11,8 @@
 #include "UpdateProcessesEvent.h"
 #include <events/SubscriberHandledEvent.h>
 
+#include "ReliableUdpPacketReceivedEvent.h"
+
 namespace gamelib
 {
 	EventFactory* EventFactory::Get()
@@ -101,6 +103,11 @@ namespace gamelib
 	                                                                  unsigned long deltaMs) const
 	{
 		return std::make_shared<SubscriberHandledEvent>(value, event, deltaMs);
+	}
+
+	std::shared_ptr<ReliableUdpPacketReceivedEvent> EventFactory::CreateReliableUdpPacketReceived(std::shared_ptr<Message> message) const
+	{
+		return std::make_shared<ReliableUdpPacketReceivedEvent>(message);
 	}
 
 	std::shared_ptr<AddGameObjectToCurrentSceneEvent> EventFactory::CreateAddToSceneEvent(const std::shared_ptr<GameObject> & obj)

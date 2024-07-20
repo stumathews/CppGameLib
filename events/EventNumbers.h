@@ -27,6 +27,7 @@ namespace gamelib
 		UpdateProcesses,
 		GameWon,
 		SubscriberEventHandled,
+		ReliableUdpPacketReceived
 	};
 }
 

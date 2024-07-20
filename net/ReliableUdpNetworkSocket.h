@@ -27,13 +27,16 @@ namespace gamelib
 		std::string GetSubscriberName() override;
 		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs) override;
 		int GetSubscriberId() override;
+		
 
 	private:
 		SOCKET socket = -1;
 		ReliableUdp reliableUdp;
+
+		int SendAck(const Message& messageToAck);
 		
-		constexpr static auto PackingBufferElements = 512;
-		constexpr static auto ReceiveBufferMaxElements = 512;
+		constexpr static auto PackingBufferElements = 300;
+		constexpr static auto ReceiveBufferMaxElements = 300;
 		uint32_t packingBuffer[PackingBufferElements]{};
 		uint32_t readBuffer[ReceiveBufferMaxElements]{};
 	};

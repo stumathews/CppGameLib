@@ -16,7 +16,7 @@ int gamelib::ReliableUdpNetworkSocket::Send(const char* callersSendBuffer, const
 	BitPacker packer(packingBuffer, PackingBufferElements);
 
 	// Track/store message as sent
-	const auto message = reliableUdp.MarkSent(PacketDatum(false, callersSendBuffer));
+	const auto message = reliableUdp.MarkSent(PacketDatum(false, callersSendBuffer), false);
 
 	// Packet loss detected as we have unacknowledged data in send buffer that we are resending
 	if(message->DataCount() > 1)
@@ -54,7 +54,25 @@ int gamelib::ReliableUdpNetworkSocket::Receive(char* callersReceiveBuffer, const
 
 	// Unpack message
 	message.Read(packedBufferReader);
+
+	// Check for any transmission errors
+	if(!message.ValidateChecksum())
+	{
+		RaiseEvent(EventFactory::Get()->CreateReliableUdpCheckSumFailedEvent(std::make_shared<Message>(message)));
+
+		// We drop the packet, no acknowledgment is sent. Sender will need to resend.
+		return 0;
+	}
+
+
 	reliableUdp.MarkReceived(message);
+
+	// SendAck - only to non-ack messages (don't ack an ack!)
+	if(message.Header.MessageType != 0)	
+	{		
+		RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketReceived(std::make_shared<Message>(message)));
+		SendAck(message);
+	}
 
 	// Copy contents to caller's receive buffer to expose the contents of the message
 	std::stringstream ss;
@@ -76,6 +94,31 @@ bool gamelib::ReliableUdpNetworkSocket::IsValid()
 SOCKET gamelib::ReliableUdpNetworkSocket::GetRawSocket() const
 {
 	return socket;
+}
+
+int gamelib::ReliableUdpNetworkSocket::SendAck(const Message& messageToAck)
+{		
+	BitPacker packer(packingBuffer, PackingBufferElements);
+
+	std::stringstream ackMessageContents;
+		ackMessageContents << "client acks server's seq:" << messageToAck.Header.Sequence << std::endl;
+
+	// Prepare data to be sent - not ack will be pre-acked so we don't try to resend it
+	const auto data = PacketDatum(true, ackMessageContents.str().c_str());		
+
+	// Add data to message and mark message as having been sent (we sent it later)
+	auto* ackMessage = reliableUdp.MarkSent(data, true);
+
+	ackMessage->Header.MessageType = 0; // ack
+
+	// Write message to network buffer		
+	ackMessage->Write(packer);
+
+	// Count only as much as what was packed
+	const auto countBytesToSend = static_cast<int>(ceil(static_cast<double>(packer.TotalBitsPacked()) / static_cast<double>(8)));
+	
+	// Send network buffer over udp		
+	return send(socket, reinterpret_cast<char*>(readBuffer), countBytesToSend, 0);
 }
 
 void gamelib::ReliableUdpNetworkSocket::Connect(const char* address, const char* port)
@@ -100,3 +143,5 @@ int gamelib::ReliableUdpNetworkSocket::GetSubscriberId()
 {
 	return EventSubscriber::GetSubscriberId();
 }
+
+

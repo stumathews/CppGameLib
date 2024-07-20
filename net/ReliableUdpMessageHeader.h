@@ -13,7 +13,8 @@ namespace gamelib
 	    uint16_t Sequence; // current sequence
 	    uint16_t LastAckedSequence;
 	    uint32_t LastAckedBits; // bit n is set means Sequence - n was acked ie the previous n sequence was acked
-
+		uint8_t MessageType; // 0 is acknowledgment, positive numbers are message types
+		
 		void Write(BitPacker<uint32_t>& bitPacker) const;
 	    void Read(BitfieldReader<uint32_t>& bitfieldReader);
 	};

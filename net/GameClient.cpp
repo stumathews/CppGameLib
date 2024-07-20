@@ -15,8 +15,7 @@ using namespace json11;
 namespace gamelib
 {
 	GameClient::GameClient(const std::string& nickName, const std::shared_ptr<IConnectedNetworkSocket>& inConnection)
-	{
-		readBufferLength = 512;				
+	{				
 		noDataTimeout.tv_sec = 0;
 		noDataTimeout.tv_usec = 0;
 		isDisconnectedFromGameServer = true;
@@ -116,29 +115,23 @@ namespace gamelib
 		// Process network data coming from the game server
 		if (FD_ISSET(connection->GetRawSocket(), &readfds))
 		{
-			constexpr int maxBufferLength = 512;
-
-			char readBuffer[maxBufferLength];
-			constexpr int bufferLength = maxBufferLength;
-			ZeroMemory(readBuffer, bufferLength);
-
 			// Read the payload off the network, wait for all the data
-			const int bytesReceived = connection->Receive(readBuffer, bufferLength);
+			const int bytesReceived = connection->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferMaxElements * 32 /8);
 
 			if (bytesReceived > 0)
 			{
-				ParseReceivedServerPayload(readBuffer);
-				RaiseNetworkTrafficReceivedEvent(readBuffer, bytesReceived);
+				ParseReceivedServerPayload(reinterpret_cast<char*>(readBuffer));
+				RaiseNetworkTrafficReceivedEvent(reinterpret_cast<char*>(readBuffer), bytesReceived);
 
 				this->isDisconnectedFromGameServer = false;
 			}
 			else if (bytesReceived == SOCKET_ERROR && WSAGetLastError() == WSAECONNRESET)
-				{
-					// Connection closed. Server died.
-					this->isDisconnectedFromGameServer = true;
+			{
+				// Connection closed. Server died.
+				this->isDisconnectedFromGameServer = true;
 
-					Logger::Get()->LogThis("Connection closed. Server died.");
-				}
+				Logger::Get()->LogThis("Connection closed. Server died.");
+			}
 		}
 	}
 

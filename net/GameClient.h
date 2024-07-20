@@ -55,9 +55,7 @@ namespace gamelib
 
 		// How long to wait for network data the arrive {0,0} means non-blocking
 		timeval noDataTimeout{};
-
-		// What is the maximum amount of data to read off the network.
-		int readBufferLength;
+		
 		std::string nickName;
 		EventManager* eventManager;
 		SerializationManager* serializationManager;
@@ -75,6 +73,8 @@ namespace gamelib
 		int InternalSend(const char* array, size_t size) const;
 		void ParseReceivedServerPayload(const char*  buffer) const;
 		std::string GetSubscriberName() override;
+		constexpr static auto ReceiveBufferMaxElements = 300;
+		uint32_t readBuffer[ReceiveBufferMaxElements]{};
 	};
 }
 

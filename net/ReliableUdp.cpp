@@ -13,15 +13,15 @@ gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum)
 	// add to send buffer
 	SendBuffer.Put(sequence, datum);
 			
-	// We'll attach any unacked data that was supposed to have been sent previously
-	for(uint16_t i = 0; i < SendBuffer.GetBufferSize(); i++)
+	// Attach previous sequences' messages that have not been acked yet
+	for(uint16_t i = 0; i < SendBuffer.GetBufferSize()-1; i++)
 	{
-		if(i == 0) continue; // skip getting current sequence
+		if(i == 0) continue; // We don't have a seq0 (sequence numbers start at 1)
 
 		// Get previous sequence and see if its unacked...
-		const auto pPreviousDatum = SendBuffer.Get(sequence - i);
+		const auto pPreviousDatum = SendBuffer.Get(datum.Sequence - i);
 
-		if(pPreviousDatum == nullptr) continue;
+		if(pPreviousDatum == nullptr) break;
 
 		auto previousDatum = *pPreviousDatum;
 
@@ -35,79 +35,81 @@ gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum)
 
 	// Send Message, attaching any consecutive data that was not previously sent
 	// also include a reference to what we've received from the sender previously, just in case an ack did not go through to the sender
-	sentMessage = new Message(sequence, lastAckedSequence, GeneratePreviousAckedBits(), dataToSent.size(), dataToSent);
+	sentMessage = new Message(datum.Sequence, lastAckedSequence, GeneratePreviousAckedBits(), dataToSent.size(), dataToSent);
 			
 	return sentMessage;
 }
 
-void gamelib::ReliableUdp::MarkReceived(const Message& message)
+void gamelib::ReliableUdp::MarkReceived(const Message& senderMessage)
 {
-	const auto messageSequence = message.Header.Sequence;
-			
-	// Mark the sender's last known message it acked from us as acked, i.e no need to resend 
-	SendBuffer.Put(message.Header.LastAckedSequence, PacketDatum(true));
-				
-	// Look through the sender's list of previously acked messages and ensure that we dont re-send them
-	constexpr uint16_t numBits = sizeof message.Header.LastAckedBits * 8;
-	for(uint16_t i = 0; i < numBits ;i++)
+	// Sender received LastAckedSequence of ours we sent...		
+	const auto* p = SendBuffer.Get(senderMessage.Header.LastAckedSequence);
+	if(p != nullptr)
 	{
-		if(i == 0) continue;
+		auto datum = *p;
+		datum.Acked = true;
+		SendBuffer.Put(datum.Sequence, datum);
+	}
 
-		if(BitFiddler<uint32_t>::BitCheck(message.Header.LastAckedBits, i))
+	// ...and the bits set in LastAckedBits should say how many prior sequences were also received
+	for(uint16_t i = 0; i < static_cast<uint16_t>(sizeof (senderMessage.Header.LastAckedBits) * 8 -1) ; i++)
+	{
+		// if bit n is set, the prior sequence received was priorSeq - n+1
+		if(BitFiddler<uint32_t>::BitCheck(senderMessage.Header.LastAckedBits, i))
 		{
-			const uint16_t previousSequence = (message.Header.LastAckedSequence - i) + 1;
-			auto datumToUpdate = *SendBuffer.Get(previousSequence); datumToUpdate.Acked = true;
+			// bit 0 means the previous previous sequence before LastAckedSequqnce was received, bit 1, the next prior, bit 2, the prior, prior
+			const uint16_t previousSequence = (static_cast<uint16_t>(senderMessage.Header.LastAckedSequence) - (i+1)) ;
+			auto datumToUpdate = *SendBuffer.Get(previousSequence);
+
+			// mark it as having been received/acked by sender, acked messages will not be re-sent from the send buffer
+			datumToUpdate.Acked = true;
 			SendBuffer.Put(previousSequence, datumToUpdate);
 		}
 	}
 
-	// mark all the containing prior sequences as having been received too
-	for(uint16_t i = 0; i < message.Data().size()-1; i++)
+	// Mark all the sequences as having been received
+	for(int i = static_cast<int>(senderMessage.Data().size()) -1 ; i >= 0 ; i--)
 	{
-		if(i == 0) continue; // skip current sequence
+		// The current sequence is index 0, prior sequences were added on top, so a next index 1, 2, 3 are the prior sequences etc.
+		auto datumToUpdate = senderMessage.Data()[i];
+		datumToUpdate.Acked = true;
+		ReceiveBuffer.Put(datumToUpdate.Sequence, datumToUpdate);
+	}
 
-		const uint16_t currentSequence = messageSequence - i;
-		auto datumToUpdate = message.Data()[currentSequence]; datumToUpdate.Acked = true;
-		ReceiveBuffer.Put(currentSequence, datumToUpdate);
-	}		
-				
-	// mark the this incoming sequence as finally received after all previous ones contained in the message
-	PacketDatum incomingData = message.Data()[0]; incomingData.Acked = true;
-	ReceiveBuffer.Put(messageSequence, incomingData);
-
-	// last mark this as the last acknowledged sequence if we've not seen it before, i.e it larger than waht we've previously seen
-	if(messageSequence > lastAckedSequence)
+	// last mark this as the last acknowledged sequence if we've not seen it before, i.e it larger than what we've previously seen
+	if(senderMessage.Header.Sequence > lastAckedSequence)
 	{
-		lastAckedSequence = messageSequence;
+
+		lastAckedSequence = senderMessage.Header.Sequence;
 	}
 }
 
 uint32_t gamelib::ReliableUdp::GeneratePreviousAckedBits()
 {
 	uint32_t previousAckedBits {};
-
-	// Bit 0 is always unset as it represents the current datm, while bit n represents (current - n) ie nth previous datum 
-	previousAckedBits = BitFiddler<uint32_t>::ClearBit(previousAckedBits, 0);
-
-	// Read the list of already received & acked data.
-	for(uint16_t i = 0; i < sizeof previousAckedBits * 8 - 1; i++) // we only set the last 31 bits. Bit 1 is always 0 meaning current sending sequence is unacked
+	
+	for(uint16_t i = 0; i < static_cast<uint16_t>(sizeof previousAckedBits * 8 -1); i++)
 	{
-		const auto* pCurrentDatum = ReceiveBuffer.Get(lastAckedSequence - i);
-		const auto bitPosition = i + 1; // offset bit position by 1 as we've already
 
-		if(pCurrentDatum != nullptr)
-		{
-			const auto currentPacket = *pCurrentDatum;
-			if(currentPacket.Acked)
-			{				
-				previousAckedBits = BitFiddler<uint32_t>::SetBit(previousAckedBits, bitPosition);
-				continue;
-			}
-		}
+		// If we received sequence x, we should also have received the prior sequences if the were no received because they were bundled up within x.
+		// If the last 4 sequences prior to the lastAckedSequence(eg 10) was received, this is how we should format the bits:
+		// 00000000000000000000000000001111
+		// then this is understood to mean that 9, 8, 7, 6 were also acked
+		const auto* pPriorDatum = ReceiveBuffer.Get(lastAckedSequence - (i+1));
+		const auto bitPosition = i;
+		
+		if(pPriorDatum == nullptr) break;
+		
+		const auto currentPacket = *pPriorDatum;
+		if(currentPacket.Acked)
+		{				
+			previousAckedBits = BitFiddler<uint32_t>::SetBit(previousAckedBits, bitPosition);
+			continue;
+		}		
 
 		previousAckedBits = BitFiddler<uint32_t>::ClearBit(previousAckedBits, bitPosition);					
 	}
-			
-	// NB: we'll tell the receiver that this is what we've already received
+	
+	// NB: we'll tell the receiver that since the last acked message sequence, we also received the prior message sequence for each bit is set
 	return previousAckedBits;
 }

@@ -52,7 +52,7 @@ TEST_F(CrcTests, CheckSumTest)
 	data.push_back(datum1);
 	data.push_back(datum2);
 
-	Message msg1(seq1, lastAckedSeq, previousAckedBits, data.size(), data);
+	Message msg1(seq1, lastAckedSeq, previousAckedBits, data.size(), data, false);
 
 	const auto checksum1 = msg1.GenerateCheckSum();
 

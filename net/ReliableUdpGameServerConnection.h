@@ -22,8 +22,7 @@ namespace gamelib
 	{
 	public:
 		ReliableUdpGameServerConnection(const std::string& host, const std::string& port);
-		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs = 0) override;
-		
+
 	private:
 
 		// When we check for player traffic, we need to unpack the received data
@@ -33,7 +32,6 @@ namespace gamelib
 		int InternalSend(SOCKET socket, const char* buf, int len, int flags, const sockaddr* to, int toLen) override;
 		int SendAck(const SOCKET socket, const Message& messageToAck, const int flags, PeerInfo& peerInfo);
 
-	private:
 		// Used to keep track of packets send/received
 		ReliableUdp reliableUdp;
 

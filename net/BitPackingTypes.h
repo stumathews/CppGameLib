@@ -29,7 +29,15 @@ namespace gamelib
 				return const_cast<char*>(&elements[0]);
 			}
 
-			explicit String(const std::string& value) { Initialize(value); }
+		    static int GetSizeEstimateInBytes(const size_t stringLength)
+		    {
+				const auto stringLengthStorageSizeInBits = sizeof(T)*8 ;
+				const auto charactersSizeInBytes = stringLength * 8;
+				const auto bytes = stringLengthStorageSizeInBits + charactersSizeInBytes / 8;
+				return bytes;
+			}
+
+		    explicit String(const std::string& value) { Initialize(value); }
 
 			explicit String(const char* value) { Initialize(value); }
 

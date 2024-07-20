@@ -22,7 +22,6 @@ namespace gamelib
 		const int bytesReceived = recvfrom(listeningSocket, receiveBuffer, ReceiveBufferMaxElements, 0,
 		                                   reinterpret_cast<sockaddr*>(&fromClient.Address), &fromClient.Length);
 
-
 		if (bytesReceived > 0)
 		{
 			// Hook up to a 32-bit bitfield reader to the received buffer. This will read 32-bits at a time
@@ -31,7 +30,17 @@ namespace gamelib
 			BitfieldReader reader(reinterpret_cast<uint32_t*>(receiveBuffer), count32BitBlocks);
 						
 			// Unpack receive buffer into message
-			Message message; message.Read(reader);
+			Message message;
+			message.Read(reader);
+
+			// Check for any transmission errors
+			if(!message.ValidateChecksum())
+			{
+				RaiseEvent(EventFactory::Get()->CreateReliableUdpCheckSumFailedEvent(std::make_shared<Message>(message)));
+
+				// We drop the packet, no acknowledgment is sent. Sender will need to resend.
+				return;
+			}
 
 			RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketReceived(std::make_shared<Message>(message)));
 
@@ -42,9 +51,14 @@ namespace gamelib
 			SendAck(listeningSocket, message, 0, fromClient);
 
 			// For the case were received multiple messages (aggregate)
-			for( auto& payload : message.Data())
+			// The first message payload is the message we've just received, the following payloads
+			// are for the previous messages that were bundled with this message.
+			// ie data[0] = current, data[1] is prior, data[2] is prior prior. So we need to process in reverse order until data[0]
+			const auto messageData = message.Data();
+			for(int i = static_cast<int>(message.Data().size()) -1 ; i >= 0 ; i--)
 			{
-				const char* payloadData = payload.Data();
+				const PacketDatum& datum = messageData[i];
+				const char* payloadData = datum.Data();
 				const int dataSize = static_cast<int>(strlen(payloadData));
 
 				ParseReceivedPlayerPayload(payloadData, dataSize, fromClient);
@@ -56,7 +70,6 @@ namespace gamelib
 			Networking::Get()->netError(bytesReceived, WSAGetLastError(), "Error listening for player traffic");
 		}
 	}
-
 	
 	int ReliableUdpGameServerConnection::InternalSend(const SOCKET socket, const char* buf, int len, const int flags,  const sockaddr* to, int toLen)
 	{		

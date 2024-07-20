@@ -110,6 +110,11 @@ namespace gamelib
 		return std::make_shared<ReliableUdpPacketReceivedEvent>(message);
 	}
 
+	std::shared_ptr<ReliableUdpCheckSumFailedEvent> EventFactory::CreateReliableUdpCheckSumFailedEvent(std::shared_ptr<Message> failedMessage) const
+	{
+		return std::make_shared<ReliableUdpCheckSumFailedEvent>(failedMessage);
+	}
+
 	std::shared_ptr<AddGameObjectToCurrentSceneEvent> EventFactory::CreateAddToSceneEvent(const std::shared_ptr<GameObject> & obj)
 	{
 		return std::make_shared<AddGameObjectToCurrentSceneEvent>(obj);

@@ -23,6 +23,9 @@ namespace gamelib
 		 */
 		Message(uint16_t sequence, const uint16_t lastAckedSequence, uint32_t previousAckedBits,
 		                 uint16_t n, const std::vector<PacketDatum >& inData);
+		uint32_t GenerateCheckSum();
+		bool ValidateChecksum(uint32_t yourChecksum);
+		bool ValidateChecksum();
 
 		Message() = default;
 
@@ -34,6 +37,7 @@ namespace gamelib
 
 		// Number of aggregate messages
 		[[nodiscard]] uint16_t DataCount() const;
+		
 
 		// Pack into bitPacker's associated buffer
 		void Write(BitPacker<uint32_t>& bitPacker) const;
@@ -43,7 +47,11 @@ namespace gamelib
 			
 		
 	private:
+		void Write(BitPacker<uint32_t>& bitPacker, bool includeCheckSum) const;
+		void Read(BitfieldReader<uint32_t>& bitfieldReader, bool includeCheckSum);
 		std::vector<PacketDatum> packets{};
+		static constexpr int CheckSumBufferElements = 300;
+		uint32_t checkSumBuffer[CheckSumBufferElements] {0}; //enough to hold up to 1200 bytes of packet data for check-summing
 	};
 }
 #endif

@@ -2,7 +2,7 @@
 #include "GameClient.h"
 #include "Option.h"
 
-gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum)
+gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum, bool isAckMessage )
 {
 	// increase sequence number for this datum to be sent
 	datum.Sequence = ++sequence;
@@ -30,7 +30,7 @@ gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum)
 		// We can only add up to the limit of what we can send. This is based on the MTU which is difficult to estimate so we use a
 		// reasonable value that is around the general upper limit for MTUs which is 1000-1500 bytes.
 		// We won't support packets larger than this (fragmentation) ie. splitting packets and reassembling them
-		const auto canAddMoreData = messageSizeInBytes <= maxMessageSizeBytes + previousDatum.EstimateSizeInBytes();
+		const auto canAddMoreData = messageSizeInBytes <= maxMessageSizeBytes - previousDatum.EstimateSizeInBytes();
 				
 		// We have some previous data that was not sent.
 		if(!previousDatum.Acked && canAddMoreData)
@@ -44,7 +44,7 @@ gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum)
 
 	// Send Message, attaching any consecutive data that was not previously sent
 	// also include a reference to what we've received from the sender previously, just in case an ack did not go through to the sender
-	sentMessage = new Message(datum.Sequence, lastAckedSequence, GeneratePreviousAckedBits(), dataToSent.size(), dataToSent);
+	sentMessage = new Message(datum.Sequence, lastAckedSequence, GeneratePreviousAckedBits(), dataToSent.size(), dataToSent, isAckMessage);
 			
 	return sentMessage;
 }

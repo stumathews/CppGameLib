@@ -58,20 +58,16 @@ namespace gamelib
 
 	void UdpGameServerConnection::CheckForPlayerTraffic()
 	{
-		const int DEFAULT_BUFLEN = 512;
-		char buffer[DEFAULT_BUFLEN];
-		const int bufferLength = DEFAULT_BUFLEN;
-		ZeroMemory(buffer, bufferLength);
 				
 		PeerInfo fromClient; // Identifier who the client sending the data is
-				
+
 		// Read all incoming data		
-		const int bytesReceived = recvfrom(listeningSocket, buffer, bufferLength, 0, (sockaddr*) &fromClient.Address, &fromClient.Length);
+		const int bytesReceived = recvfrom(listeningSocket, reinterpret_cast<char*>(readBuffer), ReadBufferSizeInBytes, 0, (sockaddr*) &fromClient.Address, &fromClient.Length);
 
 		if (bytesReceived > 0)
 		{
-			ParseReceivedPlayerPayload(buffer, bufferLength, fromClient);
-			RaiseNetworkTrafficReceivedEvent(buffer, bytesReceived, fromClient);
+			ParseReceivedPlayerPayload(reinterpret_cast<char*>(readBuffer), ReadBufferSizeInBytes, fromClient);
+			RaiseNetworkTrafficReceivedEvent(reinterpret_cast<char*>(readBuffer), bytesReceived, fromClient);
 		}
 	}
 

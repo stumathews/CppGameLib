@@ -60,7 +60,12 @@ namespace gamelib
 
 		// Inherited via IGameServerConnection
 		void Create() override;
-
+		
+		
+	protected:		
+		constexpr static auto ReadBufferMaxElements = 300;
+		constexpr static auto ReadBufferSizeInBytes = ReadBufferMaxElements * 32 / 8;
+		uint32_t readBuffer[ReadBufferMaxElements]{};
 	public:
 		void Disconnect() override;
 	};

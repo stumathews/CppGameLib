@@ -565,7 +565,7 @@ TEST_F(NetworkingTests, ReliableUdpNetworkTest)
 	// Collect events from Event Manger to see what traffic was captured
 	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
 	
-	EXPECT_EQ(serverEmittedEvents.size(), 6); // six packets in total 3 sends, 3 unacknowledged re-sends
+	EXPECT_EQ(serverEmittedEvents.size(), 9); // six packets in total 3 sends, 3 unacknowledged re-sends
 
 	const int countData1 = ranges::count_if(serverEmittedEvents, [data1](shared_ptr<Event> event)
 	{

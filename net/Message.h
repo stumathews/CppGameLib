@@ -20,9 +20,9 @@ namespace gamelib
 		 * \param previousAckedBits 
 		 * \param n number of contained packets (if > 1 this is an aggregated message containing other messages)
 		 * \param inData the contained packets
+		 * \param isAckMessage is the message type is an ack type
 		 */
-		Message(uint16_t sequence, const uint16_t lastAckedSequence, uint32_t previousAckedBits,
-		                 uint16_t n, const std::vector<PacketDatum >& inData);
+		Message(uint16_t sequence, const uint16_t lastAckedSequence, uint32_t previousAckedBits, uint16_t n, const std::vector<PacketDatum >& inData, bool isAckMessage);
 		uint32_t GenerateCheckSum();
 		bool ValidateChecksum(uint32_t yourChecksum);
 		bool ValidateChecksum();

@@ -7,9 +7,6 @@
 #include "UdpGameServerConnection.h"
 #include "net/ReliableUdp.h"
 
-constexpr auto NetworkBufferSize = 512;
-constexpr auto ReceiveBufferMaxElements = 512;
-
 namespace gamelib
 {
 	class Networking;
@@ -34,10 +31,6 @@ namespace gamelib
 
 		// Used to keep track of packets send/received
 		ReliableUdp reliableUdp;
-
-		// Underlying packing and receiving buffer
-		uint32_t networkBuffer[NetworkBufferSize]{};
-		char receiveBuffer[ReceiveBufferMaxElements]{};
 	};
 }
 

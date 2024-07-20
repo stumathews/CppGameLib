@@ -18,8 +18,8 @@ namespace gamelib
 		// Identifier who the client sending the data is
 		PeerInfo fromClient; 
 				
-		// Read all incoming data into readBuffer		
-		const int bytesReceived = recvfrom(listeningSocket, receiveBuffer, ReceiveBufferMaxElements, 0,
+		// Read all incoming data into readBuffer
+		const int bytesReceived = recvfrom(listeningSocket, reinterpret_cast<char*>(readBuffer), ReadBufferSizeInBytes, 0,
 		                                   reinterpret_cast<sockaddr*>(&fromClient.Address), &fromClient.Length);
 
 		if (bytesReceived > 0)
@@ -27,7 +27,7 @@ namespace gamelib
 			// Hook up to a 32-bit bitfield reader to the received buffer. This will read 32-bits at a time
 
 			const auto count32BitBlocks = bytesReceived * 8 /32;
-			BitfieldReader reader(reinterpret_cast<uint32_t*>(receiveBuffer), count32BitBlocks);
+			BitfieldReader reader(readBuffer, count32BitBlocks);
 						
 			// Unpack receive buffer into message
 			Message message;
@@ -42,13 +42,16 @@ namespace gamelib
 				return;
 			}
 
-			RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketReceived(std::make_shared<Message>(message)));
 
 			// Mark this sequence as having been received
 			reliableUdp.MarkReceived(message);
 
-			// Send a acknowledgment that message was received
-			SendAck(listeningSocket, message, 0, fromClient);
+			// Send a acknowledgment that normal message was received (dont send acks to acks)
+			if(message.Header.MessageType != 0)
+			{				
+				RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketReceived(std::make_shared<Message>(message)));
+				SendAck(listeningSocket, message, 0, fromClient);
+			}
 
 			// For the case were received multiple messages (aggregate)
 			// The first message payload is the message we've just received, the following payloads
@@ -61,7 +64,8 @@ namespace gamelib
 				const char* payloadData = datum.Data();
 				const int dataSize = static_cast<int>(strlen(payloadData));
 
-				ParseReceivedPlayerPayload(payloadData, dataSize, fromClient);
+				// Temporarily do not send others states to other players
+				//ParseReceivedPlayerPayload(payloadData, dataSize, fromClient);
 				RaiseNetworkTrafficReceivedEvent(payloadData, dataSize, fromClient);
 			}
 		}
@@ -73,7 +77,7 @@ namespace gamelib
 	
 	int ReliableUdpGameServerConnection::InternalSend(const SOCKET socket, const char* buf, int len, const int flags,  const sockaddr* to, int toLen)
 	{		
-		BitPacker packer(networkBuffer, NetworkBufferSize);
+		BitPacker packer(readBuffer, ReadBufferMaxElements);
 				
 		// Prepare data to be sent
 		const auto data = PacketDatum(false, buf);		
@@ -90,15 +94,15 @@ namespace gamelib
 		const auto countBytesToSend = static_cast<int>(ceil(static_cast<double>(packer.TotalBitsPacked()) / static_cast<double>(8)));
 		
 		// Send network buffer over udp		
-		return sendto(socket, reinterpret_cast<char*>(networkBuffer), countBytesToSend, flags, to, toLen);
+		return sendto(socket, reinterpret_cast<char*>(readBuffer), countBytesToSend, flags, to, toLen);
 	}
 
 	int ReliableUdpGameServerConnection::SendAck(const SOCKET socket, const Message& messageToAck, const int flags, PeerInfo& peerInfo)
 	{
-		BitPacker packer(networkBuffer, NetworkBufferSize);
+		BitPacker packer(readBuffer, ReadBufferMaxElements);
 
 		std::stringstream ackMessage;
-		ackMessage << "server acks seq:" << messageToAck.Header.Sequence << std::endl;
+		ackMessage << "server acks client seq:" << messageToAck.Header.Sequence << std::endl;
 
 		// Add data to message and mark message as having been sent (we sent it later).
 		// Note we explicitly acked=true this to avoid resending it (acks are fire and forgets)
@@ -113,7 +117,7 @@ namespace gamelib
 		const auto countBytesToSend = static_cast<int>(ceil(static_cast<double>(packer.TotalBitsPacked()) / static_cast<double>(8)));
 		
 		// Send network buffer over udp		
-		return sendto(socket, reinterpret_cast<char*>(networkBuffer), countBytesToSend, flags, reinterpret_cast<sockaddr*>(&peerInfo.Address), peerInfo.Length);
+		return sendto(socket, reinterpret_cast<char*>(readBuffer), countBytesToSend, flags, reinterpret_cast<sockaddr*>(&peerInfo.Address), peerInfo.Length);
 	}
 }
 

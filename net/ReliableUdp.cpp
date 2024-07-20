@@ -12,7 +12,9 @@ gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum)
 
 	// add to send buffer
 	SendBuffer.Put(sequence, datum);
-			
+
+	int messageSizeInBytes = ReliableUdpMessageHeader::GetSizeInBits() / 8;
+
 	// Attach previous sequences' messages that have not been acked yet
 	for(uint16_t i = 0; i < SendBuffer.GetBufferSize()-1; i++)
 	{
@@ -25,11 +27,18 @@ gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum)
 
 		auto previousDatum = *pPreviousDatum;
 
+		// We can only add up to the limit of what we can send. This is based on the MTU which is difficult to estimate so we use a
+		// reasonable value that is around the general upper limit for MTUs which is 1000-1500 bytes.
+		// We won't support packets larger than this (fragmentation) ie. splitting packets and reassembling them
+		const auto canAddMoreData = messageSizeInBytes <= maxMessageSizeBytes + previousDatum.EstimateSizeInBytes();
+				
 		// We have some previous data that was not sent.
-		if(!previousDatum.Acked)
+		if(!previousDatum.Acked && canAddMoreData)
 		{
 			// Add it to what must be sent with this message
 			dataToSent.push_back(previousDatum);
+
+			messageSizeInBytes += previousDatum.EstimateSizeInBytes();
 		}
 	}
 

@@ -36,7 +36,10 @@ namespace gamelib
 		uint16_t lastAckedSequence {};
 	private:
 		Message* sentMessage{};
-		uint16_t sequence {};	
+		uint16_t sequence {};
+
+		const int maxMessageSizeBytes = 1200;
+		// Limit the message size to a size that is below a good estimate for MTU to avoid sending packet being dropped
 	};
 }
 

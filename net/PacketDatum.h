@@ -34,6 +34,12 @@ namespace gamelib
 			dataString = temp.c_str();
 		}
 
+		int EstimateSizeInBytes()
+		{
+			// 1 + 16 + StringSize
+			return 1 + 16 + bit_packing_types::String<uint16_t>::GetSizeEstimateInBytes(dataString.length());
+		}
+
 		bool Acked;
 		uint16_t Sequence {};
 		[[nodiscard]] const char* Data() const { return dataString.c_str();}

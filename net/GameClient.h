@@ -6,6 +6,7 @@
 
 #include "IConnectedNetworkSocket.h"
 #include "ReliableUdp.h"
+#include "time/PeriodicTimer.h"
 
 namespace gamelib
 {
@@ -63,6 +64,7 @@ namespace gamelib
 		Networking* networking;
 		EventFactory* eventFactory;
 		bool isTcp;
+		PeriodicTimer periodicTimer;
 
 		// Inherited via EventSubscriber
 		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs) override;

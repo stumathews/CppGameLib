@@ -2,7 +2,7 @@
 #include "GameClient.h"
 #include "Option.h"
 
-gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum, bool isAckMessage )
+gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum, const bool isAckMessage)
 {
 	// increase sequence number for this datum to be sent
 	datum.Sequence = ++sequence;
@@ -49,7 +49,7 @@ gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum, bool isAckMe
 	return sentMessage;
 }
 
-void gamelib::ReliableUdp::MarkReceived(const Message& senderMessage)
+void gamelib::ReliableUdp::MarkReceived(const Message& senderMessage, unsigned long receivedTimeMs)
 {
 	// Sender received LastAckedSequence of ours we sent...		
 	const auto* p = SendBuffer.Get(senderMessage.Header.LastAckedSequence);
@@ -88,7 +88,6 @@ void gamelib::ReliableUdp::MarkReceived(const Message& senderMessage)
 	// last mark this as the last acknowledged sequence if we've not seen it before, i.e it larger than what we've previously seen
 	if(senderMessage.Header.Sequence > lastAckedSequence)
 	{
-
 		lastAckedSequence = senderMessage.Header.Sequence;
 	}
 }

@@ -13,7 +13,7 @@ namespace gamelib
 	{
 	}
 	
-	void ReliableUdpGameServerConnection::CheckForPlayerTraffic()
+	void ReliableUdpGameServerConnection::CheckForPlayerTraffic(const unsigned long deltaMs)
 	{
 		// Identifier who the client sending the data is
 		PeerInfo fromClient; 
@@ -44,13 +44,13 @@ namespace gamelib
 
 
 			// Mark this sequence as having been received
-			reliableUdp.MarkReceived(message);
+			reliableUdp.MarkReceived(message, deltaMs);
 
 			// Send a acknowledgment that normal message was received (dont send acks to acks)
 			if(message.Header.MessageType != 0)
 			{				
 				RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketReceived(std::make_shared<Message>(message)));
-				SendAck(listeningSocket, message, 0, fromClient);
+				SendAck(listeningSocket, message, 0, fromClient, deltaMs);
 			}
 
 			// For the case were received multiple messages (aggregate)
@@ -75,15 +75,15 @@ namespace gamelib
 		}
 	}
 	
-	int ReliableUdpGameServerConnection::InternalSend(const SOCKET socket, const char* buf, int len, const int flags,  const sockaddr* to, int toLen)
+	int ReliableUdpGameServerConnection::InternalSend(const SOCKET socket, const char* buf, int len, const int flags,  const sockaddr* to, const int toLen, const unsigned long sendTimeMs)
 	{		
 		BitPacker packer(readBuffer, ReadBufferMaxElements);
 				
 		// Prepare data to be sent
-		const auto data = PacketDatum(false, buf);		
+		const auto data = PacketDatum(false, buf, sendTimeMs);		
 
 		// Add data to message and mark message as having been sent (we sent it later)
-		const auto message = reliableUdp.MarkSent(data);
+		const auto message = reliableUdp.MarkSent(data );
 
 		message->Header.MessageType = 1; // non-ack
 
@@ -97,7 +97,7 @@ namespace gamelib
 		return sendto(socket, reinterpret_cast<char*>(readBuffer), countBytesToSend, flags, to, toLen);
 	}
 
-	int ReliableUdpGameServerConnection::SendAck(const SOCKET socket, const Message& messageToAck, const int flags, PeerInfo& peerInfo)
+	int ReliableUdpGameServerConnection::SendAck(const SOCKET socket, const Message& messageToAck, const int flags, PeerInfo& peerInfo, const unsigned long sendTimeMs)
 	{
 		BitPacker packer(readBuffer, ReadBufferMaxElements);
 
@@ -106,7 +106,7 @@ namespace gamelib
 
 		// Add data to message and mark message as having been sent (we sent it later).
 		// Note we explicitly acked=true this to avoid resending it (acks are fire and forgets)
-		const auto message = reliableUdp.MarkSent(PacketDatum(true, ackMessage.str().c_str()));
+		const auto message = reliableUdp.MarkSent(PacketDatum(true, ackMessage.str().c_str()), sendTimeMs);
 
 		message->Header.MessageType = 0; // acknowledgment
 

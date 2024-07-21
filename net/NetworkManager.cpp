@@ -71,17 +71,17 @@ namespace gamelib
 		}
 	}
 
-	void NetworkManager::Listen() const
+	void NetworkManager::Listen(const unsigned long deltaMs) const
 	{
 		if (SettingsManager::Get()->GetBool("global", "isNetworkGame"))
 		{
 			if (isGameServer)
 			{
-				Server->Listen();
+				Server->Listen(deltaMs);
 			}
 			else
 			{
-				Client->Read();
+				Client->Read(deltaMs);
 			}
 		}
 	}

@@ -40,7 +40,7 @@ namespace gamelib
 		WSACleanup();
 	}
 
-	void UdpGameServerConnection::Listen()
+	void UdpGameServerConnection::Listen(const unsigned long deltaMs)
 	{
 		const auto maxSockets = 5; // Number of pending connections to have in the queue at any one moment
 		
@@ -52,11 +52,11 @@ namespace gamelib
 		
 		if (dataIsAvailable)
 		{
-			CheckForPlayerTraffic();			
+			CheckForPlayerTraffic(deltaMs);			
 		}
 	}
 
-	void UdpGameServerConnection::CheckForPlayerTraffic()
+	void UdpGameServerConnection::CheckForPlayerTraffic(unsigned long deltaMs)
 	{
 				
 		PeerInfo fromClient; // Identifier who the client sending the data is
@@ -88,7 +88,7 @@ namespace gamelib
 		eventManager->RaiseEventWithNoLogging(event);
 	}
 
-	int UdpGameServerConnection::InternalSend(SOCKET socket, const char* buf, int len, int flags,  const sockaddr* to, int tolen)
+	int UdpGameServerConnection::InternalSend(SOCKET socket, const char* buf, int len, int flags,  const sockaddr* to, int tolen, unsigned long sendTimeMs)
 	{		
 		return sendto(socket, buf, len, flags, to, tolen);
 	}

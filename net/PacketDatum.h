@@ -13,7 +13,7 @@ namespace gamelib
 	struct PacketDatum
 	{	
 		PacketDatum();
-		explicit PacketDatum(bool acked, const char* customData = "");
+		explicit PacketDatum(bool acked, const char* customData = "", unsigned long sendTimeMs = 0);
 
 		template <typename T>		
 		void Write(BitPacker<T>& bitPacker) const
@@ -34,7 +34,7 @@ namespace gamelib
 			dataString = temp.c_str();
 		}
 
-		int EstimateSizeInBytes() const
+		[[nodiscard]] int EstimateSizeInBytes() const
 		{
 			// 1 + 16 + StringSize
 			return 1 + 16 + bit_packing_types::String<uint16_t>::GetSizeEstimateInBytes(dataString.length());
@@ -42,7 +42,7 @@ namespace gamelib
 
 		bool Acked;
 		uint16_t Sequence {};
-		double SendTime {0}; // We can evaluate the RTT for this packet when it gets acked
+		unsigned long SendTime {0}; // We can evaluate the RTT for this packet when it gets acked. This is not serialized
 		[[nodiscard]] const char* Data() const { return dataString.c_str();}
 	private:
 		std::string dataString;

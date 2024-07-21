@@ -39,7 +39,7 @@ namespace gamelib
 		void operator=(NetworkManager const&) = delete;
 
 		// Listen for network traffic destined for this this game server or this client
-		void Listen() const;
+		void Listen(const unsigned long deltaMs) const;
 		void PingGameServer() const;
 
 		std::shared_ptr<GameClient> Client = nullptr;

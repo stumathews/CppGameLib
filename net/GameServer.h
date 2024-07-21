@@ -31,7 +31,7 @@ namespace gamelib
 		/// <summary>
 		/// Checks to see if there is any data waiting to be read or written.
 		/// </summary>
-		void Listen() const;
+		void Listen(unsigned long deltaMs = 0) const;
 		
 		void Disconnect() const;
 
@@ -51,7 +51,7 @@ namespace gamelib
 		/// <summary>
 		/// Check if there is any data waiting to be ready from any of the connected player sockets
 		/// </summary>
-		void CheckForPlayerTraffic() const;
+		void CheckForPlayerTraffic(const unsigned long deltaMs) const;
 
 		// Inherited via EventSubscriber
 		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs) override;

@@ -23,11 +23,11 @@ namespace gamelib
 	private:
 
 		// When we check for player traffic, we need to unpack the received data
-		void CheckForPlayerTraffic() override;
+		void CheckForPlayerTraffic(unsigned long deltaMs) override;
 
 		// When data is sent, we need to pack it up into the over-the-wire protocol format
-		int InternalSend(SOCKET socket, const char* buf, int len, int flags, const sockaddr* to, int toLen) override;
-		int SendAck(const SOCKET socket, const Message& messageToAck, const int flags, PeerInfo& peerInfo);
+		int InternalSend(SOCKET socket, const char* buf, int len, int flags, const sockaddr* to, int toLen, unsigned long sendTimeMs = 0) override;
+		int SendAck(const SOCKET socket, const Message& messageToAck, const int flags, PeerInfo& peerInfo, unsigned long sendTimeMs = 0);
 
 		// Used to keep track of packets send/received
 		ReliableUdp reliableUdp;

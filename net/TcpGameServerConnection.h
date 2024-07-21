@@ -33,7 +33,7 @@ namespace gamelib
 
 
 		// Inherited via IGameServerConnection
-		void CheckForPlayerTraffic() override;
+		void CheckForPlayerTraffic(unsigned long deltaMs) override;
 		void ProcessPingMessage(const size_t& playerId) const;
 		void SendToConnectedPlayersExceptToSender(const std::string& senderNickname, const std::string&
 		                                          serializedMessage, const size_t& playerId) const;
@@ -44,7 +44,7 @@ namespace gamelib
 		fd_set readfds{};
 
 		// Inherited via IGameServerConnection
-		void Listen() override;
+		void Listen(const unsigned long deltaMs) override;
 		void CheckForNewTcpPlayers();
 		/// <summary>
 		/// How long to wait for network data the arrive {0,0} means non-blocking

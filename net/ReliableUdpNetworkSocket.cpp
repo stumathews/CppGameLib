@@ -11,12 +11,12 @@ gamelib::ReliableUdpNetworkSocket::ReliableUdpNetworkSocket() = default;
 
 bool gamelib::ReliableUdpNetworkSocket::IsTcp() { return false; }
 
-int gamelib::ReliableUdpNetworkSocket::Send(const char* callersSendBuffer, const int dataLength)
+int gamelib::ReliableUdpNetworkSocket::Send(const char* callersSendBuffer, const int dataLength, const unsigned long deltaMs)
 {
 	BitPacker packer(packingBuffer, PackingBufferElements);
 
 	// Track/store message as sent
-	const auto message = reliableUdp.MarkSent(PacketDatum(false, callersSendBuffer), false);
+	const auto message = reliableUdp.MarkSent(PacketDatum(false, callersSendBuffer, deltaMs), false);
 
 	// Packet loss detected as we have unacknowledged data in send buffer that we are resending
 	if(message->DataCount() > 1)
@@ -34,7 +34,7 @@ int gamelib::ReliableUdpNetworkSocket::Send(const char* callersSendBuffer, const
 	return send(socket, reinterpret_cast<char*>(packingBuffer), countBytesToSend, 0);
 }
 
-int gamelib::ReliableUdpNetworkSocket::Receive(char* callersReceiveBuffer, const int bufLength)
+int gamelib::ReliableUdpNetworkSocket::Receive(char* callersReceiveBuffer, const int bufLength, unsigned long deltaMs)
 {	
 	// Read the payload off the network, wait for all the data
 	const int bytesReceived = recv(socket, callersReceiveBuffer, bufLength, 0); 
@@ -64,14 +64,14 @@ int gamelib::ReliableUdpNetworkSocket::Receive(char* callersReceiveBuffer, const
 		return 0;
 	}
 
-
-	reliableUdp.MarkReceived(message);
+	reliableUdp.MarkReceived(message, deltaMs);
 
 	// SendAck - only to non-ack messages (don't ack an ack!)
 	if(message.Header.MessageType != 0)	
-	{		
+	{
+		
 		RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketReceived(std::make_shared<Message>(message)));
-		SendAck(message);
+		SendAck(message, deltaMs);
 	}
 
 	// Copy contents to caller's receive buffer to expose the contents of the message
@@ -96,7 +96,7 @@ SOCKET gamelib::ReliableUdpNetworkSocket::GetRawSocket() const
 	return socket;
 }
 
-int gamelib::ReliableUdpNetworkSocket::SendAck(const Message& messageToAck)
+int gamelib::ReliableUdpNetworkSocket::SendAck(const Message& messageToAck, const unsigned long sendTimeMs)
 {		
 	BitPacker packer(packingBuffer, PackingBufferElements);
 
@@ -104,7 +104,7 @@ int gamelib::ReliableUdpNetworkSocket::SendAck(const Message& messageToAck)
 		ackMessageContents << "client acks server's seq:" << messageToAck.Header.Sequence << std::endl;
 
 	// Prepare data to be sent - not ack will be pre-acked so we don't try to resend it
-	const auto data = PacketDatum(true, ackMessageContents.str().c_str());		
+	const auto data = PacketDatum(true, ackMessageContents.str().c_str(), sendTimeMs);		
 
 	// Add data to message and mark message as having been sent (we sent it later)
 	auto* ackMessage = reliableUdp.MarkSent(data, true);

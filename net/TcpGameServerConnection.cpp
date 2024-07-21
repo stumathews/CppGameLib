@@ -27,7 +27,7 @@ namespace gamelib
 		this->serializationManager = SerializationManager::Get();		
 	}
 
-	void TcpGameServerConnection::Listen()
+	void TcpGameServerConnection::Listen(const unsigned long deltaMs)
 	{
 		constexpr auto maxSockets = 5; // Number of pending connections to have in the queue at any one moment
 		
@@ -51,7 +51,7 @@ namespace gamelib
 		if (dataIsAvailable)
 		{			
 			CheckForNewTcpPlayers();
-			CheckForPlayerTraffic();			
+			CheckForPlayerTraffic(deltaMs);			
 		}
 	}
 
@@ -112,7 +112,7 @@ namespace gamelib
 		closesocket(listeningSocket);		
 	}
 
-	void TcpGameServerConnection::CheckForPlayerTraffic()
+	void TcpGameServerConnection::CheckForPlayerTraffic(unsigned long deltaMs)
 	{
 		for (size_t playerId = 0; playerId < Players.size(); playerId++)
 		{

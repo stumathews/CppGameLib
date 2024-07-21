@@ -79,7 +79,7 @@ namespace gamelib
 		/// </summary>
 		void ReadKeyboard(unsigned long deltaMs) const;
 
-		void ReadNetwork() const;
+		void ReadNetwork(const unsigned long deltaMs) const;
 
 		/// <summary>
 		/// Gte the Time now in MS

@@ -13,11 +13,11 @@ namespace gamelib
 		explicit TcpNetworkSocket(): socket(0) {  }
 
 		bool IsTcp() override;
-		int Send(const char* data, int dataLength) override;
-		int Receive(char* readBuffer, int bufLength) override;
+		int Send(const char* data, int dataLength, unsigned long deltaMs) override;
+		int Receive(char* readBuffer, int bufLength, unsigned long deltaMs) override;
 		bool IsValid() override;
 		[[nodiscard]] SOCKET GetRawSocket() const override;
-		~TcpNetworkSocket() override =default;
+		~TcpNetworkSocket() override = default;
 		void Connect(const char* address, const char* port) override;
 
 	private:

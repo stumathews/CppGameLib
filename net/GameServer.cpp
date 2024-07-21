@@ -44,14 +44,14 @@ namespace gamelib
 		eventManager->SubscribeToEvent(StartNetworkLevelEventId, this);
 	}
 	
-	void GameServer::Listen() const
+	void GameServer::Listen(const unsigned long deltaMs) const
 	{		
-		gameServerConnection->Listen();
+		gameServerConnection->Listen(deltaMs);
 	}
 		
-	void GameServer::CheckForPlayerTraffic() const
+	void GameServer::CheckForPlayerTraffic(const unsigned long deltaMs) const
 	{
-		gameServerConnection->CheckForPlayerTraffic();		
+		gameServerConnection->CheckForPlayerTraffic(deltaMs);		
 	}
 
 	void GameServer::Disconnect() const

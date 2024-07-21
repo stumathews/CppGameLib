@@ -27,7 +27,7 @@ namespace gamelib
 	public:		
 		
 		Message* MarkSent(PacketDatum datum, bool isAckMessage = false);
-		void MarkReceived(const Message& senderMessage);
+		void MarkReceived(const Message& senderMessage, unsigned long receivedTimeMs = 0);
 
 		uint32_t GeneratePreviousAckedBits();
 

@@ -100,7 +100,7 @@ namespace gamelib
 	{
 		
 		ReadKeyboard(deltaMs);
-		ReadNetwork();
+		ReadNetwork(deltaMs);
 
 		EventManager::Get()->ProcessAllEvents(deltaMs);
 		EventManager::Get()->DispatchEventToSubscriber(EventFactory::Get()->CreateUpdateAllGameObjectsEvent(), deltaMs);
@@ -171,10 +171,10 @@ namespace gamelib
 
 		getControllerInputFunction(deltaMs);
 	}
-	void GameStructure::ReadNetwork() const
+	void GameStructure::ReadNetwork(const unsigned long deltaMs) const
 	{
 		if(!sampleNetwork) return;
-		NetworkManager::Get()->Listen();
+		NetworkManager::Get()->Listen(deltaMs);
 	}
 
 	void GameStructure::HandleSpareTime(long elapsedTime)

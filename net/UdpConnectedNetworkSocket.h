@@ -14,8 +14,8 @@ namespace gamelib
 
 		void Connect(const char* address, const char* port) override;
 		bool IsTcp() override;
-		int Send(const char* data, int dataLength) override;
-		int Receive(char* readBuffer, int bufLength) override;
+		int Send(const char* data, const int dataLength, const unsigned long deltaMs) override;
+		int Receive(char* readBuffer, const int bufLength, unsigned long deltaMs) override;
 		bool IsValid() override;
 		[[nodiscard]] SOCKET GetRawSocket() const override;
 		~UdpConnectedNetworkSocket() override = default;

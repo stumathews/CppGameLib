@@ -34,16 +34,16 @@ namespace gamelib
 		EventFactory* eventFactory;
 
 		// Inherited via IGameServerConnection
-		virtual void CheckForPlayerTraffic() override;
+		virtual void CheckForPlayerTraffic(unsigned long deltaMs) override;
 		
-		virtual int InternalSend(SOCKET socket, const char* buf, int len, int flags, const sockaddr* to, int tolen);
+		virtual int InternalSend(SOCKET socket, const char* buf, int len, int flags, const sockaddr* to, int tolen, unsigned long sendTimeMs = 0);
 		void SendToConnectedPlayersExceptToSender(const std::string& senderNickname, const std::string&
 		                                          serializedMessage);
 		timeval timeout{};
 		fd_set readfds{};
 
 		// Inherited via IGameServerConnection
-		void Listen() override;
+		void Listen(const unsigned long deltaMs) override;
 
 		// Inherited via IGameServerConnection
 		void ProcessPingMessage(PeerInfo fromClient);

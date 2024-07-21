@@ -86,7 +86,7 @@ namespace gamelib
 	}
 
 
-	void GameClient::Read()
+	void GameClient::Read(const unsigned long deltaMs)
 	{
 		if(this->isDisconnectedFromGameServer)
 		{
@@ -106,11 +106,11 @@ namespace gamelib
 
 		if (dataIsAvailable)
 		{
-			CheckSocketForTraffic();
+			CheckSocketForTraffic(deltaMs);
 		}
 	}
 
-	void GameClient::CheckSocketForTraffic()
+	void GameClient::CheckSocketForTraffic(const unsigned long deltaMs)
 	{
 		// Process network data coming from the game server
 		if (FD_ISSET(connection->GetRawSocket(), &readfds))

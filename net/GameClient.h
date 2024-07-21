@@ -41,7 +41,7 @@ namespace gamelib
 		/// <summary>
 		/// Listen for incoming traffic from the game server
 		/// </summary>
-		void Read();
+		void Read(unsigned long deltaMs = 0);
 		
 	private:
 		std::shared_ptr<GameServer> gameServer;
@@ -67,7 +67,7 @@ namespace gamelib
 		// Inherited via EventSubscriber
 		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs) override;
 		void SubscribeToGameEvents();
-		void CheckSocketForTraffic();
+		void CheckSocketForTraffic(unsigned long deltaMs);
 		void RaiseNetworkTrafficReceivedEvent(const char* buffer, const int bytesReceived);
 		int InternalSend(const std::string& message) const;
 		int InternalSend(const char* array, size_t size) const;

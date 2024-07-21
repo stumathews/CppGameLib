@@ -18,14 +18,14 @@ namespace gamelib
 		explicit ReliableUdpNetworkSocket(SOCKET socket);
 		ReliableUdpNetworkSocket();
 		bool IsTcp() override;
-		int Send(const char* callersSendBuffer, int dataLength) override;
-		int Receive(char* callersReceiveBuffer, int bufLength) override;
+		int Send(const char* callersSendBuffer, const int dataLength, unsigned long deltaMs = 0) override;
+		int Receive(char* callersReceiveBuffer, int bufLength, unsigned long deltaMs = 0) override;
 		bool IsValid() override;
 		[[nodiscard]] SOCKET GetRawSocket() const override;
 		~ReliableUdpNetworkSocket() override = default;
 		void Connect(const char* address, const char* port) override;
 		std::string GetSubscriberName() override;
-		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, unsigned long deltaMs) override;
 		int GetSubscriberId() override;
 		
 
@@ -33,7 +33,7 @@ namespace gamelib
 		SOCKET socket = -1;
 		ReliableUdp reliableUdp;
 
-		int SendAck(const Message& messageToAck);
+		int SendAck(const Message& messageToAck, unsigned long sendTimeMs);
 		
 		constexpr static auto PackingBufferElements = 300;
 		constexpr static auto ReceiveBufferMaxElements = 300;

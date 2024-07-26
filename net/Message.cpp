@@ -45,7 +45,7 @@ bool gamelib::Message::ValidateChecksum(const uint32_t yourChecksum)
 
 bool gamelib::Message::ValidateChecksum()
 {
-	return ValidateChecksum(this->GenerateCheckSum());
+	return ValidateChecksum(this->Header.CheckSum);
 }
 
 std::vector<gamelib::PacketDatum> gamelib::Message::Data() const
@@ -76,7 +76,7 @@ void gamelib::Message::Write(BitPacker<uint32_t>& bitPacker, const bool includeC
 void gamelib::Message::Read(BitfieldReader<uint32_t>& bitfieldReader, const bool includeCheckSum)
 {
 	// Unpack into bitField reader's associated buffer
-	Header.Read(bitfieldReader, includeCheckSum);
+		Header.Read(bitfieldReader, includeCheckSum);
 
 	const auto arraySize = bitfieldReader.ReadNext<int>(16);
 	for(int i = 0 ; i < arraySize; i++)

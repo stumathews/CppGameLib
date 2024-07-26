@@ -16,18 +16,18 @@ namespace gamelib
 	void ReliableUdpGameServerConnection::CheckForPlayerTraffic(const unsigned long deltaMs)
 	{
 		// Identifier who the client sending the data is
-		PeerInfo fromClient; 
-				
+		PeerInfo fromClient;
+						
 		// Read all incoming data into readBuffer
 		const int bytesReceived = recvfrom(listeningSocket, reinterpret_cast<char*>(readBuffer), ReadBufferSizeInBytes, 0,
 		                                   reinterpret_cast<sockaddr*>(&fromClient.Address), &fromClient.Length);
 
+		const auto numReceivedReadBufferElements = bytesReceived * 8 /32;
+
 		if (bytesReceived > 0)
 		{
-			// Hook up to a 32-bit bitfield reader to the received buffer. This will read 32-bits at a time
-
-			const auto count32BitBlocks = bytesReceived * 8 /32;
-			BitfieldReader reader(readBuffer, count32BitBlocks);
+			// Hook up to a 32-bit bitfield reader to the received buffer. This will read 32-bits at a time			
+			BitfieldReader reader(readBuffer, numReceivedReadBufferElements);
 						
 			// Unpack receive buffer into message
 			Message message;

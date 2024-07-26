@@ -1026,14 +1026,14 @@ TEST_F(BitPackingTests, PacketDatumSerilization)
 	tempD3.Read(reader);
 
 	EXPECT_EQ(tempD1.Sequence, d1.Sequence);
-	EXPECT_EQ(tempD1.Acked, d1.Acked);
+	EXPECT_EQ(tempD1.IsAcked, d1.IsAcked);
 	EXPECT_STREQ(tempD1.Data(), d1.Data());	
 
 	EXPECT_EQ(tempD2.Sequence, d2.Sequence);
-	EXPECT_EQ(tempD2.Acked, d2.Acked);
+	EXPECT_EQ(tempD2.IsAcked, d2.IsAcked);
 	EXPECT_STREQ(tempD2.Data(), d2.Data());	
 
 	EXPECT_EQ(tempD3.Sequence, d3.Sequence);
-	EXPECT_EQ(tempD3.Acked, d3.Acked);
+	EXPECT_EQ(tempD3.IsAcked, d3.IsAcked);
 	EXPECT_STREQ(tempD3.Data(), d3.Data());
 }

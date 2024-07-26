@@ -104,8 +104,8 @@
     <IntDir>$(ProjectDir)obj\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
-    <VcpkgEnableManifest>false</VcpkgEnableManifest>
-    <VcpkgEnabled>false</VcpkgEnabled>
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+    <VcpkgEnabled>true</VcpkgEnabled>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -250,6 +250,7 @@
     <ClInclude Include="net\ReliableUdpGameServerConnection.h" />
     <ClInclude Include="net\ReliableUdpNetworkSocket.h" />
     <ClInclude Include="events\ReliableUdpPacketReceivedEvent.h" />
+    <ClInclude Include="security\Security.h" />
     <ClInclude Include="time\PeriodicTimer.h" />
     <ClInclude Include="events\EventId.h" />
     <ClInclude Include="events\EventFactory.h" />
@@ -377,6 +378,7 @@
     <ClCompile Include="net\ReliableUdpGameServerConnection.cpp" />
     <ClCompile Include="net\ReliableUdpNetworkSocket.cpp" />
     <ClCompile Include="events\ReliableUdpPacketReceivedEvent.cpp" />
+    <ClCompile Include="security\Security.cpp" />
     <ClCompile Include="time\PeriodicTimer.cpp" />
     <ClCompile Include="events\EventId.cpp" />
     <ClCompile Include="events\EventFactory.cpp" />

@@ -1,6 +1,5 @@
 {
   "dependencies": [
-    "gtest",
     "libsodium"
   ]
 }

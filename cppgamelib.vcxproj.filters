@@ -492,6 +492,9 @@
     <ClInclude Include="events\ReliableUdpCheckSumFailedEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="security\Security.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -783,6 +786,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="events\ReliableUdpPacketLossDetectedEvent.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="security\Security.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

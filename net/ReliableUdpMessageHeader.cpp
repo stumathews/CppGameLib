@@ -14,6 +14,11 @@ void gamelib::ReliableUdpMessageHeader::Write(BitPacker<uint32_t>& bitPacker, co
 	bitPacker.Finish(); //flush align to next boundary
 }
 
+void gamelib::ReliableUdpMessageHeader::Write(BitPacker<uint32_t>& bitPacker) const
+{
+	Write(bitPacker, true);
+}
+
 void gamelib::ReliableUdpMessageHeader::Read(BitfieldReader<uint32_t>& bitfieldReader, const bool includeChecksum = true)
 {
 	Sequence = bitfieldReader.ReadNext<uint16_t>(16);
@@ -28,6 +33,10 @@ void gamelib::ReliableUdpMessageHeader::Read(BitfieldReader<uint32_t>& bitfieldR
 	bitfieldReader.Finish(); // align to next boundary
 }
 
+void gamelib::ReliableUdpMessageHeader::Read(BitfieldReader<uint32_t>& bitfieldReader)
+{
+	Read(bitfieldReader, true);
+}
 int gamelib::ReliableUdpMessageHeader::GetSizeInBits()
 {
 	// LastAckedSequence, LastAckedSequence, LastAckedBits

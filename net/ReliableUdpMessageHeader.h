@@ -28,9 +28,13 @@ namespace gamelib
 		 // CRC checksym 
 		uint32_t CheckSum {};
 		
-		void Write(BitPacker<uint32_t>& bitPacker, bool includeChecksum) const;
-	    void Read(BitfieldReader<uint32_t>& bitfieldReader, const bool includeChecksum);
-	    static int GetSizeInBits();
+		
+		 void Write(BitPacker<uint32_t>& bitPacker) const;
+		 void Read(BitfieldReader<uint32_t>& bitfieldReader);
+		
+		 void Write(BitPacker<uint32_t>& bitPacker, bool includeChecksum) const;		
+		 void Read(BitfieldReader<uint32_t>& bitfieldReader, const bool includeChecksum);
+		 static int GetSizeInBits();
 	};
 }
 

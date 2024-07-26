@@ -16,31 +16,29 @@ gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum, const bool i
 	int messageSizeInBytes = ReliableUdpMessageHeader::GetSizeInBits() / 8;
 
 	// Attach previous sequences' messages that have not been acked yet
-	for(uint16_t i = 0; i < SendBuffer.GetBufferSize()-1; i++)
+	for(uint16_t i = datum.Sequence -1; i > lastAckedSequence; i--)
 	{
-		if(i == 0) continue; // We don't have a seq0 (sequence numbers start at 1)
+			// Get previous sequence and see if its unacked...
+		const auto pPreviousDatum = SendBuffer.Get(i);
 
-		// Get previous sequence and see if its unacked...
-		const auto pPreviousDatum = SendBuffer.Get(datum.Sequence - i);
+			if(pPreviousDatum == nullptr) break;
 
-		if(pPreviousDatum == nullptr) break;
+			auto previousDatum = *pPreviousDatum;
 
-		auto previousDatum = *pPreviousDatum;
+			// We can only add up to the limit of what we can send. This is based on the MTU which is difficult to estimate so we use a
+			// reasonable value that is around the general upper limit for MTUs which is 1000-1500 bytes.
+			// We won't support packets larger than this (fragmentation) ie. splitting packets and reassembling them
+			const auto canAddMoreData = messageSizeInBytes <= maxMessageSizeBytes - previousDatum.EstimateSizeInBytes();
+					
+			// We have some previous data that was not sent.
+			if(!previousDatum.IsAcked && canAddMoreData)
+			{
+				// Add it to what must be sent with this message
+				dataToSent.push_back(previousDatum);
 
-		// We can only add up to the limit of what we can send. This is based on the MTU which is difficult to estimate so we use a
-		// reasonable value that is around the general upper limit for MTUs which is 1000-1500 bytes.
-		// We won't support packets larger than this (fragmentation) ie. splitting packets and reassembling them
-		const auto canAddMoreData = messageSizeInBytes <= maxMessageSizeBytes - previousDatum.EstimateSizeInBytes();
-				
-		// We have some previous data that was not sent.
-		if(!previousDatum.Acked && canAddMoreData)
-		{
-			// Add it to what must be sent with this message
-			dataToSent.push_back(previousDatum);
-
-			messageSizeInBytes += previousDatum.EstimateSizeInBytes();
+				messageSizeInBytes += previousDatum.EstimateSizeInBytes();
+			}
 		}
-	}
 
 	// Send Message, attaching any consecutive data that was not previously sent
 	// also include a reference to what we've received from the sender previously, just in case an ack did not go through to the sender
@@ -56,7 +54,7 @@ void gamelib::ReliableUdp::MarkReceived(const Message& senderMessage, unsigned l
 	if(p != nullptr)
 	{
 		auto datum = *p;
-		datum.Acked = true;
+		datum.IsAcked = true;
 		SendBuffer.Put(datum.Sequence, datum);
 	}
 
@@ -71,7 +69,7 @@ void gamelib::ReliableUdp::MarkReceived(const Message& senderMessage, unsigned l
 			auto datumToUpdate = *SendBuffer.Get(previousSequence);
 
 			// mark it as having been received/acked by sender, acked messages will not be re-sent from the send buffer
-			datumToUpdate.Acked = true;
+			datumToUpdate.IsAcked = true;
 			SendBuffer.Put(previousSequence, datumToUpdate);
 		}
 	}
@@ -81,7 +79,7 @@ void gamelib::ReliableUdp::MarkReceived(const Message& senderMessage, unsigned l
 	{
 		// The current sequence is index 0, prior sequences were added on top, so a next index 1, 2, 3 are the prior sequences etc.
 		auto datumToUpdate = senderMessage.Data()[i];
-		datumToUpdate.Acked = true;
+		datumToUpdate.IsAcked = true;
 		ReceiveBuffer.Put(datumToUpdate.Sequence, datumToUpdate);
 	}
 
@@ -109,7 +107,7 @@ uint32_t gamelib::ReliableUdp::GeneratePreviousAckedBits()
 		if(pPriorDatum == nullptr) break;
 		
 		const auto currentPacket = *pPriorDatum;
-		if(currentPacket.Acked)
+		if(currentPacket.IsAcked)
 		{				
 			previousAckedBits = BitFiddler<uint32_t>::SetBit(previousAckedBits, bitPosition);
 			continue;

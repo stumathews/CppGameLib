@@ -7,6 +7,7 @@
 
 namespace gamelib
 {
+
 	ReliableUdpProtocolManager::ReliableUdpProtocolManager(std::shared_ptr<IConnectedNetworkSocket> gameClientConnection)
 	: gameClientConnection(std::move(gameClientConnection)), isGameServer(false)
 	{
@@ -25,12 +26,11 @@ namespace gamelib
 		FSMState sendPublicKey("SendPublicKey",
 			[&](unsigned long deltaMs)
 			{
-				// Send public key
 				BitPacker packer(readBuffer, ReceiveBufferMaxElements);
 
 				Message requestPublicKeyMessage;
 
-				requestPublicKeyMessage.Header.MessageType = 2;
+				requestPublicKeyMessage.Header.MessageType = RequestPubKey;
 
 				requestPublicKeyMessage.Write(packer);
 
@@ -92,7 +92,7 @@ namespace gamelib
 		BitPacker packer(packingBuffer, PackingBufferElements);
 
 		// Track/store message as sent
-		const auto message = reliableUdp.MarkSent(PacketDatum(false, callersSendBuffer, deltaMs), false);
+		const auto message = reliableUdp.MarkSent(PacketDatum(false, callersSendBuffer, deltaMs), General);
 
 		// Packet loss detected as we have unacknowledged data in send buffer that we are resending
 		if(message->DataCount() > 1)
@@ -106,14 +106,12 @@ namespace gamelib
 		// Count only as much as what was packed
 		const auto countBytesToSend = static_cast<int>(ceil(static_cast<double>(packer.TotalBitsPacked()) / static_cast<double>(8)));
 
-		// Send over the transport - might be a aggregated message if there were no prior acks
-		const auto sendResult = gameClientConnection->Send(reinterpret_cast<char*>(packingBuffer), countBytesToSend);
 
 		//// Use a constant nonce for now
-		//*sharedNonce = 1;
+		*sharedNonce = 1;
 
-		//// We will encrypt the message with extra bytes for auth tag
-		//std::vector<unsigned char> encryptedMessage(dataLength + crypto_secretbox_MACBYTES);
+		// We will encrypt the message with extra bytes for auth tag
+		std::vector<unsigned char> encryptedMessage(dataLength + crypto_secretbox_MACBYTES);
 
 		//// Encrypt message
 		//Security::EncryptWithSessionKey(reinterpret_cast<const unsigned char*>(data), dataLength,
@@ -122,6 +120,12 @@ namespace gamelib
 
 		//// send Encrypted message
 		//const auto sendResult = gameClientConnection->Send(reinterpret_cast<char*>(encryptedMessage.data()), encryptedMessage.size(), deltaMs);
+
+
+		// Send over the transport - might be a aggregated message if there were no prior acks
+		const auto sendResult = gameClientConnection->Send(reinterpret_cast<char*>(packingBuffer), countBytesToSend);
+
+		
 
 		// Update protocol state
 		Update(deltaMs);
@@ -226,7 +230,7 @@ namespace gamelib
 		const auto data = PacketDatum(true, ackMessageContents.str().c_str(), sendTimeMs);		
 
 		// Add data to message and mark message as having been sent (we sent it later)
-		auto* ackMessage = reliableUdp.MarkSent(data, true);
+		auto* ackMessage = reliableUdp.MarkSent(data, Ack);
 
 		// Write message to network buffer		
 		ackMessage->Write(packer);

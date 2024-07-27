@@ -24,7 +24,7 @@ void gamelib::ReliableUdpMessageHeader::Read(BitfieldReader<uint32_t>& bitfieldR
 	Sequence = bitfieldReader.ReadNext<uint16_t>(16);
 	LastAckedSequence = bitfieldReader.ReadNext<uint16_t>(16);
 	LastAckedBits = bitfieldReader.ReadNext<uint32_t>(32);
-	MessageType = bitfieldReader.ReadNext<uint8_t>(BITS_REQUIRED(0,3));
+	MessageType = static_cast<enum MessageType>(bitfieldReader.ReadNext<uint8_t>(BITS_REQUIRED(0, 3)));
 	ProtocolId = bitfieldReader.ReadNext<uint16_t>(16);	
 	if(includeChecksum)
 	{

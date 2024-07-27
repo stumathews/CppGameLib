@@ -94,9 +94,7 @@ namespace gamelib
 		const auto data = PacketDatum(false, buf, sendTimeMs);		
 
 		// Add data to message and mark message as having been sent (we sent it later)
-		const auto message = reliableUdp.MarkSent(data );
-
-		message->Header.MessageType = 1; // non-ack
+		const auto message = reliableUdp.MarkSent(data, General);
 
 		// Write message to network buffer		
 		message->Write(packer);
@@ -117,7 +115,7 @@ namespace gamelib
 
 		// Add data to message and mark message as having been sent (we sent it later).
 		// Note we explicitly acked=true this to avoid resending it (acks are fire and forgets)
-		const auto message = reliableUdp.MarkSent(PacketDatum(true, ackMessage.str().c_str()), true);
+		const auto message = reliableUdp.MarkSent(PacketDatum(true, ackMessage.str().c_str()), Ack);
 		
 		// Write message to network buffer		
 		message->Write(packer);

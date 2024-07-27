@@ -2,7 +2,7 @@
 #include "GameClient.h"
 #include "Option.h"
 
-gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum, const bool isAckMessage)
+gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum, const MessageType messageType)
 {
 	// increase sequence number for this datum to be sent
 	datum.Sequence = ++sequence;
@@ -42,7 +42,7 @@ gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum, const bool i
 
 	// Send Message, attaching any consecutive data that was not previously sent
 	// also include a reference to what we've received from the sender previously, just in case an ack did not go through to the sender
-	sentMessage = new Message(datum.Sequence, lastAckedSequence, GeneratePreviousAckedBits(), dataToSent.size(), dataToSent, isAckMessage);
+	sentMessage = new Message(datum.Sequence, lastAckedSequence, GeneratePreviousAckedBits(), dataToSent.size(), dataToSent, messageType);
 			
 	return sentMessage;
 }

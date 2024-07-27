@@ -3,16 +3,14 @@
 #include "crc.h"
 
 gamelib::Message::Message(const uint16_t sequence, const uint16_t lastAckedSequence, uint32_t previousAckedBits,
-                          const uint16_t n, const std::vector<PacketDatum>& inData, const bool isAckMessage)
+                          const uint16_t n, const std::vector<PacketDatum>& inData, const MessageType messageType)
 {
 	// Set the sequence for this message in the header
 	Header.Sequence = sequence;
 	Header.LastAckedSequence = lastAckedSequence;
 	Header.LastAckedBits = previousAckedBits;
 	Header.ProtocolId = 12;
-	Header.MessageType = isAckMessage
-							? 0 /*ack*/
-							: 1 /*normal*/;
+	Header.MessageType = messageType;
 	
 	// Store list of previously unsent messages
 	for(auto i = 0; i < n; i++)

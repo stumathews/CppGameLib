@@ -8,6 +8,13 @@
 
 namespace gamelib
 {
+	enum MessageType : uint8_t
+	{
+		Ack = 0,
+		RequestPubKey,
+		General
+	};
+
 	struct ReliableUdpMessageHeader
 	{
 		 // Sequence number
@@ -22,9 +29,8 @@ namespace gamelib
 		 // Message Types:
 		 // 0 is acknowledgment,
 		 // 1 RequestPublicKey
-		 // 2 EncryptedData
-		 // 3 UnencryptedData 
-		uint8_t MessageType {};
+		 // 3 General
+		MessageType MessageType {};
 
 		 // This is so that the server can throw away messages that have a different protocol Id
 		uint16_t ProtocolId {};

@@ -20,7 +20,7 @@
 #include "net/NetworkConnectionFactory.h"
 #include "net/ReliableUdp.h"
 #include "net/ReliableUdpGameServerConnection.h"
-#include "net/ReliableUdpNetworkSocket.h"
+#include "net/ReliableUdpProtocolManager.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -45,7 +45,7 @@ public:
 		ListeningThread = thread([&]()
 		{
 			// Make a new server connection
-			auto defaultConnection = GameServerConnectionFactory::Create(false /* UDP */, ServerAddress, ListeningPort); 
+			auto defaultConnection = GameServerConnectionFactory::Create(false /* UDP */, ServerAddress, ListeningPort, false); 
 			Server = std::make_shared<GameServer>(ServerAddress, ListeningPort,
 			                                      inGameServerConnection != nullptr
 				                                      ? inGameServerConnection
@@ -482,65 +482,15 @@ TEST_F(NetworkingTests, MultiPlayerJoinEventsEmittedOnConnect)
 	EXPECT_EQ(serverEmittedEvents.size(), 6) << "Should be 3 joined traffic events, and 3 official player joined events - both emitted from server";
 }
 
-TEST_F(NetworkingTests, ReliableUdpTest)
-{
 
-	StartNetworkServer();
-
-	const auto player1Nick = "Player1";
-
-	// Setup client
-	const auto client1 = make_shared<GameClient>(player1Nick, NetworkConnectionFactory::Create(false) /* using UDP*/);
-	client1->Initialize();
-	client1->Connect(Server);
-
-	ReliableUdp reliableUdp;
-	const PacketDatum packet1(false, "There can be only one.");
-	const PacketDatum packet2(false, "There can be only two.");
-	const PacketDatum packet3(false, "There can be only three.");
-	const PacketDatum packet4(false, "There can be only four.");
-	reliableUdp.MarkSent(packet1);
-	reliableUdp.MarkSent(packet2);
-	reliableUdp.MarkSent(packet3);
-	
-	Message* lastMessage = reliableUdp.MarkSent(packet4);
-	lastMessage->Header.LastAckedSequence = 44;
-	lastMessage->Header.LastAckedBits = 99;
-
-	constexpr int bufferSize = 512;
-
-	uint32_t buffer[bufferSize] {};
-	BitPacker bitPacker(buffer, bufferSize);
-
-	// write last message out into buffer (binpacked)
-	lastMessage->Write(bitPacker);
-	
-	// read out the last message from the buffer (binpacked)
-	BitfieldReader reader(buffer, bufferSize);
-	
-	Message message3;
-	message3.Read(reader);	
-
-	EXPECT_EQ(message3.Header.Sequence, lastMessage->Header.Sequence);
-	EXPECT_EQ(message3.Header.LastAckedSequence, lastMessage->Header.LastAckedSequence);
-	EXPECT_EQ(message3.Header.LastAckedBits, lastMessage->Header.LastAckedBits);
-	EXPECT_EQ(message3.DataCount(), 4);
-
-	// Not too sure why this is reversed but at least its containing consistent data
-	EXPECT_STREQ(message3.Data()[0].Data(), packet4.Data());
-	EXPECT_STREQ(message3.Data()[1].Data(), packet3.Data());
-	EXPECT_STREQ(message3.Data()[2].Data(), packet2.Data());
-	EXPECT_STREQ(message3.Data()[3].Data(), packet1.Data());
-}
-
-
-TEST_F(NetworkingTests, ReliableUdpNetworkTest)
+TEST_F(NetworkingTests, ReliabelUdpPacketLossResendTest)
 {
 	// The game server connection will unpack/process our protocol messages
 	const auto gameServerConnection = std::make_shared<ReliableUdpGameServerConnection>(ServerAddress, ListeningPort);
 
 	// The game client connection will pack/send our protocol messages
-	const auto gameClientConnection = std::make_shared<ReliableUdpNetworkSocket>();
+	const auto gameClientConnection = std::make_shared<UdpConnectedNetworkSocket>();
+	const auto reliableUdpProtocolManager = std::make_shared<ReliableUdpProtocolManager>(gameClientConnection);
 	
 	StartNetworkServer(gameServerConnection);
 	
@@ -552,12 +502,12 @@ TEST_F(NetworkingTests, ReliableUdpNetworkTest)
 	const PacketDatum packet2(false, data2);
 	const PacketDatum packet3(false, data3);
 	
-	gameClientConnection->Connect(ServerAddress, ListeningPort);
+	reliableUdpProtocolManager->Connect(ServerAddress, ListeningPort);
 
 	// Send data reliably with aggregated message support if not acknowledgment received
-	gameClientConnection->Send(data1, strlen(data1)); 
-	gameClientConnection->Send(data2, strlen(data2));
-	gameClientConnection->Send(data3, strlen(data3));
+	reliableUdpProtocolManager->Send(data1, strlen(data1)); 
+	reliableUdpProtocolManager->Send(data2, strlen(data2));
+	reliableUdpProtocolManager->Send(data3, strlen(data3));
 		
 	// Wait for the server to respond
 	Sleep(1000);	
@@ -565,7 +515,7 @@ TEST_F(NetworkingTests, ReliableUdpNetworkTest)
 	// Collect events from Event Manger to see what traffic was captured
 	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
 	
-	EXPECT_EQ(serverEmittedEvents.size(), 9); // six packets in total 3 sends, 3 unacknowledged re-sends
+	EXPECT_EQ(serverEmittedEvents.size(), 12); //12 packets. x3 received, x3 acks, x1 data1, x1 (data1, data2), x1 (data1, data2, data3)
 
 	const int countData1 = ranges::count_if(serverEmittedEvents, [data1](shared_ptr<Event> event)
 	{
@@ -599,4 +549,47 @@ TEST_F(NetworkingTests, ReliableUdpNetworkTest)
 	EXPECT_EQ(countData1, 3); // we expect data1 to be sent once, with 2 retries
 	EXPECT_EQ(countData2, 2); // we expect data2 to be sent once, with 1 retry
 	EXPECT_EQ(countData3, 1); // we expect data3 to be sent once
+}
+
+TEST_F(NetworkingTests, ReliableUdpAckTest)
+{
+	constexpr static auto ReceiveBufferMaxElements = 300;
+	constexpr static auto ReceiveBufferBytes = (300 * 32/8);
+	uint32_t readBuffer[ReceiveBufferMaxElements]{};
+	// The game server connection will unpack/process our protocol messages
+	const auto gameServerConnection = std::make_shared<ReliableUdpGameServerConnection>(ServerAddress, ListeningPort);
+
+	// The reliableUdpProtocol will pack/send our protocol messages
+	const auto reliableUdpProtocolManager = std::make_shared<ReliableUdpProtocolManager>(std::make_shared<UdpConnectedNetworkSocket>());
+	
+	StartNetworkServer(gameServerConnection);
+
+	const auto data1 = "There can be only one.";
+	const auto data2 = "There can be only two.";
+	const auto data3 = "There can be only three.";
+
+	const PacketDatum packet1(false, data1);
+	const PacketDatum packet2(false, data2);
+	const PacketDatum packet3(false, data3);
+	
+	reliableUdpProtocolManager->Connect(ServerAddress, ListeningPort);
+
+	// Send data reliably with aggregated message support if not acknowledgment received
+	reliableUdpProtocolManager->Send(data1, strlen(data1));
+	reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes);
+
+	reliableUdpProtocolManager->Send(data2, strlen(data2)); // packet loss should be detected here
+	reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes);
+
+	reliableUdpProtocolManager->Send(data3, strlen(data3)); // packet loss should be detected here
+	reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes);
+
+	// Wait for the server to respond
+	Sleep(1000);	
+		
+	// Collect events from Event Manger to see what traffic was captured
+	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
+
+	EXPECT_EQ(clientEmittedEvents.size(), 3); // exepcted the client to receive 3 acks for the 3 sent messages
+	EXPECT_EQ(serverEmittedEvents.size(), 9);// expected 3 sets of reliable message received and reliable message ack received (6) and 1 event for each message data (only 1 containing message data per message) (3)
 }

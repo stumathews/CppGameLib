@@ -480,9 +480,6 @@
     <ClInclude Include="net\BitfieldReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="net\ReliableUdpNetworkSocket.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="net\ReliableUdpGameServerConnection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -493,6 +490,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="security\Security.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\ReliableUdpProtocolManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\IProtocolManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\TransportOnlyProtocolManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="events\ReliableUdpAckPacketEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -776,9 +785,6 @@
     <ClCompile Include="net\ReliableUdp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="net\ReliableUdpNetworkSocket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="net\ReliableUdpGameServerConnection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -789,6 +795,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="security\Security.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="net\ReliableUdpProtocolManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

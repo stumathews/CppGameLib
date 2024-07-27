@@ -7,14 +7,15 @@
 #include <events/EventFactory.h>
 #include <file/SerializationManager.h>
 
-#include "NetworkConnectionFactory.h"
+#include "TransportOnlyProtocolManager.h"
+#include "ReliableUdpProtocolManager.h"
 #include "events/StartNetworkLevelEvent.h"
 
 using namespace json11;
 
 namespace gamelib
 {
-	GameClient::GameClient(const std::string& nickName, const std::shared_ptr<IConnectedNetworkSocket>& inConnection)
+	GameClient::GameClient(const std::string& nickName, const std::shared_ptr<IConnectedNetworkSocket>& connection, const bool useReliableUdpProtocolManager)
 	{				
 		noDataTimeout.tv_sec = 0;
 		noDataTimeout.tv_usec = 0;
@@ -25,8 +26,12 @@ namespace gamelib
 		networking = nullptr;
 		eventFactory = nullptr;
 		this->nickName = nickName;
-		this->connection = inConnection;
-		this->isTcp = connection->IsTcp();
+		
+		networkProtocolManager = useReliableUdpProtocolManager
+			? std::dynamic_pointer_cast<IProtocolManager>(std::make_shared<ReliableUdpProtocolManager>(connection)) // layers reliable protocol over transport
+			: std::dynamic_pointer_cast<IProtocolManager>(std::make_shared<TransportOnlyProtocolManager>(connection)); // passes data directly to transports ie. udp or tcp
+		
+		this->isTcp = networkProtocolManager->GetConnection()->IsTcp();
 	}
 
 	void GameClient::Initialize()
@@ -38,11 +43,12 @@ namespace gamelib
 		networking = Networking::Get();
 		eventFactory = EventFactory::Get();
 
+		networkProtocolManager->Initialize();
+
 		Logger::Get()->LogThis(isTcp ? "Client using TCP" : "Client using UDP");
 		Logger::Get()->LogThis("Nickname:" + std::string(nickName));
 		
 		periodicTimer.SetFrequency(5000);
-
 
 		SubscribeToGameEvents();
 	}
@@ -61,14 +67,14 @@ namespace gamelib
 	{
 		std::stringstream message; message << "Connecting to game server: " << inGameServer->Address << ":" << inGameServer->Port;
 		Logger::Get()->LogThis(message.str());
-
-		connection->Connect(inGameServer->Address.c_str(), inGameServer->Port.c_str());
+		
+		networkProtocolManager->Connect(inGameServer->Address.c_str(), inGameServer->Port.c_str());
 		
 		Logger::Get()->LogThis("Server socket created. Connected to server.");
-		
+				
 		SendPlayerDetails();
 						
-		if(connection->IsValid())
+		if(networkProtocolManager->GetConnection()->IsValid())
 		{
 			this->isDisconnectedFromGameServer = false;
 		}
@@ -79,12 +85,11 @@ namespace gamelib
 
 		const auto response = SerializationManager::CreateRequestPlayerDetailsMessageResponse(nickName);
 		
-		const int sendResult = connection->Send(response.c_str(), response.size());
+		const int sendResult = networkProtocolManager->Send(response.c_str(), response.size());
 		
 		Logger::Get()->LogThis(sendResult == 0 ? "Error: 0 bytes sent." : "client/player details successfully sent.");
 		
 	}
-
 
 	void GameClient::Read(const unsigned long deltaMs)
 	{
@@ -99,7 +104,7 @@ namespace gamelib
 		FD_ZERO(&readfds);
 		
 		// Add it to the list of file descriptors to listen for readability
-		FD_SET(connection->GetRawSocket(), &readfds);
+		FD_SET(networkProtocolManager->GetConnection()->GetRawSocket(), &readfds);
 				
 		// Check monitored sockets for incoming 'readable' data
 		const auto dataIsAvailable = select(maxSockets, &readfds, nullptr, nullptr, &noDataTimeout) > 0;
@@ -113,10 +118,10 @@ namespace gamelib
 	void GameClient::CheckSocketForTraffic(const unsigned long deltaMs)
 	{
 		// Process network data coming from the game server
-		if (FD_ISSET(connection->GetRawSocket(), &readfds))
+		if (FD_ISSET(networkProtocolManager->GetConnection()->GetRawSocket(), &readfds))
 		{
 			// Read the payload off the network, wait for all the data
-			const int bytesReceived = connection->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferMaxElements * 32 /8);
+			const int bytesReceived = networkProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferMaxElements * 32 /8);
 
 			if (bytesReceived > 0)
 			{
@@ -144,8 +149,8 @@ namespace gamelib
 		if(messageType == "requestPlayerDetails")
 		{
 			const auto response = SerializationManager::CreateRequestPlayerDetailsMessageResponse(nickName);
-
-			connection->Send(response.c_str(), static_cast<int>(response.size()));
+			
+			networkProtocolManager->Send(response.c_str(), static_cast<int>(response.size()));
 
 			return;
 		}
@@ -176,12 +181,12 @@ namespace gamelib
 
 	int GameClient::InternalSend(const std::string& message) const
 	{
-		return connection->Send(message.c_str(), static_cast<int>(message.size()));
+		return networkProtocolManager->Send(message.c_str(), static_cast<int>(message.size()));
 	}
 
 	int GameClient::InternalSend(const char* array, const size_t size) const
 	{
-		return connection->Send(array, static_cast<int>(size));
+		return networkProtocolManager->Send(array, static_cast<int>(size));
 	}
 
 	std::vector<std::shared_ptr<Event>> GameClient::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs)
@@ -216,17 +221,15 @@ namespace gamelib
 
 	void GameClient::PingGameServer() const
 	{
-		Logger::Get()->LogThis("Pinging game server...");
-
 		const auto message = serializationManager->CreatePingMessage();
 		const int sendResult = InternalSend(message);
 
-		Logger::Get()->LogThis(sendResult > 0 ? "Sent ping request" : "Error, no data sent");
+		Logger::Get()->LogThis(sendResult > 0 ? "Sent ping request" : "Ping error, no data sent");
 
 		if (sendResult == SOCKET_ERROR) 
 		{
 			Networking::netError(0,0, "Ping Game server connect failed. Shutting down client");
-			closesocket(connection->GetRawSocket());
+			closesocket(networkProtocolManager->GetConnection()->GetRawSocket());
 			WSACleanup();
 		}
 	}
@@ -239,9 +242,9 @@ namespace gamelib
 
 	GameClient::~GameClient()
 	{
-		if (shutdown(connection->GetRawSocket(), SD_SEND) == SOCKET_ERROR) 
+		if (shutdown(networkProtocolManager->GetConnection()->GetRawSocket(), SD_SEND) == SOCKET_ERROR) 
 		{
-			closesocket(connection->GetRawSocket());
+			closesocket(networkProtocolManager->GetConnection()->GetRawSocket());
 			WSACleanup();
 		}
 	}

@@ -231,10 +231,14 @@
     <ClInclude Include="cppgamelib\time.h" />
     <ClInclude Include="cppgamelib\utils.h" />
     <ClInclude Include="character\StatefulMove.h" />
+    <ClInclude Include="events\ReliableUdpAckPacketEvent.h" />
     <ClInclude Include="events\ReliableUdpCheckSumFailedEvent.h" />
     <ClInclude Include="events\SubscriberHandledEvent.h" />
     <ClInclude Include="graphic\Subscribable.h" />
     <ClInclude Include="graphic\Window.h" />
+    <ClInclude Include="net\IProtocolManager.h" />
+    <ClInclude Include="net\TransportOnlyProtocolManager.h" />
+    <ClInclude Include="net\ReliableUdpProtocolManager.h" />
     <ClInclude Include="net\Message.h" />
     <ClInclude Include="net\ReliableUdpMessageHeader.h" />
     <ClInclude Include="net\BitfieldReader.h" />
@@ -248,7 +252,6 @@
     <ClInclude Include="net\UdpConnectedNetworkSocket.h" />
     <ClInclude Include="net\PacketDatum.h" />
     <ClInclude Include="net\ReliableUdpGameServerConnection.h" />
-    <ClInclude Include="net\ReliableUdpNetworkSocket.h" />
     <ClInclude Include="events\ReliableUdpPacketReceivedEvent.h" />
     <ClInclude Include="security\Security.h" />
     <ClInclude Include="time\PeriodicTimer.h" />
@@ -367,6 +370,7 @@
     <ClCompile Include="events\ReliableUdpPacketLossDetectedEvent.h" />
     <ClCompile Include="graphic\Subscribable.cpp" />
     <ClCompile Include="graphic\Window.cpp" />
+    <ClCompile Include="net\ReliableUdpProtocolManager.cpp" />
     <ClCompile Include="net\Message.cpp" />
     <ClCompile Include="net\ReliableUdp.cpp" />
     <ClCompile Include="net\ReliableUdpMessageHeader.cpp" />
@@ -376,7 +380,6 @@
     <ClCompile Include="net\UdpConnectedNetworkSocket.cpp" />
     <ClCompile Include="net\PacketDatum.cpp" />
     <ClCompile Include="net\ReliableUdpGameServerConnection.cpp" />
-    <ClCompile Include="net\ReliableUdpNetworkSocket.cpp" />
     <ClCompile Include="events\ReliableUdpPacketReceivedEvent.cpp" />
     <ClCompile Include="security\Security.cpp" />
     <ClCompile Include="time\PeriodicTimer.cpp" />

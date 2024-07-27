@@ -36,8 +36,7 @@ namespace gamelib
 		}
 		else
 		{
-			auto clientConnection = NetworkConnectionFactory::Create(isTcp, useReliableUdp);
-			Client = std::make_shared<GameClient>(nickName, clientConnection);
+			Client = std::make_shared<GameClient>(nickName, NetworkConnectionFactory::Create(isTcp), useReliableUdp);
 			Client->Initialize();
 			Client->Connect(Server);
 		}

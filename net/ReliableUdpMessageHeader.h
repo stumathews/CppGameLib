@@ -19,7 +19,11 @@ namespace gamelib
 		 // bit n is set means Sequence - n was acked ie the previous n sequence was acked
 	    uint32_t LastAckedBits {};
 
-		 // 0 is acknowledgment, positive numbers are message types
+		 // Message Types:
+		 // 0 is acknowledgment,
+		 // 1 RequestPublicKey
+		 // 2 EncryptedData
+		 // 3 UnencryptedData 
 		uint8_t MessageType {};
 
 		 // This is so that the server can throw away messages that have a different protocol Id

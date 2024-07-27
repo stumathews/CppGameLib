@@ -1,15 +1,17 @@
 #pragma once
 #include "GameServer.h"
-#include <file/Logger.h>
 #include <WinSock2.h>
 #include <events/EventSubscriber.h>
 
 #include "IConnectedNetworkSocket.h"
 #include "ReliableUdp.h"
+#include "security/Security.h"
 #include "time/PeriodicTimer.h"
 
 namespace gamelib
 {
+	class IProtocolManager;
+	class ReliableUdpProtocolManager;
 	class EventManager;
 	class Networking;
 	class EventFactory;
@@ -19,7 +21,7 @@ namespace gamelib
 	{
 	public:
 		~GameClient() override;
-		GameClient(const std::string& nickName, const std::shared_ptr<IConnectedNetworkSocket>& connection);
+		GameClient(const std::string& nickName, const std::shared_ptr<IConnectedNetworkSocket>& connection, bool useReliableUdpProtocolManager = false);
 		GameClient(const GameClient& other) = delete;
 		GameClient(const GameClient&& other) = delete;
 		const GameClient& operator=(const GameClient& other) = delete;
@@ -46,10 +48,9 @@ namespace gamelib
 	private:
 		std::shared_ptr<GameServer> gameServer;
 
-		/// <summary>
-		/// The socket the game client will use to communicate with the game server
-		/// </summary>
-		std::shared_ptr<IConnectedNetworkSocket> connection;
+		std::shared_ptr<IProtocolManager> networkProtocolManager;		
+		
+		
 		fd_set readfds{};
 		bool isDisconnectedFromGameServer;
 
@@ -61,7 +62,7 @@ namespace gamelib
 		SerializationManager* serializationManager;
 		Networking* networking;
 		EventFactory* eventFactory;
-		bool isTcp;
+		bool isTcp{};
 		PeriodicTimer periodicTimer;
 
 		// Inherited via EventSubscriber

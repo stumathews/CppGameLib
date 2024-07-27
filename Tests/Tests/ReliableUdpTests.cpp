@@ -322,3 +322,45 @@ TEST_F(ReliableUdpTests, AliceBobOutOfOrder)
 	EXPECT_TRUE(alice.SendBuffer.Get(a2SentMessage.Header.Sequence)->IsAcked);
 	EXPECT_TRUE(alice.SendBuffer.Get(a3SentMessage.Header.Sequence)->IsAcked);
 }
+
+TEST_F(ReliableUdpTests, MessageOrdering)
+{
+
+	ReliableUdp reliableUdp;
+	const PacketDatum packet1(false, "There can be only one.");
+	const PacketDatum packet2(false, "There can be only two.");
+	const PacketDatum packet3(false, "There can be only three.");
+	const PacketDatum packet4(false, "There can be only four.");
+	reliableUdp.MarkSent(packet1);
+	reliableUdp.MarkSent(packet2);
+	reliableUdp.MarkSent(packet3);
+	
+	Message* lastMessage = reliableUdp.MarkSent(packet4);
+	lastMessage->Header.LastAckedSequence = 44;
+	lastMessage->Header.LastAckedBits = 99;
+
+	constexpr int bufferSize = 512;
+
+	uint32_t buffer[bufferSize] {};
+	BitPacker bitPacker(buffer, bufferSize);
+
+	// write last message out into buffer (binpacked)
+	lastMessage->Write(bitPacker);
+	
+	// read out the last message from the buffer (binpacked)
+	BitfieldReader reader(buffer, bufferSize);
+	
+	Message message3;
+	message3.Read(reader);	
+
+	EXPECT_EQ(message3.Header.Sequence, lastMessage->Header.Sequence);
+	EXPECT_EQ(message3.Header.LastAckedSequence, lastMessage->Header.LastAckedSequence);
+	EXPECT_EQ(message3.Header.LastAckedBits, lastMessage->Header.LastAckedBits);
+	EXPECT_EQ(message3.DataCount(), 4);
+
+	// Not too sure why this is reversed but at least its containing consistent data
+	EXPECT_STREQ(message3.Data()[0].Data(), packet4.Data());
+	EXPECT_STREQ(message3.Data()[1].Data(), packet3.Data());
+	EXPECT_STREQ(message3.Data()[2].Data(), packet2.Data());
+	EXPECT_STREQ(message3.Data()[3].Data(), packet1.Data());
+}

@@ -5,7 +5,7 @@ void gamelib::ReliableUdpMessageHeader::Write(BitPacker<uint32_t>& bitPacker, co
 	bitPacker.Pack(16, Sequence);
 	bitPacker.Pack(16, LastAckedSequence);
 	bitPacker.Pack(32, LastAckedBits);
-	bitPacker.Pack(BITS_REQUIRED(0,1), MessageType);
+	bitPacker.Pack(BITS_REQUIRED(0,3), MessageType);
 	bitPacker.Pack(16, ProtocolId);
 	if(includeChecksum)
 	{
@@ -24,7 +24,7 @@ void gamelib::ReliableUdpMessageHeader::Read(BitfieldReader<uint32_t>& bitfieldR
 	Sequence = bitfieldReader.ReadNext<uint16_t>(16);
 	LastAckedSequence = bitfieldReader.ReadNext<uint16_t>(16);
 	LastAckedBits = bitfieldReader.ReadNext<uint32_t>(32);
-	MessageType = bitfieldReader.ReadNext<uint8_t>(BITS_REQUIRED(0,1));
+	MessageType = bitfieldReader.ReadNext<uint8_t>(BITS_REQUIRED(0,3));
 	ProtocolId = bitfieldReader.ReadNext<uint16_t>(16);	
 	if(includeChecksum)
 	{

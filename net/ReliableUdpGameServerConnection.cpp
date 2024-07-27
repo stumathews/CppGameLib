@@ -41,32 +41,43 @@ namespace gamelib
 				// We drop the packet, no acknowledgment is sent. Sender will need to resend.
 				return;
 			}
-
-
+			
 			// Mark this sequence as having been received
-			reliableUdp.MarkReceived(message, deltaMs);
+			reliableUdp.MarkReceived(message, deltaMs);			
 
-			// Send a acknowledgment that normal message was received (dont send acks to acks)
-			if(message.Header.MessageType != 0)
+			// Message handling:
+
+			if(message.Header.MessageType != 0) // non-ack message
 			{				
 				RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketReceived(std::make_shared<Message>(message)));
+
+				// For the case where we've received multiple messages (aggregate).
+
+				// The first message payload is the message we've just received, the following payloads
+				// are for the previous messages that were bundled with this message.
+
+				// ie data[0] = current, data[1] is prior, data[2] is prior prior. So we need to process in reverse order until data[0]
+
+				const auto messageData = message.Data();
+				for(int i = static_cast<int>(message.Data().size()) -1 ; i >= 0 ; i--)
+				{
+					const PacketDatum& datum = messageData[i];
+					const char* payloadData = datum.Data();
+					const int dataSize = static_cast<int>(strlen(payloadData));
+
+					// Temporarily do not send others states to other players
+					//ParseReceivedPlayerPayload(payloadData, dataSize, fromClient);
+					RaiseNetworkTrafficReceivedEvent(payloadData, dataSize, fromClient);
+				}
+
 				SendAck(listeningSocket, message, 0, fromClient, deltaMs);
+
+				// sent ack
+				RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), true));
 			}
-
-			// For the case were received multiple messages (aggregate)
-			// The first message payload is the message we've just received, the following payloads
-			// are for the previous messages that were bundled with this message.
-			// ie data[0] = current, data[1] is prior, data[2] is prior prior. So we need to process in reverse order until data[0]
-			const auto messageData = message.Data();
-			for(int i = static_cast<int>(message.Data().size()) -1 ; i >= 0 ; i--)
+			else if(message.Header.MessageType == 0) // ack message
 			{
-				const PacketDatum& datum = messageData[i];
-				const char* payloadData = datum.Data();
-				const int dataSize = static_cast<int>(strlen(payloadData));
-
-				// Temporarily do not send others states to other players
-				//ParseReceivedPlayerPayload(payloadData, dataSize, fromClient);
-				RaiseNetworkTrafficReceivedEvent(payloadData, dataSize, fromClient);
+				RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), false));
 			}
 		}
 		else
@@ -106,10 +117,8 @@ namespace gamelib
 
 		// Add data to message and mark message as having been sent (we sent it later).
 		// Note we explicitly acked=true this to avoid resending it (acks are fire and forgets)
-		const auto message = reliableUdp.MarkSent(PacketDatum(true, ackMessage.str().c_str()), sendTimeMs);
-
-		message->Header.MessageType = 0; // acknowledgment
-
+		const auto message = reliableUdp.MarkSent(PacketDatum(true, ackMessage.str().c_str()), true);
+		
 		// Write message to network buffer		
 		message->Write(packer);
 

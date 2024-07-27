@@ -5,6 +5,8 @@
 #include <events/Event.h>
 #include <events/IEventSerializationManager.h>
 
+#include "net/BitPacker.h"
+
 namespace gamelib
 {
 	class SerializationManager
@@ -16,7 +18,8 @@ namespace gamelib
 				[[nodiscard]] std::string CreatePlayerMovedEventMessage(const std::shared_ptr<Event>& event, const std::string& target) const;
 				[[nodiscard]] std::string CreateControllerMoveEventMessage(const std::shared_ptr<Event>& evt, const std::string& target) const;
 				[[nodiscard]] std::string CreateStartNetworkLevelMessage(const std::shared_ptr<Event>& evt, const std::string& target) const;
-		public:
+
+	public:
 			static SerializationManager* Get();
 			SerializationManager();
 			~SerializationManager();

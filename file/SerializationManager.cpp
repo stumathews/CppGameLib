@@ -8,6 +8,7 @@
 #include <events/PlayerMovedEvent.h>
 #include <events/StartNetworkLevelEvent.h>
 
+#include "net/Message.h"
 #include "utils/Utils.h"
 
 using namespace json11;

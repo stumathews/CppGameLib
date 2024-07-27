@@ -139,6 +139,11 @@ namespace gamelib
 			segmentsWritten = countTimesOverflowed;
 		}
 
+		int TotalBytesPacked()
+		{			
+			return static_cast<int>(ceil(static_cast<double>(TotalBitsPacked()) / static_cast<double>(8)));;
+		}
+
 		void Finish()
 		{
 			Flush();

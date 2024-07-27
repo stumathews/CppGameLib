@@ -79,6 +79,7 @@ namespace gamelib
 			this->isDisconnectedFromGameServer = false;
 		}
 	}
+
 	void GameClient::SendPlayerDetails() const
 	{
 		Logger::Get()->LogThis("Registering client with game server.");
@@ -125,7 +126,7 @@ namespace gamelib
 
 			if (bytesReceived > 0)
 			{
-				ParseReceivedServerPayload(reinterpret_cast<char*>(readBuffer));
+				ParseReceivedServerPayload(reinterpret_cast<char*>(readBuffer), deltaMs);
 				RaiseNetworkTrafficReceivedEvent(reinterpret_cast<char*>(readBuffer), bytesReceived);
 
 				this->isDisconnectedFromGameServer = false;
@@ -140,7 +141,7 @@ namespace gamelib
 		}
 	}
 
-	void GameClient::ParseReceivedServerPayload(const char* buffer) const
+	void GameClient::ParseReceivedServerPayload(const char* buffer, const unsigned long deltaMs) const
 	{
 		const auto msgHeader = serializationManager->GetMessageHeader(buffer);
 		const auto messageType = msgHeader.MessageType;
@@ -150,7 +151,7 @@ namespace gamelib
 		{
 			const auto response = SerializationManager::CreateRequestPlayerDetailsMessageResponse(nickName);
 			
-			networkProtocolManager->Send(response.c_str(), static_cast<int>(response.size()));
+			networkProtocolManager->Send(response.c_str(), static_cast<int>(response.size()), deltaMs);
 
 			return;
 		}
@@ -179,14 +180,14 @@ namespace gamelib
 		eventManager->RaiseEventWithNoLogging(eventFactory->CreateNetworkTrafficReceivedEvent(buffer, "Game Server", bytesReceived, this->GetSubscriberName()));
 	}
 
-	int GameClient::InternalSend(const std::string& message) const
+	int GameClient::InternalSend(const std::string& message, const unsigned long deltaMs) const
 	{
-		return networkProtocolManager->Send(message.c_str(), static_cast<int>(message.size()));
+		return networkProtocolManager->Send(message.c_str(), static_cast<int>(message.size()), deltaMs);
 	}
 
-	int GameClient::InternalSend(const char* array, const size_t size) const
+	int GameClient::InternalSend(const char* array, const size_t size, const unsigned long deltaMs) const
 	{
-		return networkProtocolManager->Send(array, static_cast<int>(size));
+		return networkProtocolManager->Send(array, static_cast<int>(size), deltaMs);
 	}
 
 	std::vector<std::shared_ptr<Event>> GameClient::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs)
@@ -196,7 +197,7 @@ namespace gamelib
 			periodicTimer.Update(deltaMs);
 			periodicTimer.DoIfReady([=]()
 			{
-				PingGameServer();
+				PingGameServer(deltaMs);
 			});
 			return {};
 		}
@@ -207,7 +208,7 @@ namespace gamelib
 		Logger::Get()->LogThis(evt->ToString());
 
 		const auto message = serializationManager->Serialize(evt, nickName);
-		const int sendResult = InternalSend(message);
+		const int sendResult = InternalSend(message, deltaMs);
 
 		Logger::Get()->LogThis(sendResult > 0 ? "Successfully sent." : "Error no data sent");
 
@@ -219,10 +220,10 @@ namespace gamelib
 		return nickName;
 	}
 
-	void GameClient::PingGameServer() const
+	void GameClient::PingGameServer(const unsigned long deltaMs) const
 	{
 		const auto message = serializationManager->CreatePingMessage();
-		const int sendResult = InternalSend(message);
+		const int sendResult = InternalSend(message.c_str(), deltaMs);
 
 		Logger::Get()->LogThis(sendResult > 0 ? "Sent ping request" : "Ping error, no data sent");
 
@@ -237,7 +238,7 @@ namespace gamelib
 	int GameClient::SendBinary(uint16_t* array, const size_t numBits) const
 	{
 		const auto numBytes = ceil((double)numBits / (double)8);
-		return InternalSend(reinterpret_cast<char*>(array), numBytes);
+		return InternalSend(reinterpret_cast<char*>(array), numBytes, 0);
 	}
 
 	GameClient::~GameClient()

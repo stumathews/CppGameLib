@@ -8,6 +8,9 @@
 #include <net/PeerInfo.h>
 #include <events/EventSubscriber.h>
 #include <events/Event.h>
+
+#include "security/Security.h"
+
 namespace gamelib
 {
 	class Networking;
@@ -66,6 +69,10 @@ namespace gamelib
 		constexpr static auto ReadBufferMaxElements = 300;
 		constexpr static auto ReadBufferSizeInBytes = ReadBufferMaxElements * 32 / 8;
 		uint32_t readBuffer[ReadBufferMaxElements]{};
+		
+		SecuritySide securitySide;
+		unsigned char remotePublicKey[SecuritySide::PublicKeyLengthBytes]{0};
+		unsigned char sharedNonce[SecuritySide::NonceLengthBytes]{0};
 	public:
 		void Disconnect() override;
 	};

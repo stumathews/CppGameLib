@@ -21,8 +21,34 @@ namespace gamelib
 		// Read all incoming data into readBuffer
 		const int bytesReceived = recvfrom(listeningSocket, reinterpret_cast<char*>(readBuffer), ReadBufferSizeInBytes, 0,
 		                                   reinterpret_cast<sockaddr*>(&fromClient.Address), &fromClient.Length);
-
+		
 		const auto numReceivedReadBufferElements = bytesReceived * 8 /32;
+
+		if(sessionEstablished)
+		{
+			// We will use the same nonce for now (constant)
+			*sharedNonce = 1;
+
+			// We'll store the decrypted message minus the auth tag here
+			std::vector<unsigned char> decryptedMessage(bytesReceived - crypto_secretbox_MACBYTES);
+
+			// decrypt message
+			auto descryptSuceeded = Security::Get()->DecryptWithSessionKey(
+				reinterpret_cast<const unsigned char*>(readBuffer),
+				bytesReceived,
+				securitySide.GetReceiveSessionKey(), 
+				sharedNonce,
+				decryptedMessage.data());
+
+			if(descryptSuceeded < 0)
+			{
+				return;
+			}
+
+			// copy decrypted message into caller's buffer
+			memcpy_s(readBuffer, ReadBufferSizeInBytes, decryptedMessage.data(), decryptedMessage.size());
+			
+		}
 
 		if (bytesReceived > 0)
 		{
@@ -75,9 +101,30 @@ namespace gamelib
 				// sent ack
 				RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), true));
 			}
-			else if(message.Header.MessageType == 0) // ack message
+
+			if(message.Header.MessageType == 0) // ack message
 			{
 				RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), false));
+			}
+			
+			if(message.Header.MessageType == SendPubKey)
+			{
+
+				// We got the client's public key
+				memcpy_s(remotePublicKey, SecuritySide::PublicKeyLengthBytes, message.Data()[0].Data(), SecuritySide::PublicKeyLengthBytes);
+								
+				// Generate our own public key
+				securitySide.GenerateKeyPair();
+
+				// Send it to the server
+				InternalSend(listeningSocket, reinterpret_cast<char*>(securitySide.GetPublicKey()),
+				             SecuritySide::PublicKeyLengthBytes, 0, reinterpret_cast<sockaddr*>(&fromClient.Address),
+				             fromClient.Length, deltaMs, SendPubKey);
+
+				// We can derive the session keys
+				securitySide.GenerateServerTransmissionKeys(remotePublicKey);
+
+				sessionEstablished = true;
 			}
 		}
 		else
@@ -85,46 +132,56 @@ namespace gamelib
 			Networking::Get()->netError(bytesReceived, WSAGetLastError(), "Error listening for player traffic");
 		}
 	}
-	
-	int ReliableUdpGameServerConnection::InternalSend(const SOCKET socket, const char* buf, int len, const int flags,  const sockaddr* to, const int toLen, const unsigned long sendTimeMs)
-	{		
+
+	int ReliableUdpGameServerConnection::InternalSend(const SOCKET socket, const char* buf, int len, const int flags,  const sockaddr* to, const int toLen, const unsigned long sendTimeMs, MessageType messageType)
+	{
 		BitPacker packer(readBuffer, ReadBufferMaxElements);
 				
 		// Prepare data to be sent
 		const auto data = PacketDatum(false, buf, sendTimeMs);		
 
 		// Add data to message and mark message as having been sent (we sent it later)
-		const auto message = reliableUdp.MarkSent(data, General);
+		const auto message = reliableUdp.MarkSent(data, messageType);
 
 		// Write message to network buffer		
 		message->Write(packer);
 
 		// Count only as much as what was packed
 		const auto countBytesToSend = static_cast<int>(ceil(static_cast<double>(packer.TotalBitsPacked()) / static_cast<double>(8)));
-		
+
+		if(sessionEstablished)
+		{
+			// Use a constant nonce for now
+			*sharedNonce = 1;
+
+			// We will encrypt the message with extra bytes for auth tag
+			std::vector<unsigned char> encryptedMessage(packer.TotalBytesPacked() + crypto_secretbox_MACBYTES);
+
+			// Encrypt message
+			Security::EncryptWithSessionKey(reinterpret_cast<const unsigned char*>(readBuffer), packer.TotalBytesPacked(),
+			                                securitySide.GetTransmissionSessionKey(), sharedNonce,
+			                                encryptedMessage.data());
+
+			// send Encrypted message
+			return sendto(socket, reinterpret_cast<char*>(encryptedMessage.data()), encryptedMessage.size(), flags, to, toLen);
+		}
+
 		// Send network buffer over udp		
 		return sendto(socket, reinterpret_cast<char*>(readBuffer), countBytesToSend, flags, to, toLen);
+	}
+	
+	int ReliableUdpGameServerConnection::InternalSend(const SOCKET socket, const char* buf, int len, const int flags,  const sockaddr* to, const int toLen, const unsigned long sendTimeMs)
+	{		
+		return InternalSend(socket, buf, len, flags, to, toLen, sendTimeMs, General);
 	}
 
 	int ReliableUdpGameServerConnection::SendAck(const SOCKET socket, const Message& messageToAck, const int flags, PeerInfo& peerInfo, const unsigned long sendTimeMs)
 	{
-		BitPacker packer(readBuffer, ReadBufferMaxElements);
-
 		std::stringstream ackMessage;
-		ackMessage << "server acks client seq:" << messageToAck.Header.Sequence << std::endl;
 
-		// Add data to message and mark message as having been sent (we sent it later).
-		// Note we explicitly acked=true this to avoid resending it (acks are fire and forgets)
-		const auto message = reliableUdp.MarkSent(PacketDatum(true, ackMessage.str().c_str()), Ack);
+		ackMessage << "server acks client seq:" << messageToAck.Header.Sequence << std::endl;		
 		
-		// Write message to network buffer		
-		message->Write(packer);
-
-		// Count only as much as what was packed
-		const auto countBytesToSend = static_cast<int>(ceil(static_cast<double>(packer.TotalBitsPacked()) / static_cast<double>(8)));
-		
-		// Send network buffer over udp		
-		return sendto(socket, reinterpret_cast<char*>(readBuffer), countBytesToSend, flags, reinterpret_cast<sockaddr*>(&peerInfo.Address), peerInfo.Length);
+		return InternalSend(socket, ackMessage.str().c_str(), ackMessage.str().size(), flags, reinterpret_cast<sockaddr*>(&peerInfo.Address), peerInfo.Length, sendTimeMs, Ack );
 	}
 }
 

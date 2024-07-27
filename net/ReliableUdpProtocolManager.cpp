@@ -9,90 +9,48 @@ namespace gamelib
 {
 
 	ReliableUdpProtocolManager::ReliableUdpProtocolManager(std::shared_ptr<IConnectedNetworkSocket> gameClientConnection)
-	: gameClientConnection(std::move(gameClientConnection)), isGameServer(false)
+	: gameClientConnection(std::move(gameClientConnection))
 	{
 		ReliableUdpProtocolManager::Initialize();
 	}
 
 	ReliableUdpProtocolManager::ReliableUdpProtocolManager(std::shared_ptr<IGameServerConnection> gameServerConnection)
-	: gameServerConnection(std::move(gameServerConnection)), isGameServer(true)
+	: gameServerConnection(std::move(gameServerConnection))
 	{
 	}
 
 	bool ReliableUdpProtocolManager::Initialize()
 	{
 		clientSecuritySide.GenerateKeyPair();
-
-		FSMState sendPublicKey("SendPublicKey",
-			[&](unsigned long deltaMs)
-			{
-				BitPacker packer(readBuffer, ReceiveBufferMaxElements);
-
-				Message requestPublicKeyMessage;
-
-				requestPublicKeyMessage.Header.MessageType = RequestPubKey;
-
-				requestPublicKeyMessage.Write(packer);
-
-				Send(reinterpret_cast<char*>(readBuffer), packer.TotalBytesPacked());
-			},
-			[](){}, 
-			[](){});
-
-		FSMState receivePublicKey("RetrievePublicKey",[&](unsigned long deltaMs)
-			{
-				// Receive public key
-				Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferMaxElements);
 				
-				BitfieldReader reader(readBuffer, ReceiveBufferMaxElements);
-
-				Message receivePublicKeyMessage;
-
-				receivePublicKeyMessage.Read(reader);
-
-				const auto datum = receivePublicKeyMessage.Data()[0];
-				remotePublicKey = (unsigned char*) datum.Data();
-				
-			},
-			[](){}, 
-			[](){});
-
-		FSMState generateSessionKeysState("GenerateSessionKeys",
-			[&](unsigned long deltaMs)
-			{
-				clientSecuritySide.GenerateClientTransmissionKeys(remotePublicKey);
-			},
-			[](){}, 
-			[](){});
-
-		FSMState normalSend("Ready",
-			[&](unsigned long deltaMs)
-			{
-				
-			},
-			[](){}, 
-			[](){});
-
 		return true;
 	}
 
 	void ReliableUdpProtocolManager::Connect(const char* address, const char* port) const
 	{
-		// Connect to server
 		gameClientConnection->Connect(address, port);
 	}
 
 	int ReliableUdpProtocolManager::Send(const char* callersSendBuffer, const int dataLength, const unsigned long deltaMs)
 	{
-		/*if(protocolState.ActiveState->GetName() != "Ready")
+		if(!sessionEstablished)
 		{
-			return -1;
-		}*/
+			// Send our public key to server. Server should respond with theirs.
+			const auto bytesSent = SendInternal(reinterpret_cast<char*>(clientSecuritySide.GetPublicKey()), SecuritySide::PublicKeyLengthBytes, 0, SendPubKey);
+			return bytesSent;
+		}
 
+		// Send over the transport - might be a aggregated message if there were no prior acks
+		
+		return SendInternal(callersSendBuffer, dataLength, deltaMs, General);
+	}	
+
+	int ReliableUdpProtocolManager::SendInternal(const char* callersSendBuffer, const int dataLength, const unsigned long deltaMs, const MessageType messageType)
+	{
 		BitPacker packer(packingBuffer, PackingBufferElements);
 
 		// Track/store message as sent
-		const auto message = reliableUdp.MarkSent(PacketDatum(false, callersSendBuffer, deltaMs), General);
+		const auto message = reliableUdp.MarkSent(PacketDatum(false, callersSendBuffer, deltaMs), messageType);
 
 		// Packet loss detected as we have unacknowledged data in send buffer that we are resending
 		if(message->DataCount() > 1)
@@ -105,41 +63,30 @@ namespace gamelib
 
 		// Count only as much as what was packed
 		const auto countBytesToSend = static_cast<int>(ceil(static_cast<double>(packer.TotalBitsPacked()) / static_cast<double>(8)));
-
-
-		//// Use a constant nonce for now
-		*sharedNonce = 1;
-
-		// We will encrypt the message with extra bytes for auth tag
-		std::vector<unsigned char> encryptedMessage(dataLength + crypto_secretbox_MACBYTES);
-
-		//// Encrypt message
-		//Security::EncryptWithSessionKey(reinterpret_cast<const unsigned char*>(data), dataLength,
-		//                                clientSecuritySide.GetTransmissionSessionKey(), sharedNonce,
-		//                                encryptedMessage.data());
-
-		//// send Encrypted message
-		//const auto sendResult = gameClientConnection->Send(reinterpret_cast<char*>(encryptedMessage.data()), encryptedMessage.size(), deltaMs);
-
-
-		// Send over the transport - might be a aggregated message if there were no prior acks
-		const auto sendResult = gameClientConnection->Send(reinterpret_cast<char*>(packingBuffer), countBytesToSend);
-
 		
+		if(sessionEstablished)
+		{
+			// Use a constant nonce for now
+			*sharedNonce = 1;
 
-		// Update protocol state
-		Update(deltaMs);
+			// We will encrypt the message with extra bytes for auth tag
+			std::vector<unsigned char> encryptedMessage(packer.TotalBytesPacked() + crypto_secretbox_MACBYTES);
 
+			// Encrypt message
+			Security::EncryptWithSessionKey(reinterpret_cast<const unsigned char*>(packingBuffer), packer.TotalBytesPacked(),
+			                                clientSecuritySide.GetTransmissionSessionKey(), sharedNonce,
+			                                encryptedMessage.data());
+
+			// send Encrypted message
+			return gameClientConnection->Send(reinterpret_cast<char*>(encryptedMessage.data()), encryptedMessage.size());
+		}
+		
+		const auto sendResult = gameClientConnection->Send(reinterpret_cast<char*>(packingBuffer), countBytesToSend);
 		return sendResult;
 	}
 
-	int ReliableUdpProtocolManager::Receive(char* callersReceiveBuffer, const int bufLength, const unsigned long deltaMs)
+	int ReliableUdpProtocolManager::ReceiveInternal(char* callersReceiveBuffer, const int bufLength, const unsigned long deltaMs)
 	{
-		/*if(protocolState.ActiveState->GetName() != "Ready")
-		{
-			return -1;
-		}*/
-
 		// Read the payload off the network, wait for all the data
 		const int bytesReceived = gameClientConnection->Receive(callersReceiveBuffer, bufLength);
 
@@ -150,6 +97,31 @@ namespace gamelib
 
 		// Hook up to a 32-bit bitfield reader to the received buffer. This will read 32-bits at a time
 		const auto count32BitBlocks = bytesReceived * 8 /32;
+				
+		if(sessionEstablished)
+		{
+			// We will use the same nonce for now (constant)
+			*sharedNonce = 1;
+
+			// We'll store the decrypted message minus the auth tag here
+			std::vector<unsigned char> decryptedMessage(bytesReceived - crypto_secretbox_MACBYTES);
+
+			// decrypt message
+			auto decrptResult = Security::Get()->DecryptWithSessionKey(
+				reinterpret_cast<const unsigned char*>(callersReceiveBuffer),
+				bytesReceived,
+				clientSecuritySide.GetReceiveSessionKey(), 
+				sharedNonce,
+				decryptedMessage.data());
+
+			if(decrptResult < 0)
+			{
+				return bufLength;
+			}
+			// copy decrypted message into caller's buffer
+			memcpy_s(callersReceiveBuffer, bufLength, decryptedMessage.data(), decryptedMessage.size());
+		}
+
 		
 		BitfieldReader packedBufferReader(reinterpret_cast<uint32_t*>(callersReceiveBuffer), count32BitBlocks);
 
@@ -177,44 +149,45 @@ namespace gamelib
 			RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketReceived(std::make_shared<Message>(message)));
 			SendAck(message, deltaMs);
 			RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), true));
-		}
+		} 		
 		
-		if(message.Header.MessageType == 0) // ack
+		if (message.Header.MessageType == 0) // ack
 		{
 			RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), false));
 		}
+		
+		if(message.Header.MessageType == SendPubKey)
+		{
+			// Server sent us their public key
+			memcpy_s(remotePublicKey, SecuritySide::PublicKeyLengthBytes, message.Data()[0].Data(), SecuritySide::PublicKeyLengthBytes);
 
+			// We Can establish the session keys now
+			clientSecuritySide.GenerateClientTransmissionKeys(remotePublicKey);
+
+			// Prevent re-sending our public key
+			sessionEstablished = true;
+		}
+
+		
 		// Copy contents to caller's receive buffer to expose the contents of the message
 		std::stringstream ss;
 		for(auto& packet : message.Data())
 		{
 			ss << packet.Data();
 		}
+
 			
 		strcpy_s(callersReceiveBuffer, bufLength, ss.str().c_str());
 
-		//// Receive encrypted message into readBuffer
-		//const auto receiveResult = gameClientConnection->Receive(reinterpret_cast<char*>(readBuffer), ReadBufferSizeInBytes, deltaMs);
 
-		//// We will use the same nonce for now (constant)
-		//*sharedNonce = 1;
+		return bytesReceived;
+	}
 
-		//// We'll store the decrypted message minus the auth tag here
-		//std::vector<unsigned char> decryptedMessage(bufLength - crypto_secretbox_MACBYTES);
+	int ReliableUdpProtocolManager::Receive(char* callersReceiveBuffer, const int bufLength, const unsigned long deltaMs)
+	{
 
-		//// decrypt message
-		//Security::Get()->DecryptWithSessionKey(
-		//	reinterpret_cast<const unsigned char*>(readBuffer),
-		//	bufLength,
-		//	clientSecuritySide.GetReceiveSessionKey(), 
-		//	sharedNonce,
-		//	decryptedMessage.data());
-
-		//// copy decrypted message into caller's buffer
-		//strcpy_s(receivedBuffer, bufLength, (char*)decryptedMessage.data());
-
-		// Update protocol state
-		Update(deltaMs);
+		const auto bytesReceived = ReceiveInternal(callersReceiveBuffer, bufLength, deltaMs);
+		
 
 		return bytesReceived;
 	}

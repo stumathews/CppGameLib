@@ -35,7 +35,7 @@ namespace gamelib
 		// Make an initial connection to the game server. This will register a socket with the game server tat we can later use to talk to it
 		void Connect(const std::shared_ptr<GameServer>& inGameServer);
 		void SendPlayerDetails() const;
-		void PingGameServer() const;
+		void PingGameServer(const unsigned long deltaMs) const;
 
 		// sends and array of items of type T across the network 
 		int SendBinary(uint16_t* array, size_t numBits) const;
@@ -70,9 +70,9 @@ namespace gamelib
 		void SubscribeToGameEvents();
 		void CheckSocketForTraffic(unsigned long deltaMs);
 		void RaiseNetworkTrafficReceivedEvent(const char* buffer, const int bytesReceived);
-		int InternalSend(const std::string& message) const;
-		int InternalSend(const char* array, size_t size) const;
-		void ParseReceivedServerPayload(const char*  buffer) const;
+		int InternalSend(const char* array, const size_t size, const unsigned long deltaMs) const;
+		int InternalSend(const std::string& message, const unsigned long deltaMs) const;
+		void ParseReceivedServerPayload(const char* buffer, const unsigned long deltaMs) const;
 		std::string GetSubscriberName() override;
 		constexpr static auto ReceiveBufferMaxElements = 300;
 		uint32_t readBuffer[ReceiveBufferMaxElements]{};

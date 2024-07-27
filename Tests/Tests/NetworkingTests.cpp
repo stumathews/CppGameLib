@@ -243,7 +243,7 @@ TEST_F(NetworkingTests, TestPing)
 	Client->Connect(Server);
 	
 	// When pinging the game server...
-	Client->PingGameServer();
+	Client->PingGameServer(0);
 
 	// Wait for the server to respond
 	Sleep(1000);
@@ -485,12 +485,18 @@ TEST_F(NetworkingTests, MultiPlayerJoinEventsEmittedOnConnect)
 
 TEST_F(NetworkingTests, ReliabelUdpPacketLossResendTest)
 {
+
+	constexpr static auto ReceiveBufferMaxElements = 300;
+	constexpr static auto ReceiveBufferBytes = 300 * 32 / 8;
+	uint32_t readBuffer[ReceiveBufferMaxElements]{};
+
 	// The game server connection will unpack/process our protocol messages
 	const auto gameServerConnection = std::make_shared<ReliableUdpGameServerConnection>(ServerAddress, ListeningPort);
 
 	// The game client connection will pack/send our protocol messages
 	const auto gameClientConnection = std::make_shared<UdpConnectedNetworkSocket>();
 	const auto reliableUdpProtocolManager = std::make_shared<ReliableUdpProtocolManager>(gameClientConnection);
+	reliableUdpProtocolManager->Initialize();
 	
 	StartNetworkServer(gameServerConnection);
 	
@@ -505,9 +511,16 @@ TEST_F(NetworkingTests, ReliabelUdpPacketLossResendTest)
 	reliableUdpProtocolManager->Connect(ServerAddress, ListeningPort);
 
 	// Send data reliably with aggregated message support if not acknowledgment received
-	reliableUdpProtocolManager->Send(data1, strlen(data1)); 
+	reliableUdpProtocolManager->Send(data1, strlen(data1));
+	Sleep(1000);
+	reliableUdpProtocolManager->Receive((char*)readBuffer, ReceiveBufferBytes, 0);
+
 	reliableUdpProtocolManager->Send(data2, strlen(data2));
+	Sleep(1000);
+	reliableUdpProtocolManager->Receive((char*)readBuffer, ReceiveBufferBytes, 0);
 	reliableUdpProtocolManager->Send(data3, strlen(data3));
+	Sleep(1000);
+	reliableUdpProtocolManager->Receive((char*)readBuffer, ReceiveBufferBytes, 0);
 		
 	// Wait for the server to respond
 	Sleep(1000);	

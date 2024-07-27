@@ -40,7 +40,7 @@ namespace gamelib
 
 		// Listen for network traffic destined for this this game server or this client
 		void Listen(const unsigned long deltaMs) const;
-		void PingGameServer() const;
+		void PingGameServer(const unsigned long deltaMs) const;
 
 		std::shared_ptr<GameClient> Client = nullptr;
 		std::shared_ptr<GameServer> Server = nullptr;

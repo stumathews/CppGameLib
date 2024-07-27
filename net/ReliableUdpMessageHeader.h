@@ -11,7 +11,7 @@ namespace gamelib
 	enum MessageType : uint8_t
 	{
 		Ack = 0,
-		RequestPubKey,
+		SendPubKey,
 		General
 	};
 

@@ -24,6 +24,8 @@ namespace gamelib
 
 		// When we check for player traffic, we need to unpack the received data
 		void CheckForPlayerTraffic(unsigned long deltaMs) override;
+		int InternalSend(SOCKET socket, const char* buf, int len, int flags, const sockaddr* to, int toLen,
+		                 unsigned long sendTimeMs, MessageType messageType);
 
 		// When data is sent, we need to pack it up into the over-the-wire protocol format
 		int InternalSend(SOCKET socket, const char* buf, int len, int flags, const sockaddr* to, int toLen, unsigned long sendTimeMs = 0) override;
@@ -31,6 +33,7 @@ namespace gamelib
 
 		// Used to keep track of packets send/received
 		ReliableUdp reliableUdp;
+		bool sessionEstablished {false};
 	};
 }
 

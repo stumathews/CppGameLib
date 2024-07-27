@@ -62,11 +62,11 @@ namespace gamelib
 		instance = nullptr;
 	}
 
-	void NetworkManager::PingGameServer() const
+	void NetworkManager::PingGameServer(const unsigned long deltaMs) const
 	{
 		if(!isGameServer)
 		{
-			Client->PingGameServer();
+			Client->PingGameServer(deltaMs);
 		}
 	}
 

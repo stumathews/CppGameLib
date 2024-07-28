@@ -23,7 +23,7 @@ namespace gamelib
 			
 		}
 
-		void Connect(const char* address, const char* port) const override
+		void Connect(const char* address, const char* port) override
 		{
 			gameClientConnection->Connect(address, port);
 		}

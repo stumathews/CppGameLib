@@ -26,22 +26,28 @@ namespace gamelib
 		return true;
 	}
 
-	void ReliableUdpProtocolManager::Connect(const char* address, const char* port) const
+	void ReliableUdpProtocolManager::Connect(const char* address, const char* port)
 	{
 		gameClientConnection->Connect(address, port);
+
+		if(!sessionEstablished)
+		{
+			// Send our public key to server. Server should respond with theirs.
+			SendInternal(reinterpret_cast<char*>(clientSecuritySide.GetPublicKey()), SecuritySide::PublicKeyLengthBytes, 0, SendPubKey);
+		}
 	}
 
 	int ReliableUdpProtocolManager::Send(const char* callersSendBuffer, const int dataLength, const unsigned long deltaMs)
 	{
 		if(!sessionEstablished)
 		{
-			// Send our public key to server. Server should respond with theirs.
-			const auto bytesSent = SendInternal(reinterpret_cast<char*>(clientSecuritySide.GetPublicKey()), SecuritySide::PublicKeyLengthBytes, 0, SendPubKey);
-			return bytesSent;
+			// Do not send the data if the session is not encrypted.
+
+			// Send our public key to server instead.
+			return SendInternal(reinterpret_cast<char*>(clientSecuritySide.GetPublicKey()), SecuritySide::PublicKeyLengthBytes, 0, SendPubKey);;
 		}
 
-		// Send over the transport - might be a aggregated message if there were no prior acks
-		
+		// Send over the transport - might be a aggregated message if there were no prior acks		
 		return SendInternal(callersSendBuffer, dataLength, deltaMs, General);
 	}	
 

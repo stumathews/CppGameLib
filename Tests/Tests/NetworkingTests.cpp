@@ -16,6 +16,9 @@
 #include "file/SerializationManager.h"
 #include "net/BitPacker.h"
 #include "TestData.h"
+#include "events/ReliableUdpAckPacketEvent.h"
+#include "events/ReliableUdpPacketLossDetectedEvent.h"
+#include "events/ReliableUdpPacketReceivedEvent.h"
 #include "net/GameServerConnectionFactory.h"
 #include "net/NetworkConnectionFactory.h"
 #include "net/ReliableUdp.h"
@@ -485,7 +488,6 @@ TEST_F(NetworkingTests, MultiPlayerJoinEventsEmittedOnConnect)
 
 TEST_F(NetworkingTests, ReliabelUdpPacketLossResendTest)
 {
-
 	constexpr static auto ReceiveBufferMaxElements = 300;
 	constexpr static auto ReceiveBufferBytes = 300 * 32 / 8;
 	uint32_t readBuffer[ReceiveBufferMaxElements]{};
@@ -507,28 +509,53 @@ TEST_F(NetworkingTests, ReliabelUdpPacketLossResendTest)
 	const PacketDatum packet1(false, data1);
 	const PacketDatum packet2(false, data2);
 	const PacketDatum packet3(false, data3);
-	
+
+	// Establish connection and send public key
 	reliableUdpProtocolManager->Connect(ServerAddress, ListeningPort);
 
-	// Send data reliably with aggregated message support if not acknowledgment received
-	reliableUdpProtocolManager->Send(data1, strlen(data1));
-	Sleep(1000);
-	reliableUdpProtocolManager->Receive((char*)readBuffer, ReceiveBufferBytes, 0);
+	// Receive ack for receiving pub key
+	reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 
+	// Receive server's public key
+	reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
+
+	// Tests: send data reliably with aggregated message support if not acknowledgment received
+	
+	reliableUdpProtocolManager->Send(data1, strlen(data1));
 	reliableUdpProtocolManager->Send(data2, strlen(data2));
-	Sleep(1000);
-	reliableUdpProtocolManager->Receive((char*)readBuffer, ReceiveBufferBytes, 0);
 	reliableUdpProtocolManager->Send(data3, strlen(data3));
-	Sleep(1000);
-	reliableUdpProtocolManager->Receive((char*)readBuffer, ReceiveBufferBytes, 0);
 		
 	// Wait for the server to respond
-	Sleep(1000);	
+	Sleep(1000);
 		
 	// Collect events from Event Manger to see what traffic was captured
 	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
+
+	// Expected server events
 	
-	EXPECT_EQ(serverEmittedEvents.size(), 12); //12 packets. x3 received, x3 acks, x1 data1, x1 (data1, data2), x1 (data1, data2, data3)
+	EXPECT_EQ(serverEmittedEvents[0]->Id, ReliableUdpPacketReceivedEventId); // Data received: client's public key
+	EXPECT_EQ(serverEmittedEvents[1]->Id, NetworkTrafficReceivedEventId); // Report data received: public key
+	EXPECT_EQ(serverEmittedEvents[2]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data (public key data)
+
+	//data1
+	EXPECT_EQ(serverEmittedEvents[3]->Id, ReliableUdpPacketReceivedEventId); // Data received: data1
+	EXPECT_EQ(serverEmittedEvents[4]->Id, NetworkTrafficReceivedEventId); // Report data received: data1
+	EXPECT_EQ(serverEmittedEvents[5]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data1
+
+	// data2
+	EXPECT_EQ(serverEmittedEvents[6]->Id, ReliableUdpPacketReceivedEventId); // Data received: (data1,data2)
+	EXPECT_EQ(serverEmittedEvents[7]->Id, NetworkTrafficReceivedEventId); // Report data received: data1
+	EXPECT_EQ(serverEmittedEvents[8]->Id, NetworkTrafficReceivedEventId); // Report data received: data2
+	EXPECT_EQ(serverEmittedEvents[9]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data2
+
+	// data3
+	EXPECT_EQ(serverEmittedEvents[10]->Id, ReliableUdpPacketReceivedEventId); // Data received: (data1, data2, data3)
+	EXPECT_EQ(serverEmittedEvents[11]->Id, NetworkTrafficReceivedEventId); // Report data received: data1
+	EXPECT_EQ(serverEmittedEvents[12]->Id, NetworkTrafficReceivedEventId); // Report data received: data2
+	EXPECT_EQ(serverEmittedEvents[13]->Id, NetworkTrafficReceivedEventId); // Report data received: data3
+	EXPECT_EQ(serverEmittedEvents[14]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data3
+		
+	EXPECT_EQ(serverEmittedEvents.size(), 15);
 
 	const int countData1 = ranges::count_if(serverEmittedEvents, [data1](shared_ptr<Event> event)
 	{
@@ -562,47 +589,110 @@ TEST_F(NetworkingTests, ReliabelUdpPacketLossResendTest)
 	EXPECT_EQ(countData1, 3); // we expect data1 to be sent once, with 2 retries
 	EXPECT_EQ(countData2, 2); // we expect data2 to be sent once, with 1 retry
 	EXPECT_EQ(countData3, 1); // we expect data3 to be sent once
+
+
+	// Expected client events
+	EXPECT_EQ(clientEmittedEvents[0]->Id, ReliableUdpAckPacketEventId);   // Ack received for sending client's public key
+	EXPECT_EQ(clientEmittedEvents[1]->Id, ReliableUdpPacketReceivedEventId); // Data received: public key
+	EXPECT_EQ(clientEmittedEvents[2]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data (server's public key)
+	EXPECT_EQ(clientEmittedEvents[3]->Id, ReliableUdpPacketLossDetectedEventId); // Loss detected of data1 while sending data2
+	EXPECT_EQ(clientEmittedEvents[4]->Id, ReliableUdpPacketLossDetectedEventId); // Loss detected of data2 while sending data1
+
+	EXPECT_EQ(clientEmittedEvents.size(), 5);
 }
 
-TEST_F(NetworkingTests, ReliableUdpAckTest)
+TEST_F(NetworkingTests, ReliabelUdpRoutineConversation)
 {
+
 	constexpr static auto ReceiveBufferMaxElements = 300;
-	constexpr static auto ReceiveBufferBytes = (300 * 32/8);
+	constexpr static auto ReceiveBufferBytes = 300 * 32 / 8;
 	uint32_t readBuffer[ReceiveBufferMaxElements]{};
+
 	// The game server connection will unpack/process our protocol messages
 	const auto gameServerConnection = std::make_shared<ReliableUdpGameServerConnection>(ServerAddress, ListeningPort);
 
-	// The reliableUdpProtocol will pack/send our protocol messages
-	const auto reliableUdpProtocolManager = std::make_shared<ReliableUdpProtocolManager>(std::make_shared<UdpConnectedNetworkSocket>());
+	// The game client connection will pack/send our protocol messages
+	const auto gameClientConnection = std::make_shared<UdpConnectedNetworkSocket>();
+	const auto reliableUdpProtocolManager = std::make_shared<ReliableUdpProtocolManager>(gameClientConnection);
+	reliableUdpProtocolManager->Initialize();
 	
 	StartNetworkServer(gameServerConnection);
-
-	const auto data1 = "There can be only one.";
-	const auto data2 = "There can be only two.";
-	const auto data3 = "There can be only three.";
+	
+	auto data1 = "There can be only one.";
+	auto data2 = "There can be only two.";
+	auto data3 = "There can be only three.";
 
 	const PacketDatum packet1(false, data1);
 	const PacketDatum packet2(false, data2);
 	const PacketDatum packet3(false, data3);
-	
+
+	// Establish connection and send public key
 	reliableUdpProtocolManager->Connect(ServerAddress, ListeningPort);
 
+	// Receive ack for receiving pub key
+	reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
+
+	// Receive server's public key
+	reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
+
 	// Send data reliably with aggregated message support if not acknowledgment received
+
+	// send data1 encrypted
 	reliableUdpProtocolManager->Send(data1, strlen(data1));
-	reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes);
 
-	reliableUdpProtocolManager->Send(data2, strlen(data2)); // packet loss should be detected here
-	reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes);
+	// Receive ack for data1
+	reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
+	
+	// Send encrypted data2
+	reliableUdpProtocolManager->Send(data2, strlen(data2));
 
-	reliableUdpProtocolManager->Send(data3, strlen(data3)); // packet loss should be detected here
-	reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes);
+	// Receive ack for data2
+	reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 
+	// Send encrypted data3
+	reliableUdpProtocolManager->Send(data3, strlen(data3));
+
+	// Receive ack for data3
+	reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
+		
 	// Wait for the server to respond
-	Sleep(1000);	
+	Sleep(1000);
 		
 	// Collect events from Event Manger to see what traffic was captured
 	const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
 
-	EXPECT_EQ(clientEmittedEvents.size(), 3); // exepcted the client to receive 3 acks for the 3 sent messages
-	EXPECT_EQ(serverEmittedEvents.size(), 9);// expected 3 sets of reliable message received and reliable message ack received (6) and 1 event for each message data (only 1 containing message data per message) (3)
+	// Expected server events:
+
+	EXPECT_EQ(serverEmittedEvents[0]->Id, ReliableUdpPacketReceivedEventId); // Data received: client's public key
+	EXPECT_EQ(serverEmittedEvents[1]->Id, NetworkTrafficReceivedEventId); // Report data received: public key
+	EXPECT_EQ(serverEmittedEvents[2]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data (public key data)
+
+	//data1
+	EXPECT_EQ(serverEmittedEvents[3]->Id, ReliableUdpPacketReceivedEventId); // Data received: data1
+	EXPECT_EQ(serverEmittedEvents[4]->Id, NetworkTrafficReceivedEventId); // Report data received: data1
+	EXPECT_EQ(serverEmittedEvents[5]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data1
+
+	// data2
+	EXPECT_EQ(serverEmittedEvents[6]->Id, ReliableUdpPacketReceivedEventId); // Data received: data2
+	EXPECT_EQ(serverEmittedEvents[7]->Id, NetworkTrafficReceivedEventId); // Report data received: data2
+	EXPECT_EQ(serverEmittedEvents[8]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data2
+
+	// data3
+	EXPECT_EQ(serverEmittedEvents[9]->Id, ReliableUdpPacketReceivedEventId); // Data received: data3
+	EXPECT_EQ(serverEmittedEvents[10]->Id, NetworkTrafficReceivedEventId); // Report data received: data3
+	EXPECT_EQ(serverEmittedEvents[11]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data3
+		
+	EXPECT_EQ(serverEmittedEvents.size(), 12);
+
+	// Expected client events:
+
+	EXPECT_EQ(clientEmittedEvents[0]->Id, ReliableUdpAckPacketEventId);   // Ack received for sending client's public key
+	EXPECT_EQ(clientEmittedEvents[1]->Id, ReliableUdpPacketReceivedEventId); // Data received: public key
+	EXPECT_EQ(clientEmittedEvents[2]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data (server's public key)
+	EXPECT_EQ(clientEmittedEvents[3]->Id, ReliableUdpAckPacketEventId); // received ack from server for data1
+	EXPECT_EQ(clientEmittedEvents[4]->Id, ReliableUdpAckPacketEventId); // received ack from server for data2
+		EXPECT_FALSE(To<ReliableUdpAckPacketEvent>(clientEmittedEvents[4])->Sent);
+	EXPECT_EQ(clientEmittedEvents[5]->Id, ReliableUdpAckPacketEventId); // received ack from server for data3
+		EXPECT_FALSE(To<ReliableUdpAckPacketEvent>(clientEmittedEvents[5])->Sent);	
 }
+

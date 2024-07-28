@@ -54,7 +54,7 @@ namespace gamelib
 		
 			bool Initialize() override;		
 			std::shared_ptr<IConnectedNetworkSocket> GetConnection() override;
-			void Connect(const char* address, const char* port) const override;
+			void Connect(const char* address, const char* port) override;
 
 			int Send(const char* callersSendBuffer, int dataLength, unsigned long deltaMs = 0) override;
 			int Receive(char* callersReceiveBuffer, int bufLength, unsigned long deltaMs = 0) override;

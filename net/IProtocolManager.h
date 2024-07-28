@@ -12,7 +12,7 @@ namespace gamelib
 	{
 	public:
 		virtual ~IProtocolManager() = default;
-		virtual void Connect(const char* address, const char* port) const = 0;
+		virtual void Connect(const char* address, const char* port) = 0;
 		virtual int Send(const char* data, int dataLength, unsigned long deltaMs = 0) = 0;
 		virtual int Receive(char* receivedBuffer, int bufLength, unsigned long deltaMs = 0) = 0;
 		virtual int SendAck(const Message& messageToAck, unsigned long sendTimeMs) = 0;

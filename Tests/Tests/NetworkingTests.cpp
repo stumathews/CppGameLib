@@ -19,6 +19,7 @@
 #include "events/ReliableUdpAckPacketEvent.h"
 #include "events/ReliableUdpPacketLossDetectedEvent.h"
 #include "events/ReliableUdpPacketReceivedEvent.h"
+#include "events/ReliableUdpPacketRttCalculatedEvent.h"
 #include "net/GameServerConnectionFactory.h"
 #include "net/NetworkConnectionFactory.h"
 #include "net/ReliableUdp.h"
@@ -593,12 +594,13 @@ TEST_F(NetworkingTests, ReliabelUdpPacketLossResendTest)
 
 	// Expected client events
 	EXPECT_EQ(clientEmittedEvents[0]->Id, ReliableUdpAckPacketEventId);   // Ack received for sending client's public key
-	EXPECT_EQ(clientEmittedEvents[1]->Id, ReliableUdpPacketReceivedEventId); // Data received: public key
-	EXPECT_EQ(clientEmittedEvents[2]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data (server's public key)
-	EXPECT_EQ(clientEmittedEvents[3]->Id, ReliableUdpPacketLossDetectedEventId); // Loss detected of data1 while sending data2
-	EXPECT_EQ(clientEmittedEvents[4]->Id, ReliableUdpPacketLossDetectedEventId); // Loss detected of data2 while sending data1
+	EXPECT_EQ(clientEmittedEvents[1]->Id, ReliableUdpPacketRttCalculatedEventId);
+	EXPECT_EQ(clientEmittedEvents[2]->Id, ReliableUdpPacketReceivedEventId); // Data received: public key
+	EXPECT_EQ(clientEmittedEvents[3]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data (server's public key)
+	EXPECT_EQ(clientEmittedEvents[4]->Id, ReliableUdpPacketLossDetectedEventId); // Loss detected of data1 while sending data2
+	EXPECT_EQ(clientEmittedEvents[5]->Id, ReliableUdpPacketLossDetectedEventId); // Loss detected of data2 while sending data1
 
-	EXPECT_EQ(clientEmittedEvents.size(), 5);
+	EXPECT_EQ(clientEmittedEvents.size(), 6);
 }
 
 TEST_F(NetworkingTests, ReliabelUdpRoutineConversation)
@@ -687,12 +689,16 @@ TEST_F(NetworkingTests, ReliabelUdpRoutineConversation)
 	// Expected client events:
 
 	EXPECT_EQ(clientEmittedEvents[0]->Id, ReliableUdpAckPacketEventId);   // Ack received for sending client's public key
-	EXPECT_EQ(clientEmittedEvents[1]->Id, ReliableUdpPacketReceivedEventId); // Data received: public key
-	EXPECT_EQ(clientEmittedEvents[2]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data (server's public key)
-	EXPECT_EQ(clientEmittedEvents[3]->Id, ReliableUdpAckPacketEventId); // received ack from server for data1
-	EXPECT_EQ(clientEmittedEvents[4]->Id, ReliableUdpAckPacketEventId); // received ack from server for data2
-		EXPECT_FALSE(To<ReliableUdpAckPacketEvent>(clientEmittedEvents[4])->Sent);
-	EXPECT_EQ(clientEmittedEvents[5]->Id, ReliableUdpAckPacketEventId); // received ack from server for data3
-		EXPECT_FALSE(To<ReliableUdpAckPacketEvent>(clientEmittedEvents[5])->Sent);	
+	EXPECT_EQ(clientEmittedEvents[1]->Id, ReliableUdpPacketRttCalculatedEventId); 
+	EXPECT_EQ(clientEmittedEvents[2]->Id, ReliableUdpPacketReceivedEventId); // Data received: public key
+	EXPECT_EQ(clientEmittedEvents[3]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data (server's public key)
+	EXPECT_EQ(clientEmittedEvents[4]->Id, ReliableUdpAckPacketEventId); // received ack from server for data1
+	EXPECT_EQ(clientEmittedEvents[5]->Id, ReliableUdpPacketRttCalculatedEventId); 
+	EXPECT_EQ(clientEmittedEvents[6]->Id, ReliableUdpAckPacketEventId); // received ack from server for data2
+		EXPECT_FALSE(To<ReliableUdpAckPacketEvent>(clientEmittedEvents[6])->Sent);	
+	EXPECT_EQ(clientEmittedEvents[7]->Id, ReliableUdpPacketRttCalculatedEventId); 
+	EXPECT_EQ(clientEmittedEvents[8]->Id, ReliableUdpAckPacketEventId); // received ack from server for data3
+		EXPECT_FALSE(To<ReliableUdpAckPacketEvent>(clientEmittedEvents[8])->Sent);
+	EXPECT_EQ(clientEmittedEvents[9]->Id, ReliableUdpPacketRttCalculatedEventId);
 }
 

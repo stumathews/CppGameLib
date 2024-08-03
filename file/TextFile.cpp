@@ -15,9 +15,16 @@ namespace gamelib
 		Close();
 	}
 
-	void TextFile::Append(const std::string& line)
+	void TextFile::Append(const std::string& line, const bool includeTimeString)
 	{
-		buffer << GetTimeString() << " " << line;
+		if(includeTimeString)
+		{
+			buffer << GetTimeString() << " " << line;
+		}
+		else
+		{
+			buffer << line;
+		}
 		Flush();
 	}
 

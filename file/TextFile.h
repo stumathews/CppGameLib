@@ -13,7 +13,7 @@ namespace gamelib
 		explicit TextFile(const std::string& fileName);
 		
 		~TextFile();
-		void Append(const std::string& line);
+		void Append(const std::string& line, bool includeTimeString = true);
 		void Create(const std::string& fileName);
 		void Flush();
 		void Close();

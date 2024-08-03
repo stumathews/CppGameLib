@@ -237,6 +237,8 @@
     <ClInclude Include="graphic\Subscribable.h" />
     <ClInclude Include="graphic\Window.h" />
     <ClInclude Include="net\IProtocolManager.h" />
+    <ClInclude Include="net\NetworkingStatistics.h" />
+    <ClInclude Include="net\PacketDatumUtils.h" />
     <ClInclude Include="net\TransportOnlyProtocolManager.h" />
     <ClInclude Include="net\ReliableUdpProtocolManager.h" />
     <ClInclude Include="net\Message.h" />
@@ -254,6 +256,7 @@
     <ClInclude Include="net\ReliableUdpGameServerConnection.h" />
     <ClInclude Include="events\ReliableUdpPacketReceivedEvent.h" />
     <ClInclude Include="security\Security.h" />
+    <ClInclude Include="file\TextFile.h" />
     <ClInclude Include="time\PeriodicTimer.h" />
     <ClInclude Include="events\EventId.h" />
     <ClInclude Include="events\EventFactory.h" />
@@ -354,6 +357,7 @@
     <ClInclude Include="geometry\Coordinate.h" />
     <ClInclude Include="utils\BitFiddler.h" />
     <ClInclude Include="utils\RingBuffer.h" />
+    <ClInclude Include="utils\Statistics.h" />
     <ClInclude Include="utils\Utils.h" />
     <ClInclude Include="structure\VariableGameLoop.h" />
   </ItemGroup>
@@ -382,6 +386,7 @@
     <ClCompile Include="net\ReliableUdpGameServerConnection.cpp" />
     <ClCompile Include="events\ReliableUdpPacketReceivedEvent.cpp" />
     <ClCompile Include="security\Security.cpp" />
+    <ClCompile Include="file\TextFile.cpp" />
     <ClCompile Include="time\PeriodicTimer.cpp" />
     <ClCompile Include="events\EventId.cpp" />
     <ClCompile Include="events\EventFactory.cpp" />

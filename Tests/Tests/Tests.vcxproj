@@ -97,6 +97,7 @@
     <ClCompile Include="SecurityTests.cpp" />
     <ClCompile Include="SettingsManagerTests.cpp" />
     <ClCompile Include="EventManagerTests.cpp" />
+    <ClCompile Include="StatisticsTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(GameLib_RootDir)\cppgamelib.vcxproj">

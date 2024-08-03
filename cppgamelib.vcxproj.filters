@@ -504,6 +504,18 @@
     <ClInclude Include="events\ReliableUdpAckPacketEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="utils\Statistics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\PacketDatumUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\NetworkingStatistics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="file\TextFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -798,6 +810,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="net\ReliableUdpProtocolManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="file\TextFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,6 +1,8 @@
 ﻿#include "ReliableUdp.h"
 #include "GameClient.h"
 #include "Option.h"
+#include "PacketDatumUtils.h"
+#include "utils/Statistics.h"
 
 gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum, const MessageType messageType)
 {
@@ -47,7 +49,7 @@ gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum, const Messag
 	return sentMessage;
 }
 
-void gamelib::ReliableUdp::MarkReceived(const Message& senderMessage, unsigned long receivedTimeMs)
+void gamelib::ReliableUdp::MarkReceived(const Message& senderMessage, const unsigned long receivedTimeMs)
 {
 	// Sender received LastAckedSequence of ours we sent...		
 	const auto* p = SendBuffer.Get(senderMessage.Header.LastAckedSequence);
@@ -55,6 +57,7 @@ void gamelib::ReliableUdp::MarkReceived(const Message& senderMessage, unsigned l
 	{
 		auto datum = *p;
 		datum.IsAcked = true;
+		datum.RttMs = datum.SendTimeMs - receivedTimeMs;
 		SendBuffer.Put(datum.Sequence, datum);
 	}
 
@@ -70,16 +73,18 @@ void gamelib::ReliableUdp::MarkReceived(const Message& senderMessage, unsigned l
 
 			// mark it as having been received/acked by sender, acked messages will not be re-sent from the send buffer
 			datumToUpdate.IsAcked = true;
+			datumToUpdate.RttMs = datumToUpdate.SendTimeMs - receivedTimeMs;
 			SendBuffer.Put(previousSequence, datumToUpdate);
 		}
 	}
 
-	// Mark all the sequences as having been received
+	// Mark all the containing sequences as having been received
 	for(int i = static_cast<int>(senderMessage.Data().size()) -1 ; i >= 0 ; i--)
 	{
 		// The current sequence is index 0, prior sequences were added on top, so a next index 1, 2, 3 are the prior sequences etc.
 		auto datumToUpdate = senderMessage.Data()[i];
 		datumToUpdate.IsAcked = true;
+		datumToUpdate.RttMs = datumToUpdate.SendTimeMs - receivedTimeMs;
 		ReceiveBuffer.Put(datumToUpdate.Sequence, datumToUpdate);
 	}
 
@@ -88,6 +93,9 @@ void gamelib::ReliableUdp::MarkReceived(const Message& senderMessage, unsigned l
 	{
 		lastAckedSequence = senderMessage.Header.Sequence;
 	}
+
+	const auto lastKEntries = 3;
+	auto averageLatency = Statistics::SMA(lastKEntries, PacketDatumUtils::GetLastKRtts(lastKEntries, ReceiveBuffer));
 }
 
 uint32_t gamelib::ReliableUdp::GeneratePreviousAckedBits()

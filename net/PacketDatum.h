@@ -45,7 +45,8 @@ namespace gamelib
 		// fields
 		bool IsAcked {false};
 		uint16_t Sequence {};
-		unsigned long SendTime {0}; // We can evaluate the RTT for this packet when it gets acked. This is not serialized
+		unsigned long SendTimeMs {0}; // We can evaluate the RTT for this packet when it gets acked. This is not serialized
+		unsigned long RttMs {0}; // rttMs = TimeNow - SendTime (note: rtt is Round-trip time)
 		bool IsDataPacked {false}; // unless specified the data is not packed, ie its just a string/bytes
 		[[nodiscard]] const char* Data() const { return dataString.c_str();}
 	private:

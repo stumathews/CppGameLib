@@ -7,7 +7,7 @@ gamelib::PacketDatum::PacketDatum()
 }
 
 gamelib::PacketDatum::PacketDatum(const bool acked, const char* customData, const unsigned long sendTimeMs, const bool isString)
-	: IsAcked(acked), SendTime(sendTimeMs), IsDataPacked(isString), dataString(customData)
+	: IsAcked(acked), SendTimeMs(sendTimeMs), IsDataPacked(isString), dataString(customData)
 {
 	
 }

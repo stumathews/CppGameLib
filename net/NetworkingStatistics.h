@@ -12,10 +12,11 @@ namespace gamelib
 		int VerificationFailedCount {0};
 		int CountAcks;
 		int CountPacketsReceived {0};
+		int CountAggregateMessagesReceived;
 
 		void Reset()
 		{
-			CountPacketsLost =  BytesReceived = VerificationFailedCount = CountAcks = CountPacketsReceived = 0;
+			CountPacketsLost =  BytesReceived = VerificationFailedCount = CountAcks = CountPacketsReceived = CountAggregateMessagesReceived = 0;
 			AverageLatency = 0.0;
 		}
 	};

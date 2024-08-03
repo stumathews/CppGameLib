@@ -93,9 +93,6 @@ void gamelib::ReliableUdp::MarkReceived(const Message& senderMessage, const unsi
 	{
 		lastAckedSequence = senderMessage.Header.Sequence;
 	}
-
-	const auto lastKEntries = 3;
-	auto averageLatency = Statistics::SMA(lastKEntries, PacketDatumUtils::GetLastKRtts(lastKEntries, ReceiveBuffer));
 }
 
 uint32_t gamelib::ReliableUdp::GeneratePreviousAckedBits()

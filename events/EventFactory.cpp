@@ -12,6 +12,7 @@
 #include <events/SubscriberHandledEvent.h>
 
 #include "ReliableUdpPacketReceivedEvent.h"
+#include "net/Rtt.h"
 
 namespace gamelib
 {
@@ -124,6 +125,12 @@ namespace gamelib
 		const std::shared_ptr<Message>& message, bool isSent) const
 	{
 		return std::make_shared<ReliableUdpAckPacketEvent>(message, isSent);
+	}
+
+	std::shared_ptr<ReliableUdpPacketRttCalculatedEvent> EventFactory::CreateReliableUdpPacketRttCalculatedEvent(
+		const std::shared_ptr<Message>& message, Rtt rtt) const
+	{
+		return std::make_shared<ReliableUdpPacketRttCalculatedEvent>(message, rtt);
 	}
 
 	std::shared_ptr<AddGameObjectToCurrentSceneEvent> EventFactory::CreateAddToSceneEvent(const std::shared_ptr<GameObject> & obj)

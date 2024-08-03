@@ -3,8 +3,10 @@
 #include <events/EventManager.h>
 #include <net/PeerInfo.h>
 
+#include "PacketDatumUtils.h"
 #include "events/EventFactory.h"
 #include "objects/GameObject.h"
+#include "utils/Statistics.h"
 
 namespace gamelib
 {
@@ -104,7 +106,11 @@ namespace gamelib
 
 			if(message.Header.MessageType == 0) // ack message
 			{
-				RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), false));
+				RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), false));				
+				
+				RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketRttCalculatedEvent(std::make_shared<Message>(message), 
+					PacketDatumUtils::CalculateRttStats(message, reliableUdp.ReceiveBuffer)));
+				
 			}
 			
 			if(message.Header.MessageType == SendPubKey)

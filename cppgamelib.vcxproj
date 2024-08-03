@@ -233,12 +233,14 @@
     <ClInclude Include="character\StatefulMove.h" />
     <ClInclude Include="events\ReliableUdpAckPacketEvent.h" />
     <ClInclude Include="events\ReliableUdpCheckSumFailedEvent.h" />
+    <ClInclude Include="events\ReliableUdpPacketRttCalculatedEvent.h" />
     <ClInclude Include="events\SubscriberHandledEvent.h" />
     <ClInclude Include="graphic\Subscribable.h" />
     <ClInclude Include="graphic\Window.h" />
     <ClInclude Include="net\IProtocolManager.h" />
     <ClInclude Include="net\NetworkingStatistics.h" />
     <ClInclude Include="net\PacketDatumUtils.h" />
+    <ClInclude Include="net\Rtt.h" />
     <ClInclude Include="net\TransportOnlyProtocolManager.h" />
     <ClInclude Include="net\ReliableUdpProtocolManager.h" />
     <ClInclude Include="net\Message.h" />

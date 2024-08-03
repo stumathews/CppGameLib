@@ -1,5 +1,6 @@
 #include "ReliableUdpProtocolManager.h"
 
+#include "PacketDatumUtils.h"
 #include "PeerInfo.h"
 #include "events/EventFactory.h"
 #include "file/SerializationManager.h"
@@ -152,14 +153,16 @@ namespace gamelib
 		if(message.Header.MessageType != 0)	
 		{
 			
-			RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketReceived(std::make_shared<Message>(message)));
+			RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketReceived(std::make_shared<Message>(message)));			
 			SendAck(message, deltaMs);
 			RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), true));
 		} 		
 		
 		if (message.Header.MessageType == 0) // ack
-		{
+		{			
 			RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), false));
+			RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketRttCalculatedEvent(std::make_shared<Message>(message), 
+					PacketDatumUtils::CalculateRttStats(message, reliableUdp.ReceiveBuffer)));
 		}
 		
 		if(message.Header.MessageType == SendPubKey)

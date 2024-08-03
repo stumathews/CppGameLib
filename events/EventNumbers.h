@@ -30,7 +30,8 @@ namespace gamelib
 		ReliableUdpPacketReceived,
 		ReliableUdpCheckSumFailed,
 		ReliableUdpPacketLossDetected,
-		ReliableUdpAckPacket
+		ReliableUdpAckPacket,
+		ReliableUdpPacketRttCalculated
 	};
 }
 

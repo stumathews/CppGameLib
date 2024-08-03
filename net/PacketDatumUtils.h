@@ -4,7 +4,10 @@
 #include <vector>
 
 #include "PacketDatum.h"
+#include "ReliableUdpGameServerConnection.h"
+#include "Rtt.h"
 #include "utils/RingBuffer.h"
+#include "utils/Statistics.h"
 
 namespace gamelib
 {
@@ -27,6 +30,13 @@ namespace gamelib
 				}
 			}
 			return p;
+		}
+
+		static Rtt CalculateRttStats(const Message& message, RingBuffer<PacketDatum>& receiveBuffer)
+		{
+			const auto* datum = receiveBuffer.Get(message.Header.Sequence);
+			const auto sma3 = Statistics::SMA(3, GetLastKRtts(3, receiveBuffer));
+			return Rtt(datum->RttMs, sma3);
 		}
 	};
 

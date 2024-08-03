@@ -516,6 +516,12 @@
     <ClInclude Include="file\TextFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="events\ReliableUdpPacketRttCalculatedEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\Rtt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">

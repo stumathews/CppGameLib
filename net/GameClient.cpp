@@ -48,8 +48,6 @@ namespace gamelib
 		Logger::Get()->LogThis(isTcp ? "Client using TCP" : "Client using UDP");
 		Logger::Get()->LogThis("Nickname:" + std::string(nickName));
 		
-		periodicTimer.SetFrequency(5000);
-
 		SubscribeToGameEvents();
 	}
 
@@ -58,9 +56,6 @@ namespace gamelib
 		// We subscribe to some of our own events and send them to the game server...
 		eventManager->SubscribeToEvent(PlayerMovedEventTypeEventId, this);
 		eventManager->SubscribeToEvent(ControllerMoveEventId, this);
-
-		// hack
-		eventManager->SubscribeToEvent(UpdateProcessesEventId, this);
 	}
 
 	void GameClient::Connect(const std::shared_ptr<GameServer>& inGameServer)
@@ -192,16 +187,6 @@ namespace gamelib
 
 	std::vector<std::shared_ptr<Event>> GameClient::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs)
 	{
-		if(evt->Id == UpdateProcessesEventId) 
-		{
-			periodicTimer.Update(deltaMs);
-			periodicTimer.DoIfReady([=]()
-			{
-				PingGameServer(deltaMs);
-			});
-			return {};
-		}
-
 		std::vector<std::shared_ptr<Event>> createdEvents;	
 
 		Logger::Get()->LogThis("Sending client event to server:");

@@ -4,6 +4,7 @@
 
 #include "GameServerConnectionFactory.h"
 #include "NetworkConnectionFactory.h"
+#include "file/SerializationManager.h"
 
 namespace gamelib
 {
@@ -13,10 +14,10 @@ namespace gamelib
 		gameServerAddress = SettingsManager::Get()->GetString("networking", "gameServerAddress");
 		gameServerPort = SettingsManager::Get()->GetString("networking", "gameServerPort");
 		maxPlayers = SettingsManager::Get()->GetInt("networking", "maxPlayers");
-
 		nickName = SettingsManager::Get()->GetString("networking", "nickname");
 		isTcp = SettingsManager::Get()->GetBool("networking", "isTcp");
 		useEncryption = SettingsManager::Get()->GetBool("networking", "useEncryption");
+		encoding = static_cast<gamelib::Encoding>(SettingsManager::Get()->GetInt("networking", "encoding"));
 	}
 
 	bool NetworkManager::IsGameServer() const
@@ -29,8 +30,9 @@ namespace gamelib
 		Networking::Get()->InitializeWinSock();
 		const auto useReliableUdp = SettingsManager::Get()->GetBool("networking", "useReliableUdp");
 		auto gameServerConnection = GameServerConnectionFactory::Create(isTcp, gameServerAddress, gameServerPort,
-		                                                                useReliableUdp, useEncryption);
-		Server = std::make_shared<GameServer>(gameServerAddress, gameServerPort, gameServerConnection, nickName);
+		                                                                useReliableUdp, useEncryption, encoding);
+
+		Server = std::make_shared<GameServer>(gameServerAddress, gameServerPort, gameServerConnection, nickName, encoding);
 
 		if(isGameServer)
 		{			
@@ -38,7 +40,7 @@ namespace gamelib
 		}
 		else
 		{
-			Client = std::make_shared<GameClient>(nickName, NetworkConnectionFactory::Create(isTcp), useReliableUdp, useEncryption);
+			Client = std::make_shared<GameClient>(nickName, NetworkConnectionFactory::Create(isTcp), useReliableUdp, useEncryption, encoding);
 			Client->Initialize();
 			Client->Connect(Server);
 		}

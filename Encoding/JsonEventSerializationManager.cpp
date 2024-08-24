@@ -4,6 +4,8 @@
 #include <events/StartNetworkLevelEvent.h>
 #include "character/DirectionUtils.h"
 #include "events/NetworkTrafficReceivedEvent.h"
+#include "net/PingMessage.h"
+#include "net/PongMessage.h"
 
 using namespace json11;
 
@@ -87,30 +89,37 @@ namespace gamelib
 		return payload.dump();
 	}
 
-    std::string JsonEventSerializationManager::CreatePongMessage()
-    {
-		/*
-
-		Json payload = Json::object
+	std::string JsonEventSerializationManager::CreateRequestPlayerDetailsMessageResponse(const std::string& target)
+	{
+		const Json payload = Json::object
 		{
-		{ "messageType", "ping" },
-		{ "isHappy", false },
-		{ "eventType", (int)gamelib::EventType::NetworkTrafficReceived },
-		{ "names", Json::array{ "Stuart", "Jenny", "bruce" } },
-		{ "ages", Json::array{ 1, 2, 3 } },
-		{ "fish", Json::object{ { "yo", "sushi" } } }
-		};
+			{ "messageType", "requestPlayerDetails" },
+			{ "nickname", target}
+		};			
 
-		*/
+
+		return payload.dump();
+	}
+
+	std::string JsonEventSerializationManager::CreatePongMessage()
+    {
+		PongMessage pongMessage;
+			pongMessage.Type = "pong";
+			pongMessage.isHappy = true;
+			pongMessage.eventType = NetworkTrafficReceivedEventId.PrimaryId;
+			pongMessage.names = { "Stuart", "Jenny", "bruce" };
+			pongMessage.ages = {1, 2,3 };
+			pongMessage.fish = Fish("Neemo", "Mathews");
+
 
 		const Json sendPayload = Json::object
 		{
-			{ "messageType", "pong" },
-			{ "isHappy", true },
-			{ "eventType", NetworkTrafficReceivedEventId.PrimaryId },
-			{ "names", Json::array{ "Stuart", "Jenny", "bruce" } },
-			{ "ages", Json::array{ 1, 2, 3 } },
-			{ "fish", Json::object{ { "yo", "sushi" } } }
+			{ "messageType", pongMessage.Type },
+			{ "isHappy", pongMessage.isHappy },
+			{ "eventType", pongMessage.eventType },
+			{ "names",  pongMessage.names },
+			{ "ages",  pongMessage.ages  },
+			{ "fish", Json::object{ { pongMessage.fish.Name, pongMessage.fish.Surname } } }
 		};
 
 		return sendPayload.dump();
@@ -118,16 +127,25 @@ namespace gamelib
 
 	std::string JsonEventSerializationManager::CreatePingMessage()
 	{
-		const Json payload = Json::object{
-			{ "messageType", "ping" },
-			{ "isHappy", false },
-			{ "eventType", NetworkTrafficReceivedEventId.PrimaryId },
-			{ "names", Json::array{ "Stuart", "Jenny", "bruce" } },
-			{ "ages", Json::array{ 1, 2, 3 } },
-			{ "fish", Json::object{ { "yo", "sushi" } } }
-		};
+		PingMessage pingMessage;
+			pingMessage.Type = "ping";
+			pingMessage.IsHappy = true;
+			pingMessage.EventType = NetworkTrafficReceivedEventId.PrimaryId;
+			pingMessage.Names = { "Stuart", "Jenny", "bruce" };
+			pingMessage.Ages = {1, 2,3 };
+			pingMessage.Fish = Fish("Neemo", "Mathews");
 
-		return payload.dump();
+
+		const Json sendPayload = Json::object
+		{
+			{ "messageType", pingMessage.Type },
+			{ "isHappy", pingMessage.IsHappy },
+			{ "eventType", pingMessage.EventType },
+			{ "names", pingMessage.Names },
+			{ "ages",  pingMessage.Ages },
+			{ "fish", Json::object{ { pingMessage.Fish.Name, pingMessage.Fish.Surname } } }
+		};
+		return sendPayload.dump();
 	}
 	
 }

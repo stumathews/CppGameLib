@@ -41,6 +41,8 @@ public:
 	const char* ClientNickName = "Alice";
 	const char* ServerNickName = "Bob";	
 	const string ServerOrigin = ServerAddress + string(":") + ListeningPort;
+	const Encoding wireEncoding = Encoding::Json;
+	std::shared_ptr<SerializationManager> serializationManager;
 
 	void StartNetworkServer(std::shared_ptr<IGameServerConnection> inGameServerConnection = nullptr)
 	{
@@ -76,6 +78,7 @@ public:
 
 	void SetUp() override
 	{
+		serializationManager = std::make_shared<SerializationManager>(wireEncoding);
 	}
 
 	void TearDown() override
@@ -124,7 +127,7 @@ public:
 	         if( event->Id == NetworkTrafficReceivedEventId)
 	         {
 	             const auto trafficReceivedEvent = To<NetworkTrafficReceivedEvent>(event);
-				 const auto& messageType = SerializationManager::Get()->GetMessageHeader(trafficReceivedEvent->Message).MessageType;
+				 const auto& messageType = serializationManager->GetMessageHeader(trafficReceivedEvent->Message).MessageType;
 	             return messageType == requiredMessageType && trafficReceivedEvent->Identifier == trafficEventIdentifier;
 	         }
 	         return false;	
@@ -189,10 +192,10 @@ public:
 
 		// Ensure we got a ping response from the server
 		EXPECT_TRUE(trafficEvent != nullptr);
-		EXPECT_EQ(trafficEvent->BytesReceived, 143);
+		EXPECT_EQ(trafficEvent->BytesReceived, 147);
 		EXPECT_EQ(trafficEvent->Identifier, messageIdentifier); // Ensure it came from the client
 		EXPECT_EQ(trafficEvent->Origin, expectedEventOrigin);
-		EXPECT_EQ(trafficEvent->Message, "{\"ages\": [1, 2, 3], \"eventType\": 1015, \"fish\": {\"yo\": \"sushi\"}, \"isHappy\": false, \"messageType\": \"ping\", \"names\": [\"Stuart\", \"Jenny\", \"bruce\"]}");
+		EXPECT_EQ(trafficEvent->Message, "{\"ages\": [1, 2, 3], \"eventType\": 1015, \"fish\": {\"Neemo\": \"Mathews\"}, \"isHappy\": true, \"messageType\": \"ping\", \"names\": [\"Stuart\", \"Jenny\", \"bruce\"]}");
 
 	}
 

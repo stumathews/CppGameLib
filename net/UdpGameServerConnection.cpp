@@ -8,7 +8,7 @@
 
 namespace gamelib
 {
-	UdpGameServerConnection::UdpGameServerConnection(const std::string& host, const std::string& port)
+	UdpGameServerConnection::UdpGameServerConnection(const std::string& host, const std::string& port, const gamelib::Encoding wireFormat)
 	{
 		this->host = host;
 		this->port = port;
@@ -18,6 +18,7 @@ namespace gamelib
 		this->eventManager = nullptr;
 		this->networking = nullptr;
 		this->eventFactory = nullptr;
+		this->Encoding = wireFormat;
 	}
 
 	void UdpGameServerConnection::Initialize()
@@ -25,7 +26,7 @@ namespace gamelib
 		this->networking = Networking::Get();
 		this->eventFactory = EventFactory::Get();
 		this->eventManager = EventManager::Get();
-		this->serializationManager = SerializationManager::Get();
+		this->serializationManager = std::make_shared<SerializationManager>(Encoding);
 		
 	}	
 

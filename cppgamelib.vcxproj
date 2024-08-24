@@ -209,6 +209,7 @@
     <ClInclude Include="audio\AudioAsset.h" />
     <ClInclude Include="ai\BehaviorTree.h" />
     <ClInclude Include="ai\BehaviorTreeBuilder.h" />
+    <ClInclude Include="Encoding\BitPackedEventSerializationManager.h" />
     <ClInclude Include="character\DirectionUtils.h" />
     <ClInclude Include="cppgamelib.h" />
     <ClInclude Include="cppgamelib\ai.h" />
@@ -237,9 +238,12 @@
     <ClInclude Include="events\SubscriberHandledEvent.h" />
     <ClInclude Include="graphic\Subscribable.h" />
     <ClInclude Include="graphic\Window.h" />
+    <ClInclude Include="net\Fish.h" />
     <ClInclude Include="net\IProtocolManager.h" />
     <ClInclude Include="net\NetworkingStatistics.h" />
     <ClInclude Include="net\PacketDatumUtils.h" />
+    <ClInclude Include="net\PingMessage.h" />
+    <ClInclude Include="net\PongMessage.h" />
     <ClInclude Include="net\Rtt.h" />
     <ClInclude Include="net\TransportOnlyProtocolManager.h" />
     <ClInclude Include="net\ReliableUdpProtocolManager.h" />
@@ -272,7 +276,7 @@
     <ClInclude Include="graphic\DrawableText.h" />
     <ClInclude Include="character\Hotspot.h" />
     <ClInclude Include="input\IInputManager.h" />
-    <ClInclude Include="json\JsonEventSerializationManager.h" />
+    <ClInclude Include="Encoding\JsonEventSerializationManager.h" />
     <ClInclude Include="json\json11.h" />
     <ClInclude Include="character\IGameMoveStrategy.h" />
     <ClInclude Include="character\IMovement.h" />
@@ -362,6 +366,7 @@
     <ClInclude Include="utils\Statistics.h" />
     <ClInclude Include="utils\Utils.h" />
     <ClInclude Include="structure\VariableGameLoop.h" />
+    <ClInclude Include="Encoding\XmlEventSerializationManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ai\ConditionalSequence.h" />
@@ -371,6 +376,7 @@
     <ClCompile Include="audio\AudioAsset.cpp" />
     <ClCompile Include="ai\BehaviorTree.cpp" />
     <ClCompile Include="ai\BehaviorTreeBuilder.cpp" />
+    <ClCompile Include="Encoding\BitPackedEventSerializationManager.cpp" />
     <ClCompile Include="character\DirectionUtils.cpp" />
     <ClCompile Include="character\StatefulMove.cpp" />
     <ClCompile Include="events\ReliableUdpPacketLossDetectedEvent.h" />
@@ -398,7 +404,7 @@
     <ClCompile Include="graphic\DrawableText.cpp" />
     <ClCompile Include="character\Hotspot.cpp" />
     <ClCompile Include="input\IInputManager.cpp" />
-    <ClCompile Include="json\JsonEventSerializationManager.cpp" />
+    <ClCompile Include="Encoding\JsonEventSerializationManager.cpp" />
     <ClCompile Include="json\json11.cpp" />
     <ClCompile Include="character\MovementAtSpeed.cpp" />
     <ClCompile Include="net\NetworkPlayer.cpp" />
@@ -465,6 +471,7 @@
     <ClCompile Include="file\SettingsManager.cpp" />
     <ClCompile Include="geometry\Coordinate.cpp" />
     <ClCompile Include="structure\VariableGameLoop.cpp" />
+    <ClCompile Include="Encoding\XmlEventSerializationManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="net\tcpclient.skel" />

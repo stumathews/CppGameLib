@@ -228,7 +228,7 @@
     <ClInclude Include="events\IEventSerializationManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="json\JsonEventSerializationManager.h">
+    <ClInclude Include="Encoding\JsonEventSerializationManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="file\SerializationManager.h">
@@ -522,6 +522,21 @@
     <ClInclude Include="net\Rtt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Encoding\BitPackedEventSerializationManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Encoding\XmlEventSerializationManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\PingMessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\PongMessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\Fish.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">
@@ -701,7 +716,7 @@
     <ClCompile Include="events\IEventSerializationManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="json\JsonEventSerializationManager.cpp">
+    <ClCompile Include="Encoding\JsonEventSerializationManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="file\SerializationManager.cpp">
@@ -819,6 +834,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="file\TextFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Encoding\BitPackedEventSerializationManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Encoding\XmlEventSerializationManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -11,14 +11,13 @@ namespace gamelib
 {
 	class Networking;
 	class EventManager;
-	class SerializationManager;
 	class EventFactory;
 
 	// Connection capable of packing and unpacking protocol data
 	class ReliableUdpGameServerConnection final : public UdpGameServerConnection
 	{
 	public:
-		ReliableUdpGameServerConnection(const std::string& host, const std::string& port, bool useEncryption = true);
+		ReliableUdpGameServerConnection(const std::string& host, const std::string& port, bool useEncryption = true, gamelib::Encoding wireFormat = Encoding::Json);
 
 	private:
 

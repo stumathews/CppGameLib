@@ -5,6 +5,7 @@
 
 #include "IConnectedNetworkSocket.h"
 #include "ReliableUdp.h"
+#include "file/SerializationManager.h"
 #include "security/Security.h"
 #include "time/PeriodicTimer.h"
 
@@ -21,7 +22,8 @@ namespace gamelib
 	{
 	public:
 		~GameClient() override;
-		GameClient(const std::string& nickName, const std::shared_ptr<IConnectedNetworkSocket>& connection, bool useReliableUdpProtocolManager = false, bool useEncryption = true);
+		GameClient(const std::string& nickName, const std::shared_ptr<IConnectedNetworkSocket>& connection,
+		           bool useReliableUdpProtocolManager = false, bool useEncryption = true, Encoding encoding = Encoding::Json);
 		GameClient(const GameClient& other) = delete;
 		GameClient(const GameClient&& other) = delete;
 		const GameClient& operator=(const GameClient& other) = delete;
@@ -59,11 +61,12 @@ namespace gamelib
 		
 		std::string nickName;
 		EventManager* eventManager;
-		SerializationManager* serializationManager;
+		std::shared_ptr<SerializationManager> serializationManager;
 		Networking* networking;
 		EventFactory* eventFactory;
 		bool useEncryption {true};
 		bool isTcp{};
+		Encoding encoding;
 
 
 		// Inherited via EventSubscriber

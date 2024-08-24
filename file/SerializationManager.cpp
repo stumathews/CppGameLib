@@ -3,11 +3,13 @@
 #include <json/json11.h>
 #include <net/MessageHeader.h>
 #include <events/Event.h>
-#include <json/JsonEventSerializationManager.h>
 #include <events/ControllerMoveEvent.h>
 #include <events/PlayerMovedEvent.h>
 #include <events/StartNetworkLevelEvent.h>
 
+#include "Encoding/BitPackedEventSerializationManager.h"
+#include "Encoding/JsonEventSerializationManager.h"
+#include "Encoding/XmlEventSerializationManager.h"
 #include "net/Message.h"
 #include "utils/Utils.h"
 
@@ -15,24 +17,10 @@ using namespace json11;
 
 namespace gamelib
 {
-	SerializationManager* SerializationManager::Get()
+	SerializationManager::SerializationManager(const gamelib::Encoding desiredEncoding = Encoding::Json)
 	{
-		if (instance == nullptr)
-		{
-			instance = new SerializationManager();
-			instance->Initialize();
-		}
-		return instance;
-	}
-
-	SerializationManager::SerializationManager() = default;
-
-	SerializationManager* SerializationManager::instance = nullptr;
-
-	
-	SerializationManager::~SerializationManager()
-	{		
-		instance = nullptr;
+		Encoding = desiredEncoding;
+		Initialize();
 	}
 
 	MessageHeader SerializationManager::GetMessageHeader(const std::string& serializedMessage) const
@@ -114,14 +102,7 @@ namespace gamelib
 	{
 		// Send our Nick to the server
 
-		const Json payload = Json::object
-		{
-			{ "messageType", "requestPlayerDetails" },
-			{ "nickname", target}
-		};			
-
-
-		return payload.dump();
+		return eventSerialization->CreateRequestPlayerDetailsMessageResponse(target);		
 	}
 
 	std::string SerializationManager::CreatePongMessage() const
@@ -146,8 +127,23 @@ namespace gamelib
 
 	bool SerializationManager::Initialize()
 	{		
-		// Change the serializtion format here
-		eventSerialization = std::make_shared<JsonEventSerializationManager>();
+		// Change the serialization format here
+		switch(Encoding)
+		{
+		case Encoding::Json: 			
+			eventSerialization = std::make_shared<JsonEventSerializationManager>();
+			break;
+		case Encoding::Xml:
+			eventSerialization = std::make_shared<XmlEventSerializationManager>();
+			break;
+		case Encoding::BitPacked:
+			eventSerialization = std::make_shared<BitPackedEventSerializationManager>();
+			break;
+		case Encoding::None: break;
+		default:
+			
+			throw std::exception(std::string("Unknown serialization format").c_str());
+		}
 		return true;
 	}
 

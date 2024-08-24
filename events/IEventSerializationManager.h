@@ -20,6 +20,7 @@ namespace gamelib
 		virtual std::string CreateUnknownEventMessage(std::shared_ptr<Event> evt, std::string target) = 0;
 		virtual std::string SerializeStartNetworkLevelEvent(std::shared_ptr<StartNetworkLevelEvent> evt, std::string target) = 0;
 		virtual std::shared_ptr<StartNetworkLevelEvent> DeserializeStartNetworkLevel(std::string serializedMessage) = 0;
+		virtual std::string CreateRequestPlayerDetailsMessageResponse(const std::string& target) = 0;
 	};
 }
 

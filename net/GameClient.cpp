@@ -16,7 +16,7 @@ using namespace json11;
 namespace gamelib
 {
 	GameClient::GameClient(const std::string& nickName, const std::shared_ptr<IConnectedNetworkSocket>& connection,
-	                       const bool useReliableUdpProtocolManager, bool useEncryption)
+	                       const bool useReliableUdpProtocolManager, bool useEncryption, Encoding desiredEncoding)
 	{				
 		noDataTimeout.tv_sec = 0;
 		noDataTimeout.tv_usec = 0;
@@ -28,6 +28,7 @@ namespace gamelib
 		eventFactory = nullptr;
 		this->nickName = nickName;
 		this->useEncryption = useEncryption;
+		encoding = desiredEncoding;
 		
 		networkProtocolManager = useReliableUdpProtocolManager
 			                         ? std::dynamic_pointer_cast<IProtocolManager>(std::make_shared<ReliableUdpProtocolManager>(connection, useEncryption)) // layers reliable protocol over transport
@@ -41,9 +42,10 @@ namespace gamelib
 		Logger::Get()->LogThis("Initializing game client...");
 		
 		eventManager = EventManager::Get();
-		serializationManager = SerializationManager::Get();
 		networking = Networking::Get();
 		eventFactory = EventFactory::Get();
+		
+		serializationManager = std::make_shared<SerializationManager>(encoding);
 
 		networkProtocolManager->Initialize();
 
@@ -81,7 +83,7 @@ namespace gamelib
 	{
 		Logger::Get()->LogThis("Registering client with game server.");
 
-		const auto response = SerializationManager::CreateRequestPlayerDetailsMessageResponse(nickName);
+		const auto response = serializationManager->CreateRequestPlayerDetailsMessageResponse(nickName);
 		
 		const int sendResult = networkProtocolManager->Send(response.c_str(), response.size());
 		
@@ -146,7 +148,7 @@ namespace gamelib
 		// Send client registration response immediately back to server
 		if(messageType == "requestPlayerDetails")
 		{
-			const auto response = SerializationManager::CreateRequestPlayerDetailsMessageResponse(nickName);
+			const auto response = serializationManager->CreateRequestPlayerDetailsMessageResponse(nickName);
 			
 			networkProtocolManager->Send(response.c_str(), static_cast<int>(response.size()), deltaMs);
 
@@ -210,7 +212,7 @@ namespace gamelib
 	void GameClient::PingGameServer(const unsigned long deltaMs) const
 	{
 		const auto message = serializationManager->CreatePingMessage();
-		const int sendResult = InternalSend(message.c_str(), deltaMs);
+		const int sendResult = InternalSend(message, deltaMs);
 
 		Logger::Get()->LogThis(sendResult > 0 ? "Sent ping request" : "Ping error, no data sent");
 

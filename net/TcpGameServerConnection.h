@@ -8,6 +8,8 @@
 #include <events/Event.h>
 #include <events/EventSubscriber.h>
 
+#include "file/SerializationManager.h"
+
 namespace gamelib
 {
 	class Networking;
@@ -19,17 +21,18 @@ namespace gamelib
 	{
 	public:
 
-		TcpGameServerConnection(const std::string& host, const std::string& port);
+		TcpGameServerConnection(const std::string& host, const std::string& port, Encoding wireFormat);
 		~TcpGameServerConnection() override;
 		void Initialize() override;
 	private:
 		SOCKET listeningSocket{};
 		std::string host, port;
 
-		SerializationManager* serializationManager;
+		std::shared_ptr<SerializationManager> serializationManager;
 		EventManager* _eventManager;
 		Networking* networking;
 		EventFactory* _eventFactory;
+		Encoding encoding;
 
 
 		// Inherited via IGameServerConnection

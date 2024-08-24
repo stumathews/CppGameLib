@@ -7,7 +7,7 @@
 
 namespace gamelib
 {
-	TcpGameServerConnection::TcpGameServerConnection(const std::string& host, const std::string& port)
+	TcpGameServerConnection::TcpGameServerConnection(const std::string& host, const std::string& port, const gamelib::Encoding wireFormat)
 	{
 		this->host = host;
 		this->port = port;
@@ -17,6 +17,7 @@ namespace gamelib
 		this->_eventManager = nullptr;
 		this->networking = nullptr;
 		this->_eventFactory = nullptr;
+		this->encoding = wireFormat;
 	}
 	
 	void TcpGameServerConnection::Initialize()
@@ -24,7 +25,7 @@ namespace gamelib
 		this->networking = Networking::Get();
 		this->_eventFactory = EventFactory::Get();
 		this->_eventManager = EventManager::Get();
-		this->serializationManager = SerializationManager::Get();		
+		this->serializationManager = std::make_shared<SerializationManager>(encoding);		
 	}
 
 	void TcpGameServerConnection::Listen(const unsigned long deltaMs)

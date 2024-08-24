@@ -5,6 +5,8 @@
 #include <file/Logger.h>
 #include <events/EventSubscriber.h>
 
+#include "file/SerializationManager.h"
+
 
 namespace gamelib
 {
@@ -18,7 +20,8 @@ namespace gamelib
 	{
 	public:
 		GameServer(const std::string& address, const std::string& port,
-		           std::shared_ptr<IGameServerConnection> gameServerConnection, const std::string& nickName = "Server");
+		           std::shared_ptr<IGameServerConnection> gameServerConnection, const std::string& nickName = "Server",
+			Encoding wireFormat = Encoding::Json);
 		GameServer(const GameServer& other) = delete;
 		GameServer(const GameServer&& other) = delete;
 		GameServer& operator=(GameServer& other) = delete;
@@ -38,6 +41,8 @@ namespace gamelib
 		[[nodiscard]] std::shared_ptr<IGameServerConnection> Connection() const { return gameServerConnection; }
 		std::string Address;
 		std::string Port;
+		Encoding Encoding;
+
 	private:
 				
 		// Game server connection can either be in TCP or UDP
@@ -58,7 +63,7 @@ namespace gamelib
 
 		std::string GetSubscriberName() override;
 
-		SerializationManager* serializationManager{};
+		std::shared_ptr<SerializationManager> serializationManager{};
 		EventManager* eventManager{};
 		Networking* networking{};
 		EventFactory* eventFactory{};

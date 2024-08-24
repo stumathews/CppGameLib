@@ -6,6 +6,7 @@ namespace gamelib
 {
 	class JsonEventSerializationManager final :  public IEventSerializationManager
 	{
+	public:
 		std::shared_ptr<PlayerMovedEvent> DeserializePlayerMovedEvent(std::string serializedMessage) override;
 		std::shared_ptr<StartNetworkLevelEvent> DeserializeStartNetworkLevel(std::string serializedMessage) override;
 		std::string SerializeControllerMoveEvent(std::shared_ptr<ControllerMoveEvent> object, std::string target) override;
@@ -15,6 +16,7 @@ namespace gamelib
 		std::string CreatePongMessage() override;
 		std::string CreatePingMessage() override;
 		std::string CreateUnknownEventMessage(std::shared_ptr<Event> evt, std::string target) override;
+		std::string CreateRequestPlayerDetailsMessageResponse(const std::string& target) override;
 	};
 }
 

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 namespace gamelib
 {
@@ -147,6 +148,13 @@ namespace gamelib
 		void Finish()
 		{
 			Flush();
+		}
+
+		std::vector<char> ToBytes()
+		{
+			auto bytes = std::vector<char>(TotalBytesPacked());
+			memcpy_s(bytes.data(), bytes.size(), reinterpret_cast<char*>(flushDestination), TotalBytesPacked());
+			return bytes;
 		}
 
 		T TotalSegmentsWritten() { return segmentsWritten; }

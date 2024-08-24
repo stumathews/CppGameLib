@@ -2,16 +2,14 @@
 #include <net/Networking.h>
 #include <events/EventManager.h>
 #include <net/PeerInfo.h>
-
 #include "PacketDatumUtils.h"
 #include "events/EventFactory.h"
 #include "objects/GameObject.h"
-#include "utils/Statistics.h"
 
 namespace gamelib
 {
-	ReliableUdpGameServerConnection::ReliableUdpGameServerConnection(const std::string& host, const std::string& port, bool useEncryption):
-		UdpGameServerConnection(host, port), useEncryption(useEncryption)
+	ReliableUdpGameServerConnection::ReliableUdpGameServerConnection(const std::string& host, const std::string& port, bool useEncryption, gamelib::Encoding wireFormat):
+		UdpGameServerConnection(host, port, wireFormat), useEncryption(useEncryption)
 	{
 	}
 	
@@ -35,14 +33,14 @@ namespace gamelib
 			std::vector<unsigned char> decryptedMessage(bytesReceived - crypto_secretbox_MACBYTES);
 
 			// decrypt message
-			auto descryptSuceeded = Security::Get()->DecryptWithSessionKey(
+			const auto decryptSucceeded = Security::Get()->DecryptWithSessionKey(
 				reinterpret_cast<const unsigned char*>(readBuffer),
 				bytesReceived,
 				securitySide.GetReceiveSessionKey(), 
 				sharedNonce,
 				decryptedMessage.data());
 
-			if(descryptSuceeded < 0)
+			if(decryptSucceeded < 0)
 			{
 				return;
 			}

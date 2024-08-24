@@ -95,6 +95,7 @@
     <ClCompile Include="SceneManagerTests.cpp" />
     <ClCompile Include="SDLGraphicsManagerTests.cpp" />
     <ClCompile Include="SecurityTests.cpp" />
+    <ClCompile Include="SerializationTests.cpp" />
     <ClCompile Include="SettingsManagerTests.cpp" />
     <ClCompile Include="EventManagerTests.cpp" />
     <ClCompile Include="StatisticsTests.cpp" />

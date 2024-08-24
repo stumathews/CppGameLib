@@ -18,19 +18,20 @@ using namespace json11;
 namespace gamelib
 {
 	GameServer::GameServer(const std::string& address, const std::string& port, const std::shared_ptr<IGameServerConnection> gameServerConnection,
-	                       const std::string& nickName)
+	                       const std::string& nickName, const gamelib::Encoding wireFormat)
 	{		
 		this->gameServerConnection = gameServerConnection;
 		this->nickname = nickName;
 		this->Address = address;
 		this->Port = port;
+		this->Encoding = wireFormat;
 	}
 
 	void GameServer::Initialize()
 	{		
 		Logger::Get()->LogThis("Game Server Starting...");
 		
-		serializationManager = SerializationManager::Get();
+		serializationManager = std::make_shared<SerializationManager>(Encoding);
 		eventManager = EventManager::Get();
 		networking = Networking::Get();
 		eventFactory = EventFactory::Get();

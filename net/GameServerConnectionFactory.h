@@ -15,12 +15,14 @@ namespace gamelib
 	class GameServerConnectionFactory
 	{
 	public:
-		static [[nodiscard]] std::shared_ptr<IGameServerConnection> Create(const bool isTcp, const std::string& address, const std::string& port, const bool useReliableUdp = false, bool useEncryption = true)
+		static [[nodiscard]] std::shared_ptr<IGameServerConnection> Create(
+			const bool isTcp, const std::string& address, const std::string& port, const bool useReliableUdp = false,
+			bool useEncryption = true, Encoding wireFormat = Encoding::Json)
 		{
-			return isTcp ? To<IGameServerConnection>(std::make_shared<TcpGameServerConnection>(address, port))
+			return isTcp ? To<IGameServerConnection>(std::make_shared<TcpGameServerConnection>(address, port, wireFormat))
 						 : useReliableUdp
-							? To<IGameServerConnection>(std::make_shared<ReliableUdpGameServerConnection>(address, port, useEncryption))
-							: To<IGameServerConnection>(std::make_shared<UdpGameServerConnection>(address, port));
+							? To<IGameServerConnection>(std::make_shared<ReliableUdpGameServerConnection>(address, port, useEncryption, wireFormat))
+							: To<IGameServerConnection>(std::make_shared<UdpGameServerConnection>(address, port, wireFormat));
 		}
 	};
 }

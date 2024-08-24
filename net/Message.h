@@ -6,7 +6,6 @@
 #include "BitPackingTypes.h"
 #include "ReliableUdpMessageHeader.h"
 #include "PacketDatum.h"
-#include "ReliableUdpMessageHeader.h"
 
 namespace gamelib
 {

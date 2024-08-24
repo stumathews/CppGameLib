@@ -1,5 +1,4 @@
 #include "EventFactory.h"
-#include <json/JsonEventSerializationManager.h>
 #include <memory>
 #include <events/StartNetworkLevelEvent.h>
 #include <net/NetworkPlayer.h>
@@ -12,6 +11,7 @@
 #include <events/SubscriberHandledEvent.h>
 
 #include "ReliableUdpPacketReceivedEvent.h"
+#include "Encoding/JsonEventSerializationManager.h"
 #include "net/Rtt.h"
 
 namespace gamelib

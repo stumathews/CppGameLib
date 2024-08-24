@@ -9,6 +9,7 @@
 #include <events/EventSubscriber.h>
 #include <events/Event.h>
 
+#include "file/SerializationManager.h"
 #include "security/Security.h"
 
 namespace gamelib
@@ -21,17 +22,18 @@ namespace gamelib
 	class UdpGameServerConnection : public IGameServerConnection, public EventSubscriber
 	{
 	public:
-		UdpGameServerConnection(const std::string& host, const std::string& port);
+		UdpGameServerConnection(const std::string& host, const std::string& port, Encoding wireFormat);
 		// Inherited via IGameServerConnection
 		void Initialize() override;
 	protected:		
 		SOCKET listeningSocket{};
+		Encoding Encoding;
 		void RaiseNetworkTrafficReceivedEvent(const char buffer[], const int bytesReceived, const PeerInfo fromClient);
 		void ParseReceivedPlayerPayload(const char* inPayload, int payloadLength, PeerInfo fromClient);
 	private:
 		std::string host, port;
 
-		SerializationManager* serializationManager;
+		std::shared_ptr<SerializationManager> serializationManager;
 		EventManager* eventManager;
 		Networking* networking;
 		EventFactory* eventFactory;

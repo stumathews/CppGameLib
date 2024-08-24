@@ -18,7 +18,7 @@ namespace gamelib
 	class ReliableUdpGameServerConnection final : public UdpGameServerConnection
 	{
 	public:
-		ReliableUdpGameServerConnection(const std::string& host, const std::string& port);
+		ReliableUdpGameServerConnection(const std::string& host, const std::string& port, bool useEncryption = true);
 
 	private:
 
@@ -34,6 +34,7 @@ namespace gamelib
 		// Used to keep track of packets send/received
 		ReliableUdp reliableUdp;
 		bool sessionEstablished {false};
+		bool useEncryption {true};
 	};
 }
 

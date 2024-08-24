@@ -57,7 +57,11 @@ void gamelib::ReliableUdp::MarkReceived(const Message& senderMessage, const unsi
 	{
 		auto datum = *p;
 		datum.IsAcked = true;
-		datum.RttMs = datum.SendTimeMs - receivedTimeMs;
+		datum.RttMs = receivedTimeMs - datum.SendTimeMs;
+		if(datum.RttMs != 0)
+		{
+			int i = 0;
+		}
 		SendBuffer.Put(datum.Sequence, datum);
 	}
 
@@ -73,18 +77,18 @@ void gamelib::ReliableUdp::MarkReceived(const Message& senderMessage, const unsi
 
 			// mark it as having been received/acked by sender, acked messages will not be re-sent from the send buffer
 			datumToUpdate.IsAcked = true;
-			datumToUpdate.RttMs = datumToUpdate.SendTimeMs - receivedTimeMs;
+			datumToUpdate.RttMs = receivedTimeMs - datumToUpdate.SendTimeMs;
 			SendBuffer.Put(previousSequence, datumToUpdate);
 		}
 	}
 
-	// Mark all the containing sequences as having been received
+	// Mark all the containing sequences as having been received/acked
 	for(int i = static_cast<int>(senderMessage.Data().size()) -1 ; i >= 0 ; i--)
 	{
 		// The current sequence is index 0, prior sequences were added on top, so a next index 1, 2, 3 are the prior sequences etc.
 		auto datumToUpdate = senderMessage.Data()[i];
-		datumToUpdate.IsAcked = true;
-		datumToUpdate.RttMs = datumToUpdate.SendTimeMs - receivedTimeMs;
+		datumToUpdate.IsAcked = true; // yes we'll acknoweldge it implicitly as it will be added to our outgoing acked bits.
+		datumToUpdate.RttMs = 0;
 		ReceiveBuffer.Put(datumToUpdate.Sequence, datumToUpdate);
 	}
 

@@ -21,7 +21,7 @@ namespace gamelib
 	{
 	public:
 		~GameClient() override;
-		GameClient(const std::string& nickName, const std::shared_ptr<IConnectedNetworkSocket>& connection, bool useReliableUdpProtocolManager = false);
+		GameClient(const std::string& nickName, const std::shared_ptr<IConnectedNetworkSocket>& connection, bool useReliableUdpProtocolManager = false, bool useEncryption = true);
 		GameClient(const GameClient& other) = delete;
 		GameClient(const GameClient&& other) = delete;
 		const GameClient& operator=(const GameClient& other) = delete;
@@ -62,7 +62,9 @@ namespace gamelib
 		SerializationManager* serializationManager;
 		Networking* networking;
 		EventFactory* eventFactory;
+		bool useEncryption {true};
 		bool isTcp{};
+
 
 		// Inherited via EventSubscriber
 		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs) override;

@@ -16,6 +16,7 @@ namespace gamelib
 
 		nickName = SettingsManager::Get()->GetString("networking", "nickname");
 		isTcp = SettingsManager::Get()->GetBool("networking", "isTcp");
+		useEncryption = SettingsManager::Get()->GetBool("networking", "useEncryption");
 	}
 
 	bool NetworkManager::IsGameServer() const
@@ -27,7 +28,8 @@ namespace gamelib
 	{
 		Networking::Get()->InitializeWinSock();
 		const auto useReliableUdp = SettingsManager::Get()->GetBool("networking", "useReliableUdp");
-		auto gameServerConnection = GameServerConnectionFactory::Create(isTcp, gameServerAddress, gameServerPort, useReliableUdp);
+		auto gameServerConnection = GameServerConnectionFactory::Create(isTcp, gameServerAddress, gameServerPort,
+		                                                                useReliableUdp, useEncryption);
 		Server = std::make_shared<GameServer>(gameServerAddress, gameServerPort, gameServerConnection, nickName);
 
 		if(isGameServer)
@@ -36,7 +38,7 @@ namespace gamelib
 		}
 		else
 		{
-			Client = std::make_shared<GameClient>(nickName, NetworkConnectionFactory::Create(isTcp), useReliableUdp);
+			Client = std::make_shared<GameClient>(nickName, NetworkConnectionFactory::Create(isTcp), useReliableUdp, useEncryption);
 			Client->Initialize();
 			Client->Connect(Server);
 		}

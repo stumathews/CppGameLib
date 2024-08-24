@@ -10,9 +10,11 @@ namespace gamelib
 		float AverageLatency {0.0}; // SMA3
 		int BytesReceived {0};
 		int VerificationFailedCount {0};
-		int CountAcks;
+		int CountAcks {0};
 		int CountPacketsReceived {0};
-		int CountAggregateMessagesReceived;
+		int CountAggregateMessagesReceived {0};
+		int SendRateMs {0};
+		int SendRatePs {0}; // sends per second
 
 		void Reset()
 		{

@@ -38,13 +38,14 @@ namespace gamelib
 			ReliableUdp reliableUdp;
 
 			bool sessionEstablished {false};
+		    bool useEncryption {true}; 
 			int SendInternal(const char* callersSendBuffer, int dataLength, unsigned long deltaMs, MessageType messageType);
 			int ReceiveInternal(char* callersReceiveBuffer, int bufLength, unsigned long deltaMs);
 		
 
 		public:
-			ReliableUdpProtocolManager(std::shared_ptr<IConnectedNetworkSocket> gameClientConnection);
-			ReliableUdpProtocolManager(std::shared_ptr<IGameServerConnection> gameServerConnection);
+			ReliableUdpProtocolManager(std::shared_ptr<IConnectedNetworkSocket> gameClientConnection, bool useEncryption = true);
+			ReliableUdpProtocolManager(std::shared_ptr<IGameServerConnection> gameServerConnection, bool useEncryption = true);
 
 			// Cannot copy
 			ReliableUdpProtocolManager(ReliableUdpProtocolManager const&) = delete;

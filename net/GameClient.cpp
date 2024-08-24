@@ -15,7 +15,8 @@ using namespace json11;
 
 namespace gamelib
 {
-	GameClient::GameClient(const std::string& nickName, const std::shared_ptr<IConnectedNetworkSocket>& connection, const bool useReliableUdpProtocolManager)
+	GameClient::GameClient(const std::string& nickName, const std::shared_ptr<IConnectedNetworkSocket>& connection,
+	                       const bool useReliableUdpProtocolManager, bool useEncryption)
 	{				
 		noDataTimeout.tv_sec = 0;
 		noDataTimeout.tv_usec = 0;
@@ -26,10 +27,11 @@ namespace gamelib
 		networking = nullptr;
 		eventFactory = nullptr;
 		this->nickName = nickName;
+		this->useEncryption = useEncryption;
 		
 		networkProtocolManager = useReliableUdpProtocolManager
-			? std::dynamic_pointer_cast<IProtocolManager>(std::make_shared<ReliableUdpProtocolManager>(connection)) // layers reliable protocol over transport
-			: std::dynamic_pointer_cast<IProtocolManager>(std::make_shared<TransportOnlyProtocolManager>(connection)); // passes data directly to transports ie. udp or tcp
+			                         ? std::dynamic_pointer_cast<IProtocolManager>(std::make_shared<ReliableUdpProtocolManager>(connection, useEncryption)) // layers reliable protocol over transport
+			                         : std::dynamic_pointer_cast<IProtocolManager>(std::make_shared<TransportOnlyProtocolManager>(connection)); // passes data directly to transports ie. udp or tcp
 		
 		this->isTcp = networkProtocolManager->GetConnection()->IsTcp();
 	}
@@ -117,7 +119,7 @@ namespace gamelib
 		if (FD_ISSET(networkProtocolManager->GetConnection()->GetRawSocket(), &readfds))
 		{
 			// Read the payload off the network, wait for all the data
-			const int bytesReceived = networkProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferMaxElements * 32 /8);
+			const int bytesReceived = networkProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferMaxElements * 32 /8, deltaMs);
 
 			if (bytesReceived > 0)
 			{

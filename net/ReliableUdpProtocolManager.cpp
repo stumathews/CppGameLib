@@ -9,15 +9,15 @@
 namespace gamelib
 {
 
-	ReliableUdpProtocolManager::ReliableUdpProtocolManager(std::shared_ptr<IConnectedNetworkSocket> gameClientConnection)
-	: gameClientConnection(std::move(gameClientConnection))
-	{
+	ReliableUdpProtocolManager::ReliableUdpProtocolManager(std::shared_ptr<IConnectedNetworkSocket> gameClientConnection, bool useEncryption)
+	: gameClientConnection(std::move(gameClientConnection)), useEncryption(useEncryption)
+{
 		ReliableUdpProtocolManager::Initialize();
 	}
 
-	ReliableUdpProtocolManager::ReliableUdpProtocolManager(std::shared_ptr<IGameServerConnection> gameServerConnection)
-	: gameServerConnection(std::move(gameServerConnection))
-	{
+	ReliableUdpProtocolManager::ReliableUdpProtocolManager(std::shared_ptr<IGameServerConnection> gameServerConnection, bool useEncryption)
+	: gameServerConnection(std::move(gameServerConnection)), useEncryption(useEncryption)
+{
 	}
 
 	bool ReliableUdpProtocolManager::Initialize()
@@ -45,7 +45,7 @@ namespace gamelib
 			// Do not send the data if the session is not encrypted.
 
 			// Send our public key to server instead.
-			return SendInternal(reinterpret_cast<char*>(clientSecuritySide.GetPublicKey()), SecuritySide::PublicKeyLengthBytes, 0, SendPubKey);;
+			return SendInternal(reinterpret_cast<char*>(clientSecuritySide.GetPublicKey()), SecuritySide::PublicKeyLengthBytes, deltaMs, SendPubKey);;
 		}
 
 		// Send over the transport - might be a aggregated message if there were no prior acks		
@@ -71,7 +71,7 @@ namespace gamelib
 		// Count only as much as what was packed
 		const auto countBytesToSend = static_cast<int>(ceil(static_cast<double>(packer.TotalBitsPacked()) / static_cast<double>(8)));
 		
-		if(sessionEstablished)
+		if(sessionEstablished && useEncryption)
 		{
 			// Use a constant nonce for now
 			*sharedNonce = 1;
@@ -105,7 +105,7 @@ namespace gamelib
 		// Hook up to a 32-bit bitfield reader to the received buffer. This will read 32-bits at a time
 		const auto count32BitBlocks = bytesReceived * 8 /32;
 				
-		if(sessionEstablished)
+		if(sessionEstablished && useEncryption)
 		{
 			// We will use the same nonce for now (constant)
 			*sharedNonce = 1;
@@ -162,7 +162,7 @@ namespace gamelib
 		{			
 			RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), false));
 			RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketRttCalculatedEvent(std::make_shared<Message>(message), 
-					PacketDatumUtils::CalculateRttStats(message, reliableUdp.ReceiveBuffer)));
+					PacketDatumUtils::CalculateRttStats(message, reliableUdp.SendBuffer)));
 		}
 		
 		if(message.Header.MessageType == SendPubKey)

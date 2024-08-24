@@ -32,10 +32,10 @@ namespace gamelib
 			return p;
 		}
 
-		static Rtt CalculateRttStats(const Message& message, RingBuffer<PacketDatum>& receiveBuffer)
+		static Rtt CalculateRttStats(const Message& message, RingBuffer<PacketDatum>& sendBuffer)
 		{
-			const auto* datum = receiveBuffer.Get(message.Header.Sequence);
-			const auto sma3 = Statistics::SMA(3, GetLastKRtts(3, receiveBuffer));
+			const auto* datum = sendBuffer.Get(message.Header.Sequence);
+			const auto sma3 = Statistics::SMA(3, GetLastKRtts(3, sendBuffer));
 			return Rtt(datum->RttMs, sma3);
 		}
 	};

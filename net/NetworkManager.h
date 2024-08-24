@@ -23,6 +23,7 @@ namespace gamelib
 			int maxPlayers;
 			std::string nickName;
 			bool isTcp;
+			bool useEncryption;
 
 		public:
 		static NetworkManager* Get();

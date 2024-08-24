@@ -10,8 +10,8 @@
 
 namespace gamelib
 {
-	ReliableUdpGameServerConnection::ReliableUdpGameServerConnection(const std::string& host, const std::string& port):
-		UdpGameServerConnection(host, port)
+	ReliableUdpGameServerConnection::ReliableUdpGameServerConnection(const std::string& host, const std::string& port, bool useEncryption):
+		UdpGameServerConnection(host, port), useEncryption(useEncryption)
 	{
 	}
 	
@@ -26,7 +26,7 @@ namespace gamelib
 		
 		const auto numReceivedReadBufferElements = bytesReceived * 8 /32;
 
-		if(sessionEstablished)
+		if(sessionEstablished && useEncryption)
 		{
 			// We will use the same nonce for now (constant)
 			*sharedNonce = 1;
@@ -155,7 +155,7 @@ namespace gamelib
 		// Count only as much as what was packed
 		const auto countBytesToSend = static_cast<int>(ceil(static_cast<double>(packer.TotalBitsPacked()) / static_cast<double>(8)));
 
-		if(sessionEstablished)
+		if(sessionEstablished  && useEncryption)
 		{
 			// Use a constant nonce for now
 			*sharedNonce = 1;

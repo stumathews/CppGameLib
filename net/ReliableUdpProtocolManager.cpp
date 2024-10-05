@@ -95,7 +95,7 @@ namespace gamelib
 	int ReliableUdpProtocolManager::ReceiveInternal(char* callersReceiveBuffer, const int bufLength, const unsigned long deltaMs)
 	{
 		// Read the payload off the network, wait for all the data
-		const int bytesReceived = gameClientConnection->Receive(callersReceiveBuffer, bufLength);
+		const int bytesReceived = gameClientConnection->Receive(callersReceiveBuffer, bufLength, deltaMs);
 
 		if(bytesReceived < 0)
 		{

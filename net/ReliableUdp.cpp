@@ -52,16 +52,12 @@ gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum, const Messag
 void gamelib::ReliableUdp::MarkReceived(const Message& senderMessage, const unsigned long receivedTimeMs)
 {
 	// Sender received LastAckedSequence of ours we sent...		
-	const auto* p = SendBuffer.Get(senderMessage.Header.LastAckedSequence);
-	if(p != nullptr)
+	const auto* lastAckedPacket = SendBuffer.Get(senderMessage.Header.LastAckedSequence);
+	if(lastAckedPacket != nullptr)
 	{
-		auto datum = *p;
+		auto datum = *lastAckedPacket;
 		datum.IsAcked = true;
 		datum.RttMs = receivedTimeMs - datum.SendTimeMs;
-		if(datum.RttMs != 0)
-		{
-			int i = 0;
-		}
 		SendBuffer.Put(datum.Sequence, datum);
 	}
 
@@ -74,6 +70,8 @@ void gamelib::ReliableUdp::MarkReceived(const Message& senderMessage, const unsi
 			// bit 0 means the previous previous sequence before LastAckedSequqnce was received, bit 1, the next prior, bit 2, the prior, prior
 			const uint16_t previousSequence = (static_cast<uint16_t>(senderMessage.Header.LastAckedSequence) - (i+1)) ;
 			auto datumToUpdate = *SendBuffer.Get(previousSequence);
+
+			if(datumToUpdate.IsAcked) continue; // Already acked
 
 			// mark it as having been received/acked by sender, acked messages will not be re-sent from the send buffer
 			datumToUpdate.IsAcked = true;
@@ -88,7 +86,7 @@ void gamelib::ReliableUdp::MarkReceived(const Message& senderMessage, const unsi
 		// The current sequence is index 0, prior sequences were added on top, so a next index 1, 2, 3 are the prior sequences etc.
 		auto datumToUpdate = senderMessage.Data()[i];
 		datumToUpdate.IsAcked = true; // yes we'll acknoweldge it implicitly as it will be added to our outgoing acked bits.
-		datumToUpdate.RttMs = 0;
+		datumToUpdate.RttMs = receivedTimeMs - datumToUpdate.SendTimeMs;
 		ReceiveBuffer.Put(datumToUpdate.Sequence, datumToUpdate);
 	}
 

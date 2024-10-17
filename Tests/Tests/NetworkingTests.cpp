@@ -21,7 +21,7 @@
 #include "events/ReliableUdpPacketReceivedEvent.h"
 #include "events/ReliableUdpPacketRttCalculatedEvent.h"
 #include "net/GameServerConnectionFactory.h"
-#include "net/NetworkConnectionFactory.h"
+#include "net/GameClientConnectionFactory.h"
 #include "net/ReliableUdp.h"
 #include "net/ReliableUdpGameServerConnection.h"
 #include "net/ReliableUdpProtocolManager.h"
@@ -224,7 +224,7 @@ TEST_F(NetworkingTests, TestConnectToServer)
 	StartNetworkServer();
 
 	// Setup client
-	Client = make_shared<GameClient>(ClientNickName, NetworkConnectionFactory::Create(false) /* using UDP*/);
+	Client = make_shared<GameClient>(ClientNickName, GameClientConnectionFactory::Create(false) /* using UDP*/);
 	Client->Initialize();
 	Client->Connect(Server);
 	
@@ -245,7 +245,7 @@ TEST_F(NetworkingTests, TestPing)
 	StartNetworkServer();
 
 	// Setup client
-	Client = make_shared<GameClient>(ClientNickName, NetworkConnectionFactory::Create(false) /* using UDP*/);
+	Client = make_shared<GameClient>(ClientNickName, GameClientConnectionFactory::Create(false) /* using UDP*/);
 	Client->Initialize();
 	Client->Connect(Server);
 	
@@ -279,7 +279,7 @@ TEST_F(NetworkingTests, TestCustomBinarySend)
 
 	StartNetworkServer();
 
-	Client = make_shared<GameClient>(ClientNickName, NetworkConnectionFactory::Create(false) /* using UDP*/);
+	Client = make_shared<GameClient>(ClientNickName, GameClientConnectionFactory::Create(false) /* using UDP*/);
 	Client->Initialize();
 	Client->Connect(Server);
 
@@ -330,7 +330,7 @@ TEST_F(NetworkingTests, TestBitPacketBinarySend)
 
 	StartNetworkServer();
 
-	Client = make_shared<GameClient>(ClientNickName, NetworkConnectionFactory::Create(false) /* using UDP*/);
+	Client = make_shared<GameClient>(ClientNickName, GameClientConnectionFactory::Create(false) /* using UDP*/);
 	Client->Initialize();
 	Client->Connect(Server);
 
@@ -389,7 +389,7 @@ TEST_F(NetworkingTests, TestBitPacketBinarySendReadPayload)
 
 	StartNetworkServer();
 
-	Client = make_shared<GameClient>(ClientNickName, NetworkConnectionFactory::Create(false) /* using UDP*/);
+	Client = make_shared<GameClient>(ClientNickName, GameClientConnectionFactory::Create(false) /* using UDP*/);
 	Client->Initialize();
 	Client->Connect(Server);
 
@@ -451,15 +451,15 @@ TEST_F(NetworkingTests, MultiPlayerJoinEventsEmittedOnConnect)
 	const auto player3Nick = "Player3";
 
 	// Setup client
-	const auto client1 = make_shared<GameClient>(player1Nick, NetworkConnectionFactory::Create(false) /* using UDP*/);
+	const auto client1 = make_shared<GameClient>(player1Nick, GameClientConnectionFactory::Create(false) /* using UDP*/);
 	client1->Initialize();
 	client1->Connect(Server);
 
-	const auto client2 = make_shared<GameClient>(player2Nick, NetworkConnectionFactory::Create(false) /* using UDP*/);
+	const auto client2 = make_shared<GameClient>(player2Nick, GameClientConnectionFactory::Create(false) /* using UDP*/);
 	client2->Initialize();
 	client2->Connect(Server);
 
-	const auto client3 = make_shared<GameClient>(player3Nick, NetworkConnectionFactory::Create(false) /* using UDP*/);
+	const auto client3 = make_shared<GameClient>(player3Nick, GameClientConnectionFactory::Create(false) /* using UDP*/);
 	client3->Initialize();
 	client3->Connect(Server);
 	

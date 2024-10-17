@@ -8,15 +8,28 @@ namespace gamelib
 {
 	class IConnectedNetworkSocket;
 
+	// Interface for game client's networking protocol
 	class IProtocolManager
 	{
 	public:
 		virtual ~IProtocolManager() = default;
+
+		// connect to server
 		virtual void Connect(const char* address, const char* port) = 0;
+
+		// send data to server
 		virtual int Send(const char* data, int dataLength, unsigned long deltaMs = 0) = 0;
+
+		// read data from server
 		virtual int Receive(char* receivedBuffer, int bufLength, unsigned long deltaMs = 0) = 0;
+
+		// send ack to server
 		virtual int SendAck(const Message& messageToAck, unsigned long sendTimeMs) = 0;
-		virtual bool Initialize() = 0;		
+
+		// initialize
+		virtual bool Initialize() = 0;
+
+		// Get client's socket to game server
 		virtual std::shared_ptr<IConnectedNetworkSocket> GetConnection() = 0;
 	};
 }

@@ -19,7 +19,8 @@ namespace gamelib
 
 		void Reset()
 		{
-			CountPacketsLost =  BytesReceived = VerificationFailedCount = CountAcks = CountPacketsReceived = CountAggregateMessagesReceived = 0;
+			CountPacketsLost = BytesReceived = VerificationFailedCount = CountAcks = CountPacketsReceived =
+				CountAggregateMessagesReceived = 0;
 			AverageLatencySMA3 = RttMs = 0.0;
 		}
 	};

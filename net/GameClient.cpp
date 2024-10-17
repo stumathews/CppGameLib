@@ -16,7 +16,7 @@ using namespace json11;
 namespace gamelib
 {
 	GameClient::GameClient(const std::string& nickName, const std::shared_ptr<IConnectedNetworkSocket>& connection,
-	                       const bool useReliableUdpProtocolManager, bool useEncryption, Encoding desiredEncoding)
+	                       const bool useReliableUdpProtocolManager, bool useEncryption, const Encoding desiredEncoding)
 	{				
 		noDataTimeout.tv_sec = 0;
 		noDataTimeout.tv_usec = 0;
@@ -29,7 +29,8 @@ namespace gamelib
 		this->nickName = nickName;
 		this->useEncryption = useEncryption;
 		encoding = desiredEncoding;
-		
+
+		// its through the network protocol manager that connections to the server are made, and that network events are listened for
 		networkProtocolManager = useReliableUdpProtocolManager
 			                         ? std::dynamic_pointer_cast<IProtocolManager>(std::make_shared<ReliableUdpProtocolManager>(connection, useEncryption)) // layers reliable protocol over transport
 			                         : std::dynamic_pointer_cast<IProtocolManager>(std::make_shared<TransportOnlyProtocolManager>(connection)); // passes data directly to transports ie. udp or tcp
@@ -85,10 +86,9 @@ namespace gamelib
 
 		const auto response = serializationManager->CreateRequestPlayerDetailsMessageResponse(nickName);
 		
-		const int sendResult = networkProtocolManager->Send(response.c_str(), response.size());
+		const int sendResult = networkProtocolManager->Send(response.c_str(), static_cast<int>(response.size()));
 		
-		Logger::Get()->LogThis(sendResult == 0 ? "Error: 0 bytes sent." : "client/player details successfully sent.");
-		
+		Logger::Get()->LogThis(sendResult == 0 ? "Error: 0 bytes sent." : "client/player details successfully sent.");		
 	}
 
 	void GameClient::Read(const unsigned long deltaMs)
@@ -226,8 +226,8 @@ namespace gamelib
 
 	int GameClient::SendBinary(uint16_t* array, const size_t numBits) const
 	{
-		const auto numBytes = ceil((double)numBits / (double)8);
-		return InternalSend(reinterpret_cast<char*>(array), numBytes, 0);
+		const auto numBytes = ceil(static_cast<double>(numBits) / static_cast<double>(8));
+		return InternalSend(reinterpret_cast<char*>(array), static_cast<size_t>(numBytes), 0);
 	}
 
 	GameClient::~GameClient()

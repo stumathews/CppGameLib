@@ -6,8 +6,8 @@ gamelib::PacketDatum::PacketDatum()
 	IsDataPacked = true; // by default we'll assume that the messages are unpacked raw strings
 }
 
-gamelib::PacketDatum::PacketDatum(const bool acked, const char* customData, const unsigned long sendTimeMs, const bool isString)
-	: IsAcked(acked), SendTimeMs(sendTimeMs), IsDataPacked(isString), dataString(customData)
+gamelib::PacketDatum::PacketDatum(const bool isAcknowledged, const char* customData, const unsigned long sendTimeMs, const bool isString)
+	: IsAcked(isAcknowledged), SendTimeMs(sendTimeMs), IsDataPacked(isString), dataString(customData)
 {
 	
 }

@@ -5,6 +5,7 @@
 
 namespace gamelib
 {
+	// Interface to a client's connection to server
 	class IConnectedNetworkSocket
 	{
 	public:

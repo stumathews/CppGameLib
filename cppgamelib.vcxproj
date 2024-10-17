@@ -252,7 +252,7 @@
     <ClInclude Include="net\BitfieldReader.h" />
     <ClInclude Include="net\GameServerConnectionFactory.h" />
     <ClInclude Include="net\IConnectedNetworkSocket.h" />
-    <ClInclude Include="net\NetworkConnectionFactory.h" />
+    <ClInclude Include="net\GameClientConnectionFactory.h" />
     <ClInclude Include="net\BitPacker.h" />
     <ClInclude Include="net\BitPackingTypes.h" />
     <ClInclude Include="net\ReliableUdp.h" />
@@ -287,7 +287,6 @@
     <ClInclude Include="net\TcpNetworkPlayer.h" />
     <ClInclude Include="net\GameClient.h" />
     <ClInclude Include="net\GameServer.h" />
-    <ClInclude Include="net\Connection.h" />
     <ClInclude Include="common\aliases.h" />
     <ClInclude Include="common\Common.h" />
     <ClInclude Include="common\constants.h" />
@@ -306,7 +305,6 @@
     <ClInclude Include="events\GameObjectEvent.h" />
     <ClInclude Include="character\Movement.h" />
     <ClInclude Include="net\Networking.h" />
-    <ClInclude Include="net\NetworkEvent.h" />
     <ClInclude Include="net\NetworkManager.h" />
     <ClInclude Include="net\UdpNetworkPlayer.h" />
     <ClInclude Include="character\Npc.h" />
@@ -386,7 +384,7 @@
     <ClCompile Include="net\Message.cpp" />
     <ClCompile Include="net\ReliableUdp.cpp" />
     <ClCompile Include="net\ReliableUdpMessageHeader.cpp" />
-    <ClCompile Include="net\NetworkConnectionFactory.cpp" />
+    <ClCompile Include="net\GameClientConnectionFactory.cpp" />
     <ClCompile Include="net\crc.h" />
     <ClCompile Include="net\TcpNetworkSocket.cpp" />
     <ClCompile Include="net\UdpConnectedNetworkSocket.cpp" />
@@ -411,7 +409,6 @@
     <ClCompile Include="net\TcpNetworkPlayer.cpp" />
     <ClCompile Include="net\GameClient.cpp" />
     <ClCompile Include="net\GameServer.cpp" />
-    <ClCompile Include="net\Connection.cpp" />
     <ClCompile Include="file\Logger.cpp" />
     <ClCompile Include="cppgamelib.cpp" />
     <ClCompile Include="ai\FSM.cpp" />
@@ -425,7 +422,6 @@
     <ClCompile Include="events\GameObjectEvent.cpp" />
     <ClCompile Include="structure\Profiler.cpp" />
     <ClCompile Include="structure\GameStructure.cpp" />
-    <ClCompile Include="net\NetworkEvent.cpp" />
     <ClCompile Include="net\Networking.cpp" />
     <ClCompile Include="net\NetworkManager.cpp" />
     <ClCompile Include="net\UdpNetworkPlayer.cpp" />

@@ -2,7 +2,6 @@
 #include "GameClient.h"
 #include "Option.h"
 #include "PacketDatumUtils.h"
-#include "utils/Statistics.h"
 
 gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum, const MessageType messageType)
 {
@@ -18,7 +17,7 @@ gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum, const Messag
 	int messageSizeInBytes = ReliableUdpMessageHeader::GetSizeInBits() / 8;
 
 	// Attach previous sequences' messages that have not been acked yet
-	for(uint16_t i = datum.Sequence -1; i > lastAckedSequence; i--)
+	for(uint16_t i = datum.Sequence -1; i > LastAcknowledgedSequenceNumber; i--)
 	{
 			// Get previous sequence and see if its unacked...
 		const auto pPreviousDatum = SendBuffer.Get(i);
@@ -44,7 +43,8 @@ gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum, const Messag
 
 	// Send Message, attaching any consecutive data that was not previously sent
 	// also include a reference to what we've received from the sender previously, just in case an ack did not go through to the sender
-	sentMessage = new Message(datum.Sequence, lastAckedSequence, GeneratePreviousAckedBits(), dataToSent.size(), dataToSent, messageType);
+	sentMessage = new Message(datum.Sequence, LastAcknowledgedSequenceNumber, GenerateAcknowledgedBits(),
+	                          static_cast<uint16_t>(dataToSent.size()), dataToSent, messageType);
 			
 	return sentMessage;
 }
@@ -91,13 +91,13 @@ void gamelib::ReliableUdp::MarkReceived(const Message& senderMessage, const unsi
 	}
 
 	// last mark this as the last acknowledged sequence if we've not seen it before, i.e it larger than what we've previously seen
-	if(senderMessage.Header.Sequence > lastAckedSequence)
+	if(senderMessage.Header.Sequence > LastAcknowledgedSequenceNumber)
 	{
-		lastAckedSequence = senderMessage.Header.Sequence;
+		LastAcknowledgedSequenceNumber = senderMessage.Header.Sequence;
 	}
 }
 
-uint32_t gamelib::ReliableUdp::GeneratePreviousAckedBits()
+uint32_t gamelib::ReliableUdp::GenerateAcknowledgedBits()
 {
 	uint32_t previousAckedBits {};
 	
@@ -108,7 +108,7 @@ uint32_t gamelib::ReliableUdp::GeneratePreviousAckedBits()
 		// If the last 4 sequences prior to the lastAckedSequence(eg 10) was received, this is how we should format the bits:
 		// 00000000000000000000000000001111
 		// then this is understood to mean that 9, 8, 7, 6 were also acked
-		const auto* pPriorDatum = ReceiveBuffer.Get(lastAckedSequence - (i+1));
+		const auto* pPriorDatum = ReceiveBuffer.Get(LastAcknowledgedSequenceNumber - (i+1));
 		const auto bitPosition = i;
 		
 		if(pPriorDatum == nullptr) break;

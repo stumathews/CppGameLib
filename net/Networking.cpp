@@ -20,10 +20,9 @@ namespace gamelib
 	Networking* Networking::Instance = nullptr;
 
 	Networking::Networking()
-	{
-	}
+	= default;
 
-	
+
 	bool Networking::InitializeWinSock()
 	{
 		Logger::Get()->LogThis("Initializing Winsock2");

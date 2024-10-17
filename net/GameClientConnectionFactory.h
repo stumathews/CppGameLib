@@ -9,8 +9,8 @@
 
 namespace gamelib
 {
-
-	class NetworkConnectionFactory
+	// Creates connection to server for clients
+	class GameClientConnectionFactory
 	{
 	public:
 
@@ -19,7 +19,8 @@ namespace gamelib
 			auto networkSocket =  
 				isTcp
 					? std::dynamic_pointer_cast<IConnectedNetworkSocket>(std::make_shared<TcpNetworkSocket>(TcpNetworkSocket()))
-					: std::dynamic_pointer_cast<IConnectedNetworkSocket>(std::make_shared<UdpConnectedNetworkSocket>(UdpConnectedNetworkSocket()));
+					: std::dynamic_pointer_cast<IConnectedNetworkSocket>(
+						std::make_shared<UdpConnectedNetworkSocket>(UdpConnectedNetworkSocket()));
 
 			return networkSocket;
 		}		

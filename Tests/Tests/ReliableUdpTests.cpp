@@ -86,24 +86,24 @@ TEST_F(ReliableUdpTests, BasicRecieve)
 	reliableUdp.MarkReceived(*message1);
 
 	EXPECT_EQ(reliableUdp.ReceiveBuffer.GetLastAddedSequence(), message1->Header.Sequence);
-	EXPECT_EQ(reliableUdp.lastAckedSequence, message1->Header.Sequence);
+	EXPECT_EQ(reliableUdp.LastAcknowledgedSequenceNumber, message1->Header.Sequence);
 	EXPECT_TRUE(reliableUdp.ReceiveBuffer.Get(message1->Header.Sequence)->IsAcked);
 
 	const auto* message2 = reliableUdp.MarkSent(data2, General);
 	reliableUdp.MarkReceived(*message2);
 
 	EXPECT_EQ(reliableUdp.ReceiveBuffer.GetLastAddedSequence(), message2->Header.Sequence);//
-	EXPECT_EQ(reliableUdp.lastAckedSequence, message2->Header.Sequence);
+	EXPECT_EQ(reliableUdp.LastAcknowledgedSequenceNumber, message2->Header.Sequence);
 	EXPECT_TRUE(reliableUdp.ReceiveBuffer.Get(message2->Header.Sequence)->IsAcked);
 
 	const auto* message3 = reliableUdp.MarkSent(data3, General);
 	reliableUdp.MarkReceived(*message3);
 
 	EXPECT_EQ(reliableUdp.ReceiveBuffer.GetLastAddedSequence(), message3->Header.Sequence);//
-	EXPECT_EQ(reliableUdp.lastAckedSequence, message3->Header.Sequence);
+	EXPECT_EQ(reliableUdp.LastAcknowledgedSequenceNumber, message3->Header.Sequence);
 	EXPECT_TRUE(reliableUdp.ReceiveBuffer.Get(message3->Header.Sequence)->IsAcked);
 
-	auto senderAckedBits = reliableUdp.GeneratePreviousAckedBits();
+	auto senderAckedBits = reliableUdp.GenerateAcknowledgedBits();
 
 	EXPECT_TRUE(BitFiddler<uint32_t>::BitCheck(senderAckedBits, 0)); // if bit n is set, means the nth prior sequence was received eg. 3-0 = sequence 3
 	EXPECT_TRUE(BitFiddler<uint32_t>::BitCheck(senderAckedBits, 1));  // if bit n is set, means the nth prior sequence was received eg. 3-1 = sequence 2

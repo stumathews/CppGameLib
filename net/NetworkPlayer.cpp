@@ -2,7 +2,6 @@
 
 namespace gamelib
 {
-
 	void NetworkPlayer::SetNickName(const std::string& nick)
 	{
 		nickName = nick;

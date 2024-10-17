@@ -7,8 +7,6 @@
 #include <net/IGameServerConnection.h>
 #include <net/TcpGameServerConnection.h>
 #include <net/UdpGameServerConnection.h>
-
-#include "GameServerConnectionFactory.h"
 #include "events/StartNetworkLevelEvent.h"
 #include "utils/Utils.h"
 
@@ -17,7 +15,8 @@ using namespace json11;
 
 namespace gamelib
 {
-	GameServer::GameServer(const std::string& address, const std::string& port, const std::shared_ptr<IGameServerConnection> gameServerConnection,
+	GameServer::GameServer(const std::string& address, const std::string& port,
+	                       const std::shared_ptr<IGameServerConnection> gameServerConnection,
 	                       const std::string& nickName, const gamelib::Encoding wireFormat)
 	{		
 		this->gameServerConnection = gameServerConnection;

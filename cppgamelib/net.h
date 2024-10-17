@@ -1,10 +1,8 @@
 #pragma once
-#include <net/Connection.h>
 #include <net/GameClient.h>
 #include <net/GameServer.h>
 #include <net/IGameServerConnection.h>
 #include <net/MessageHeader.h>
-#include <net/NetworkEvent.h>
 #include <net/Networking.h>
 #include <net/NetworkManager.h>
 #include <net/NetworkPlayer.h>

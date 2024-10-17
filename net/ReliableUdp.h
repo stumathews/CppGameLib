@@ -25,17 +25,30 @@ namespace gamelib
 	class ReliableUdp
 	{
 	public:		
-		
+
+		// Mark a packet as being sent
 		Message* MarkSent(PacketDatum datum, MessageType messageType);
+
+		// Mark a packet as being received
 		void MarkReceived(const Message& senderMessage, unsigned long receivedTimeMs = 0);
 
-		uint32_t GeneratePreviousAckedBits();
+		// Generate 32-bit number that represents the last 32 packets received
+		uint32_t GenerateAcknowledgedBits();
 
+		// Store packets received in receive buffer
 		RingBuffer<PacketDatum> ReceiveBuffer;
-		RingBuffer<PacketDatum> SendBuffer;	
-		uint16_t lastAckedSequence {};
+
+		// Store packets to be sent into the send buffer
+		RingBuffer<PacketDatum> SendBuffer;
+
+		// The last sequence number you received
+		uint16_t LastAcknowledgedSequenceNumber {};
 	private:
+
+		// Keeps a record of the last sent message
 		Message* sentMessage{};
+
+		// Keeps track of the last sequence number generated
 		uint16_t sequence {};
 
 		const int maxMessageSizeBytes = 1200;

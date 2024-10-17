@@ -8,7 +8,9 @@
 
 namespace gamelib
 {
-	ReliableUdpGameServerConnection::ReliableUdpGameServerConnection(const std::string& host, const std::string& port, bool useEncryption, gamelib::Encoding wireFormat):
+	ReliableUdpGameServerConnection::ReliableUdpGameServerConnection(const std::string& host, const std::string& port,
+	                                                                 const bool useEncryption,
+	                                                                 const gamelib::Encoding wireFormat):
 		UdpGameServerConnection(host, port, wireFormat), useEncryption(useEncryption)
 	{
 	}
@@ -73,7 +75,7 @@ namespace gamelib
 
 			// Message handling:
 
-			if(message.Header.MessageType != 0) // non-ack message
+			if(message.Header.MessageType != Ack) // non-ack message
 			{				
 				RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketReceived(std::make_shared<Message>(message)));
 
@@ -102,7 +104,7 @@ namespace gamelib
 				RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), true));
 			}
 
-			if(message.Header.MessageType == 0) // ack message
+			if(message.Header.MessageType == Ack) // ack message
 			{
 				RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), false));				
 				
@@ -167,7 +169,7 @@ namespace gamelib
 			                                encryptedMessage.data());
 
 			// send Encrypted message
-			return sendto(socket, reinterpret_cast<char*>(encryptedMessage.data()), encryptedMessage.size(), flags, to, toLen);
+			return sendto(socket, reinterpret_cast<char*>(encryptedMessage.data()), static_cast<int>(encryptedMessage.size()), flags, to, toLen);
 		}
 
 		// Send network buffer over udp		
@@ -185,7 +187,8 @@ namespace gamelib
 
 		ackMessage << "server acks client seq:" << messageToAck.Header.Sequence << std::endl;		
 		
-		return InternalSend(socket, ackMessage.str().c_str(), ackMessage.str().size(), flags, reinterpret_cast<sockaddr*>(&peerInfo.Address), peerInfo.Length, sendTimeMs, Ack );
+		return InternalSend(socket, ackMessage.str().c_str(), static_cast<int>(ackMessage.str().size()), flags,
+		                    reinterpret_cast<sockaddr*>(&peerInfo.Address), peerInfo.Length, sendTimeMs, Ack);
 	}
 }
 

@@ -11,7 +11,7 @@
 
 namespace gamelib
 {
-
+	// creates connection to clients for game server
 	class GameServerConnectionFactory
 	{
 	public:
@@ -21,7 +21,9 @@ namespace gamelib
 		{
 			return isTcp ? To<IGameServerConnection>(std::make_shared<TcpGameServerConnection>(address, port, wireFormat))
 						 : useReliableUdp
-							? To<IGameServerConnection>(std::make_shared<ReliableUdpGameServerConnection>(address, port, useEncryption, wireFormat))
+							? To<IGameServerConnection>(
+							 std::make_shared<
+								 ReliableUdpGameServerConnection>(address, port, useEncryption, wireFormat))
 							: To<IGameServerConnection>(std::make_shared<UdpGameServerConnection>(address, port, wireFormat));
 		}
 	};

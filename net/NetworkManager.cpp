@@ -1,15 +1,16 @@
 #include "NetworkManager.h"
 #include <file/SettingsManager.h>
 #include <net/Networking.h>
-
 #include "GameServerConnectionFactory.h"
-#include "NetworkConnectionFactory.h"
+#include "GameClientConnectionFactory.h"
 #include "file/SerializationManager.h"
 
 namespace gamelib
 {
 	NetworkManager::NetworkManager()
 	{
+		// NB: both game server and game client use the same underlying settings
+
 		isGameServer = SettingsManager::Get()->GetBool("networking", "isGameServer");		
 		gameServerAddress = SettingsManager::Get()->GetString("networking", "gameServerAddress");
 		gameServerPort = SettingsManager::Get()->GetString("networking", "gameServerPort");
@@ -17,61 +18,39 @@ namespace gamelib
 		nickName = SettingsManager::Get()->GetString("networking", "nickname");
 		isTcp = SettingsManager::Get()->GetBool("networking", "isTcp");
 		useEncryption = SettingsManager::Get()->GetBool("networking", "useEncryption");
-		encoding = static_cast<gamelib::Encoding>(SettingsManager::Get()->GetInt("networking", "encoding"));
-	}
-
-	bool NetworkManager::IsGameServer() const
-	{
-		return isGameServer;
+		encoding = static_cast<Encoding>(SettingsManager::Get()->GetInt("networking", "encoding"));
 	}
 
 	bool NetworkManager::Initialize()
 	{
 		Networking::Get()->InitializeWinSock();
+
+		// Determine what protocol we are going to use for connections
 		const auto useReliableUdp = SettingsManager::Get()->GetBool("networking", "useReliableUdp");
+
+		
+		// eg. tcp, udp, reliable-udp connection
 		auto gameServerConnection = GameServerConnectionFactory::Create(isTcp, gameServerAddress, gameServerPort,
 		                                                                useReliableUdp, useEncryption, encoding);
-
+		// Game server object needs to be created when Network Manager is acting
+		// as a game server (will initialize it) or game client (will connect to game server)
 		Server = std::make_shared<GameServer>(gameServerAddress, gameServerPort, gameServerConnection, nickName, encoding);
 
 		if(isGameServer)
-		{			
+		{
 			Server->Initialize();
 		}
 		else
 		{
-			Client = std::make_shared<GameClient>(nickName, NetworkConnectionFactory::Create(isTcp), useReliableUdp, useEncryption, encoding);
+			// eg. UDP or TCP connection
+			auto gameClientConnection = GameClientConnectionFactory::Create(isTcp);
+
+			Client = std::make_shared<GameClient>(nickName, gameClientConnection, useReliableUdp, useEncryption, encoding);
 			Client->Initialize();
 			Client->Connect(Server);
 		}
 
 		return true;
-	}
-
-	NetworkManager* NetworkManager::Get()
-	{
-		if (instance == nullptr)
-		{
-			instance = new NetworkManager();
-		}
-		return instance;
-	}
-
-	NetworkManager* NetworkManager::instance = nullptr;
-
-	
-	NetworkManager::~NetworkManager()
-	{
-		
-		instance = nullptr;
-	}
-
-	void NetworkManager::PingGameServer(const unsigned long deltaMs) const
-	{
-		if(!isGameServer)
-		{
-			Client->PingGameServer(deltaMs);
-		}
 	}
 
 	void NetworkManager::Listen(const unsigned long deltaMs) const
@@ -88,4 +67,34 @@ namespace gamelib
 			}
 		}
 	}
+	
+	void NetworkManager::PingGameServer(const unsigned long deltaMs) const
+	{
+		if(!isGameServer)
+		{
+			Client->PingGameServer(deltaMs);
+		}
+	}
+		
+	bool NetworkManager::IsGameServer() const
+	{
+		return isGameServer;
+	}
+
+
+	NetworkManager* NetworkManager::Get()
+	{
+		if (instance == nullptr)
+		{
+			instance = new NetworkManager();
+		}
+		return instance;
+	}
+
+	NetworkManager* NetworkManager::instance = nullptr;
+		
+	NetworkManager::~NetworkManager()
+	{		
+		instance = nullptr;
+	}	
 }

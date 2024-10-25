@@ -263,6 +263,7 @@
     <ClInclude Include="events\ReliableUdpPacketReceivedEvent.h" />
     <ClInclude Include="security\Security.h" />
     <ClInclude Include="file\TextFile.h" />
+    <ClInclude Include="TestMe.h" />
     <ClInclude Include="time\PeriodicTimer.h" />
     <ClInclude Include="events\EventId.h" />
     <ClInclude Include="events\EventFactory.h" />

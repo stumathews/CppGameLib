@@ -23,14 +23,14 @@ namespace gamelib
 		this->nickname = nickName;
 		this->Address = address;
 		this->Port = port;
-		this->Encoding = wireFormat;
+		this->encoding = wireFormat;
 	}
 
 	void GameServer::Initialize()
 	{		
 		Logger::Get()->LogThis("Game Server Starting...");
 		
-		serializationManager = std::make_shared<SerializationManager>(Encoding);
+		serializationManager = std::make_shared<SerializationManager>(encoding);
 		eventManager = EventManager::Get();
 		networking = Networking::Get();
 		eventFactory = EventFactory::Get();

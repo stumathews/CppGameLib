@@ -18,11 +18,3 @@
 #include <cppgamelib/resource.h>
 #include <cppgamelib/scene.h>
 #include <cppgamelib/time.h>
-
-
-
-
-
-
-
-

@@ -16,6 +16,9 @@ namespace gamelib
 	class EventFactory;
 	class IGameServerConnection;
 
+	/**
+	 * \brief Game server listens for game client traffic and sends game state updates to game clients
+	 */
 	class GameServer final : public EventSubscriber
 	{
 	public:
@@ -31,41 +34,45 @@ namespace gamelib
 
 		~GameServer() override;
 
-		/// <summary>
-		/// Checks to see if there is any data waiting to be read or written.
-		/// </summary>
+		// Checks to see if there is any data waiting to be read or written.
 		void Listen(unsigned long deltaMs = 0) const;
-		
+
+		// Disconnect all clients by closing game server's listening socket
 		void Disconnect() const;
 
-		[[nodiscard]] std::shared_ptr<IGameServerConnection> Connection() const { return gameServerConnection; }
+		// Information about the Game server
 		std::string Address;
 		std::string Port;
-		Encoding Encoding;
-
+		
 	private:
 				
-		// Game server connection can either be in TCP or UDP
+		// Game server connection manages the network protocol used between server and client
 		std::shared_ptr<IGameServerConnection> gameServerConnection;
+				
+		// Desired format to use to send network data, eg. Xml, Json, Bit-packed
+		Encoding encoding;
 		
-		/// <summary>
-		/// Nick name of this machine
-		/// </summary>
+		/// Nick name of this server
 		std::string nickname;
 
-		/// <summary>
-		/// Check if there is any data waiting to be ready from any of the connected player sockets
-		/// </summary>
-		void CheckForPlayerTraffic(const unsigned long deltaMs) const;
+		// Check if there is any data waiting to be ready from any of the connected player sockets
+		void CheckForPlayerTraffic(unsigned long deltaMs) const;
 
 		// Inherited via EventSubscriber
-		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, unsigned long deltaMs) override;
 
 		std::string GetSubscriberName() override;
 
+		// Used to create messages to send to the client
 		std::shared_ptr<SerializationManager> serializationManager{};
+
+		// Used to listen and emit game events
 		EventManager* eventManager{};
+
+		// Low-level network functions
 		Networking* networking{};
+
+		// Creates types of events that can be sent to the event manager
 		EventFactory* eventFactory{};
 
 	};

@@ -63,7 +63,8 @@ namespace gamelib
 		PeerInfo fromClient; // Identifier who the client sending the data is
 
 		// Read all incoming data		
-		const int bytesReceived = recvfrom(listeningSocket, reinterpret_cast<char*>(readBuffer), ReadBufferSizeInBytes, 0, (sockaddr*) &fromClient.Address, &fromClient.Length);
+		const int bytesReceived = recvfrom(listeningSocket, reinterpret_cast<char*>(readBuffer), ReadBufferSizeInBytes,
+		                                   0, reinterpret_cast<sockaddr*>(&fromClient.Address), &fromClient.Length);
 
 		if (bytesReceived > 0)
 		{
@@ -72,7 +73,8 @@ namespace gamelib
 		}
 	}
 
-	void UdpGameServerConnection::RaiseNetworkTrafficReceivedEvent(const char buffer[512], const int bytesReceived, const PeerInfo fromClient) 
+	void UdpGameServerConnection::RaiseNetworkTrafficReceivedEvent(const char* buffer, const int bytesReceived,
+	                                                               const PeerInfo fromClient) 
 	{
 		std::string identifier = "unknown";
 		for(auto player : players)
@@ -89,9 +91,10 @@ namespace gamelib
 		eventManager->RaiseEventWithNoLogging(event);
 	}
 
-	int UdpGameServerConnection::InternalSend(SOCKET socket, const char* buf, int len, int flags,  const sockaddr* to, int tolen, unsigned long sendTimeMs)
+	int UdpGameServerConnection::InternalSend(const SOCKET socket, const char* buf, const int len, const int flags,
+	                                          const sockaddr* to, const int toLen, unsigned long sendTimeMs)
 	{		
-		return sendto(socket, buf, len, flags, to, tolen);
+		return sendto(socket, buf, len, flags, to, toLen);
 	}
 
 	void UdpGameServerConnection::SendToConnectedPlayersExceptToSender(const std::string& senderNickname, const std::string
@@ -139,7 +142,7 @@ namespace gamelib
 	void UdpGameServerConnection::ProcessPingMessage(PeerInfo fromClient)
 	{
 		const auto data = serializationManager->CreatePongMessage();
-		InternalSend(listeningSocket, data.c_str(), static_cast<int>(data.length()), 0, (sockaddr*) &fromClient.Address, fromClient.Length);
+		InternalSend(listeningSocket, data.c_str(), static_cast<int>(data.length()), 0, reinterpret_cast<sockaddr*>(&fromClient.Address), fromClient.Length);
 	}
 
 
@@ -168,13 +171,13 @@ namespace gamelib
 	{
 		for (auto player : players)
 		{
-			InternalSend(listeningSocket, serializedEvent.c_str(), static_cast<int>(serializedEvent.size()), 0, (sockaddr*) &player.PeerInfo.Address, player.PeerInfo.Length);
+			InternalSend(listeningSocket, serializedEvent.c_str(), static_cast<int>(serializedEvent.size()), 0, reinterpret_cast<sockaddr*>(&player.PeerInfo.Address), player.PeerInfo.Length);
 		}
 	}
 
 	std::vector<std::shared_ptr<Event>> UdpGameServerConnection::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs)
 	{
-		// We dont handle events yet
+		// We don't handle events yet
 		return {};
 	}
 

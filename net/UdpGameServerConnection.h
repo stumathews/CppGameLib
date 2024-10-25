@@ -8,7 +8,6 @@
 #include <net/PeerInfo.h>
 #include <events/EventSubscriber.h>
 #include <events/Event.h>
-
 #include "file/SerializationManager.h"
 #include "security/Security.h"
 
@@ -28,7 +27,7 @@ namespace gamelib
 	protected:		
 		SOCKET listeningSocket{};
 		Encoding Encoding;
-		void RaiseNetworkTrafficReceivedEvent(const char buffer[], const int bytesReceived, const PeerInfo fromClient);
+		void RaiseNetworkTrafficReceivedEvent(const char* buffer, int bytesReceived, PeerInfo fromClient);
 		void ParseReceivedPlayerPayload(const char* inPayload, int payloadLength, PeerInfo fromClient);
 	private:
 		std::string host, port;
@@ -39,20 +38,20 @@ namespace gamelib
 		EventFactory* eventFactory;
 
 		// Inherited via IGameServerConnection
-		virtual void CheckForPlayerTraffic(unsigned long deltaMs) override;
+		void CheckForPlayerTraffic(unsigned long deltaMs) override;
 		
-		virtual int InternalSend(SOCKET socket, const char* buf, int len, int flags, const sockaddr* to, int tolen, unsigned long sendTimeMs = 0);
+		virtual int InternalSend(SOCKET socket, const char* buf, int len, int flags, const sockaddr* to, int toLen, unsigned long sendTimeMs = 0);
 		void SendToConnectedPlayersExceptToSender(const std::string& senderNickname, const std::string&
 		                                          serializedMessage);
 		timeval timeout{};
 		fd_set readfds{};
 
 		// Inherited via IGameServerConnection
-		void Listen(const unsigned long deltaMs) override;
+		void Listen(unsigned long deltaMs) override;
 
 		// Inherited via IGameServerConnection
 		void ProcessPingMessage(PeerInfo fromClient);
-		void ProcessRequestPlayerDetailsMessage(const MessageHeader& messageHeader, const PeerInfo fromClient);
+		void ProcessRequestPlayerDetailsMessage(const MessageHeader& messageHeader, PeerInfo fromClient);
 		
 		std::vector<UdpNetworkPlayer> players;
 
@@ -60,7 +59,7 @@ namespace gamelib
 		void SendEventToAllPlayers(std::string serializedEvent) override;
 
 		// Inherited via EventSubscriber
-		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, unsigned long deltaMs) override;
 		std::string GetSubscriberName() override;
 
 		// Inherited via IGameServerConnection

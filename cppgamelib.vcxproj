@@ -236,10 +236,12 @@
     <ClInclude Include="events\ReliableUdpCheckSumFailedEvent.h" />
     <ClInclude Include="events\ReliableUdpPacketRttCalculatedEvent.h" />
     <ClInclude Include="events\SubscriberHandledEvent.h" />
+    <ClInclude Include="net\GameStatePusher.h" />
     <ClInclude Include="graphic\Subscribable.h" />
     <ClInclude Include="graphic\Window.h" />
     <ClInclude Include="net\Fish.h" />
     <ClInclude Include="net\IProtocolManager.h" />
+    <ClInclude Include="net\NetworkingActivityMonitor.h" />
     <ClInclude Include="net\NetworkingStatistics.h" />
     <ClInclude Include="net\PacketDatumUtils.h" />
     <ClInclude Include="net\PingMessage.h" />
@@ -379,8 +381,10 @@
     <ClCompile Include="character\DirectionUtils.cpp" />
     <ClCompile Include="character\StatefulMove.cpp" />
     <ClCompile Include="events\ReliableUdpPacketLossDetectedEvent.h" />
+    <ClCompile Include="net\GameStatePusher.cpp" />
     <ClCompile Include="graphic\Subscribable.cpp" />
     <ClCompile Include="graphic\Window.cpp" />
+    <ClCompile Include="net\NetworkingActivityMonitor.cpp" />
     <ClCompile Include="net\ReliableUdpProtocolManager.cpp" />
     <ClCompile Include="net\Message.cpp" />
     <ClCompile Include="net\ReliableUdp.cpp" />

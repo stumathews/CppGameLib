@@ -504,7 +504,7 @@
     <ClInclude Include="net\PacketDatumUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="net\NetworkingStatistics.h">
+    <ClInclude Include="net\NetworkingActivityMonitor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="file\TextFile.h">
@@ -532,6 +532,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TestMe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\NetworkingStatistics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\GameStatePusher.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -831,6 +837,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Encoding\XmlEventSerializationManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="net\NetworkingActivityMonitor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="net\GameStatePusher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

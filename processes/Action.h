@@ -7,12 +7,12 @@ namespace gamelib
 	class Action final : public Process
 	{
 	public:
-		explicit Action(std::function<void(unsigned long deltaMs = 0)> action, const bool succeedAfterExecution = true) : Process(), action(std::move(action)), succeedAfterExecution(succeedAfterExecution) {}
+		explicit Action(std::function<void(unsigned long deltaMs)> action, const bool succeedAfterExecution = true) : Process(), action(std::move(action)), succeedAfterExecution(succeedAfterExecution) {}
 		void OnUpdate(const unsigned long deltaMs) override
 		{
 			action(deltaMs);
 
-			// By default this action/process will be removed from the process manager once its run, unless....
+			// By default, this action/process will be removed from the process manager once its run, unless....
 			if(succeedAfterExecution)
 			{
 				Succeed();

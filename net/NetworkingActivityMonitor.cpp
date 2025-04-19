@@ -8,8 +8,9 @@ using namespace std;
 
 namespace gamelib
 {
-	NetworkingActivityMonitor::NetworkingActivityMonitor(ProcessManager& processManager, EventManager& eventManager):
-		processManager(processManager), eventManager(eventManager)
+	NetworkingActivityMonitor::NetworkingActivityMonitor(ProcessManager& processManager, EventManager& eventManager,
+	                                                     const bool verbose = false):
+		processManager(processManager), eventManager(eventManager), verbose(verbose)
 	{
 		// Prepare a file that will receive the statistics every saveIntervalMs
 		statisticsFile = std::make_shared<TextFile>("statistics.txt");
@@ -130,112 +131,130 @@ namespace gamelib
 		return "NetworkStatistics";
 	}
 	
-	void NetworkingActivityMonitor::OnNetworkPlayerJoinedEvent(const std::shared_ptr<Event>& evt)
+	void NetworkingActivityMonitor::OnNetworkPlayerJoinedEvent(const std::shared_ptr<Event>& evt) const
 	{
-		const auto joinEvent = To<NetworkPlayerJoinedEvent>(evt);
-		stringstream message;
-		message << joinEvent->Player.GetNickName() << " joined.";
-		Logger::Get()->LogThis(message.str());
+		if (verbose)
+		{
+			const auto joinEvent = To<NetworkPlayerJoinedEvent>(evt);
+			stringstream message;
+			message << joinEvent->Player.GetNickName() << " joined.";
+			Logger::Get()->LogThis(message.str());
+		}
 	}
 
 	void NetworkingActivityMonitor::OnNetworkTrafficReceivedEvent(const std::shared_ptr<Event>& evt)
 	{
 		const auto networkPlayerTrafficReceivedEvent = To<NetworkTrafficReceivedEvent>(evt);
-		std::stringstream message;
-		message
-			<< networkPlayerTrafficReceivedEvent->BytesReceived << " bytes of data received from " << networkPlayerTrafficReceivedEvent->Identifier
-			<< ". Message: \"" << networkPlayerTrafficReceivedEvent->Message << "\"";
-
-		// how much data did we receie in this second?
+		
+		// how much data did we receive in this second?
 		stats.BytesReceived += networkPlayerTrafficReceivedEvent->BytesReceived;
 
-		Logger::Get()->LogThis(message.str());
+		if (verbose)
+		{
+			std::stringstream message;
+			message
+				<< networkPlayerTrafficReceivedEvent->BytesReceived << " bytes of data received from " << networkPlayerTrafficReceivedEvent->Identifier
+				<< ". Message: \"" << networkPlayerTrafficReceivedEvent->Message << "\"";
+
+			Logger::Get()->LogThis(message.str());
+		}
 	}
 
 	void NetworkingActivityMonitor::OnReliableUdpPacketReceivedEvent(const std::shared_ptr<Event>& evt)
 	{
 		const auto rudpEvent = To<ReliableUdpPacketReceivedEvent>(evt);
 		const auto rudpMessage = rudpEvent->ReceivedMessage;
-		stringstream bundledSeqs;
-
-		bundledSeqs << "(";
-		for (int i = 0; i < rudpMessage->DataCount(); i++)
-		{
-			bundledSeqs << rudpMessage->Data()[i].Sequence;
-			if (i < rudpMessage->DataCount() - 1)
-			{
-				bundledSeqs << ",";
-			}
-		}
-		bundledSeqs << ")";
-
-		std::stringstream message;
-		message
-			<< "Received " << rudpMessage->Header.Sequence << ". Playload: " << bundledSeqs.str()
-			<< " Sender acks: "
-			<< BitFiddler<uint32_t>::ToString(rudpMessage->Header.LastAckedSequence);
-
+		
 		// write stats
 		stats.CountPacketsReceived++;
 		stats.CountAggregateMessagesReceived += rudpMessage->DataCount();
 
-		Logger::Get()->LogThis(message.str());
+		if (verbose)
+		{
+			stringstream bundledSeqs;
+
+			bundledSeqs << "(";
+			for (int i = 0; i < rudpMessage->DataCount(); i++)
+			{
+				bundledSeqs << rudpMessage->Data()[i].Sequence;
+				if (i < rudpMessage->DataCount() - 1)
+				{
+					bundledSeqs << ",";
+				}
+			}
+			bundledSeqs << ")";
+
+			std::stringstream message;
+			message
+				<< "Received " << rudpMessage->Header.Sequence << ". Playload: " << bundledSeqs.str()
+				<< " Sender acks: "
+				<< BitFiddler<uint32_t>::ToString(rudpMessage->Header.LastAckedSequence);
+
+			Logger::Get()->LogThis(message.str());
+		}
 	}
 
 	void NetworkingActivityMonitor::OnReliableUdpCheckSumFailedEvent(const std::shared_ptr<Event>& evt)
-	{
-		const auto failedChecksumEvent = To<ReliableUdpCheckSumFailedEvent>(evt);
-		const auto failedMessage = failedChecksumEvent->failedMessage;
-		std::stringstream message;
-
-		message << "Checksum failed for sequence " << failedMessage->Header.Sequence << ". Dropping packet.";
-
+	{		
 		// write stats
 		stats.VerificationFailedCount++;
 
-		Logger::Get()->LogThis(message.str());
+		if (verbose) 
+		{
+			const auto failedChecksumEvent = To<ReliableUdpCheckSumFailedEvent>(evt);
+			const auto failedMessage = failedChecksumEvent->failedMessage;
+
+			std::stringstream message;
+			message << "Checksum failed for sequence " << failedMessage->Header.Sequence << ". Dropping packet.";
+			Logger::Get()->LogThis(message.str());
+		}
 	}
 
 	void NetworkingActivityMonitor::OnReliableUdpPacketLossDetectedEvent(const std::shared_ptr<Event>& evt)
 	{
-		const auto reliableUdpPacketLossDetectedEvent = To<ReliableUdpPacketLossDetectedEvent>(evt);
-		const auto resendingMessage = reliableUdpPacketLossDetectedEvent->messageBundle;
-
-		stringstream bundledSeqs;
-		std::stringstream message;
-
-		for (int i = static_cast<int>(resendingMessage->Data().size()) - 1; i >= 0; i--)
-		{
-			bundledSeqs << resendingMessage->Data()[i].Sequence;
-			if (i < resendingMessage->DataCount() - 1)
-			{
-				bundledSeqs << ",";
-			}
-		}
-
-		message << "Packet loss detected. Sequences " << bundledSeqs.str() << " were not acknowledged by receiver and will be resent with sending sequence "
-			<< resendingMessage->Header.Sequence;
-
 		// Track statistics
 		stats.CountPacketsLost++;
 
-		Logger::Get()->LogThis(message.str());
+		if (verbose)
+		{
+			const auto reliableUdpPacketLossDetectedEvent = To<ReliableUdpPacketLossDetectedEvent>(evt);
+			const auto resendingMessage = reliableUdpPacketLossDetectedEvent->messageBundle;
+
+			stringstream bundledSequences;
+			std::stringstream message;
+
+			for (int i = static_cast<int>(resendingMessage->Data().size()) - 1; i >= 0; i--)
+			{
+				bundledSequences << resendingMessage->Data()[i].Sequence;
+				if (i < resendingMessage->DataCount() - 1)
+				{
+					bundledSequences << ",";
+				}
+			}
+
+			message << "Packet loss detected. Sequences " << bundledSequences.str() << " were not acknowledged by receiver and will be resent with sending sequence "
+				<< resendingMessage->Header.Sequence;
+
+			Logger::Get()->LogThis(message.str());
+		}
 	}
 
 	void NetworkingActivityMonitor::OnReliableUdpAckPacketEvent(const std::shared_ptr<Event>& evt)
 	{
-		const auto reliableUdpPacketLossDetectedEvent = To<ReliableUdpAckPacketEvent>(evt);
-		const auto ackMessage = reliableUdpPacketLossDetectedEvent->ReceivedMessage;
-
-		std::stringstream message;
-
-		message << "Acknowledgement " << (reliableUdpPacketLossDetectedEvent->Sent ? "sent: " : " received: ") << ackMessage->Header.Sequence;
-
-		// how many acks did we receive
+		// how many acknowledgements did we receive?
 		stats.CountAcks++;
 
-		Logger::Get()->LogThis(message.str());
+		if (verbose)
+		{
+			const auto reliableUdpPacketLossDetectedEvent = To<ReliableUdpAckPacketEvent>(evt);
+			const auto ackMessage = reliableUdpPacketLossDetectedEvent->ReceivedMessage;
 
+			std::stringstream message;
+
+			message << "Acknowledgement " << (reliableUdpPacketLossDetectedEvent->Sent ? "sent: " : " received: ") << ackMessage->Header.Sequence;
+
+			Logger::Get()->LogThis(message.str());
+		}
 	}
 
 	void NetworkingActivityMonitor::OnReliableUdpPacketRttCalculatedEvent(const std::shared_ptr<gamelib::Event>& evt)

@@ -15,7 +15,7 @@ namespace gamelib
 	{
 	public:
 	
-		NetworkingActivityMonitor(ProcessManager& processManager, EventManager& eventManager);
+		NetworkingActivityMonitor(ProcessManager& processManager, EventManager& eventManager, bool verbose);
 		void ScheduleSaveStatistics();
 		void ScheduleProcess(std::shared_ptr<Process> process) const;
 		void InitialiseStatisticsFile() const;
@@ -34,6 +34,7 @@ namespace gamelib
 		gamelib::PeriodicTimer statisticsSampleInterval;
 		ProcessManager& processManager;
 		EventManager& eventManager;
+		bool verbose;
 
 		void OnReliableUdpAckPacketEvent(const std::shared_ptr<Event>& evt);
 		void OnReliableUdpPacketRttCalculatedEvent(const std::shared_ptr<gamelib::Event>& evt);
@@ -41,7 +42,7 @@ namespace gamelib
 		void OnReliableUdpPacketReceivedEvent(const std::shared_ptr<Event>& evt);
 		void OnReliableUdpCheckSumFailedEvent(const std::shared_ptr<Event>& evt);
 		void OnReliableUdpPacketLossDetectedEvent(const std::shared_ptr<Event>& evt);
-		static void OnNetworkPlayerJoinedEvent(const std::shared_ptr<Event>& evt);
+		void OnNetworkPlayerJoinedEvent(const std::shared_ptr<Event>& evt) const;
 	};
 }
 

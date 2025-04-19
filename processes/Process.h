@@ -36,7 +36,12 @@ namespace gamelib
 	[[nodiscard]] bool IsRemoved() const { return state == Removed; } // Future work
 	[[nodiscard]] bool IsPaused() const { return state == Paused; } // Future work
 
-	void AttachChild(const std::shared_ptr<Process>& newChild) { child = newChild; }
+	std::shared_ptr<Process>& AttachChild(const std::shared_ptr<Process>& newChild)
+	{
+		child = newChild;
+		return child;
+	}
+
 	std::shared_ptr<Process> GetChild() { return child; }
 	std::shared_ptr<Process> PeekChild() { return child; }
 

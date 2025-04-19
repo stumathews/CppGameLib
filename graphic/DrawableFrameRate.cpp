@@ -32,6 +32,7 @@ void gamelib::DrawableFrameRate::Update(const unsigned long deltaMs)
 	if(currentSampleTimeMs >= sampleDurationInMilliSecs)
 	{
 		currentSampleTimeMs = 0;
+
 		// collect a new sample
 		sampleRates.emplace_back(accumulatedSampleWindowTime,framesPerSecond);
 	}
@@ -45,40 +46,42 @@ void gamelib::DrawableFrameRate::Update(const unsigned long deltaMs)
 
 void gamelib::DrawableFrameRate::Draw(SDL_Renderer* renderer)
 {
-	DrawableText::Draw(renderer);
+	//DrawableText::Draw(renderer);
 	const AbcdRectangle rect(*drawBounds);
-	constexpr auto intervals = 4;
-	constexpr auto ratio = 25;
-	const auto pixelsPerInterval = rect.GetHeight() / (100/ratio);
+	constexpr auto intervals = 10;
+	constexpr double ratio = 100.00 / intervals;
+	const auto pixelsPerInterval = rect.GetHeight() / intervals;
+	const auto pixelsPerValue = rect.GetHeight() / 100.00;
 
 	// draw a line every interval
 	for(int i = 0; i < intervals;i++)
 	{
 		const auto jump = i * pixelsPerInterval;
-		const Line marker(rect.GetDx(), rect.GetDy() - jump, rect.GetDx() + 5, rect.GetCy()-jump);
-		const AbcdRectangle makerValueBounds(marker.X1 - 15, marker.Y1 - 5, 10, 10);
-		DrawableText markerValue(makerValueBounds, std::to_string(i * ratio), Color);
-
-		markerValue.Draw(renderer);
+		const Line marker(rect.GetDx(), rect.GetDy() - jump, rect.GetDx() + 1, rect.GetCy()-jump);
 		SDL_RenderDrawLine(renderer, marker.X1, marker.Y1, marker.X2, marker.Y2);
 	}
 
-	for (auto& sample : sampleRates)
-	{
-		// draw framesPerSecond as a point somewhere on the widget
-		std::stringstream format;
-		
-		const auto rate = std::get<1>(sample);
-		const auto t = std::get<0>(sample);
-		const auto totalSecsPassed = t / 1000;
-		const auto xPerSecond = rect.GetDx() + (rect.GetWidth() / (maxTotalSampleDurationMs / 1000)) * totalSecsPassed;
+	// draw line of rate from first sample to last (current) sample
+	if (sampleRates.empty()) return;
 
-		const AbcdRectangle valueBounds(xPerSecond, rect.GetDy() + 25, rect.GetWidth()/2, rect.GetHeight()/2);
+	// sampleRates is a vector of tuples { time, rate }
+	const auto firstSample = sampleRates[0];
+	const auto lastSample = sampleRates[sampleRates.size() - 1];
 
-		const auto point = Line(xPerSecond,rect.GetDy() - rate, xPerSecond, rect.GetDy() - rate);
+	const auto firstRateValue = std::get<1>(firstSample);
+	const auto lastRateValue = std::get<1>(lastSample);
 
-		SDL_RenderDrawLine(renderer, point.X1, point.Y1, point.X2, point.Y2);		
-	}
+	// We subtract because the y-axis is inverted and rect is not based 0,0 relative to rect
+	const double y1 = rect.GetDy() - (pixelsPerValue * firstRateValue);
+	const double y2 = rect.GetDy() - (pixelsPerValue * lastRateValue);
+
+	const auto lastTime = std::get<0>(lastSample);
+	const auto totalSecsPassed = lastTime / 1000;
+
+	const int xAtLastTime = rect.GetDx() + (rect.GetWidth() / (maxTotalSampleDurationMs / 1000)) * totalSecsPassed;
+
+	// Straight line from first to last sample
+	const auto line = Line(rect.GetDx(), static_cast<int>(y1), xAtLastTime, static_cast<int>(y2));
+
+	SDL_RenderDrawLine(renderer, line.X1, line.Y1, line.X2, line.Y2);
 };
-
-

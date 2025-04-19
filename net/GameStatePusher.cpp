@@ -2,12 +2,13 @@
 
 namespace gamelib
 {
-	GameStatePusher::GameStatePusher(const int sendRateMs, const bool isGameServer,
-		gamelib::ProcessManager& processManager): isGameServer(isGameServer), sendRateMs(sendRateMs), processManager(processManager)
+	GameStatePusher::GameStatePusher(const std::function<void()>& sendGameStateFunc, const int sendRateMs, const bool isGameServer,
+		ProcessManager& processManager): isGameServer(isGameServer), sendRateMs(sendRateMs), processManager(processManager),
+		                                          sendGameStateFunc(sendGameStateFunc)
 	{
 	}
 
-	void GameStatePusher::Initialise(const std::function<void()>& sendGameStateFunc)
+	void GameStatePusher::Initialise()
 	{
 		if (isGameServer)
 		{
@@ -18,18 +19,19 @@ namespace gamelib
 		// Send game state every sendRateMs
 		gameStateSendInterval.SetFrequency(sendRateMs);
 
-
-		// Send the game state as a background task
-		sendTask = std::dynamic_pointer_cast<gamelib::Process>(std::make_shared<gamelib::Action>([&](const unsigned long deltaMs)
+		// create task to send the game state as a background task
+		sendTask = std::dynamic_pointer_cast<Process>(std::make_shared<Action>([&](const unsigned long deltaMs)
 		{
 			// Update timers
 			gameStateSendInterval.Update(deltaMs);
 
 			// Send game state of sending interval is elapsed
-			gameStateSendInterval.DoIfReady([=]()
+			gameStateSendInterval.DoIfReady([&]()
 			{
-				// We represent our game state as rudimentary pings
-				sendGameStateFunc();
+					if (sendGameStateFunc) 
+					{
+						sendGameStateFunc();
+					}
 			});
 		}, false));
 	}

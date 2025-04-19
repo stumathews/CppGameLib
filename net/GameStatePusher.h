@@ -13,9 +13,8 @@ namespace gamelib
 	class GameStatePusher
 	{
 	public:
-		GameStatePusher(const int sendRateMs, const bool isGameServer, gamelib::ProcessManager& processManager);
-
-		void Initialise(const std::function<void()>& sendGameStateFunc);
+		void Initialise();
+		GameStatePusher(const std::function<void()>& sendGameStateFunc, int sendRateMs, bool isGameServer, ProcessManager& processManager);
 		void Run() const;
 
 	private:
@@ -24,10 +23,11 @@ namespace gamelib
 		// Periodically send game state to the game server
 		int sendRateMs;
 
-		std::shared_ptr<gamelib::Process> sendTask;
+		std::shared_ptr<Process> sendTask;
 
-		gamelib::PeriodicTimer gameStateSendInterval;
-		gamelib::ProcessManager& processManager;
+		PeriodicTimer gameStateSendInterval;
+		ProcessManager& processManager;  // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)
+		std::function<void()> sendGameStateFunc;
 	};
 }
 

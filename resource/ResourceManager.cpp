@@ -17,7 +17,7 @@ namespace gamelib
 	using namespace std;
 
 	ResourceManager::ResourceManager(): debug(false) {  }
-	ResourceManager::~ResourceManager() { Instance = nullptr; }
+	ResourceManager::~ResourceManager() { instance = nullptr; }
 
 	/// <summary>
 	/// Initialise the resource manager
@@ -109,32 +109,51 @@ namespace gamelib
 	/// </summary>
 	void ResourceManager::IndexResourceFile(const string& resourcesFilePath)
 	{
+		if (isIndexed)
+		{
+			Logger::Get()->LogThis("ResourceManager: resources already indexed. Skipping.");
+			return;
+		}
+
 		Logger::Get()->LogThis("ResourceManager: reading resources.xml.");
 
 		XMLDocument xmlDocument;
+
+		// Read the resources file
 		xmlDocument.LoadFile(resourcesFilePath.c_str());
 
+		// If not errors, parse the XML file
 		if (xmlDocument.ErrorID() == 0)
 		{
+			// Get the Assets XML node
 			auto* pAssetsNode = xmlDocument.FirstChildElement("Assets");
 
 			if (pAssetsNode)
 			{
+				// Get all the assets in the XML file
 				for (auto child = pAssetsNode->FirstChild(); child; child = child->NextSibling())
 				{
-					auto* const element = child->ToElement();
-					if (element)
+					auto* const assetElement = child->ToElement();
+
+					if (assetElement)
 					{
+						// Prepare to create the asset from the element definition
 						shared_ptr<Asset> theAsset = nullptr;
-						const char* ptrAssetType{};
+						const char* ptrAssetType {};
 
-						element->QueryStringAttribute("type", &ptrAssetType);
-						theAsset = CreateAssetFromElement(ptrAssetType, theAsset, element);
+						// Determine the asset type
+						assetElement->QueryStringAttribute("type", &ptrAssetType);
 
-						// Store the asset reference, but don't load it
+						// Create the asset based on the asset type
+						theAsset = CreateAssetFromElement(ptrAssetType, theAsset, assetElement);
+
 						if (theAsset != nullptr)
 						{
+							// Store the asset reference, but don't load it
 							StoreAsset(theAsset);
+
+							// Keep track of how many assets we have
+							countResources++;
 						}
 						else
 						{
@@ -148,7 +167,7 @@ namespace gamelib
 			}
 			else
 			{
-				THROW(12, "No Assets found", GetSubscriberName());
+				THROW(12, "No Assets found in resource file", GetSubscriberName());
 			}
 		}
 		else
@@ -158,6 +177,8 @@ namespace gamelib
 		}
 
 		LogMessage(to_string(countResources) + string(" assets available in resource manager."));
+
+		isIndexed = true;
 	}
 
 	/// <summary>
@@ -165,27 +186,32 @@ namespace gamelib
 	/// </summary>
 	/// <param name="type">Type of asset identified in the resource file</param>
 	/// <param name="asset"></param>
-	/// <param name="element">the current element containing the asset data</param>
+	/// <param name="assetElement">the current element containing the asset data</param>
 	/// <returns></returns>
 	std::shared_ptr<Asset>& ResourceManager::CreateAssetFromElement(const char* type, std::shared_ptr<Asset>& asset,
-	                                                                XMLElement* const& element)
+	                                                                XMLElement* const& assetElement)
 	{
+		// Create types of assets based on their definition
+
 		// Create a graphic asset
 		if (strcmp(type, "graphic") == 0)
 		{
-			asset = GraphicAssetFactory::Get()->Parse(element);
+			// Read graphic asset details
+			asset = GraphicAssetFactory::Get()->Parse(assetElement);
 		}
 
 		// Create fx/sound/audio asset
 		else if (strcmp(type, "fx") == 0 || strcmp(type, "music") == 0)
 		{
-			asset = AudioManager::Get()->CreateAsset(element, *this);
+			// Read audio asset details
+			asset = AudioManager::Get()->CreateAsset(assetElement, *this);
 		}
 
 		// Create font asset
 		else if (strcmp(type, "font") == 0)
 		{
-			asset = FontManager::Get()->CreateAsset(element);
+			// Read font asset details
+			asset = FontManager::Get()->CreateAsset(assetElement);
 		}
 		else
 		{
@@ -214,7 +240,6 @@ namespace gamelib
 		LogMessage(
 			"Discovered " + string(asset->Type) + string(" asset#: ") + to_string(asset->Uid) + string(" ") + string(
 				asset->Name));
-		countResources++;
 	}
 
 	string ResourceManager::GetSubscriberName() { return "resource manager"; }
@@ -223,13 +248,13 @@ namespace gamelib
 
 	ResourceManager* ResourceManager::Get()
 	{
-		if (Instance == nullptr)
+		if (instance == nullptr)
 		{
-			Instance = new ResourceManager();
+			instance = new ResourceManager();
 		}
 
-		return Instance;
+		return instance;
 	}
 
-	ResourceManager* ResourceManager::Instance = nullptr;
+	ResourceManager* ResourceManager::instance = nullptr;
 }

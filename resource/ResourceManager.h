@@ -28,7 +28,7 @@ namespace gamelib
 
 		// index the resources file
 		void IndexResourceFile(const std::string& resourcesFilePath = "game/resources.xml");
-		std::shared_ptr<Asset>& CreateAssetFromElement(const char* type, std::shared_ptr<Asset>& theAsset, tinyxml2::XMLElement* const& element);
+		std::shared_ptr<Asset>& CreateAssetFromElement(const char* type, std::shared_ptr<Asset>& theAsset, tinyxml2::XMLElement* const& assetElement);
 		[[nodiscard]] int GetCountUnloadedResources() const { return countUnloadedResources; }
 		[[nodiscard]] int GetCountLoadedResources() const { return countLoadedResources; }
 
@@ -39,7 +39,7 @@ namespace gamelib
 			UnknownResourceType
 		};
 	protected:
-		static ResourceManager* Instance;
+		static ResourceManager* instance;
 				
 	private:
 		ResourceManager();		
@@ -53,7 +53,7 @@ namespace gamelib
 		int countLoadedResources = 0;
 		int countUnloadedResources = 0;
 		bool debug;
-		
+		bool isIndexed;
 	};
 }
 

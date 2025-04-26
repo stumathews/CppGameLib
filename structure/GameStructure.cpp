@@ -59,11 +59,9 @@ namespace gamelib
 									int screenHeight,
 									const string& windowTitle,
 	                                const string& resourceFilePath, 
-									const string& gameSettingsFilePath,
 								    const string& sceneFolderPath)
 	{
 		// Read config about the game's settings
-		const auto settingsInitialized = SettingsManager::Get()->Load(gameSettingsFilePath);
 		const auto beVerbose = SettingsManager::Bool("global", "verbose");
 
 		sampleInput = SettingsManager::Bool("gameStructure", "sampleInput");
@@ -94,8 +92,8 @@ namespace gamelib
 				IsFailedOrFalse(LogOnFailure(ResourceManager::Get()->Initialize(resourceFilePath),
 				                             "Could not initialize resource manager")) ||
 				IsFailedOrFalse(LogOnFailure(SceneManager::Get()->Initialize(sceneFolderPath),
-				                             "Could not initialize scene manager")) ||
-				IsFailedOrFalse(settingsInitialized)) { return false; }
+				                             "Could not initialize scene manager")))
+			{ return false; }
 
 			return true;
 		}, true, true);

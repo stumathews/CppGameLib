@@ -8,8 +8,7 @@ namespace gamelib
 	 An ABCD Rectangle looks like this;
 
 		A----B
-		|    |
-		|    |
+		|        |
 		D----C
 
 	Each point A, B, C, D has and x,y coordinate

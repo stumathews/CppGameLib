@@ -40,7 +40,7 @@ namespace gamelib
 		const char* ClientNickName = "Alice";
 		const char* ServerNickName = "Bob";	
 		const string ServerOrigin = ServerAddress + string(":") + ListeningPort;
-		const Encoding WireEncoding = Encoding::Json;
+		const Encoding WireEncoding = Encoding::json;
 		std::shared_ptr<SerializationManager> SerializationManager;
 
 		void StartNetworkServer(std::shared_ptr<IGameServerConnection> inGameServerConnection = nullptr)

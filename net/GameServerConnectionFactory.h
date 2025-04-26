@@ -17,7 +17,7 @@ namespace gamelib
 	public:
 		static [[nodiscard]] std::shared_ptr<IGameServerConnection> Create(
 			const bool isTcp, const std::string& address, const std::string& port, const bool useReliableUdp = false,
-			bool useEncryption = true, Encoding wireFormat = Encoding::Json)
+			bool useEncryption = true, Encoding wireFormat = Encoding::json)
 		{
 			return isTcp ? To<IGameServerConnection>(std::make_shared<TcpGameServerConnection>(address, port, wireFormat))
 						 : useReliableUdp

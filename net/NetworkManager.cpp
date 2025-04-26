@@ -27,7 +27,7 @@ namespace gamelib
 
 		// Determine what protocol we are going to use for connections
 		const auto useReliableUdp = SettingsManager::Get()->GetBool("networking", "useReliableUdp");
-
+		const auto sendClientEventsToServer = SettingsManager::Get()->GetBool("networking", "sendClientEventsToServer");
 		
 		// eg. tcp, udp, reliable-udp connection
 		auto gameServerConnection = GameServerConnectionFactory::Create(isTcp, gameServerAddress, gameServerPort,
@@ -45,7 +45,8 @@ namespace gamelib
 			// eg. UDP or TCP connection
 			auto gameClientConnection = GameClientConnectionFactory::Create(isTcp);
 
-			Client = std::make_shared<GameClient>(nickName, gameClientConnection, useReliableUdp, useEncryption, encoding);
+			Client = std::make_shared<GameClient>(nickName, gameClientConnection, useReliableUdp, useEncryption,
+			                                      encoding, sendClientEventsToServer);
 			Client->Initialize();
 			Client->Connect(Server);
 		}

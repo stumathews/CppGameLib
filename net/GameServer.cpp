@@ -61,7 +61,7 @@ namespace gamelib
 
 	std::vector<std::shared_ptr<Event>> GameServer::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs)
 	{
-		gameServerConnection->SendEventToAllPlayers(serializationManager->Serialize(evt, nickname)); 
+		gameServerConnection->SendEventToAllPlayers(serializationManager->SerializeEvent(evt, nickname)); 
 
 		return {};
 	}

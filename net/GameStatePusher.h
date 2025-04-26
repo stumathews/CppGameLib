@@ -14,7 +14,8 @@ namespace gamelib
 	{
 	public:
 		void Initialise();
-		GameStatePusher(const std::function<void()>& sendGameStateFunc, int sendRateMs, bool isGameServer, ProcessManager& processManager);
+		GameStatePusher(const std::function<void()>& sendGameStateFunc, int sendRateMs, bool isGameServer,
+		                ProcessManager& processManager);
 		void Run() const;
 
 	private:

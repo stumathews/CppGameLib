@@ -25,12 +25,17 @@ namespace gamelib
 	{
 	public:
 		~GameClient() override;
+
 		GameClient(const std::string& nickName, const std::shared_ptr<IConnectedNetworkSocket>& connection,
-		           bool useReliableUdpProtocolManager = false, bool useEncryption = true, Encoding encoding = Encoding::Json);
+		           bool useReliableUdpProtocolManager = false, bool useEncryption = true,
+		           Encoding encoding = Encoding::json, bool sendClientEventsToServer = true);
 		GameClient(const GameClient& other) = delete;
 		GameClient(const GameClient&& other) = delete;
 		const GameClient& operator=(const GameClient& other) = delete;
 		const GameClient& operator=(const GameClient&& other) = delete;
+
+		void SetupProtocolManager(const std::shared_ptr<IConnectedNetworkSocket>& connection,
+			bool useReliableUdpProtocolManager, bool useEncryption);
 
 		/// <summary>
 		/// Initializes the Game client.
@@ -56,6 +61,7 @@ namespace gamelib
 		int SendBinary(uint16_t* array, size_t numBits) const;
 
 		std::shared_ptr<GameServer> gameServer;
+		bool sendClientEventsToServer;
 
 		void SendPlayerDetails() const;
 
@@ -82,9 +88,6 @@ namespace gamelib
 
 		// Events that the client can create for the game
 		EventFactory* eventFactory;
-
-		// Use encryption when sending network traffic
-		bool useEncryption {true};
 
 		// Use TCP or UDP
 		bool isTcp{};

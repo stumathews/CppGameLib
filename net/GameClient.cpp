@@ -6,7 +6,6 @@
 #include <json/json11.h>
 #include <events/EventFactory.h>
 #include <file/SerializationManager.h>
-
 #include "TransportOnlyProtocolManager.h"
 #include "ReliableUdpProtocolManager.h"
 #include "events/StartNetworkLevelEvent.h"
@@ -16,24 +15,26 @@ using namespace json11;
 namespace gamelib
 {
 	GameClient::GameClient(const std::string& nickName, const std::shared_ptr<IConnectedNetworkSocket>& connection,
-	                       const bool useReliableUdpProtocolManager, bool useEncryption, const Encoding desiredEncoding)
+	                       const bool useReliableUdpProtocolManager, const bool useEncryption, const Encoding encoding,
+	                       const bool sendClientEventsToServer)
 	{				
-		noDataTimeout.tv_sec = 0;
-		noDataTimeout.tv_usec = 0;
-		isDisconnectedFromGameServer = true;
-		readfds = {0,{0}};
-		eventManager = nullptr;
-		serializationManager = nullptr;
-		networking = nullptr;
-		eventFactory = nullptr;
+		this->noDataTimeout.tv_sec = 0;
+		this->noDataTimeout.tv_usec = 0;
+		this->isDisconnectedFromGameServer = true;
+		this->eventManager = nullptr;
+		this->serializationManager = nullptr;
+		this->networking = nullptr;
+		this->eventFactory = nullptr;
 		this->nickName = nickName;
-		this->useEncryption = useEncryption;
-		encoding = desiredEncoding;
+		this->encoding = encoding;
+		this->readfds =
+		{
+			.fd_count = 0			,
+			.fd_array = {0}
+		};
+		this->sendClientEventsToServer = sendClientEventsToServer;
 
-		// its through the network protocol manager that connections to the server are made, and that network events are listened for
-		networkProtocolManager = useReliableUdpProtocolManager
-			                         ? std::dynamic_pointer_cast<IProtocolManager>(std::make_shared<ReliableUdpProtocolManager>(connection, useEncryption)) // layers reliable protocol over transport
-			                         : std::dynamic_pointer_cast<IProtocolManager>(std::make_shared<TransportOnlyProtocolManager>(connection)); // passes data directly to transports ie. udp or tcp
+		SetupProtocolManager(connection, useReliableUdpProtocolManager, useEncryption);
 		
 		this->isTcp = networkProtocolManager->GetConnection()->IsTcp();
 	}
@@ -50,17 +51,40 @@ namespace gamelib
 
 		networkProtocolManager->Initialize();
 
-		Logger::Get()->LogThis(isTcp ? "Client using TCP" : "Client using UDP");
+		Logger::Get()->LogThis(isTcp 
+			? "Client using TCP"
+			: "Client using UDP");
+
 		Logger::Get()->LogThis("Nickname:" + std::string(nickName));
 		
 		SubscribeToGameEvents();
 	}
 
+	// Protocol manager that connections to the server are made, and that network events are listened for
+	void GameClient::SetupProtocolManager(const std::shared_ptr<IConnectedNetworkSocket>& connection,
+	                                      const bool useReliableUdpProtocolManager, bool useEncryption)
+	{
+		// Layers reliable protocol over transport
+		const auto reliableUdpProtocolManager = std::dynamic_pointer_cast<IProtocolManager>(
+			std::make_shared<ReliableUdpProtocolManager>(connection, useEncryption));
+
+		// Passes data directly to transports i.e., udp or tcp
+		const auto transportOnlyProtocolManager = std::dynamic_pointer_cast<IProtocolManager>(
+			std::make_shared<TransportOnlyProtocolManager>(connection));
+
+		this->networkProtocolManager = useReliableUdpProtocolManager
+			? reliableUdpProtocolManager
+			: transportOnlyProtocolManager;
+	}
+
 	void GameClient::SubscribeToGameEvents()
 	{
-		// We subscribe to some of our own events and send them to the game server...
-		eventManager->SubscribeToEvent(PlayerMovedEventTypeEventId, this);
-		eventManager->SubscribeToEvent(ControllerMoveEventId, this);
+		if (this->sendClientEventsToServer)
+		{
+			// We subscribe to some of our own events and send them to the game server...
+			eventManager->SubscribeToEvent(PlayerMovedEventTypeEventId, this);
+			eventManager->SubscribeToEvent(ControllerMoveEventId, this);
+		}
 	}
 
 	void GameClient::Connect(const std::shared_ptr<GameServer>& inGameServer)
@@ -176,7 +200,9 @@ namespace gamelib
 
 	void GameClient::RaiseNetworkTrafficReceivedEvent(const char* buffer, const int bytesReceived)
 	{
-		eventManager->RaiseEventWithNoLogging(eventFactory->CreateNetworkTrafficReceivedEvent(buffer, "Game Server", bytesReceived, this->GetSubscriberName()));
+		eventManager->RaiseEventWithNoLogging(
+			eventFactory->CreateNetworkTrafficReceivedEvent(buffer, "Game Server", bytesReceived,
+			                                                this->GetSubscriberName()));
 	}
 
 	int GameClient::InternalSend(const std::string& message, const unsigned long deltaMs) const
@@ -191,17 +217,19 @@ namespace gamelib
 
 	std::vector<std::shared_ptr<Event>> GameClient::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs)
 	{
-		std::vector<std::shared_ptr<Event>> createdEvents;	
+		if (sendClientEventsToServer)
+		{
+			Logger::Get()->LogThis("Sending client event to server:");
+			Logger::Get()->LogThis(evt->ToString());
 
-		Logger::Get()->LogThis("Sending client event to server:");
-		Logger::Get()->LogThis(evt->ToString());
+			const auto message = serializationManager->SerializeEvent(evt, nickName);
+			const int sendResult = InternalSend(message, deltaMs);
 
-		const auto message = serializationManager->Serialize(evt, nickName);
-		const int sendResult = InternalSend(message, deltaMs);
-
-		Logger::Get()->LogThis(sendResult > 0 ? "Successfully sent." : "Error no data sent");
-
-		return createdEvents;
+			Logger::Get()->LogThis(sendResult > 0 
+				? "Successfully sent."
+				: "Error no data sent");
+		}
+		return {};
 	}
 
 	std::string GameClient::GetSubscriberName()
@@ -214,7 +242,9 @@ namespace gamelib
 		const auto message = serializationManager->CreatePingMessage();
 		const int sendResult = InternalSend(message, deltaMs);
 
-		Logger::Get()->LogThis(sendResult > 0 ? "Sent ping request" : "Ping error, no data sent");
+		Logger::Get()->LogThis(sendResult > 0 
+			? "Sent ping request"
+			: "Ping error, no data sent");
 
 		if (sendResult == SOCKET_ERROR) 
 		{
@@ -232,9 +262,11 @@ namespace gamelib
 
 	GameClient::~GameClient()
 	{
-		if (shutdown(networkProtocolManager->GetConnection()->GetRawSocket(), SD_SEND) == SOCKET_ERROR) 
+		const auto connectionSocket = networkProtocolManager->GetConnection()->GetRawSocket();
+
+		if (shutdown(connectionSocket, SD_SEND) == SOCKET_ERROR) 
 		{
-			closesocket(networkProtocolManager->GetConnection()->GetRawSocket());
+			closesocket(connectionSocket);
 			WSACleanup();
 		}
 	}

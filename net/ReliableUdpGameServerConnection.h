@@ -18,7 +18,7 @@ namespace gamelib
 	{
 	public:
 		ReliableUdpGameServerConnection(const std::string& host, const std::string& port, bool useEncryption = true,
-		                                gamelib::Encoding wireFormat = Encoding::Json);
+		                                gamelib::Encoding wireFormat = Encoding::json);
 	private:
 
 		// When we check for player traffic, we need to unpack the received data

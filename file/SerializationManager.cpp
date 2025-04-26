@@ -1,4 +1,5 @@
 #include "SerializationManager.h"
+#include <cassert>
 #include <string>
 #include <json/json11.h>
 #include <net/MessageHeader.h>
@@ -6,7 +7,6 @@
 #include <events/ControllerMoveEvent.h>
 #include <events/PlayerMovedEvent.h>
 #include <events/StartNetworkLevelEvent.h>
-
 #include "Encoding/BitPackedEventSerializationManager.h"
 #include "Encoding/JsonEventSerializationManager.h"
 #include "Encoding/XmlEventSerializationManager.h"
@@ -17,31 +17,59 @@ using namespace json11;
 
 namespace gamelib
 {
-	SerializationManager::SerializationManager(const gamelib::Encoding desiredEncoding = Encoding::Json)
+	SerializationManager::SerializationManager(const gamelib::Encoding desiredEncoding = Encoding::json)
 	{
 		Encoding = desiredEncoding;
 		Initialize();
 	}
 
-	MessageHeader SerializationManager::GetMessageHeader(const std::string& serializedMessage) const
+	void SerializationManager::Initialize()
 	{
-		std::string error;
-		const auto parsedJson = Json::parse(serializedMessage, error);
+		assert(Encoding == Encoding::json || Encoding == Encoding::xml || Encoding == Encoding::bit_packed || Encoding == Encoding::none);
 
-		MessageHeader header;
-		header.MessageType = parsedJson["messageType"].string_value();
-		header.MessageTarget = parsedJson["nickname"].string_value();
+		switch (Encoding)
+		{
+			case Encoding::json: 
+				eventSerialization = std::make_shared<JsonEventSerializationManager>();
+				break;
+			case Encoding::xml:
+				eventSerialization = std::make_shared<XmlEventSerializationManager>();
+				break;
+			case Encoding::bit_packed:
+				eventSerialization = std::make_shared<BitPackedEventSerializationManager>();
+				break;
+			case Encoding::none:
+				throw std::exception(std::string("Unknown serialization format").c_str());
+		}
+	}
+
+	MessageHeader SerializationManager::GetMessageHeader(const std::string& serializedMessage)
+	{
+		std::string jsonParseError;
+		const auto jsonObject = Json::parse(serializedMessage, jsonParseError);
+
+		if (!jsonParseError.empty())
+		{
+			throw std::runtime_error("Failed to parse JSON: " + jsonParseError);
+		}
+
+		MessageHeader header
+		{
+			.MessageType = jsonObject["messageType"].string_value(),
+			.MessageTarget = jsonObject["nickname"].string_value(),
+		};
 
 		return header;
 	}
 
-	std::string SerializationManager::Serialize(const std::shared_ptr<Event>& evt, const std::string& target) const
+	std::string SerializationManager::SerializeEvent(const std::shared_ptr<Event>& evt, const std::string& target) const
 	{
 		// TODO: Update the list of events that can be sent over the network
 
 		if(evt->Id.PrimaryId == PlayerMovedEventTypeEventId.PrimaryId) { return CreatePlayerMovedEventMessage(evt, target);}
 		if(evt->Id.PrimaryId == ControllerMoveEventId.PrimaryId) { return CreateControllerMoveEventMessage(evt, target);}
 		if(evt->Id.PrimaryId == StartNetworkLevelEventId.PrimaryId) { return CreateStartNetworkLevelMessage(evt, target);}
+
 		return CreateUnknownEventMessage(evt, target);
 		
 	}
@@ -51,7 +79,7 @@ namespace gamelib
 	{
 		std::shared_ptr<Event> event = nullptr;
 
-		// TODO: Update the list of messages (serialised events) that we can be consumed by the network clients, i.e deserialized
+		// TODO: Update the list of messages (serialised events) that we can be consumed by the network clients, i.e., deserialized
 		
 		if(messageHeader.MessageType == StartNetworkLevelEventId.Name)
 		{
@@ -98,10 +126,8 @@ namespace gamelib
 		return eventSerialization->CreateRequestPlayerDetailsMessage();		
 	}
 
-	std::string SerializationManager::CreateRequestPlayerDetailsMessageResponse(std::string target)
+	std::string SerializationManager::CreateRequestPlayerDetailsMessageResponse(const std::string& target) const
 	{
-		// Send our Nick to the server
-
 		return eventSerialization->CreateRequestPlayerDetailsMessageResponse(target);		
 	}
 
@@ -115,36 +141,19 @@ namespace gamelib
 		return eventSerialization->CreatePingMessage();
 	}
 
-	std::string SerializationManager::UpdateTarget(const std::string& target, const std::string& serializedMessage) const
+	std::string SerializationManager::UpdateTarget(const std::string& target, const std::string& serialisedMessage)
 	{
-		std::string error;
-		const auto parsedJson = Json::parse(serializedMessage, error);
-		Json::object json_obj = parsedJson.object_items();
-		json_obj["nickname"] = target;
-		const Json another_json = json_obj;
-		return another_json.dump();
-	}
+		std::string jsonParseError;
+		const auto jsonObject = Json::parse(serialisedMessage, jsonParseError);
 
-	bool SerializationManager::Initialize()
-	{		
-		// Change the serialization format here
-		switch(Encoding)
+		if (!jsonParseError.empty())
 		{
-		case Encoding::Json: 			
-			eventSerialization = std::make_shared<JsonEventSerializationManager>();
-			break;
-		case Encoding::Xml:
-			eventSerialization = std::make_shared<XmlEventSerializationManager>();
-			break;
-		case Encoding::BitPacked:
-			eventSerialization = std::make_shared<BitPackedEventSerializationManager>();
-			break;
-		case Encoding::None: break;
-		default:
-			
-			throw std::exception(std::string("Unknown serialization format").c_str());
+			throw std::runtime_error("Failed to parse JSON: " + jsonParseError);
 		}
-		return true;
-	}
 
+		Json::object jsonObj = jsonObject.object_items();
+		jsonObj["nickname"] = target;
+		const Json anotherJson = jsonObj;
+		return anotherJson.dump();
+	}
 }

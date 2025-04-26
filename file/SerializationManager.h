@@ -4,56 +4,55 @@
 #include <net/MessageHeader.h>
 #include <events/Event.h>
 #include <events/IEventSerializationManager.h>
-
 #include "net/BitPacker.h"
 
 namespace gamelib
 {
-
-	enum class Encoding
+	enum class Encoding : uint8_t
 	{
-		None,
-		Json,
-		Xml,
-		BitPacked
+		none,
+		json,
+		xml,
+		bit_packed
 	};
 
 	class SerializationManager
 	{
 	
 		std::shared_ptr<IEventSerializationManager> eventSerialization;
-				[[nodiscard]] std::string CreatePlayerMovedEventMessage(const std::shared_ptr<Event>& event, const std::string& target) const;
-				[[nodiscard]] std::string CreateControllerMoveEventMessage(const std::shared_ptr<Event>& evt, const std::string& target) const;
-				[[nodiscard]] std::string CreateStartNetworkLevelMessage(const std::shared_ptr<Event>& evt, const std::string& target) const;
-		
-				bool Initialize();
+		[[nodiscard]] std::string CreatePlayerMovedEventMessage(const std::shared_ptr<Event>& event, const std::string& target) const;
+		[[nodiscard]] std::string CreateControllerMoveEventMessage(const std::shared_ptr<Event>& evt, const std::string& target) const;
+		[[nodiscard]] std::string CreateStartNetworkLevelMessage(const std::shared_ptr<Event>& evt, const std::string& target) const;
+
+		void Initialize();
 
 	public:
-			SerializationManager (Encoding desiredEncoding);
-				[[nodiscard]] MessageHeader GetMessageHeader(const std::string& serializedMessage) const;
+		explicit SerializationManager (Encoding desiredEncoding);
 
-				[[nodiscard]] std::shared_ptr<Event> Deserialize(const MessageHeader& messageHeader, const std::string& serializedMessage) const;
-				[[nodiscard]] std::string Serialize(const std::shared_ptr<Event>& evt, const std::string& target) const;
+		~SerializationManager() = default;
 
-				[[nodiscard]] std::string CreateUnknownEventMessage(const std::shared_ptr<Event>& evt, const std::string& target) const;
-				[[nodiscard]] std::string CreateRequestPlayerDetailsMessage() const;
-				std::string CreateRequestPlayerDetailsMessageResponse(std::string target);
-				[[nodiscard]] std::string CreatePongMessage() const;
+		[[nodiscard]] static MessageHeader GetMessageHeader(const std::string& serializedMessage);
+		[[nodiscard]] std::shared_ptr<Event> Deserialize(const MessageHeader& messageHeader, const std::string& serializedMessage) const;
+		[[nodiscard]] std::string SerializeEvent(const std::shared_ptr<Event>& evt, const std::string& target) const;
+		[[nodiscard]] std::string CreateUnknownEventMessage(const std::shared_ptr<Event>& evt, const std::string& target) const;
+		[[nodiscard]] std::string CreateRequestPlayerDetailsMessage() const;
+		[[nodiscard]] std::string CreateRequestPlayerDetailsMessageResponse(const std::string& target) const;
+		[[nodiscard]] std::string CreatePongMessage() const;
+		[[nodiscard]] std::string CreatePingMessage() const;
+		[[nodiscard]] static std::string UpdateTarget(const std::string& target, const std::string& serialisedMessage);
 
-				[[nodiscard]] std::string CreatePingMessage() const;
+		// Cannot copy/move an SerializationManager
+		SerializationManager(SerializationManager const&) = delete;
+		SerializationManager(SerializationManager&&) = delete;
 
-				[[nodiscard]] std::string UpdateTarget(const std::string& target, const std::string& serialisedMessage) const;
+		// Cannot assign to an SerializationManager
+		void operator=(SerializationManager const&) = delete;
 
+		// Cannot do move assignment
+		SerializationManager& operator=(SerializationManager&& other) = delete;
 
-			// Cannot copy an SerializationManager
-			SerializationManager(SerializationManager const&) = delete;
-
-			// Cannot assign to an SerializationManager
-			void operator=(SerializationManager const&) = delete;
-
-			// Underlying serialization method
-			inline static Encoding Encoding = Encoding::None;
-	
+		// Underlying serialization method
+		inline static auto Encoding = Encoding::none;	
 	};
 }
 

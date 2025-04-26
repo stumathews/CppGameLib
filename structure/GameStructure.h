@@ -30,8 +30,8 @@ namespace gamelib
 		// What we do when we unload the Game structure
 		~GameStructure() override;
 
-		bool Initialize(int screenWidth, int screenHeight, const std::string& windowTitle, const std::string resourceFilePath, const std::
-		                                     string& gameSettingsFilePath, std::string sceneFolderPath);
+		bool Initialize(int screenWidth, int screenHeight, const std::string& windowTitle, const std::string& resourceFilePath, const std::
+		                                     string& gameSettingsFilePath, const std::string& sceneFolderPath);
 
 		/// <summary>
 		/// releases resources incl. resource admin and other game subsystems

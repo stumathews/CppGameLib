@@ -43,6 +43,7 @@ namespace gamelib
 		// We use the old variable game loop if we don't specify a specific one
 		gameLoop =  MakeVariableGameLoop();		
 	}
+
 	/// <summary>
 	/// Update & Draw until the game ends
 	/// </summary>
@@ -50,17 +51,21 @@ namespace gamelib
 	bool GameStructure::DoGameLoop(GameWorldData* gameWorldData) const
 	{
 		gameLoop->Loop(gameWorldData);
-		std::cout << "Game done" << std::endl;
+		std::cout << "Game done" << '\n';
 		return true;
 	}
 
-	bool GameStructure::Initialize(int screenWidth, int screenHeight, const string& windowTitle,
-	                                             const string resourceFilePath, const string& gameSettingsFilePath,
-		const string sceneFolderPath)
+	bool GameStructure::Initialize(int screenWidth, 
+									int screenHeight,
+									const string& windowTitle,
+	                                const string& resourceFilePath, 
+									const string& gameSettingsFilePath,
+								    const string& sceneFolderPath)
 	{
 		// Read config about the game's settings
 		const auto settingsInitialized = SettingsManager::Get()->Load(gameSettingsFilePath);
 		const auto beVerbose = SettingsManager::Bool("global", "verbose");
+
 		sampleInput = SettingsManager::Bool("gameStructure", "sampleInput");
 		sampleNetwork = SettingsManager::Bool("gameStructure", "sampleNetwork");
 

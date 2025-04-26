@@ -1,26 +1,16 @@
-#include "FixedStepGameLoop.h"
 #include <windows.h>
-
+#include "FixedStepGameLoop.h"
 #include "objects/GameWorldData.h"
 #include "structure/Profiler.h"
 
-gamelib::FixedStepGameLoop::FixedStepGameLoop(
-	const unsigned int timeStepMs,
+gamelib::FixedStepGameLoop::FixedStepGameLoop(const unsigned int timeStepMs,
 	std::function<void(unsigned long deltaMs)> updateFunc,
 	std::function<void()> drawFunc,
 	std::function<void(unsigned long deltaMs)> inputFunc)
-	: UpdateFunc(std::move(updateFunc)), DrawFunc(std::move(drawFunc)), InputFunc(std::move(inputFunc)), TimeStepMs(timeStepMs)
-{
-}
-
-inline long gamelib::FixedStepGameLoop::GetTimeNowMs() { return static_cast<long>(timeGetTime()); }
-
-inline void gamelib::FixedStepGameLoop::Update(const unsigned long deltaMs)
-{
-	UpdateFunc(deltaMs);
-}
-
-inline void gamelib::FixedStepGameLoop::Draw() { DrawFunc(); }
+	: UpdateFunc(std::move(updateFunc)),
+      DrawFunc(std::move(drawFunc)),
+      InputFunc(std::move(inputFunc)),
+      TimeStepMs(timeStepMs) { }
 
 void gamelib::FixedStepGameLoop::Loop(GameWorldData* gameWorldData)
 {
@@ -48,4 +38,19 @@ void gamelib::FixedStepGameLoop::Loop(GameWorldData* gameWorldData)
 
 		Draw();
 	}
+}
+
+inline long gamelib::FixedStepGameLoop::GetTimeNowMs()
+{
+	return static_cast<long>(timeGetTime());
+}
+
+inline void gamelib::FixedStepGameLoop::Update(const unsigned long deltaMs)
+{
+	UpdateFunc(deltaMs);
+}
+
+inline void gamelib::FixedStepGameLoop::Draw()
+{
+	DrawFunc();
 }

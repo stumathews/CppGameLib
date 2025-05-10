@@ -5,8 +5,7 @@ void gamelib::PeriodicTimer::DoIfReady(const std::function<void()>& action)
 	if(ready)
 	{
 		action();
-		timer.Reset();
-		timer.Start(everyMs);
+		Reset();
 	}
 }
 
@@ -25,4 +24,10 @@ void gamelib::PeriodicTimer::Update(const unsigned long deltaMs)
 void gamelib::PeriodicTimer::SetFrequency(const int everyMs)
 {
 	this->everyMs = everyMs;
+}
+
+void gamelib::PeriodicTimer::Reset()
+{
+	timer.Reset();
+	timer.Start(everyMs);
 }

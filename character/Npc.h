@@ -34,7 +34,7 @@ namespace gamelib
 		std::shared_ptr<DrawableText> Status = nullptr;
 
 	protected:		
-		std::shared_ptr<IGameObjectMoveStrategy> moveStrategy;
+		std::shared_ptr<IGameObjectMoveStrategy> gameObjectMoveStrategy;
 		FSM stateMachine;
 		Direction currentMovingDirection;
 		Direction currentFacingDirection;

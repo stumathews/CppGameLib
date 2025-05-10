@@ -6,7 +6,7 @@
 gamelib::Npc::Npc(const std::string& name, const std::string& type, const Coordinate<int> position,
                   const bool visible,
                   std::shared_ptr<AnimatedSprite> sprite, std::shared_ptr<IGameObjectMoveStrategy> moveStrategy)
-	: DrawableGameObject(name, type, position, visible), Sprite(std::move(sprite)), moveStrategy(std::move(moveStrategy))
+	: DrawableGameObject(name, type, position, visible), Sprite(std::move(sprite)), gameObjectMoveStrategy(std::move(moveStrategy))
 {
 	currentMovingDirection = currentFacingDirection = Direction::Down;
 	Dimensions = Sprite->Dimensions;
@@ -24,6 +24,20 @@ void gamelib::Npc::Draw(SDL_Renderer* renderer)
 void gamelib::Npc::Update(const unsigned long deltaMs)
 {
 	Status->DrawBounds = {Bounds.x-10, Bounds.y-10, Bounds.w/2, Bounds.h /2};
+
+	// Do Behavior/React 
+	stateMachine.Update(deltaMs);
+
+	// Update the hotspot position
+	Hotspot->Update(Position);
+
+	// Update the sprite position
+	Sprite->MoveSprite(Position);
+
+	Sprite->Update(deltaMs, gamelib::AnimatedSprite::GetStdDirectionAnimationFrameGroup(currentFacingDirection));
+
+	// Update our bounds too
+	UpdateBounds(Dimensions);
 }
 
 gamelib::GameObjectType gamelib::Npc::GetGameObjectType()

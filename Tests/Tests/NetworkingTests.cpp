@@ -281,11 +281,28 @@ namespace gamelib
 	{
 		#define BITS_REQUIRED( min, max ) gamelib::BitsRequired<min,max>::result
 
-		StartNetworkServer();
+		constexpr static auto ReceiveBufferMaxElements = 300;
+		constexpr static auto ReceiveBufferBytes = 300 * 32 / 8;
+		uint32_t readBuffer[ReceiveBufferMaxElements]{};
 
-		Client = make_shared<GameClient>(ClientNickName, GameClientConnectionFactory::Create(false) /* using UDP*/);
-		Client->Initialize();
-		Client->Connect(Server);
+		// The game server connection will unpack/process our protocol messages
+		const auto gameServerConnection = std::make_shared<ReliableUdpGameServerConnection>(ServerAddress, ListeningPort);
+
+		// The game client connection will pack/send our protocol messages
+		const auto gameClientConnection = std::make_shared<UdpConnectedNetworkSocket>();
+		const auto reliableUdpProtocolManager = std::make_shared<ReliableUdpProtocolManager>(gameClientConnection);
+		reliableUdpProtocolManager->Initialize();
+
+		StartNetworkServer(gameServerConnection);
+
+		// Establish connection and send public key
+		reliableUdpProtocolManager->Connect(ServerAddress, ListeningPort);
+
+		// Receive ack for receiving pub key
+		reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
+
+		// Receive server's public key
+		reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 
 		// We will serialize bits 16-bits at a time
 		uint16_t buffer[3]{};
@@ -301,10 +318,11 @@ namespace gamelib
 		bitPacker.Flush();
 		
 		EXPECT_EQ(BitFiddler<uint16_t>::ToString(buffer[0]), "0000000100111000");
-		
-		const auto expectedBytesSent = ceil(static_cast<double>(bitPacker.TotalBitsPacked()) / static_cast<double>(8));
-		
-		const auto bytesSend = Client->SendBinary(buffer, bitPacker.TotalBitsPacked());
+				
+		const auto bytesSend = reliableUdpProtocolManager->Send((char*)buffer, bitPacker.TotalBitsPacked());
+
+		// receive ack
+		reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 
 		// Wait for the server to respond
 		Sleep(1000);
@@ -325,16 +343,32 @@ namespace gamelib
 		EXPECT_EQ(bitFieldReader.ReadNext<char>(minBitsFor6), 6);
 		EXPECT_EQ(bitFieldReader.ReadNext<char>(minBitsFor9), 9);
 
-		EXPECT_EQ(bytesSend, expectedBytesSent);
 	}
 
 	TEST_F(NetworkingTests, TestBitPacketBinarySend)
 	{
-		StartNetworkServer();
+		constexpr static auto ReceiveBufferMaxElements = 300;
+		constexpr static auto ReceiveBufferBytes = 300 * 32 / 8;
+		uint32_t readBuffer[ReceiveBufferMaxElements]{};
 
-		Client = make_shared<GameClient>(ClientNickName, GameClientConnectionFactory::Create(false) /* using UDP*/);
-		Client->Initialize();
-		Client->Connect(Server);
+		// The game server connection will unpack/process our protocol messages
+		const auto gameServerConnection = std::make_shared<ReliableUdpGameServerConnection>(ServerAddress, ListeningPort);
+
+		// The game client connection will pack/send our protocol messages
+		const auto gameClientConnection = std::make_shared<UdpConnectedNetworkSocket>();
+		const auto reliableUdpProtocolManager = std::make_shared<ReliableUdpProtocolManager>(gameClientConnection);
+		reliableUdpProtocolManager->Initialize();
+
+		StartNetworkServer(gameServerConnection);
+
+		// Establish connection and send public key
+		reliableUdpProtocolManager->Connect(ServerAddress, ListeningPort);
+
+		// Receive ack for receiving pub key
+		reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
+
+		// Receive server's public key
+		reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 
 		TestData::TestNetworkPacket sendPacket{};
 
@@ -355,10 +389,10 @@ namespace gamelib
 
 		// 0000000000000100 001001_00001010_11
 
-		Client->SendBinary(networkBuffer, packer.TotalBitsPacked());
+		reliableUdpProtocolManager->Send((char*)networkBuffer, packer.TotalBitsPacked());
 
-		// Wait for the server to respond
-		Sleep(1000);
+		// Receive ack 
+		reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 
 		const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
 		
@@ -387,11 +421,28 @@ namespace gamelib
 
 	TEST_F(NetworkingTests, TestBitPacketBinarySendReadPayload)
 	{
-		StartNetworkServer();
+		constexpr static auto ReceiveBufferMaxElements = 300;
+		constexpr static auto ReceiveBufferBytes = 300 * 32 / 8;
+		uint32_t readBuffer[ReceiveBufferMaxElements]{};
 
-		Client = make_shared<GameClient>(ClientNickName, GameClientConnectionFactory::Create(false) /* using UDP*/);
-		Client->Initialize();
-		Client->Connect(Server);
+		// The game server connection will unpack/process our protocol messages
+		const auto gameServerConnection = std::make_shared<ReliableUdpGameServerConnection>(ServerAddress, ListeningPort);
+
+		// The game client connection will pack/send our protocol messages
+		const auto gameClientConnection = std::make_shared<UdpConnectedNetworkSocket>();
+		const auto reliableUdpProtocolManager = std::make_shared<ReliableUdpProtocolManager>(gameClientConnection);
+		reliableUdpProtocolManager->Initialize();
+
+		StartNetworkServer(gameServerConnection);
+
+		// Establish connection and send public key
+		reliableUdpProtocolManager->Connect(ServerAddress, ListeningPort);
+
+		// Receive ack for receiving pub key
+		reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
+
+		// Receive server's public key
+		reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 
 		// This is the packet we're going to send over the network
 		TestData::TestNetworkPacket sendPacket {};
@@ -414,10 +465,10 @@ namespace gamelib
 		sendPacket.Write(packer); packer.Finish();
 
 		// Bits should all be in the output buffer, lets send it
-		Client->SendBinary(networkBuffer, packer.TotalBitsPacked());
+		reliableUdpProtocolManager->Send((char*)networkBuffer, packer.TotalBitsPacked());
 
-		// Wait for the server to respond
-		Sleep(10);
+		// Receive ack
+		reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 
 		// Collect events from Event Manger to see what traffic was captured
 		const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();	

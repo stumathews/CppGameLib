@@ -28,7 +28,7 @@ namespace gamelib
 		 * \return value with bits set
 		 */
 		template <typename OType>
-		OType ReadNext(const size_t numBits)
+		OType ReadNext(const uint8_t numBits)
 		{
 			auto startBit = (bitsRead + numBits) - 1;
 			const auto maxStartBit = fieldSizeBits-1;
@@ -101,7 +101,7 @@ namespace gamelib
 		 * \return value with bits read from the interval specified
 		 */
 		template<typename OType>
-		OType ReadInterval(const size_t startHighBit, const size_t numBits)
+		OType ReadInterval(const uint8_t startHighBit, const uint8_t numBits)
 		{
 			if(numBits >= (fieldSizeBits * 2)) throw std::exception("Can't read more than the double the buffer size.");
 
@@ -119,11 +119,12 @@ namespace gamelib
 		 */
 		void Reset() { bitsRead = bitsLeftInSegment = countTimesOverflowed = 0; }
 
-		uint8_t BitsLeftInSegment() const
+		[[nodiscard]] uint8_t BitsLeftInSegment() const
 		{
 			return bitsLeftInSegment;
 		}
-		uint8_t SegmentsRead() const { return segmentsRead; }
+
+		[[nodiscard]] uint8_t SegmentsRead() const { return segmentsRead; }
 		T TotalBitsRead() { return totalBitsRead;} 
 
 	private:
@@ -182,7 +183,7 @@ namespace gamelib
 		T* field;
 		uint8_t fieldSizeBits {sizeof(T)*8};
 		uint8_t countTimesOverflowed {0};
-		const size_t elements;
+		size_t elements;
 	};
 
 }

@@ -26,7 +26,7 @@ namespace gamelib
 
 			[[nodiscard]] char* c_str() const
 			{
-				return const_cast<char*>(&elements[0]);
+				return const_cast<char*>(elements.data());
 			}
 
 		    static int GetSizeEstimateInBytes(const size_t stringLength)
@@ -34,7 +34,7 @@ namespace gamelib
 				const auto stringLengthStorageSizeInBits = sizeof(T)*8 ;
 				const auto charactersSizeInBytes = stringLength * 8;
 				const auto bytes = stringLengthStorageSizeInBits + charactersSizeInBytes / 8;
-				return bytes;
+				return static_cast<int>(bytes);
 			}
 
 		    explicit String(const std::string& value) { Initialize(value); }
@@ -51,13 +51,14 @@ namespace gamelib
 				if(numElements == 0) return; // empty string
 
 				// Push bytes into bitpacker's buffer directly
-				bitPacker.PushBytes(&elements[0], numElements);
+				bitPacker.PushBytes(elements.data(), numElements);
 		    }
 
 		    void Read(BitfieldReader<T>& bitfieldReader)
 		    {
 				// read how many elements in this string
-		        numElements = bitfieldReader.ReadNext<int>(sizeof(T)*8);
+				// ReSharper disable once CppDependentTemplateWithoutTemplateKeyword
+				numElements = bitfieldReader.ReadNext<int>(sizeof(T)*8);
 				numBits = NumBits();
 
 				if(numElements == 0) return; // Empty string
@@ -65,7 +66,7 @@ namespace gamelib
 				elements.resize(numElements);
 
 				// Read byte directly from the reader's buffer
-				bitfieldReader.FetchBytes(&elements[0], numElements);
+				bitfieldReader.FetchBytes(elements.data(), numElements);
 
 				elements.push_back('\0');				
 		    }
@@ -89,7 +90,7 @@ namespace gamelib
 				numBits = NumBits();
 		    }
 
-			[[nodiscard]] int NumBits() const { return sizeof(T)*8 + (numElements * 8);}
+			[[nodiscard]] int NumBits() const { return static_cast<int>(sizeof(T))*8 + (numElements * 8);}
 		};
 
 		template <typename T>
@@ -104,7 +105,7 @@ namespace gamelib
 
 		public:		
 
-			[[nodiscard]] char* data() const { return const_cast<char*>(&elements[0]);}
+			[[nodiscard]] char* data() const { return const_cast<char*>(elements.data());}
 			[[nodiscard]] size_t Size() const { return numElements;}
 			
 			explicit ByteArray(const char* value, int length) { Initialize(value, length); }
@@ -120,7 +121,7 @@ namespace gamelib
 	    		bitPacker.Pack(sizeof(T)*8, static_cast<T>(numElements));
 
 				// Push bytes into bitpacker's buffer directly
-				bitPacker.PushBytes(&elements[0], numElements);
+				bitPacker.PushBytes(elements.data(), numElements);
 		    }
 
 		    void Read(BitfieldReader<T>& bitfieldReader)
@@ -131,7 +132,7 @@ namespace gamelib
 				elements.resize(numElements);
 
 				// Read byte directly from the reader's buffer
-				bitfieldReader.FetchBytes(&elements[0], numElements);
+				bitfieldReader.FetchBytes(elements.data(), numElements);
 				
 				numBits = NumBits();
 		    }
@@ -143,7 +144,7 @@ namespace gamelib
 				numBits = NumBits();
 		    }
 
-			[[nodiscard]] int NumBits() const { return sizeof(T)*8 + (numElements * 8);}
+			[[nodiscard]] int NumBits() const { return static_cast<int>(sizeof(T))*8 + (numElements * 8);}
 		};
 
 		template <typename T>		
@@ -233,7 +234,7 @@ namespace gamelib
 				bitPacker.Pack(BITS_REQUIRED(0, MaxElements), numElements);
 
 				// Now write each string
-				for (int i = 0 ; i < numElements; i++)
+				for (uint16_t i = 0 ; i < numElements; i++)
 				{
 					elements[i].Write(bitPacker);
 				}
@@ -243,7 +244,7 @@ namespace gamelib
 		    {
 				// Read how many elements there will be
 				numElements = bitfieldReader.ReadNext<uint16_t>(BITS_REQUIRED(0, MaxElements));
-				for (int i = 0 ; i < numElements; i++)
+				for (uint16_t i = 0 ; i < numElements; i++)
 				{
 					ByteArray<T> byteArray;
 					byteArray.Read(bitfieldReader);
@@ -256,7 +257,7 @@ namespace gamelib
 				return elements[index];
 			}
 
-			uint8_t NumElements() const { return elements.size(); }
+			[[nodiscard]] uint8_t NumElements() const { return elements.size(); }
 
 		private:
 			std::vector<ByteArray<T>> elements;

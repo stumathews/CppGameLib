@@ -25,7 +25,7 @@ namespace gamelib
 	TEST(SettingsManagerTests, OpenFileTest)
 	{
 		const auto expected_settings_count = 57;
-		EXPECT_TRUE(SettingsManager::Get()->Load("settings.xml")); 
+		EXPECT_TRUE(SettingsManager::Get()->ReadSettingsFile("settings.xml")); 
 
 		// Should have loaded 13 settings by default from the settings file
 		EXPECT_GT(SettingsManager::Get()->Count(),1);
@@ -34,11 +34,11 @@ namespace gamelib
 	TEST(SettingsManagerTests, AddSetting)
 	{
 		
-		SettingsManager::Get()->Load();	
+		SettingsManager::Get()->ReadSettingsFile();	
 		auto expected_settings_count = SettingsManager::Get()->Count();
-		SettingsManager::Get()->AddSetting("global", "name", SettingDetail("name", "mazer", "string"));
-		SettingsManager::Get()->AddSetting("global", "genre", SettingDetail("name", "platformer", "string"));
-		SettingsManager::Get()->AddSetting("global", "platform", SettingDetail("name", "windows", "string"));
+		SettingsManager::Get()->SaveSetting("global", "name", SettingDetail("name", "mazer", "string"));
+		SettingsManager::Get()->SaveSetting("global", "genre", SettingDetail("name", "platformer", "string"));
+		SettingsManager::Get()->SaveSetting("global", "platform", SettingDetail("name", "windows", "string"));
 
 		// Should have added 3 extra settings
 		EXPECT_EQ(SettingsManager::Get()->Count(), expected_settings_count+3);
@@ -46,9 +46,9 @@ namespace gamelib
 
 	TEST(SettingsManagerTests, GetSetting)
 	{
-		SettingsManager::Get()->Load();	
-		SettingsManager::Get()->AddSetting("global", "name", SettingDetail("name", "mazer", "string"));
-		SettingsManager::Get()->AddSetting("global", "genre", SettingDetail("name", "platformer", "string"));
+		SettingsManager::Get()->ReadSettingsFile();	
+		SettingsManager::Get()->SaveSetting("global", "name", SettingDetail("name", "mazer", "string"));
+		SettingsManager::Get()->SaveSetting("global", "genre", SettingDetail("name", "platformer", "string"));
 
 		// Should be able to retrieve the settings we added
 		EXPECT_EQ(SettingsManager::Get()->GetString("global", "name"), "mazer");
@@ -57,7 +57,7 @@ namespace gamelib
 
 	TEST(SettingsManagerTests, GetSettingType)
 	{
-		SettingsManager::Get()->Load();
+		SettingsManager::Get()->ReadSettingsFile();
 		EXPECT_EQ(4, SettingsManager::Get()->GetInt("global", "max_loops"));
 	}
 }

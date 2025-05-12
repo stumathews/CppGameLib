@@ -7,38 +7,31 @@ namespace gamelib
 {
 	bool SettingsManager::Reload()
 	{
-		return Load(filePath);
+		return ReadSettingsFile(filePath);
 	}
 
 	SettingsManager::SettingsManager() 
-	{ 
-		Load(); 
-	}
-
-	SettingsManager* SettingsManager::Get()
 	{
-		if (Instance == nullptr)
-		{
-			Instance = new SettingsManager();
-		}
-		return Instance;
+		ReadSettingsFile(); 
 	}
 
-	SettingsManager::~SettingsManager()
+	tinyxml2::XMLComment* SettingsManager::IsComment(tinyxml2::XMLNode* section)
 	{
-		Instance = nullptr;
+		return section->ToComment();
 	}
 
-	SettingsManager* SettingsManager::Instance = nullptr;
-
-	bool SettingsManager::Load(const string& filenamePath)
+	bool SettingsManager::ReadSettingsFile(const string& filenamePath)
 	{
 		this->filePath = filenamePath;
-		settings.clear(); // effectively this is reloading the settings from scratch each time
+
+		//reload the settings from scratch each time
+		settings.clear();
+
+		// Parse the settings XML file:
 		
-		tinyxml2::XMLDocument doc;
-		
-		/*
+		/* Example Settings file:
+		 * ----------------------
+		 
 			<settings>
 				<global>
 					<!-- 20 times a second = 50 milliseconds, 1 second is 20*50 = 1000 milliseconds -->
@@ -61,54 +54,79 @@ namespace gamelib
 			</settings>
 		 */
 
+		tinyxml2::XMLDocument doc;
 		
 		if(doc.LoadFile(filenamePath.c_str()) == tinyxml2::XML_SUCCESS)
 		{
 			// Loop through settings section
-			for(auto section = doc.FirstChildElement(SETTINGS_SECTION)->FirstChild(); section; section = section->NextSibling())
-			{	
-				if(section->ToComment())
+			for(auto section = doc.FirstChildElement(settingsSection)->FirstChild(); section; section = section->NextSibling())
+			{
+				// Ignore comments
+				if (IsComment(section)) 
+				{
 					continue;
+				}
 
-				// Loop through each setting section eg. 'global' or 'player' etc.
+				// Loop through each setting section e.g., 'global' or 'player' etc.
 				const auto* sectionName = section->Value();
+
 				for(auto* setting = section->FirstChild(); setting; setting = setting->NextSibling())
 				{
-					if(setting->ToComment())
-					continue;
+					if (IsComment(setting))
+					{
+						continue;
+					}
 
-					// Loop through the settings attributes i.e name, type etc.
+					// Loop through the settings attributes i.e., name, type etc.
 					auto settingElement = setting->ToElement();
 					string settingName;
 					string settingValue;
 					string settingType;
 
-					for(const auto* attributes = settingElement->FirstAttribute(); attributes; attributes = attributes->Next()) // // <layer name="layer0" posx="0" posy="0" visible="true"
+					for(const auto* attributes = settingElement->FirstAttribute(); attributes; attributes = attributes->Next())
 					{
 						const string key(attributes->Name());
 						const string value(attributes->Value());						
 
-						if(key == "name")
+						if (key == "name")
+						{
 							settingName = value;
-						if(key == "type")
+						}
+
+						if (key == "type")
+						{
 							settingType = value;
+						}
 					}
 
 					// Persist the setting into the SettingsManager
-					AddSetting(sectionName, settingName,  SettingDetail(settingName, settingElement->GetText(), settingType));
+					SaveSetting(sectionName, settingName,  SettingDetail(settingName, settingElement->GetText(), settingType));
 				}
 			}
 		}
 		else
 		{
+			// XML file parse failed
 			return false;
 		}
+
+		// XML file parse succeeded
 		return true;
 	}
 
-	bool SettingsManager::AddSetting(const std::string& section, const std::string& key, const SettingDetail& details)
+	bool SettingsManager::SaveSetting(const std::string& section, const std::string& key, const SettingDetail& details)
 	{
-		settings[section][key] = details;
+		try
+		{
+			// Save the setting in memory
+			settings[section][key] = details;
+		}
+		catch ([[maybe_unused]] exception& e)
+		{
+			// Could not save the setting for some reason
+			return false;
+		}
+
 		return true;
 	}
 
@@ -164,10 +182,28 @@ namespace gamelib
 		auto count = 0;
 		for(auto iterator = begin(settings); iterator != end(settings); ++iterator)
 		{
-			auto section_settings = (*iterator).second;
-			for(auto settingIter = begin(section_settings); settingIter != end(section_settings); ++settingIter)
+			auto sectionSettings = (*iterator).second;
+			for (auto settingIter = begin(sectionSettings); settingIter != end(sectionSettings); ++settingIter) 
+			{
 				count++;
+			}
 		}
 		return count;
 	}
+
+	SettingsManager* SettingsManager::Get()
+	{
+		if (instance == nullptr)
+		{
+			instance = new SettingsManager();
+		}
+		return instance;
+	}
+
+	SettingsManager::~SettingsManager()
+	{
+		instance = nullptr;
+	}
+
+	SettingsManager* SettingsManager::instance = nullptr;
 }

@@ -76,7 +76,6 @@ namespace gamelib
 		}
 	}
 
-
 	void EventManager::RaiseEventWithNoLogging(const std::shared_ptr<Event>& event) { primaryEventQueue.push(event); }
 
 	void EventManager::LogEventSubscription(const EventId& eventId, IEventSubscriber* pYou) const

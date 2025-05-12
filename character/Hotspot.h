@@ -26,7 +26,7 @@ namespace gamelib
 		[[nodiscard]] Coordinate<int> CalculateHotspotPosition() const;
 		void Update(Coordinate<int> parentPosition);
 		void Update(const unsigned long deltaMs) override {}
-		GameObjectType GetGameObjectType() override { return GameObjectType::Hotspot; }
+		GameObjectType GetGameObjectType() override { return GameObjectType::hotspot; }
 		[[nodiscard]] SDL_Rect GetBounds() const;
 	};
 }

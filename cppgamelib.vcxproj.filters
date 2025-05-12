@@ -540,6 +540,9 @@
     <ClInclude Include="net\GameStatePusher.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="objects\GameObjectType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cppgamelib.cpp">

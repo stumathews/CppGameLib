@@ -24,7 +24,7 @@ namespace gamelib
 		static std::shared_ptr<AnimatedSprite> Create(Coordinate<int> position, const std::shared_ptr<SpriteAsset>& asset);
 		static void Initialize();
 
-		GameObjectType GetGameObjectType() override { return GameObjectType::AnimatedSprite; }
+		GameObjectType GetGameObjectType() override { return GameObjectType::animated_sprite; }
 		void Draw(SDL_Renderer* renderer) override;	
 		void LoadSettings() override;
 		void MoveSprite(int x, int y);

@@ -53,7 +53,7 @@ namespace gamelib
 
 	GameObjectType StaticSprite::GetGameObjectType()
 	{
-		return GameObjectType::StaticSprite;
+		return GameObjectType::static_sprite;
 	}
 
 	void StaticSprite::LoadSettings()

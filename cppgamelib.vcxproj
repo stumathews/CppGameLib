@@ -263,6 +263,7 @@
     <ClInclude Include="net\PacketDatum.h" />
     <ClInclude Include="net\ReliableUdpGameServerConnection.h" />
     <ClInclude Include="events\ReliableUdpPacketReceivedEvent.h" />
+    <ClInclude Include="objects\GameObjectType.h" />
     <ClInclude Include="security\Security.h" />
     <ClInclude Include="file\TextFile.h" />
     <ClInclude Include="TestMe.h" />

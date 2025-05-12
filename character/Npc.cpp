@@ -42,7 +42,7 @@ void gamelib::Npc::Update(const unsigned long deltaMs)
 
 gamelib::GameObjectType gamelib::Npc::GetGameObjectType()
 {
-	return GameObjectType::GameDefined;
+	return GameObjectType::game_defined;
 }
 
 gamelib::Direction gamelib::Npc::GetDirection() const

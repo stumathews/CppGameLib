@@ -26,7 +26,7 @@ namespace gamelib
 		/// Every game Object needs to identify what type of game object it is
 		/// </summary>
 		/// <returns></returns>
-		GameObjectType GetGameObjectType() override { return GameObjectType::GameDefined; }
+		GameObjectType GetGameObjectType() override { return GameObjectType::game_defined; }
 		
 		SDL_Rect DrawBounds;
 		std::string Text {};	

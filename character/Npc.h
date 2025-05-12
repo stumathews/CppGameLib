@@ -3,7 +3,6 @@
 #include "character/AnimatedSprite.h"
 #include "objects/DrawableGameObject.h"
 #include <memory>
-
 #include "ai/FSM.h"
 #include "graphic/DrawableText.h"
 #include "character/IGameMoveStrategy.h"

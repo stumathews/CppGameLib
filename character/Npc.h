@@ -21,7 +21,7 @@ namespace gamelib
 		void Draw(SDL_Renderer* renderer) override;
 		void Update(const unsigned long deltaMs) override;
 		void SwapCurrentDirection();
-		void SetNpcDirection(Direction direction);
+		void SetDirection(Direction direction);
 		
 		GameObjectType GetGameObjectType() override;
 

@@ -52,10 +52,26 @@ gamelib::Direction gamelib::Npc::GetDirection() const
 
 void gamelib::Npc::SwapCurrentDirection()
 {
-	if (currentFacingDirection == Direction::Up) { SetNpcDirection(Direction::Down);}
-	else if (currentFacingDirection == Direction::Left) { SetNpcDirection(Direction::Right);}
-	else if (currentFacingDirection == Direction::Right) { SetNpcDirection(Direction::Left);}
-	else if (currentFacingDirection == Direction::Down) { SetNpcDirection(Direction::Up);}
+	if (currentFacingDirection == Direction::Up)
+	{
+		SetDirection(Direction::Down);
+	}
+	else if (currentFacingDirection == Direction::Left)
+	{
+		SetDirection(Direction::Right);
+	}
+	else if (currentFacingDirection == Direction::Right)
+	{
+		SetDirection(Direction::Left);
+	}
+	else if (currentFacingDirection == Direction::Down)
+	{
+		SetDirection(Direction::Up);
+	}
 }
 
-void gamelib::Npc::SetNpcDirection(const Direction direction) { currentMovingDirection = direction; currentFacingDirection = direction; }
+void gamelib::Npc::SetDirection(const Direction direction)
+{
+	currentMovingDirection = direction;
+	currentFacingDirection = direction;
+}

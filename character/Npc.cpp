@@ -50,7 +50,7 @@ gamelib::Direction gamelib::Npc::GetDirection() const
 	return currentFacingDirection;
 }
 
-void gamelib::Npc::SwapCurrentDirection()
+void gamelib::Npc::InvertCurrentDirection()
 {
 	if (currentFacingDirection == Direction::Up)
 	{

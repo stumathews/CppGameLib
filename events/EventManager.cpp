@@ -8,9 +8,7 @@
 #include <file/SettingsManager.h>
 #include <sstream>
 #include <string>
-
 #include "EventFactory.h"
-#include "SubscriberHandledEvent.h"
 #include "UpdateAllGameObjectsEvent.h"
 
 using namespace std;
@@ -78,23 +76,33 @@ namespace gamelib
 		}
 	}
 
+
 	void EventManager::RaiseEventWithNoLogging(const std::shared_ptr<Event>& event) { primaryEventQueue.push(event); }
-		
-	void EventManager::SubscribeToEvent(const EventId& eventId, IEventSubscriber* you)
+
+	void EventManager::LogEventSubscription(const EventId& eventId, IEventSubscriber* pYou) const
 	{
-		if(you)
+		if (logEvents) 
 		{
 			std::stringstream message;
-			message << "EventManager: " << you->GetSubscriberName() << " subscribed to event " << eventId.Name;
+			message << "EventManager: " << pYou->GetSubscriberName() << " subscribed to event " << eventId.Name;
 
 			Logger::Get()->LogThis(message.str());
+		}
+	}
+
+	void EventManager::SubscribeToEvent(const EventId& eventId, IEventSubscriber* pYou)
+	{
+		if(pYou)
+		{
+			LogEventSubscription(eventId, pYou);
 
 			// Prevent same subscriber adding duplicate subscriptions
-			if(std::find(eventSubscribers[eventId].begin(), eventSubscribers[eventId].end(), you) != eventSubscribers[eventId].end())
+			if(ranges::find(eventSubscribers[eventId], pYou) != eventSubscribers[eventId].end())
 			{
 				return;
 			}
-			eventSubscribers[eventId].push_back(you);
+
+			eventSubscribers[eventId].push_back(pYou);
 		}
 	}
 
@@ -154,12 +162,12 @@ namespace gamelib
 			{
 				int totalPrimaryEvents = 0;
 				std::stringstream str;
-				for(auto [eventId, count] : eventsDispatched)
+				for(const auto& [eventId, count] : eventsDispatched)
 				{
 					str << eventId.Name << " " << count << "/s ";
 					totalPrimaryEvents += count;
 				}
-				std::cout << totalPrimaryEvents  << " events/s over " << dispatchCalledTimes << " dispatches. " << str.str() << std::endl;
+				std::cout << totalPrimaryEvents  << " events/s over " << dispatchCalledTimes << " dispatches. " << str.str() << '\n';
 				eventsDispatched.clear();
 				elapsedTimeMs = 0;
 				noSubscribersDuringDispatch = badSubscribersDuringDispatch = dispatchCalledTimes = 0;

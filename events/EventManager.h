@@ -28,6 +28,7 @@ namespace gamelib
 		void ClearSubscribers();
 		void RaiseEvent(const std::shared_ptr<Event>& event, IEventSubscriber* you);
 		void RaiseEventWithNoLogging(const std::shared_ptr<Event>& event);
+		void LogEventSubscription(const EventId& eventId, IEventSubscriber* pYou) const;
 		void SubscribeToEvent(const EventId& eventId, IEventSubscriber* pYou);
 		void DispatchEventToSubscriber(const std::shared_ptr<Event>& event, unsigned long deltaMs);
 		void DispatchEventToSubscriber(const std::shared_ptr<Event>& event, const std::string& target);

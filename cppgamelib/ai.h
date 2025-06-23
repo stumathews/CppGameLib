@@ -8,7 +8,7 @@
 #include <ai/Composite.h>
 #include <ai/ConditionalSequence.h>
 #include <ai/Decorator.h>
-#include <ai/FirstOrNextSelector.h>
+#include <ai/ContinueLastSuccessfulSequenceSelector.h>
 #include <ai/FSM.h>
 #include <ai/FSMState.h>
 #include <ai/FSMTransition.h>

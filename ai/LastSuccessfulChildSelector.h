@@ -8,11 +8,11 @@ namespace gamelib
 	 * Upon failure of current behavior, it attempts to selects the next behavior in list (ignores previous child behaviors).
 	 * This does not recheck previous behaviors, which likely are higher priority if the occur earlier in the list of behaviors to select
 	 */
-	class LastOrNextChildSelector : public Composite
+	class LastSuccessfulChildSelector : public Composite
 	{
 	protected:
 
-		virtual ~LastOrNextChildSelector() override = default;
+		virtual ~LastSuccessfulChildSelector() override = default;
 
 		virtual void OnInitialize() override
 		{
@@ -22,16 +22,22 @@ namespace gamelib
 
 		BehaviorResult Update() override
 		{
-			// Update the current child behavior
+			// Run/update the current child
+
 			while(true)
 			{
 				const BehaviorResult childStatus = (*currentChildBehavior)->DoUpdate();
-				
+								
 				if(childStatus != BehaviorResult::Failure)
 				{
+					// Return after running child successfully
+
 					// If any child succeeds or is running, we do too
 					return childStatus;
 				}
+
+				// Current child failed, now we'll move to the next child
+				// and consider it as the current child
 
 				// Continue search for fallback behavior until the last child
 				if(++currentChildBehavior == children.end())

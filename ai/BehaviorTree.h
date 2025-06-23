@@ -13,7 +13,7 @@ namespace gamelib
 		{
 		}
 
-		void Tick() { root->DoUpdate();}
+		void Tick() const { root->DoUpdate();}
 	};
 }
 

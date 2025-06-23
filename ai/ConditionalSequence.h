@@ -1,12 +1,12 @@
 #pragma once
-#include "Sequence.h"
+#include "ShortCircuitingSequence.h"
 
 namespace gamelib
 {
 	/**
 	 * \brief Also known as a filter
 	 */
-	class ConditionalSequence : public Sequence
+	class ConditionalSequence : public ShortCircuitingSequence
 	{
 	public:
 

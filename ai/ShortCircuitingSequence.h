@@ -4,12 +4,13 @@
 
 namespace gamelib
 {
-	class Sequence : public Composite
+	// A sequence of activities that are all run consecutively.
+	// If one activity/behavior fails the whole sequence short circuits and fails
+	class ShortCircuitingSequence : public Composite
 	{
 		protected:
-		~Sequence() override
-		{
-	    }
+		~ShortCircuitingSequence() override = default;
+
 		virtual void OnInitialize() override
 		{
 			currentChild = children.begin();
@@ -17,7 +18,7 @@ namespace gamelib
 
 		BehaviorResult Update() override
 		{
-			// Tick each child behavior in the sequence
+			// Run/Update all child behavior in the sequence
 			while(true)
 			{
 				const BehaviorResult childStatus = (*currentChild)->DoUpdate();

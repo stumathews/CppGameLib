@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "ai/BehaviorTree.h"
-#include "ai/FirstOrNextSelector.h"
-#include "ai/InlineActionBehavior.h"
-#include "ai/Sequence.h"
+#include "ai/ActiveSelector.h"
+#include "ai/InlineBehavioralAction.h"
+#include "ai/BehavioralSequence.h"
 #include "file/Logger.h"
 #include <gmock/gmock-more-matchers.h>
 
@@ -27,17 +27,17 @@ namespace gamelib
 	{	
 		bool crawled = false, walked = false, ran = false;
 
-		InlineActionBehavior crawl([&] { crawled = true; return BehaviorResult::Success; });
-		InlineActionBehavior walk([&] { walked = true; return BehaviorResult::Success; });
-		InlineActionBehavior run([&] { ran = true; return BehaviorResult::Success; });
+		InlineBehavioralAction crawl([&] { crawled = true; return BehaviorResult::Success; });
+		InlineBehavioralAction walk([&] { walked = true; return BehaviorResult::Success; });
+		InlineBehavioralAction run([&] { ran = true; return BehaviorResult::Success; });
 
-		FirstOrNextSelector root;
+		ActiveSelector root;
 		root.AddChild(&crawl);
 		root.AddChild(&walk);
 		root.AddChild(&run);
 		
 		// When creating behavior tree, ensure it does not throw
-		BehaviorTree behaviorTree(&root);
+		const BehaviorTree behaviorTree(&root);
 
 		// Ensure the basic tick doesn't throw either
 		EXPECT_NO_THROW(behaviorTree.Tick());

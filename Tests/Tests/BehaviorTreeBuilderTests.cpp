@@ -4,7 +4,7 @@
 
 #include "ai/BehaviorTree.h"
 #include "ai/BehaviorTreeBuilder.h"
-#include "ai/InlineActionBehavior.h"
+#include "ai/InlineBehavioralAction.h"
 #include "ai/Repeat.h"
 
 using namespace std;
@@ -34,64 +34,64 @@ namespace gamelib
 		bool haveWeGotASuspectedLocation = true;
 		auto dummyAction5Result = gamelib::BehaviorResult::Success;
 
-		auto* IsPlayerVisible = new gamelib::InlineActionBehavior ([&]
+		auto* checkIsPlayerVisible = new gamelib::InlineBehavioralAction ([&]
 		{
 			return isPlayerVisible
 					? gamelib::BehaviorResult::Success
 					: gamelib::BehaviorResult::Failure;
 		}, "IsPlayerVisible");
 
-		auto* IsPlayerInRange = new gamelib::InlineActionBehavior([&]
+		auto* checkPlayerInRange = new gamelib::InlineBehavioralAction([&]
 		{
 			return isPlayerInRange
 					? gamelib::BehaviorResult::Success
 					: gamelib::BehaviorResult::Failure;
 		}, "IsPlayerInRange");
 
-		auto* HaveWeGotASuspectedLocation = new gamelib::InlineActionBehavior([&]
+		auto* checkHaveWeGotASuspectedLocation = new gamelib::InlineBehavioralAction([&]
 		{
 			return haveWeGotASuspectedLocation
 					? gamelib::BehaviorResult::Success
 					: gamelib::BehaviorResult::Failure;
 		});
 
-		auto* FireAtPlayer = new gamelib::InlineActionBehavior([&] 
+		auto* doFireAtPlayer = new gamelib::InlineBehavioralAction([&] 
 		{
 			fireAtPlayer++; 
 			return gamelib::BehaviorResult::Success;
 		}, "FireAtPlayer");
 
-		auto* MoveTowardsPlayer = new gamelib::InlineActionBehavior([&]
+		auto* doMoveTowardsPlayer = new gamelib::InlineBehavioralAction([&]
 		{
 			moveTowardsPlayer++;
 			return gamelib::BehaviorResult::Success;
 		});
-		auto* MovePlayerToLastKnownLocation = new gamelib::InlineActionBehavior([&]
+		auto* doMovePlayerToLastKnownLocation = new gamelib::InlineBehavioralAction([&]
 		{
 			movePlayerToLastKnownLocation++;
 			return gamelib::BehaviorResult::Success;
 		}, "MovePlayerToLastKnownLocation");
-		auto* LookAround = new gamelib::InlineActionBehavior([&]
+		auto* doLookAround = new gamelib::InlineBehavioralAction([&]
 		{
 			lookAround++;
 			return gamelib::BehaviorResult::Success;
 		}, "LookAround");
-		auto* MoveToRandomPosition = new gamelib::InlineActionBehavior([&]
+		auto* doMoveToRandomPosition = new gamelib::InlineBehavioralAction([&]
 		{
 			moveToRandomPosition++;
 			return dummyAction5Result;
 		}, "MoveToRandomPosition");
-		auto* LookAroundSomeMore = new gamelib::InlineActionBehavior([&]
+		auto* doLookAroundSomeMore = new gamelib::InlineBehavioralAction([&]
 		{
 			lookAroundSomeMore++;
 			return gamelib::BehaviorResult::Success;
 		});
-		auto* DummyAction7 = new gamelib::InlineActionBehavior([&]
+		auto* doDummyAction7 = new gamelib::InlineBehavioralAction([&]
 		{
 			dummyAction7++;
 			return gamelib::BehaviorResult::Success;
 		}, "DummyAction7");
-		auto* DummyAction8 = new gamelib::InlineActionBehavior([&]
+		auto* doDummyAction8 = new gamelib::InlineBehavioralAction([&]
 		{
 			dummyAction8++;
 			return gamelib::BehaviorResult::Success;
@@ -100,29 +100,29 @@ namespace gamelib
 		gamelib::BehaviorTree* behaviorTree = BehaviorTreeBuilder()
 			.ActiveNodeSelector() //1
 				.Sequence("Check if player is visible") //2
-					.Condition(IsPlayerVisible) // 3
+					.Condition(checkIsPlayerVisible) // 3
 				    .ActiveNodeSelector() // 4
 						.Sequence("") // 5
-							.Condition(IsPlayerInRange) // 6
+							.Condition(checkPlayerInRange) // 6
 							.Sequence() // 7 (this sequence will repeat while player is in range)
-								.Action(FireAtPlayer) // 8
+								.Action(doFireAtPlayer) // 8
 		                    .Finish() // finish sequence 7
 		                .Finish() // finish sequence 5
-		            .Action(MoveTowardsPlayer) // 9
+		            .Action(doMoveTowardsPlayer) // 9
 		            .Finish() // finish active selector 4
 		        .Finish() // finish sequence 2
 	            .Sequence("Check if player spotted") //10
-					.Condition(HaveWeGotASuspectedLocation) //11
-				    .Action(MovePlayerToLastKnownLocation) //12
-					.Action(LookAround) //13
+					.Condition(checkHaveWeGotASuspectedLocation) //11
+				    .Action(doMovePlayerToLastKnownLocation) //12
+					.Action(doLookAround) //13
 				.Finish() // finish sequence
 				.Sequence("Act normal") //14
-					.Action(MoveToRandomPosition) //15
-					.Action(LookAroundSomeMore) //16
+					.Action(doMoveToRandomPosition) //15
+					.Action(doLookAroundSomeMore) //16
 					.Finish() // finish sequence
 				.Sequence("Do something else") // 17
-					.Action(DummyAction7)  //18
-					.Action(DummyAction8) //19
+					.Action(doDummyAction7)  //18
+					.Action(doDummyAction8) //19
 				.Finish() // finish sequence
 			.Finish()
 		.Finish()
@@ -191,6 +191,16 @@ namespace gamelib
 		EXPECT_THAT(dummyAction7, testing::Eq(4));
 		EXPECT_THAT(dummyAction8, testing::Eq(4));
 
+		// Now test if the active selector works well by re-executing the nodes
+		isPlayerVisible = true;
+		isPlayerInRange = true;
 		behaviorTree->Tick();
+		EXPECT_THAT(fireAtPlayer, testing::Eq(3));
+
+		// Now disable player in range so that the sequence quits and move to the next behavior
+		isPlayerInRange = false;
+		behaviorTree->Tick();
+		EXPECT_THAT(moveTowardsPlayer, testing::Eq(4));
+
 	}
 }

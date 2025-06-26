@@ -193,17 +193,18 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ai\InlineActionBehavior.h" />
+    <ClInclude Include="ai\InlineBehavioralAction.h" />
     <ClInclude Include="ai\Behavior.h" />
-    <ClInclude Include="ai\FirstOrNextSelector.h" />
+    <ClInclude Include="ai\ActiveSelector.h" />
     <ClInclude Include="ai\Decorator.h" />
-    <ClInclude Include="ai\LastOrNextChildSelector.h" />
+    <ClInclude Include="ai\Selector.h" />
     <ClInclude Include="ai\Monitor.h" />
     <ClInclude Include="ai\Parallel.h" />
     <ClInclude Include="ai\Repeat.h" />
-    <ClInclude Include="ai\Sequence.h" />
+    <ClInclude Include="ai\BehavioralSequence.h" />
     <ClInclude Include="ai\BehaviorResult.h" />
-    <ClInclude Include="ai\Composite.h" />
+    <ClInclude Include="ai\CompositeBehavior.h" />
+    <ClInclude Include="ai\FilterSequence.h" />
     <ClInclude Include="asset\asset.h" />
     <ClInclude Include="audio\AudioManager.h" />
     <ClInclude Include="audio\AudioAsset.h" />

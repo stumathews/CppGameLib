@@ -5,10 +5,11 @@
 
 namespace gamelib
 {
-	class InlineActionBehavior final : public Behavior
+	// This is an action that can be defined as an inline lambda call 
+	class InlineBehavioralAction final : public Behavior
 	{
 	public:
-		explicit InlineActionBehavior(const std::function<BehaviorResult()>& onUpdateFunc, std::string description = "")
+		explicit InlineBehavioralAction(const std::function<BehaviorResult()>& onUpdateFunc, std::string description = "")
 		: Behavior(std::move(description)), onUpdateFunc(onUpdateFunc)
 		{ }
 
@@ -19,6 +20,6 @@ namespace gamelib
 		}
 
 	private:
-		const std::function<BehaviorResult()> onUpdateFunc;
+		std::function<BehaviorResult()> onUpdateFunc;
 	};
 }

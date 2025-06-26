@@ -1,26 +1,26 @@
 #pragma once
 #include "BehaviorResult.h"
-#include "Composite.h"
-#include "LastSuccessfulChildSelector.h"
+#include "CompositeBehavior.h"
+#include "Selector.h"
 
 namespace gamelib
 {
-	class ContinueLastSuccessfulSequenceSelector : public LastSuccessfulChildSelector
+	class ActiveSelector : public Selector
 	{
 	protected:
 		BehaviorResult Update() override
 		{
-			const auto prevChildBehavior = currentChildBehavior;
+			const auto prevChildBehavior = lastChild;
 
 			// Rewind the current child selector back to the first child, effectively
 			// allowing the sequence to start again
-			LastSuccessfulChildSelector::OnInitialize(); // reset to select the first (hightest priority) behavior in list of child behaviors
+			Selector::OnInitialize(); // reset to select the first (hightest priority) behavior in list of child behaviors
 
 			// Update/Run last successful child or move to next child if it failed (Skipping failed behaviors)
-			const auto result = LastSuccessfulChildSelector::Update();
+			const auto result = Selector::Update();
 
 			// previous active child was not the end && current active child has changed 
-			if(prevChildBehavior != children.end() && currentChildBehavior != prevChildBehavior)
+			if(prevChildBehavior != children.end() && lastChild != prevChildBehavior)
 			{
 				// abort failing child
 				(*prevChildBehavior)->Abort();

@@ -1,15 +1,15 @@
 #pragma once
 #include "BehaviorResult.h"
-#include "Composite.h"
+#include "CompositeBehavior.h"
 
 namespace gamelib
 {
 	// A sequence is a composite behavior (stores multiple behaviors) of activities that are all run consecutively.
 	// If one activity/behavior fails the whole sequence short circuits and fails
-	class ShortCircuitSequence : public Composite
+	class BehavioralSequence : public CompositeBehavior
 	{
 		protected:
-		~ShortCircuitSequence() override = default;
+		~BehavioralSequence() override = default;
 
 		virtual void OnInitialize() override
 		{
@@ -19,8 +19,8 @@ namespace gamelib
 
 		BehaviorResult Update() override
 		{
-			// Keep running the current child, until it's update returns failure
-			while(true)
+			// Update each child
+			while(currentChild != children.end())
 			{
 				// Run the child behavior
 				const BehaviorResult childStatus = (*currentChild)->DoUpdate();
@@ -32,17 +32,12 @@ namespace gamelib
 					return childStatus;
 				}
 
+				// Move to the next child to run...
 				++currentChild;
-
-				// Move to the next child and if we're at the last child, finish loop and return success 
-				if(currentChild == children.end())
-				{
-					return BehaviorResult::Success;
-				}
 			}
 
-			// Unexpected loop exit
-			return BehaviorResult::Invalid;
+			// All children were updated
+			return BehaviorResult::Success;
 		}
 
 		Behaviors::iterator currentChild;

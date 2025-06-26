@@ -3,7 +3,7 @@
 
 namespace gamelib
 {
-	class Parallel : public Composite
+	class Parallel : public CompositeBahavior
 	{
 	public:
 		enum Policy

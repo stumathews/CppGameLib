@@ -1,7 +1,7 @@
 #pragma once
 #include "ai/BehaviorTree.h"
-#include "ai/ContinueLastSuccessfulSequenceSelector.h"
-#include "ai/ShortCircuitSequence.h"
+#include "ai/ActiveSelector.h"
+#include "ai/BehavioralSequence.h"
 #include <stack>
 
 class BehaviorTreeBuilder
@@ -11,13 +11,13 @@ public:
 
 	BehaviorTreeBuilder& ActiveNodeSelector()
 	{
-		AddChildToCurrentNode(new gamelib::ContinueLastSuccessfulSequenceSelector());
+		AddChildToCurrentNode(new gamelib::ActiveSelector());
 		return *this;
 	}
 
 	BehaviorTreeBuilder& Sequence(const char* description = "")
 	{
-		AddChildToCurrentNode(new gamelib::ShortCircuitSequence());
+		AddChildToCurrentNode(new gamelib::BehavioralSequence());
 		return *this;
 	}
 
@@ -32,7 +32,7 @@ public:
 	}
 	BehaviorTreeBuilder& Filter()
 	{
-		AddChildToCurrentNode(new gamelib::ShortCircuitSequence());
+		AddChildToCurrentNode(new gamelib::BehavioralSequence());
 		return *this;
 	}
 	BehaviorTreeBuilder& Action(gamelib::Behavior* action)
@@ -51,18 +51,18 @@ public:
 
 private:
 	
-	enum BehaviorType
+	enum class BehaviorType : int8_t
 	{
-		NONE,
-		SEQ,
-		AS,
-		COND,
-		FILTER,
-		ACT
+		none,
+		seq,
+		as,
+		cond,
+		filter,
+		act
 
 	};
 
-	void AddChildToCurrentNode(gamelib::Composite* behavior)
+	void AddChildToCurrentNode(gamelib::CompositeBehavior* behavior)
 	{
 		if(root == nullptr)
 		{
@@ -75,13 +75,16 @@ private:
 		tree.push(behavior);
 	}
 
-	gamelib::Composite* CurrentNode()
+	gamelib::CompositeBehavior* CurrentNode()
 	{
 		return tree.top();
 	}
 	
-	gamelib::Composite* root = nullptr;
-	std::stack<gamelib::Composite*> tree;
+	gamelib::CompositeBehavior* root = nullptr;
+	std::stack<gamelib::CompositeBehavior*> tree;
+	gamelib::Behavior* currentNodePtr = nullptr;
+	gamelib::Behavior* prevNodePtr = nullptr;
+		
 
 };
 

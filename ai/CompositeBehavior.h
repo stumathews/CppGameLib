@@ -5,7 +5,7 @@
 
 namespace gamelib
 {
-	class Composite : public Behavior
+	class CompositeBehavior : public Behavior
 	{
 	public:
 

@@ -59,7 +59,6 @@ private:
 		cond,
 		filter,
 		act
-
 	};
 
 	void AddChildToCurrentNode(gamelib::CompositeBehavior* behavior)

@@ -51,26 +51,9 @@ namespace gamelib
 		// NPCs have move in a certain way
 		GameObjectMoveStrategySPtr gameObjectMoveStrategy;
 
-		// NPCs have a state machine which they can configure statically
-		FSM stateMachine;
-
 		// NPCs can have direction
-		Direction currentMovingDirection;
-		Direction currentFacingDirection;
-
-		// NPC static states (shared by all NPCs in the Mazer game)
-		FSMState hitWallState;
-		FSMState upState;
-		FSMState downState;
-		FSMState leftState;
-		FSMState rightState;
-
-		// NPC state transitions
-		FSMTransition invalidMoveTransition;
-		FSMTransition onUpDirection;
-		FSMTransition onDownDirection;
-		FSMTransition onLeftDirection;
-		FSMTransition onRightDirection;
+		gamelib::Direction currentMovingDirection;
+		gamelib::Direction currentFacingDirection;
 	};
 }
 

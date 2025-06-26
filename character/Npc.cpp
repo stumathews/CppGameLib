@@ -25,9 +25,6 @@ void gamelib::Npc::Update(const unsigned long deltaMs)
 {
 	Status->DrawBounds = {Bounds.x-10, Bounds.y-10, Bounds.w/2, Bounds.h /2};
 
-	// Do Behavior/React 
-	stateMachine.Update(deltaMs);
-
 	// Update the hotspot position
 	Hotspot->Update(Position);
 

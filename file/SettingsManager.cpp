@@ -137,7 +137,14 @@ namespace gamelib
 	
 	bool SettingsManager::GetBool(const std::string& section, const std::string& name)
 	{
-		return settings.at(section)[name].ToBool();		
+		try 
+		{
+			return settings.at(section)[name].ToBool();
+		}
+		catch (std::exception&)
+		{
+			THROW(12, "Could not find setting [" + section + "][" + name + "]", "Settings");
+		}
 	}
 
 	bool SettingsManager::Bool(const std::string& section, const std::string& name)

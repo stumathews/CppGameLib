@@ -26,9 +26,12 @@ namespace gamelib
 	        for (;;)
 	        {
 	            child->DoUpdate();
-	            if (child->GetStatus() == BehaviorResult::Running) break;
-	            if (child->GetStatus() == BehaviorResult::Failure) return BehaviorResult::Failure;
-	            if (++counter == limit) return BehaviorResult::Success;
+	            if (child->GetStatus() == BehaviorResult::Running) 
+					break;
+	            if (child->GetStatus() == BehaviorResult::Failure) 
+					return BehaviorResult::Failure;
+	            if (++counter == limit) 
+					return BehaviorResult::Success;
 	            child->Reset();
 	        }
 	        return BehaviorResult::Invalid;

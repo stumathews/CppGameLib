@@ -1,4 +1,6 @@
-#pragma once
+﻿#pragma once
+#include <string>
+
 #include "BehaviorResult.h"
 
 namespace gamelib
@@ -9,35 +11,61 @@ namespace gamelib
 	class Behavior
 	{
 	public:
+		Behavior(std::string description = "") : Description(std::move(description)), status(BehaviorResult::Invalid)
+		{
+		}
 
-		Behavior() : status(BehaviorResult::Invalid) {  }
 		virtual ~Behavior() = default;
 
-		virtual void OnInitialize(){}
+		// Called once immediately before the first call to the behavior's update method
+		virtual void OnInitialize()
+		{
+		}
+
+		// Called exactly once each time the behaviour tree is updated, until it signals it has terminated thanks to its return status
 		virtual BehaviorResult Update() = 0;
-		virtual void OnTerminate() {}
+
+		// Called once immediately after the previous update signals it's no longer running.
+		virtual void OnTerminate()
+		{
+		}
 
 		BehaviorResult DoUpdate()
 		{
-			if(status != BehaviorResult::Running)
+			// Set ourselves as running
+			if (status != BehaviorResult::Running)
 			{
 				OnInitialize();
 			}
 
+			// Update ourselves (this is inherited by descendants)
 			status = Update();
 
-			if(status != BehaviorResult::Running)
+			// Check if the last update caused us to stop running, in which case call onTerminate gracefully
+			if (status != BehaviorResult::Running)
 			{
 				OnTerminate();
 			}
 			return status;
 		}
 
-		[[nodiscard]] bool IsTerminated() const { return status == BehaviorResult::Success || status == BehaviorResult::Failure; }
+		[[nodiscard]] bool IsTerminated() const
+		{
+			return status == BehaviorResult::Success || status == BehaviorResult::Failure;
+		}
+
 		[[nodiscard]] BehaviorResult GetStatus() const { return status; }
-		[[nodiscard]] bool IsRunning() const { return status == BehaviorResult::Running;}
-		void Abort() { OnTerminate(); status = BehaviorResult::Aborted; }
+		[[nodiscard]] bool IsRunning() const { return status == BehaviorResult::Running; }
+
+		void Abort()
+		{
+			OnTerminate();
+			status = BehaviorResult::Aborted;
+		}
+
 		void Reset() { status = BehaviorResult::Invalid; }
+
+		std::string Description;
 
 	private:
 		BehaviorResult status;

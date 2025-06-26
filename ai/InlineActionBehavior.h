@@ -8,8 +8,8 @@ namespace gamelib
 	class InlineActionBehavior final : public Behavior
 	{
 	public:
-		explicit InlineActionBehavior(std::function<BehaviorResult()> onUpdateFunc)
-		: onUpdateFunc(onUpdateFunc)
+		explicit InlineActionBehavior(const std::function<BehaviorResult()>& onUpdateFunc, std::string description = "")
+		: Behavior(std::move(description)), onUpdateFunc(onUpdateFunc)
 		{ }
 
 		BehaviorResult Update() override

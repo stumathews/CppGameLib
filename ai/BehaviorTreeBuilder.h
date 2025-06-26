@@ -1,7 +1,7 @@
 #pragma once
 #include "ai/BehaviorTree.h"
 #include "ai/ContinueLastSuccessfulSequenceSelector.h"
-#include "ai/ShortCircuitingSequence.h"
+#include "ai/ShortCircuitSequence.h"
 #include <stack>
 
 class BehaviorTreeBuilder
@@ -17,7 +17,7 @@ public:
 
 	BehaviorTreeBuilder& Sequence(const char* description = "")
 	{
-		AddChildToCurrentNode(new gamelib::ShortCircuitingSequence());
+		AddChildToCurrentNode(new gamelib::ShortCircuitSequence());
 		return *this;
 	}
 
@@ -32,7 +32,7 @@ public:
 	}
 	BehaviorTreeBuilder& Filter()
 	{
-		AddChildToCurrentNode(new gamelib::ShortCircuitingSequence());
+		AddChildToCurrentNode(new gamelib::ShortCircuitSequence());
 		return *this;
 	}
 	BehaviorTreeBuilder& Action(gamelib::Behavior* action)

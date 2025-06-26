@@ -1,7 +1,7 @@
 
 #include "NetworkingActivityMonitor.h"
 #include <processes/ProcessManager.h>
-#include <events\event.h>
+#include <events/event.h>
 #include <events/NetworkPlayerJoinedEvent.h>
 
 using namespace std;
@@ -35,6 +35,19 @@ namespace gamelib
 
 		// Schedule sampler to run as a background process
 		ScheduleSaveStatistics();
+	}
+
+	// Handle events
+	ListOfEvents NetworkingActivityMonitor::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long inDeltaMs)
+	{
+		if (evt->Id.PrimaryId == NetworkPlayerJoinedEventId.PrimaryId) { OnNetworkPlayerJoinedEvent(evt); }
+		if (evt->Id.PrimaryId == ReliableUdpPacketReceivedEventId.PrimaryId) { OnReliableUdpPacketReceivedEvent(evt); }
+		if (evt->Id.PrimaryId == ReliableUdpCheckSumFailedEventId.PrimaryId) { OnReliableUdpCheckSumFailedEvent(evt); }
+		if (evt->Id.PrimaryId == ReliableUdpPacketLossDetectedEventId.PrimaryId) { OnReliableUdpPacketLossDetectedEvent(evt); }
+		if (evt->Id.PrimaryId == ReliableUdpAckPacketEventId.PrimaryId) { OnReliableUdpAckPacketEvent(evt); }
+		if (evt->Id.PrimaryId == ReliableUdpPacketRttCalculatedEventId.PrimaryId) { OnReliableUdpPacketRttCalculatedEvent(evt); }
+		if (evt->Id.PrimaryId == NetworkTrafficReceivedEventId.PrimaryId) { OnNetworkTrafficReceivedEvent(evt); }
+		return {};
 	}
 
 	void NetworkingActivityMonitor::InitialiseStatisticsFile() const
@@ -112,18 +125,6 @@ namespace gamelib
 	{
 		// Add this process to the process manager - schedules process to receive updates
 		processManager.AttachProcess(std::static_pointer_cast<Process>(process));
-	}
-
-	ListOfEvents NetworkingActivityMonitor::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long inDeltaMs)
-	{
-		if (evt->Id.PrimaryId == NetworkPlayerJoinedEventId.PrimaryId) { OnNetworkPlayerJoinedEvent(evt); }
-		if (evt->Id.PrimaryId == ReliableUdpPacketReceivedEventId.PrimaryId) { OnReliableUdpPacketReceivedEvent(evt); }
-		if (evt->Id.PrimaryId == ReliableUdpCheckSumFailedEventId.PrimaryId) { OnReliableUdpCheckSumFailedEvent(evt); }
-		if (evt->Id.PrimaryId == ReliableUdpPacketLossDetectedEventId.PrimaryId) { OnReliableUdpPacketLossDetectedEvent(evt); }
-		if (evt->Id.PrimaryId == ReliableUdpAckPacketEventId.PrimaryId) { OnReliableUdpAckPacketEvent(evt); }
-		if (evt->Id.PrimaryId == ReliableUdpPacketRttCalculatedEventId.PrimaryId) { OnReliableUdpPacketRttCalculatedEvent(evt); }
-		if (evt->Id.PrimaryId == NetworkTrafficReceivedEventId.PrimaryId) { OnNetworkTrafficReceivedEvent(evt); }
-		return {};
 	}
 
 	std::string NetworkingActivityMonitor::GetSubscriberName()

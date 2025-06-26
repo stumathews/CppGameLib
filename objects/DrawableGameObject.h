@@ -6,7 +6,7 @@
 
 namespace gamelib
 {
-	/// Object Can Draw on itself in any way it wants to
+	// Object Can Draw on itself in any way it wants to
 	class DrawableGameObject : public GameObject
 	{
 	public:

@@ -8,33 +8,33 @@ namespace gamelib
 		friend class ProcessManager;
 	public:
 
-		enum State
+		enum class State : std::uint8_t
 		{
-			Uninitialized = 0,
-			Removed,
-			Running,
-			Paused,
-			Succeeded,
-			Failed,
-			Aborted
+			uninitialized = 0,
+			removed,
+			running,
+			paused,
+			succeeded,
+			failed,
+			aborted
 		};
 
-		Process() {state = Uninitialized;}
+		Process() {state = State::uninitialized;}
 		Process(const Process& other) = delete;
 		Process(const Process&& other) = delete;
 		Process& operator=(const Process& other) = delete;
 		Process& operator=(const Process&& other) = delete;
 		virtual ~Process() = default;
 
-	void Succeed() { state = Succeeded; }
-	void Fail() { state = Failed; }
-	void Pause() { state = Paused; }
+	void Succeed() { state = State::succeeded; }
+	void Fail() { state = State::failed; }
+	void Pause() { state = State::paused; }
 
 	[[nodiscard]] State GetState() const { return state;  }
-	[[nodiscard]] bool IsAlive() const { return state == Running || state == Paused; }
-	[[nodiscard]] bool IsDead() const { return state == Succeeded || state == Failed || state == Aborted; }
-	[[nodiscard]] bool IsRemoved() const { return state == Removed; } // Future work
-	[[nodiscard]] bool IsPaused() const { return state == Paused; } // Future work
+	[[nodiscard]] bool IsAlive() const { return state == State::running || state == State::paused; }
+	[[nodiscard]] bool IsDead() const { return state == State::succeeded || state == State::failed || state == State::aborted; }
+	[[nodiscard]] bool IsRemoved() const { return state == State::removed; } // Future work
+	[[nodiscard]] bool IsPaused() const { return state == State::paused; } // Future work
 
 	std::shared_ptr<Process>& AttachChild(const std::shared_ptr<Process>& newChild)
 	{
@@ -50,7 +50,7 @@ namespace gamelib
 		std::shared_ptr<Process> child;
 		void SetState(const State newState) { state = newState; }
 	protected:
-		virtual void OnInit() { state = Running; }
+		virtual void OnInit() { state = State::running; }
 		virtual void OnUpdate(unsigned long deltaMs) = 0;
 		virtual void OnSuccess() {}
 		virtual void OnFail() {}

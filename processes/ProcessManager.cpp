@@ -15,14 +15,14 @@ namespace gamelib
 			const shared_ptr<Process> currentProcess = (*it);
 			const auto thisIt = it;
 			++it;
-			if (currentProcess->GetState() == Process::Uninitialized) { currentProcess->OnInit(); }
-			if (currentProcess->GetState() == Process::Running) { currentProcess->OnUpdate(deltaMs); }
+			if (currentProcess->GetState() == Process::State::uninitialized) { currentProcess->OnInit(); }
+			if (currentProcess->GetState() == Process::State::running) { currentProcess->OnUpdate(deltaMs); }
 
 			if (currentProcess->IsDead())
 			{
 				switch (currentProcess->GetState())
 				{
-					case Process::Succeeded:
+					case Process::State::succeeded:
 					{
 						currentProcess->OnSuccess();
 						shared_ptr<Process> child = currentProcess->GetChild();
@@ -36,7 +36,7 @@ namespace gamelib
 						}
 						break;
 					}
-					case Process::Failed:
+					case Process::State::failed:
 					{
 						currentProcess->OnFail();
 						++failCount;

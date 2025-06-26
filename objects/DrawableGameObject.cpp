@@ -39,7 +39,7 @@ namespace gamelib
 		Position.SetX(x);
 		Position.SetY(y);
 
-		Bounds = { Position.GetX(), Position.GetY(), 0 , 0 };
+		Bounds = {.x = Position.GetX(), .y = Position.GetY(), .w = 0 , .h = 0 };
 		Name = inName;
 		Type = inType;
 		IsColorKeyEnabled = false;

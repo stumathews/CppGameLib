@@ -4,13 +4,21 @@
 #include <events/event.h>
 #include <events/NetworkPlayerJoinedEvent.h>
 
+#include "events/NetworkTrafficReceivedEvent.h"
+#include "events/ReliableUdpAckPacketEvent.h"
+#include "events/ReliableUdpCheckSumFailedEvent.h"
+#include "events/ReliableUdpPacketLossDetectedEvent.h"
+#include "events/ReliableUdpPacketReceivedEvent.h"
+#include "events/ReliableUdpPacketRttCalculatedEvent.h"
+
 using namespace std;
 
 namespace gamelib
 {
 	NetworkingActivityMonitor::NetworkingActivityMonitor(ProcessManager& processManager, EventManager& eventManager,
-	                                                     const bool verbose = false):
-		processManager(processManager), eventManager(eventManager), verbose(verbose)
+	                                                     std::shared_ptr<IElapsedTimeProvider> elapsedTimeProvider, const bool verbose = false):
+		processManager(processManager), eventManager(eventManager), verbose(verbose),
+		elapsedTimeProvider(std::move(elapsedTimeProvider))
 	{
 		// Prepare a file that will receive the statistics every saveIntervalMs
 		statisticsFile = std::make_shared<TextFile>("statistics.txt");
@@ -102,7 +110,7 @@ namespace gamelib
 		statisticsSampleInterval.DoIfReady([&]()
 		{
 			// Record the current second we are in since game was started, this will be the independent variable
-			const auto tNowSecs = static_cast<int>(GameDataManager::Get()->GameWorldData.ElapsedGameTime) / 1000;
+			const auto tNowSecs = elapsedTimeProvider->GetElapsedTime();
 
 			AppendStatsToFile(tNowSecs);
 

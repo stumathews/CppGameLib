@@ -2,12 +2,17 @@
 #ifndef NETWORKING_ACTIVITY_MONITOR_H
 #define NETWORKING_ACTIVITY_MONITOR_H
 
-#include <GameDataManager.h>
 #include <processes\Action.h>
 #include <processes\Process.h>
 #include <utils\Utils.h>
 #include <file/TextFile.h>
+
+#include "IElapsedTimeProvider.h"
 #include "NetworkingStatistics.h"
+#include "events/EventManager.h"
+#include "events/EventSubscriber.h"
+#include "objects/GameObject.h"
+#include "time/PeriodicTimer.h"
 
 namespace gamelib
 {
@@ -15,7 +20,7 @@ namespace gamelib
 	{
 	public:
 	
-		NetworkingActivityMonitor(ProcessManager& processManager, EventManager& eventManager, bool verbose);
+		NetworkingActivityMonitor(ProcessManager& processManager, EventManager& eventManager, std::shared_ptr<IElapsedTimeProvider> elapsedTimeProvider, bool verbose);
 		void ScheduleSaveStatistics();
 		void ScheduleProcess(std::shared_ptr<Process> process) const;
 		void InitialiseStatisticsFile() const;
@@ -35,6 +40,7 @@ namespace gamelib
 		ProcessManager& processManager;
 		EventManager& eventManager;
 		bool verbose;
+		std::shared_ptr<IElapsedTimeProvider> elapsedTimeProvider;
 
 		void OnReliableUdpAckPacketEvent(const std::shared_ptr<Event>& evt);
 		void OnReliableUdpPacketRttCalculatedEvent(const std::shared_ptr<gamelib::Event>& evt);

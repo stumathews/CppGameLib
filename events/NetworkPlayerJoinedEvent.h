@@ -1,5 +1,6 @@
 #pragma once
 #include "Event.h"
+#include "EventNumbers.h"
 #include "../net/NetworkPlayer.h"
 
 namespace gamelib

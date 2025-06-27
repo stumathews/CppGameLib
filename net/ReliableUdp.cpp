@@ -1,6 +1,5 @@
 ﻿#include "ReliableUdp.h"
 #include "GameClient.h"
-#include "Option.h"
 #include "PacketDatumUtils.h"
 
 gamelib::Message* gamelib::ReliableUdp::MarkSent(PacketDatum datum, const MessageType messageType)

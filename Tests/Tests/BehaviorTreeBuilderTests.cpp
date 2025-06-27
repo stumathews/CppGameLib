@@ -34,64 +34,64 @@ namespace gamelib
 		bool haveWeGotASuspectedLocation = true;
 		auto dummyAction5Result = gamelib::BehaviorResult::Success;
 
-		auto* checkIsPlayerVisible = new gamelib::InlineBehavioralAction ([&]
+		auto* checkIsPlayerVisible = new gamelib::InlineBehavioralAction ([&](const unsigned long deltaMs)
 		{
 			return isPlayerVisible
 					? gamelib::BehaviorResult::Success
 					: gamelib::BehaviorResult::Failure;
 		}, "IsPlayerVisible");
 
-		auto* checkPlayerInRange = new gamelib::InlineBehavioralAction([&]
+		auto* checkPlayerInRange = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
 		{
 			return isPlayerInRange
 					? gamelib::BehaviorResult::Success
 					: gamelib::BehaviorResult::Failure;
 		}, "IsPlayerInRange");
 
-		auto* checkHaveWeGotASuspectedLocation = new gamelib::InlineBehavioralAction([&]
+		auto* checkHaveWeGotASuspectedLocation = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
 		{
 			return haveWeGotASuspectedLocation
 					? gamelib::BehaviorResult::Success
 					: gamelib::BehaviorResult::Failure;
 		});
 
-		auto* doFireAtPlayer = new gamelib::InlineBehavioralAction([&] 
+		auto* doFireAtPlayer = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
 		{
 			fireAtPlayer++; 
 			return gamelib::BehaviorResult::Success;
 		}, "FireAtPlayer");
 
-		auto* doMoveTowardsPlayer = new gamelib::InlineBehavioralAction([&]
+		auto* doMoveTowardsPlayer = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
 		{
 			moveTowardsPlayer++;
 			return gamelib::BehaviorResult::Success;
 		});
-		auto* doMovePlayerToLastKnownLocation = new gamelib::InlineBehavioralAction([&]
+		auto* doMovePlayerToLastKnownLocation = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
 		{
 			movePlayerToLastKnownLocation++;
 			return gamelib::BehaviorResult::Success;
 		}, "MovePlayerToLastKnownLocation");
-		auto* doLookAround = new gamelib::InlineBehavioralAction([&]
+		auto* doLookAround = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
 		{
 			lookAround++;
 			return gamelib::BehaviorResult::Success;
 		}, "LookAround");
-		auto* doMoveToRandomPosition = new gamelib::InlineBehavioralAction([&]
+		auto* doMoveToRandomPosition = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
 		{
 			moveToRandomPosition++;
 			return dummyAction5Result;
 		}, "MoveToRandomPosition");
-		auto* doLookAroundSomeMore = new gamelib::InlineBehavioralAction([&]
+		auto* doLookAroundSomeMore = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
 		{
 			lookAroundSomeMore++;
 			return gamelib::BehaviorResult::Success;
 		});
-		auto* doDummyAction7 = new gamelib::InlineBehavioralAction([&]
+		auto* doDummyAction7 = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
 		{
 			dummyAction7++;
 			return gamelib::BehaviorResult::Success;
 		}, "DummyAction7");
-		auto* doDummyAction8 = new gamelib::InlineBehavioralAction([&]
+		auto* doDummyAction8 = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
 		{
 			dummyAction8++;
 			return gamelib::BehaviorResult::Success;

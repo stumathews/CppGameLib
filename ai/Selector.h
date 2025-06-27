@@ -20,7 +20,7 @@ namespace gamelib
 			lastChild = children.begin();
 		}
 
-		BehaviorResult Update() override
+		BehaviorResult Update(const unsigned long deltaMs) override
 		{
 			// Persistently keep running the last child
 			while(lastChild != children.end())

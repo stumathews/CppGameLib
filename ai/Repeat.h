@@ -21,7 +21,7 @@ namespace gamelib
 	        counter = 0;
 	    }
 
-	    BehaviorResult Update() override 
+	    BehaviorResult Update(const unsigned long deltaMs) override
 	    {
 	        for (;;)
 	        {

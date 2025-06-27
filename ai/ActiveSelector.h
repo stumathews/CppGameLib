@@ -8,7 +8,7 @@ namespace gamelib
 	class ActiveSelector : public Selector
 	{
 	protected:
-		BehaviorResult Update() override
+		BehaviorResult Update(const unsigned long deltaMs) override
 		{
 			const auto prevChildBehavior = lastChild;
 
@@ -17,7 +17,7 @@ namespace gamelib
 			Selector::OnInitialize(); // reset to select the first (hightest priority) behavior in list of child behaviors
 
 			// Update/Run last successful child or move to next child if it failed (Skipping failed behaviors)
-			const auto result = Selector::Update();
+			const auto result = Selector::Update(deltaMs);
 
 			// previous active child was not the end && current active child has changed 
 			if(prevChildBehavior != children.end() && lastChild != prevChildBehavior)

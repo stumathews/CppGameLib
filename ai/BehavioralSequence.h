@@ -17,7 +17,7 @@ namespace gamelib
 			currentChild = children.begin();
 		}
 
-		BehaviorResult Update() override
+		BehaviorResult Update(const unsigned long deltaMs) override
 		{
 			// Update each child
 			while(currentChild != children.end())

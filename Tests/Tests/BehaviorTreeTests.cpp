@@ -27,9 +27,9 @@ namespace gamelib
 	{	
 		bool crawled = false, walked = false, ran = false;
 
-		InlineBehavioralAction crawl([&] { crawled = true; return BehaviorResult::Success; });
-		InlineBehavioralAction walk([&] { walked = true; return BehaviorResult::Success; });
-		InlineBehavioralAction run([&] { ran = true; return BehaviorResult::Success; });
+		InlineBehavioralAction crawl([&](const unsigned long deltaMs) { crawled = true; return BehaviorResult::Success; });
+		InlineBehavioralAction walk([&](const unsigned long deltaMs) { walked = true; return BehaviorResult::Success; });
+		InlineBehavioralAction run([&](const unsigned long deltaMs) { ran = true; return BehaviorResult::Success; });
 
 		ActiveSelector root;
 		root.AddChild(&crawl);

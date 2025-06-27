@@ -13,7 +13,7 @@ namespace gamelib
 			const auto prevChildBehavior = lastChild;
 
 			// Rewind the current child selector back to the first child, effectively
-			// allowing the sequence to start again
+			// allowing the decision-making sequence to start again from beginning
 			Selector::OnInitialize(); // reset to select the first (hightest priority) behavior in list of child behaviors
 
 			// Update/Run last successful child or move to next child if it failed (Skipping failed behaviors)

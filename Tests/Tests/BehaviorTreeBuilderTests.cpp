@@ -130,8 +130,8 @@ namespace gamelib
 
 		// Player is in range...
 
-		behaviorTree->Tick();
-		behaviorTree->Tick();
+		behaviorTree->Update();
+		behaviorTree->Update();
 		EXPECT_THAT(fireAtPlayer, testing::Eq(2));
 
 		// As the ActiveNodeSelector will repeat the last successful child (IsPlayerInRange & FireAtPLayer)
@@ -141,9 +141,9 @@ namespace gamelib
 		// Now set player is not in Range, it will fail the sequence and move to the next child in ActiveNodeSelector
 		isPlayerInRange = false;
 				
-		behaviorTree->Tick();
-		behaviorTree->Tick();
-		behaviorTree->Tick();
+		behaviorTree->Update();
+		behaviorTree->Update();
+		behaviorTree->Update();
 
 		// Still expect that only the two firing behaviors were made (none more)
 		EXPECT_THAT(fireAtPlayer, testing::Eq(2));
@@ -154,8 +154,8 @@ namespace gamelib
 		// Now make the player no longer visible,
 		// should fail the current sequence root and move to the next child in the ActiveSelector, i.e check if player is spotted
 		isPlayerVisible = false;
-		behaviorTree->Tick();
-		behaviorTree->Tick();
+		behaviorTree->Update();
+		behaviorTree->Update();
 		EXPECT_THAT(fireAtPlayer, testing::Eq(2)); // still the same
 		EXPECT_THAT(moveTowardsPlayer, testing::Eq(3)); // still the same
 
@@ -165,10 +165,10 @@ namespace gamelib
 
 		// Now fail that sequence by returning failing for the condition, HaveWeGotASuspectedLocation
 		haveWeGotASuspectedLocation = false;
-		behaviorTree->Tick();
-		behaviorTree->Tick();
-		behaviorTree->Tick();
-		behaviorTree->Tick();
+		behaviorTree->Update();
+		behaviorTree->Update();
+		behaviorTree->Update();
+		behaviorTree->Update();
 		EXPECT_THAT(fireAtPlayer, testing::Eq(2)); // still same
 		EXPECT_THAT(moveTowardsPlayer, testing::Eq(3)); // still same
 		EXPECT_THAT(movePlayerToLastKnownLocation, testing::Eq(2)); //still same
@@ -184,22 +184,22 @@ namespace gamelib
 		
 		// Now make the previous sequence fail and we should run...
 		dummyAction5Result = gamelib::BehaviorResult::Failure;
-		behaviorTree->Tick();
-		behaviorTree->Tick();
-		behaviorTree->Tick();
-		behaviorTree->Tick();
+		behaviorTree->Update();
+		behaviorTree->Update();
+		behaviorTree->Update();
+		behaviorTree->Update();
 		EXPECT_THAT(dummyAction7, testing::Eq(4));
 		EXPECT_THAT(dummyAction8, testing::Eq(4));
 
 		// Now test if the active selector works well by re-executing the nodes
 		isPlayerVisible = true;
 		isPlayerInRange = true;
-		behaviorTree->Tick();
+		behaviorTree->Update();
 		EXPECT_THAT(fireAtPlayer, testing::Eq(3));
 
 		// Now disable player in range so that the sequence quits and move to the next behavior
 		isPlayerInRange = false;
-		behaviorTree->Tick();
+		behaviorTree->Update();
 		EXPECT_THAT(moveTowardsPlayer, testing::Eq(4));
 
 	}

@@ -40,7 +40,7 @@ namespace gamelib
 		const BehaviorTree behaviorTree(&root);
 
 		// Ensure the basic tick doesn't throw either
-		EXPECT_NO_THROW(behaviorTree.Tick());
+		EXPECT_NO_THROW(behaviorTree.Update());
 
 		// Ensure 
 		EXPECT_THAT(crawled, testing::IsTrue());

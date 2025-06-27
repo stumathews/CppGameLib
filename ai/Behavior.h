@@ -8,10 +8,11 @@ namespace gamelib
 	/**
 	 * \brief A behavior is a branch in the Behavior tree
 	 */
-	class Behavior
+	class Behavior  // NOLINT(cppcoreguidelines-special-member-functions)
 	{
 	public:
-		Behavior(std::string description = "") : Description(std::move(description)), status(BehaviorResult::Invalid)
+		explicit Behavior(std::string description = "")
+		: Description(std::move(description)), status(BehaviorResult::Invalid)
 		{
 		}
 

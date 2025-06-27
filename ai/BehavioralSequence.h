@@ -6,7 +6,7 @@ namespace gamelib
 {
 	// A sequence is a composite behavior (stores multiple behaviors) of activities that are all run consecutively.
 	// If one activity/behavior fails the whole sequence short circuits and fails
-	class BehavioralSequence : public CompositeBehavior
+	class BehavioralSequence : public CompositeBehavior  // NOLINT(cppcoreguidelines-special-member-functions)
 	{
 		protected:
 		~BehavioralSequence() override = default;

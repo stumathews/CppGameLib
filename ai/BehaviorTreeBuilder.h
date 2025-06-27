@@ -4,6 +4,8 @@
 #include "ai/BehavioralSequence.h"
 #include <stack>
 
+#include "Parallel.h"
+
 class BehaviorTreeBuilder
 {
 public:
@@ -39,6 +41,13 @@ public:
 	{
 		CurrentNode()->AddChild(action);
 
+		return *this;
+	}
+
+	BehaviorTreeBuilder& Parallel(const gamelib::Parallel::Policy successPolicy, const gamelib::Parallel::Policy failurePolicy)
+	{
+		// Not Tested.
+		AddChildToCurrentNode(new gamelib::Parallel(successPolicy, failurePolicy));
 		return *this;
 	}
 

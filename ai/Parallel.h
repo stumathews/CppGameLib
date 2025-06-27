@@ -1,15 +1,16 @@
 #pragma once
-#include "Composite.h"
+#include "BehaviorResult.h"
+#include "CompositeBehavior.h"
 
 namespace gamelib
 {
-	class Parallel : public CompositeBahavior
+	class Parallel : public CompositeBehavior
 	{
 	public:
-		enum Policy
+		enum class Policy : uint8_t
 		{
-			RequireOne,
-			RequireAll
+			require_one,
+			require_all
 		};
 		Parallel(const Policy success, const Policy failure): successPolicy(success), failurePolicy(failure){}
 		~Parallel() override = default;
@@ -17,7 +18,7 @@ namespace gamelib
 	protected:
 		Policy successPolicy;
 		Policy failurePolicy;
-		virtual BehaviorResult Update() override
+		virtual BehaviorResult Update(const unsigned long deltaMs) override
 		{
 			size_t successCount = 0, failureCount = 0;
 
@@ -35,7 +36,7 @@ namespace gamelib
 				if(childResult == BehaviorResult::Success)
 				{
 					++successCount;
-					if(successPolicy == RequireOne)
+					if(successPolicy == Policy::require_one)
 					{
 						return BehaviorResult::Success;
 					}
@@ -44,19 +45,19 @@ namespace gamelib
 				if(childResult == BehaviorResult::Failure)
 				{
 					++failureCount;
-					if(failurePolicy == RequireOne)
+					if(failurePolicy == Policy::require_one)
 					{
 						return BehaviorResult::Failure;
 					}
 				}
 			}
 
-			if(failurePolicy == RequireAll && failureCount == children.size())
+			if(failurePolicy == Policy::require_all && failureCount == children.size())
 			{
 				return BehaviorResult::Failure;
 			}
 
-			if(successPolicy == RequireAll && successCount == children.size())
+			if(successPolicy == Policy::require_all && successCount == children.size())
 			{
 				return BehaviorResult::Success;
 			}
@@ -66,6 +67,7 @@ namespace gamelib
 
 		void OnTerminate() override
 		{
+			// If we're terminating, we should terminate any running child behaviors 
 			for(const auto childBehavior : children)
 			{
 				if(childBehavior->IsRunning())

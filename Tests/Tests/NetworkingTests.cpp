@@ -43,12 +43,27 @@ namespace gamelib
 		const Encoding WireEncoding = Encoding::json;
 		std::shared_ptr<SerializationManager> SerializationManager;
 
+		std::thread ListeningThread;
+		bool ServerListening{};
+		std::shared_ptr<GameClient> Client = nullptr;
+		std::shared_ptr<GameServer> Server;
+
+		std::mutex m;
+		std::condition_variable cv;
+		
+
 		void StartNetworkServer(std::shared_ptr<IGameServerConnection> inGameServerConnection = nullptr)
 		{
 			Networking::Get()->InitializeWinSock();
+
 			ServerListening = true;
+
+
 			ListeningThread = thread([&]()
 			{
+
+				std::unique_lock<std::mutex> lock(m);
+
 				// Make a new server connection
 				auto defaultConnection =
 					GameServerConnectionFactory::Create(false /* UDP */, ServerAddress, ListeningPort,
@@ -60,23 +75,33 @@ namespace gamelib
 					                                      : defaultConnection);
 				Server->Initialize();
 
+				auto serverReady = false;
+
 				// Wait for connections
 				while (ServerListening)
 				{
 					Server->Listen();
+
+					if (!serverReady) 
+					{
+						serverReady = true;
+						std::cout << "SERVER_THREAD: Signaling that server is listening and ready. Unlocking.\n";
+						lock.unlock();
+						cv.notify_one();
+					}
 				}
 
-				std::cout << "Server listening stopped.";
+				std::cout << "SERVER_THREAD: Server listening stopped.\n";
 				// Were done
 				Server->Disconnect();
-				std::cout << "Server socket disconnected";
+				std::cout << "SERVER_THREAD: Server socket disconnected\n";
 			});
 
-			// Wait for the server to be ready
-			while(Server == nullptr)
-			{
-				Sleep(250);
-			}
+			std::cout << "Waiting for server to have started..\n";
+			std::unique_lock<std::mutex> l(m);
+			cv.wait(l);
+			std::cout << "Server started.\n";
+
 		}
 		
 
@@ -91,10 +116,11 @@ namespace gamelib
 			ServerListening = false;
 
 			// finish listening thread
-			ListeningThread.join();		
+			ListeningThread.join();
+			std::cout << "Listening thread finished\n";
 			
-			//Client = nullptr;
-			//Server = nullptr;
+			Client = nullptr;
+			Server = nullptr;
 			EventManager::Get()->Reset();
 			EventManager::Get()->ClearSubscribers();
 		}
@@ -217,15 +243,13 @@ namespace gamelib
 			EXPECT_EQ(trafficEvent->Message,expectedMessage.str());
 		}
 		
-		std::thread ListeningThread;
-		bool ServerListening{};
-		std::shared_ptr<GameClient> Client = nullptr;
-		std::shared_ptr<GameServer> Server;
 	};
 
 	TEST_F(NetworkingTests, TestConnectToServer)
 	{
 		StartNetworkServer();
+
+		std::cout << "Starting client...\n";
 
 		// Setup client
 		Client = make_shared<GameClient>(ClientNickName, GameClientConnectionFactory::Create(false) /* using UDP*/);
@@ -247,6 +271,8 @@ namespace gamelib
 	TEST_F(NetworkingTests, TestPing)
 	{
 		StartNetworkServer();
+
+		std::cout << "Starting client...\n";
 
 		// Setup client
 		Client = make_shared<GameClient>(ClientNickName, GameClientConnectionFactory::Create(false) /* using UDP*/);
@@ -296,9 +322,11 @@ namespace gamelib
 
 		StartNetworkServer(gameServerConnection);
 
+		std::cout << "Starting client...\n";
+
 		// Establish connection and send public key
 		client->Connect(ServerAddress, ListeningPort);
-
+	
 		// Receive ack for receiving pub key
 		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 
@@ -362,6 +390,8 @@ namespace gamelib
 		client->Initialize();
 
 		StartNetworkServer(gameServerConnection);
+
+		std::cout << "Starting client...\n";
 
 		// Establish connection and send public key
 		client->Connect(ServerAddress, ListeningPort);
@@ -438,6 +468,8 @@ namespace gamelib
 
 		StartNetworkServer(gameServerConnection);
 
+		std::cout << "Starting client...\n";
+
 		// Establish connection and send public key
 		client->Connect(ServerAddress, ListeningPort);
 
@@ -497,8 +529,9 @@ namespace gamelib
 
 	TEST_F(NetworkingTests, MultiPlayerJoinEventsEmittedOnConnect)
 	{
-
 		StartNetworkServer();
+
+		std::cout << "Starting client...\n";
 
 		const auto player1Nick = "Player1";
 		const auto player2Nick = "Player2";
@@ -559,7 +592,9 @@ namespace gamelib
 		reliableUdpProtocolManager->Initialize();
 		
 		StartNetworkServer(gameServerConnection);
-		
+
+		std::cout << "Starting client...\n";
+
 		auto data1 = "There can be only one.";
 		auto data2 = "There can be only two.";
 		auto data3 = "There can be only three.";
@@ -672,11 +707,13 @@ namespace gamelib
 
 		// The game client connection will pack/send our protocol messages
 		const auto gameClientConnection = std::make_shared<UdpConnectedNetworkSocket>();
-		const auto reliableUdpProtocolManager = std::make_shared<ReliableUdpProtocolManager>(gameClientConnection);
-		reliableUdpProtocolManager->Initialize();
+		const auto client = std::make_shared<ReliableUdpProtocolManager>(gameClientConnection);
+		client->Initialize();
 		
 		StartNetworkServer(gameServerConnection);
-		
+
+		std::cout << "Starting client...\n";
+				
 		auto data1 = "There can be only one.";
 		auto data2 = "There can be only two.";
 		auto data3 = "There can be only three.";
@@ -685,42 +722,49 @@ namespace gamelib
 		const PacketDatum packet2(false, data2);
 		const PacketDatum packet3(false, data3);
 
-		cout << "Establish connection and send public key" << std::endl;
-		reliableUdpProtocolManager->Connect(ServerAddress, ListeningPort);
+		cout << "Test: Establish connection and send public key" << std::endl;
+		client->Connect(ServerAddress, ListeningPort);
 		
-		cout << "Receive ack for receiving pub key" << std::endl;
-		reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
+		cout << "Test: Receive ack for receiving pub key" << std::endl;
+		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 		
-		cout << "Receive server's public key" << std::endl;
-		reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
+		cout << "Test: Receive server's public key" << std::endl;
+		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 
 		// Send data reliably with aggregated message support if not acknowledgment received
 		
-		cout << "send data1 encrypted" << std::endl;
-		reliableUdpProtocolManager->Send(data1, static_cast<int>(strlen(data1)));
+		cout << "Test: send data1 encrypted" << std::endl;
+		client->Send(data1, static_cast<int>(strlen(data1)));
 		
-		cout << "Receive ack for data1" << std::endl;
-		reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
+		cout << "Test: Receive ack for data1" << std::endl;
+		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 		
-		cout << "Send encrypted data2" << std::endl;
-		reliableUdpProtocolManager->Send(data2, static_cast<int>(strlen(data2)));
+		cout << "Test: Send encrypted data2" << std::endl;
+		client->Send(data2, static_cast<int>(strlen(data2)));
 		
-		cout << "Receive ack for data2" << std::endl;
-		reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
+		cout << "Test: Receive ack for data2" << std::endl;
+		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 		
-		cout << "Send encrypted data3" << std::endl;
-		reliableUdpProtocolManager->Send(data3, static_cast<int>(strlen(data3)));
+		cout << "Test: Send encrypted data3" << std::endl;
+		client->Send(data3, static_cast<int>(strlen(data3)));
 		
-		cout << "Receive ack for data3" << std::endl;
-		reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
+		cout << "Test: Receive ack for data3" << std::endl;
+		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 			
-		cout << "Wait for the server to respond" << std::endl;
+		cout << "Test: Wait for the server to respond" << std::endl;
 		Sleep(1000);
 			
 		// Collect events from Event Manger to see what traffic was captured
 		const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
 
 		// Expected server events:
+
+		cout << "Server events emitted:\n";
+		int serverEventCount = 0;
+		for (const shared_ptr<Event>& event : serverEmittedEvents)
+		{
+			std::cout << serverEventCount++ << ": " << event->ToString() << "\n";
+		}
 
 		EXPECT_EQ(serverEmittedEvents[0]->Id, ReliableUdpPacketReceivedEventId); // Data received: client's public key
 		EXPECT_EQ(serverEmittedEvents[1]->Id, NetworkTrafficReceivedEventId); // Report data received: public key
@@ -744,6 +788,13 @@ namespace gamelib
 		EXPECT_EQ(serverEmittedEvents.size(), 12);
 
 		// Expected client events:
+
+		cout << "Client events emitted:\n";
+		int clientEventCount = 1;
+		for (const shared_ptr<Event>& event : clientEmittedEvents)
+		{
+			std::cout << clientEventCount++ << ": " << event->ToString() << "\n";
+		}
 
 		EXPECT_EQ(clientEmittedEvents[0]->Id, ReliableUdpAckPacketEventId);   // Ack received for sending client's public key
 		EXPECT_EQ(clientEmittedEvents[1]->Id, ReliableUdpPacketRttCalculatedEventId); 

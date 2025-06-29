@@ -55,13 +55,11 @@ namespace gamelib
 		void StartNetworkServer(std::shared_ptr<IGameServerConnection> inGameServerConnection = nullptr)
 		{
 			Networking::Get()->InitializeWinSock();
-
 			ServerListening = true;
-
-
 			ListeningThread = thread([&]()
 			{
 
+				// Lock mutex
 				std::unique_lock<std::mutex> lock(m);
 
 				// Make a new server connection
@@ -86,7 +84,11 @@ namespace gamelib
 					{
 						serverReady = true;
 						std::cout << "SERVER_THREAD: Signaling that server is listening and ready. Unlocking.\n";
+
+						// Release lock
 						lock.unlock();
+
+						// Notify
 						cv.notify_one();
 					}
 				}
@@ -98,8 +100,10 @@ namespace gamelib
 			});
 
 			std::cout << "Waiting for server to have started..\n";
+
 			std::unique_lock<std::mutex> l(m);
 			cv.wait(l);
+
 			std::cout << "Server started.\n";
 
 		}

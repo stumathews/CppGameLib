@@ -2,7 +2,6 @@
 #include <list>
 #include "file/tinyxml2.h"
 #include <memory>
-#include <list>
 #include "events/GameObjectEvent.h"
 #include "common/Common.h"
 #include "events/AddGameObjectToCurrentSceneEvent.h"
@@ -130,11 +129,14 @@ namespace gamelib
 
 		try 
 		{
-			if (ReadSceneFile(sceneFileName)) { EventManager::Get()->RaiseEvent(make_unique<SceneLoadedEvent>(scene), this); }
+			if (ReadSceneFile(sceneFileName))
+			{
+				EventManager::Get()->RaiseEvent(make_unique<SceneLoadedEvent>(scene), this);
+			}
 		} 
 		catch(exception &e)
 		{
-			THROW(13, string("Cloud not load scene file: ") + string(e.what()), GetSubscriberName());
+			THROW(13, string("Could not load scene file: ") + string(e.what()), GetSubscriberName());
 		}		
 	}
 	
@@ -207,7 +209,11 @@ namespace gamelib
 
 	bool SceneManager::ReadSceneFile(const string& filename)
 	{
-		if(currentSceneName == filename) { LogMessage(string("Scene already loaded. Skipping.")); return true; }
+		if(currentSceneName == filename)
+		{
+			LogMessage(string("Scene already loaded. Skipping."));
+			return true;
+		}
 
 		LogMessage("Loading scene: " + string(filename));
 		
@@ -230,8 +236,7 @@ namespace gamelib
 
 		if(doc.ErrorID() == 0) 	
 		{
-			auto* scene = doc.FirstChildElement("scene");
-			
+			auto* scene = doc.FirstChildElement("scene");			
 
 			if(scene) // <scene id="2">
 			{
@@ -246,7 +251,7 @@ namespace gamelib
 						currentLayer->Zorder = static_cast<unsigned>(layers.size());					
 
 						// Loop through layer attributes
-						for(auto layerAttributes = layerElement->FirstAttribute(); layerAttributes; layerAttributes = layerAttributes->Next()) // // <layer name="layer0" posx="0" posy="0" visible="true"
+						for(auto layerAttributes = layerElement->FirstAttribute(); layerAttributes; layerAttributes = layerAttributes->Next()) // <layer name="layer0" posx="0" posy="0" visible="true"
 						{						
 							// populate the new layer object:
 							
@@ -266,10 +271,14 @@ namespace gamelib
 							{
 								// <object ...
 								for(auto objectNode = layerContent->FirstChild(); objectNode; objectNode = objectNode->NextSibling())
-								{	
+								{
 									auto objectElement = objectNode->ToElement();
 
-									if(objectElement == nullptr) { Logger::Get()->LogThis(string("Invalid or null object found in scene file")); continue; }
+									if(objectElement == nullptr)
+									{										
+										Logger::Get()->LogThis(string("Invalid or null object found in scene file: ") + objectNode->Value());
+										continue;
+									}
 																		
 									// Build GameObject from <object>
 									auto gameObject = GameObjectFactory::Get().BuildGameObject(objectElement);
@@ -290,9 +299,13 @@ namespace gamelib
 
 				// Remember what scene we are currently in
 				currentSceneName = filename;
+
+				Logger::Get()->LogThis(string("Successfully loaded scene file"));
 				return true;
 			} // finished processing scene, layers populated
 		}
+
+		Logger::Get()->LogThis(string("Failed to load scene file"));
 		return false;
 	}
 

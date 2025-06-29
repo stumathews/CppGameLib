@@ -4,6 +4,7 @@
 
 #include "events/EventManager.h"
 #include "events/SceneChangedEvent.h"
+#include "file/SettingsManager.h"
 #include "font/FontManager.h"
 #include "graphic/SDLGraphicsManager.h"
 #include "resource/ResourceManager.h"
@@ -44,6 +45,7 @@ namespace gamelib
 
 	TEST_F(ResourceManagerTests, Initialize)
 	{
+		SettingsManager::Get()->ReadSettingsFile();
 		EXPECT_TRUE(ResourceManager::Get()->Initialize("Resources.xml")) << "Expected resource manager initialization to succeed";
 		EXPECT_EQ(EventManager::Get()->GetSubscriptions()[LevelChangedEventTypeEventId].size(), 1) << "Expected to subscribe to LevelChangedEventType";
 		EXPECT_STREQ(
@@ -54,7 +56,7 @@ namespace gamelib
 	TEST_F(ResourceManagerTests, read_resources)
 	{
 		ResourceManager::Get()->IndexResourceFile(resource_file_path);
-		EXPECT_EQ(ResourceManager::Get()->GetCountResources(), 9) << "Expected 18 assets to be loaded";
+		EXPECT_EQ(ResourceManager::Get()->GetCountResources(), 9) << "Expected 9 assets to be loaded";
 	}
 
 	TEST_F(ResourceManagerTests, get_resource_via_string)

@@ -57,11 +57,5 @@ namespace gamelib
 		EXPECT_TRUE(layer->Visible) << "Layer not visible";
 		EXPECT_EQ(layer->Zorder, 0) << "Z-order is wrong";	
 	}
-
-	TEST_F(SceneManagerTests, remove_object_from_layer)
-	{
-
-
-	}
 }
 

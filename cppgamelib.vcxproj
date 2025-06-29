@@ -241,6 +241,7 @@
     <ClInclude Include="graphic\Subscribable.h" />
     <ClInclude Include="graphic\Window.h" />
     <ClInclude Include="net\Fish.h" />
+    <ClInclude Include="net\IElapsedTimeProvider.h" />
     <ClInclude Include="net\IProtocolManager.h" />
     <ClInclude Include="net\NetworkingActivityMonitor.h" />
     <ClInclude Include="net\NetworkingStatistics.h" />

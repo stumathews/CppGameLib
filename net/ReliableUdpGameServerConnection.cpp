@@ -28,6 +28,8 @@ namespace gamelib
 
 		if(sessionEstablished && useEncryption)
 		{
+			Logger::Get()->LogThis("Server: Secure session successfully established.");
+
 			// We will use the same nonce for now (constant)
 			*sharedNonce = 1;
 
@@ -44,16 +46,25 @@ namespace gamelib
 
 			if(decryptSucceeded < 0)
 			{
+				Logger::Get()->LogThis("Server: Decrypt failed.");
 				return;
 			}
+
+			Logger::Get()->LogThis("Server: Successfully decrypted message.");
 
 			// copy decrypted message into caller's buffer
 			memcpy_s(readBuffer, ReadBufferSizeInBytes, decryptedMessage.data(), decryptedMessage.size());
 			
 		}
+		else
+		{
+			Logger::Get()->LogThis("Server: [Secure session not yet established]");
+		}
 
 		if (bytesReceived > 0)
 		{
+			Logger::Get()->LogThis("Server: Received " + std::to_string(bytesReceived) + " bytes");
+
 			// Hook up to a 32-bit bitfield reader to the received buffer. This will read 32-bits at a time			
 			BitfieldReader reader(readBuffer, numReceivedReadBufferElements);
 						
@@ -64,8 +75,10 @@ namespace gamelib
 			// Check for any transmission errors
 			if(!message.ValidateChecksum())
 			{
-				RaiseEvent(EventFactory::Get()->CreateReliableUdpCheckSumFailedEvent(std::make_shared<Message>(message)));
+				Logger::Get()->LogThis("Server: Received invalid checksum");
 
+				RaiseEvent(EventFactory::Get()->CreateReliableUdpCheckSumFailedEvent(std::make_shared<Message>(message)));
+								
 				// We drop the packet, no acknowledgment is sent. Sender will need to resend.
 				return;
 			}
@@ -76,7 +89,9 @@ namespace gamelib
 			// Message handling:
 
 			if(message.Header.MessageType != Ack) // non-ack message
-			{				
+			{
+				Logger::Get()->LogThis("Server: [Received data message (non-ack)]");
+
 				RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketReceived(std::make_shared<Message>(message)));
 
 				// For the case where we've received multiple messages (aggregate).
@@ -106,26 +121,31 @@ namespace gamelib
 
 			if(message.Header.MessageType == Ack) // ack message
 			{
+				Logger::Get()->LogThis("Server: [Received non-data message (ack)]");
+
 				RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), false));				
 				
 				RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketRttCalculatedEvent(std::make_shared<Message>(message), 
 					PacketDatumUtils::CalculateRttStats(message, reliableUdp.ReceiveBuffer)));
 				
 			}
-			
+
 			if(message.Header.MessageType == SendPubKey)
 			{
+				Logger::Get()->LogThis("Server: Received client's public key");
 
 				// We got the client's public key
 				memcpy_s(remotePublicKey, SecuritySide::PublicKeyLengthBytes, message.Data()[0].Data(), SecuritySide::PublicKeyLengthBytes);
-								
+
 				// Generate our own public key
 				securitySide.GenerateKeyPair();
 
+				Logger::Get()->LogThis("Server: Sending public key in response");
+
 				// Send it to the server
 				InternalSend(listeningSocket, reinterpret_cast<char*>(securitySide.GetPublicKey()),
-				             SecuritySide::PublicKeyLengthBytes, 0, reinterpret_cast<sockaddr*>(&fromClient.Address),
-				             fromClient.Length, deltaMs, SendPubKey);
+					SecuritySide::PublicKeyLengthBytes, 0, reinterpret_cast<sockaddr*>(&fromClient.Address),
+					fromClient.Length, deltaMs, SendPubKey);
 
 				// We can derive the session keys
 				securitySide.GenerateServerTransmissionKeys(remotePublicKey);
@@ -185,8 +205,10 @@ namespace gamelib
 	{
 		std::stringstream ackMessage;
 
-		ackMessage << "server acks client seq:" << messageToAck.Header.Sequence << std::endl;		
-		
+		ackMessage << "server acks client seq:" << messageToAck.Header.Sequence << '\n';		
+
+		Logger::Get()->LogThis("Server: Sending ack.");
+
 		return InternalSend(socket, ackMessage.str().c_str(), static_cast<int>(ackMessage.str().size()), flags,
 		                    reinterpret_cast<sockaddr*>(&peerInfo.Address), peerInfo.Length, sendTimeMs, Ack);
 	}

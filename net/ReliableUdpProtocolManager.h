@@ -60,7 +60,7 @@ namespace gamelib
 			int Send(const char* callersSendBuffer, int dataLength, unsigned long deltaMs = 0) override;
 			int Receive(char* callersReceiveBuffer, int bufLength, unsigned long deltaMs = 0) override;
 			int SendAck(const Message& messageToAck, unsigned long sendTimeMs) override;
-			void Update(unsigned long deltaMs);
+			static void Update(unsigned long deltaMs);
 			std::string GetSubscriberName() override;
 			std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, unsigned long deltaMs) override;
 			~ReliableUdpProtocolManager() override;

@@ -1,9 +1,8 @@
 #include "ReliableUdpProtocolManager.h"
 
 #include "PacketDatumUtils.h"
-#include "PeerInfo.h"
 #include "events/EventFactory.h"
-#include "file/SerializationManager.h"
+#include "file/Logger.h"
 #include "net/Message.h"
 
 namespace gamelib
@@ -31,8 +30,11 @@ namespace gamelib
 	{
 		gameClientConnection->Connect(address, port);
 
+		Logger::Get()->LogThis("Client: [Connected]");
+
 		if(!sessionEstablished)
 		{
+			Logger::Get()->LogThis("Client: Sending public key to server...");
 			// Send our public key to server. Server should respond with theirs.
 			SendInternal(reinterpret_cast<char*>(clientSecuritySide.GetPublicKey()), SecuritySide::PublicKeyLengthBytes, 0, SendPubKey);
 		}
@@ -42,13 +44,21 @@ namespace gamelib
 	{
 		if(!sessionEstablished)
 		{
+			Logger::Get()->LogThis("Client: [Detected secure session not yet established]");
+
 			// Do not send the data if the session is not encrypted.
 
+			Logger::Get()->LogThis("Client: Sending public key...");
+
 			// Send our public key to server instead.
-			return SendInternal(reinterpret_cast<char*>(clientSecuritySide.GetPublicKey()), SecuritySide::PublicKeyLengthBytes, deltaMs, SendPubKey);;
+			return SendInternal(reinterpret_cast<char*>(clientSecuritySide.GetPublicKey()), SecuritySide::PublicKeyLengthBytes, deltaMs, SendPubKey);
 		}
 
-		// Send over the transport - might be a aggregated message if there were no prior acks		
+		Logger::Get()->LogThis("Client: [Detected secure session not yet established]");
+
+		Logger::Get()->LogThis("Client: Sending encrypted data...");
+
+		// Send over the transport - might be an aggregated message if there were no prior acks		
 		return SendInternal(callersSendBuffer, dataLength, deltaMs, General);
 	}	
 
@@ -65,6 +75,8 @@ namespace gamelib
 			this->RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketLossDetectedEvent(std::make_shared<Message>(*message)));
 		}
 
+		Logger::Get()->LogThis("Client: [Sending data]");
+
 		// Write to the packingBuffer via the BitPacker	
 		message->Write(packer);
 
@@ -73,6 +85,8 @@ namespace gamelib
 		
 		if(sessionEstablished && useEncryption)
 		{
+			Logger::Get()->LogThis("Client: [Session is secure]");
+
 			// Use a constant nonce for now
 			*sharedNonce = 1;
 
@@ -84,10 +98,14 @@ namespace gamelib
 			                                clientSecuritySide.GetTransmissionSessionKey(), sharedNonce,
 			                                encryptedMessage.data());
 
+			Logger::Get()->LogThis("Client: [Sending encrypted data]");
+
 			// send Encrypted message
 			return gameClientConnection->Send(reinterpret_cast<char*>(encryptedMessage.data()), encryptedMessage.size());
 		}
-		
+
+		Logger::Get()->LogThis("Client: [Sending non-encrypted data]");
+
 		const auto sendResult = gameClientConnection->Send(reinterpret_cast<char*>(packingBuffer), countBytesToSend);
 		return sendResult;
 	}
@@ -99,14 +117,19 @@ namespace gamelib
 
 		if(bytesReceived < 0)
 		{
+			Logger::Get()->LogThis("Client: No data received!");
 			return bytesReceived;
 		}
+
+		Logger::Get()->LogThis("Client: [Receiving data]");
 
 		// Hook up to a 32-bit bitfield reader to the received buffer. This will read 32-bits at a time
 		const auto count32BitBlocks = bytesReceived * 8 /32;
 				
 		if(sessionEstablished && useEncryption)
 		{
+			Logger::Get()->LogThis("Client: [Secure session successfully established]");
+
 			// We will use the same nonce for now (constant)
 			*sharedNonce = 1;
 
@@ -123,6 +146,7 @@ namespace gamelib
 
 			if(decrptResult < 0)
 			{
+				Logger::Get()->LogThis("Client: [Decrypt failed]");
 				return bufLength;
 			}
 			// copy decrypted message into caller's buffer
@@ -141,6 +165,8 @@ namespace gamelib
 		// Check for any transmission errors
 		if(!message.ValidateChecksum())
 		{
+			Logger::Get()->LogThis("Client: [Checksum failed]");
+
 			RaiseEvent(EventFactory::Get()->CreateReliableUdpCheckSumFailedEvent(std::make_shared<Message>(message)));
 
 			// We drop the packet, no acknowledgment is sent. Sender will need to resend.
@@ -150,23 +176,27 @@ namespace gamelib
 		reliableUdp.MarkReceived(message, deltaMs);
 
 		// SendAck - only to non-ack messages (don't ack an ack!)
-		if(message.Header.MessageType != 0)	
+		if(message.Header.MessageType != Ack)	
 		{
-			
+			Logger::Get()->LogThis("Client: Sending ack");
+
 			RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketReceived(std::make_shared<Message>(message)));			
 			SendAck(message, deltaMs);
 			RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), true));
 		} 		
 		
-		if (message.Header.MessageType == 0) // ack
-		{			
+		if (message.Header.MessageType == Ack) // ack
+		{
+			Logger::Get()->LogThis("Client: Received ack");
 			RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), false));
 			RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketRttCalculatedEvent(std::make_shared<Message>(message), 
 					PacketDatumUtils::CalculateRttStats(message, reliableUdp.SendBuffer)));
 		}
-		
+
 		if(message.Header.MessageType == SendPubKey)
 		{
+			Logger::Get()->LogThis("Client: Received server's public key");
+
 			// Server sent us their public key
 			memcpy_s(remotePublicKey, SecuritySide::PublicKeyLengthBytes, message.Data()[0].Data(), SecuritySide::PublicKeyLengthBytes);
 
@@ -185,9 +215,7 @@ namespace gamelib
 			ss << packet.Data();
 		}
 
-			
 		strcpy_s(callersReceiveBuffer, bufLength, ss.str().c_str());
-
 
 		return bytesReceived;
 	}
@@ -196,7 +224,6 @@ namespace gamelib
 	{
 
 		const auto bytesReceived = ReceiveInternal(callersReceiveBuffer, bufLength, deltaMs);
-		
 
 		return bytesReceived;
 	}
@@ -206,7 +233,7 @@ namespace gamelib
 		BitPacker packer(packingBuffer, PackingBufferElements);
 
 		std::stringstream ackMessageContents;
-			ackMessageContents << "client acks server's seq:" << messageToAck.Header.Sequence << std::endl;
+			ackMessageContents << "client acks server's seq:" << messageToAck.Header.Sequence << '\n';
 
 		// Prepare data to be sent - not ack will be pre-acked so we don't try to resend it
 		const auto data = PacketDatum(true, ackMessageContents.str().c_str(), sendTimeMs);		

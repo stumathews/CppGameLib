@@ -28,7 +28,7 @@ namespace gamelib
 
 	void GameServer::Initialize()
 	{		
-		Logger::Get()->LogThis("Game Server Starting...");
+		Logger::Get()->LogThis("Game server initializing...");
 		
 		serializationManager = std::make_shared<SerializationManager>(encoding);
 		eventManager = EventManager::Get();
@@ -42,6 +42,8 @@ namespace gamelib
 		eventManager->SubscribeToEvent(PlayerMovedEventTypeEventId, this);
 		eventManager->SubscribeToEvent(ControllerMoveEventId, this);
 		eventManager->SubscribeToEvent(StartNetworkLevelEventId, this);
+
+		Logger::Get()->LogThis("Game server initialization complete.");
 	}
 	
 	void GameServer::Listen(const unsigned long deltaMs) const

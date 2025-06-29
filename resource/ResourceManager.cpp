@@ -2,6 +2,7 @@
 #include "file/tinyxml2.h"
 #include <map>
 #include <memory>
+#include <ranges>
 #include "audio/AudioManager.h"
 #include "common/Common.h"
 #include "events/EventManager.h"
@@ -27,11 +28,11 @@ namespace gamelib
 		IndexResourceFile(filePath);
 		debug = SettingsManager::Get()->GetBool("global", "verbose");
 		return LogThis("ResourceManager::initialize()", debug, [&]()
-		{
-			EventManager::Get()->SubscribeToEvent(LevelChangedEventTypeEventId, this);
-			// we will load the resources for the level that has been loaded
-			return true;
-		}, true, true);
+			{
+				EventManager::Get()->SubscribeToEvent(LevelChangedEventTypeEventId, this);
+				// we will load the resources for the level that has been loaded
+				return true;
+			}, true, true);
 	}
 
 	vector<shared_ptr<Event>> ResourceManager::HandleEvent(const std::shared_ptr<Event>& event, const unsigned long deltaMs)
@@ -55,9 +56,9 @@ namespace gamelib
 	/// <param name="level">Scene/Level assets to load.</param>
 	void ResourceManager::LoadSceneAssets(const int level)
 	{
-		for (const auto& levelResources : resourcesByScene) // we need access to all resources to swap in/out resources
+		for (const auto& val : resourcesByScene | views::values) // we need access to all resources to swap in/out resources
 		{
-			for (const auto& asset : levelResources.second)
+			for (const auto& asset : val)
 			{
 				const auto alwaysLoadResource = asset->SceneId == 0;
 				if ((asset->SceneId == level || alwaysLoadResource) && !asset->IsLoadedInMemory)
@@ -109,11 +110,7 @@ namespace gamelib
 	/// </summary>
 	void ResourceManager::IndexResourceFile(const string& resourcesFilePath)
 	{
-		if (isIndexed)
-		{
-			Logger::Get()->LogThis("ResourceManager: resources already indexed. Skipping.");
-			return;
-		}
+		Reset();
 
 		Logger::Get()->LogThis("ResourceManager: reading resources.xml.");
 
@@ -154,6 +151,8 @@ namespace gamelib
 
 							// Keep track of how many assets we have
 							countResources++;
+
+							Logger::Get()->LogThis(std::string("Asset: ") + theAsset->Name + " indexed by resource manager");
 						}
 						else
 						{
@@ -177,8 +176,6 @@ namespace gamelib
 		}
 
 		LogMessage(to_string(countResources) + string(" assets available in resource manager."));
-
-		isIndexed = true;
 	}
 
 	/// <summary>
@@ -243,6 +240,18 @@ namespace gamelib
 	}
 
 	string ResourceManager::GetSubscriberName() { return "resource manager"; }
+
+	void ResourceManager::Reset()
+	{
+		Unload();
+		resourcesById.clear();
+		resourcesByName.clear();
+		resourcesByScene.clear();
+		countLoadedResources = 0;
+		countResources = 0;
+		countUnloadedResources = 0;
+	}
+
 	shared_ptr<Asset> ResourceManager::GetAssetInfo(const string& name) { return resourcesByName[name]; }
 	shared_ptr<Asset> ResourceManager::GetAssetInfo(const int uuid) { return resourcesById[uuid]; }
 

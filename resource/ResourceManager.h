@@ -26,6 +26,7 @@ namespace gamelib
 		bool Initialize(const std::string& filePath);
 	    std::string GetSubscriberName() override;
 
+		void Reset();
 		// index the resources file
 		void IndexResourceFile(const std::string& resourcesFilePath = "game/resources.xml");
 		std::shared_ptr<Asset>& CreateAssetFromElement(const char* type, std::shared_ptr<Asset>& theAsset, tinyxml2::XMLElement* const& assetElement);
@@ -53,7 +54,6 @@ namespace gamelib
 		int countLoadedResources = 0;
 		int countUnloadedResources = 0;
 		bool debug;
-		bool isIndexed;
 	};
 }
 

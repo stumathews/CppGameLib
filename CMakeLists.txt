@@ -289,19 +289,22 @@ utils/Utils.h
 
 find_package(unofficial-sodium CONFIG REQUIRED)
 find_package(GTest CONFIG REQUIRED)
+find_package(SDL2 CONFIG REQUIRED)
+find_package(SDL2_ttf REQUIRED)
+find_package(SDL2_ttf CONFIG REQUIRED)
+find_package(SDL2_mixer REQUIRED)
+find_package(SDL2_image REQUIRED)
 
 set_target_properties(cppgamelib2 PROPERTIES LINKER_LANGUAGE CXX)
 
 target_link_libraries(cppgamelib2 
-C:/repos/2DGameDev/ThirdParty/SDL23/lib/x64/SDL2.lib 
-C:/repos/2DGameDev/ThirdParty/SDL2_ttf-2.22.0/lib/x64/SDL2_ttf.lib
-C:/repos/2DGameDev/ThirdParty/SDL2_mixer-2.8.0/lib/x64/SDL2_mixer.lib
-C:/repos/2DGameDev/ThirdParty/SDL2_image-2.8.2/lib/x64/SDL2_image.lib
+SDL2::SDL2 
+SDL2_ttf::SDL2_ttf
+SDL2_mixer::SDL2_mixer
+SDL2_image::SDL2_image
 unofficial-sodium::sodium)
 
 target_include_directories(cppgamelib2 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} 
-C:/repos/2DGameDev/ThirdParty/SDL23/include
-C:/repos/2DGameDev/ThirdParty/SDL2_ttf-2.22.0/include 
 C:/repos/2DGameDev/ThirdParty/SDL2_mixer-2.8.0/include
 C:/repos/2DGameDev/ThirdParty/SDL2_image-2.8.2/include)
 
@@ -340,15 +343,12 @@ target_include_directories(AllTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Tests/Tes
 
 target_link_libraries(AllTests PUBLIC 
 cppgamelib2
-C:/repos/2DGameDev/ThirdParty/SDL23/lib/x64/SDL2.lib 
-C:/repos/2DGameDev/ThirdParty/SDL2_ttf-2.22.0/lib/x64/SDL2_ttf.lib
-C:/repos/2DGameDev/ThirdParty/SDL2_mixer-2.8.0/lib/x64/SDL2_mixer.lib
-C:/repos/2DGameDev/ThirdParty/SDL2_image-2.8.2/lib/x64/SDL2_image.lib
-unofficial-sodium::sodium PRIVATE  GTest::gmock_main winmm)
+SDL2::SDL2
+SDL2_ttf::SDL2_ttf
+SDL2_mixer::SDL2_mixer
+SDL2_image::SDL2_image
+unofficial-sodium::sodium PRIVATE
+GTest::gmock_main winmm)
 
-target_include_directories(AllTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} 
-C:/repos/2DGameDev/ThirdParty/SDL23/include
-C:/repos/2DGameDev/ThirdParty/SDL2_ttf-2.22.0/include 
-C:/repos/2DGameDev/ThirdParty/SDL2_mixer-2.8.0/include
-C:/repos/2DGameDev/ThirdParty/SDL2_image-2.8.2/include)
+target_include_directories(AllTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 

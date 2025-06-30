@@ -1,6 +1,10 @@
 {
   "dependencies": [
     "libsodium",
-    "gtest"
+    "gtest",
+    "sdl2",
+    "sdl2-ttf",
+    "sdl2-mixer",
+    "sdl2-image"
   ]
 }

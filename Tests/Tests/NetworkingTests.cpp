@@ -330,9 +330,13 @@ namespace gamelib
 
 		// Establish connection and send public key
 		client->Connect(ServerAddress, ListeningPort);
+
+		sleep(0.5);
 	
 		// Receive ack for receiving pub key
 		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
+
+		sleep(0.5);
 
 		// Receive server's public key
 		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
@@ -358,7 +362,7 @@ namespace gamelib
 		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 
 		// Wait for the server to respond
-		Sleep(1000);
+		sleep(0.5);
 
 		const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
 		
@@ -610,11 +614,17 @@ namespace gamelib
 		// Establish connection and send public key
 		reliableUdpProtocolManager->Connect(ServerAddress, ListeningPort);
 
+		sleep(0.5);
+
 		// Receive ack for receiving pub key
 		reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 
+		sleep(0.5);
+
 		// Receive server's public key
 		reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
+
+		sleep(0.5);
 
 		// Tests: send data reliably with aggregated message support if not acknowledgment received
 		
@@ -623,36 +633,35 @@ namespace gamelib
 		reliableUdpProtocolManager->Send(data3, static_cast<int>(strlen(data3)));
 			
 		// Wait for the server to respond
-		Sleep(1000);
+		sleep(0.5);
 			
 		// Collect events from Event Manger to see what traffic was captured
 		const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
 
 		// Expected server events
 		
-		EXPECT_EQ(serverEmittedEvents[0]->Id, ReliableUdpPacketReceivedEventId); // Data received: client's public key
-		EXPECT_EQ(serverEmittedEvents[1]->Id, NetworkTrafficReceivedEventId); // Report data received: public key
-		EXPECT_EQ(serverEmittedEvents[2]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data (public key data)
-
-		//data1
-		EXPECT_EQ(serverEmittedEvents[3]->Id, ReliableUdpPacketReceivedEventId); // Data received: data1
-		EXPECT_EQ(serverEmittedEvents[4]->Id, NetworkTrafficReceivedEventId); // Report data received: data1
-		EXPECT_EQ(serverEmittedEvents[5]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data1
-
-		// data2
-		EXPECT_EQ(serverEmittedEvents[6]->Id, ReliableUdpPacketReceivedEventId); // Data received: (data1,data2)
-		EXPECT_EQ(serverEmittedEvents[7]->Id, NetworkTrafficReceivedEventId); // Report data received: data1
-		EXPECT_EQ(serverEmittedEvents[8]->Id, NetworkTrafficReceivedEventId); // Report data received: data2
-		EXPECT_EQ(serverEmittedEvents[9]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data2
-
-		// data3
-		EXPECT_EQ(serverEmittedEvents[10]->Id, ReliableUdpPacketReceivedEventId); // Data received: (data1, data2, data3)
-		EXPECT_EQ(serverEmittedEvents[11]->Id, NetworkTrafficReceivedEventId); // Report data received: data1
-		EXPECT_EQ(serverEmittedEvents[12]->Id, NetworkTrafficReceivedEventId); // Report data received: data2
-		EXPECT_EQ(serverEmittedEvents[13]->Id, NetworkTrafficReceivedEventId); // Report data received: data3
-		EXPECT_EQ(serverEmittedEvents[14]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data3
+		EXPECT_EQ(serverEmittedEvents[0]->Id, ReliableUdpPacketReceivedEventId);
+		EXPECT_EQ(serverEmittedEvents[1]->Id, NetworkTrafficReceivedEventId); 
+		EXPECT_EQ(serverEmittedEvents[2]->Id, ReliableUdpAckPacketEventId); 
+		EXPECT_EQ(serverEmittedEvents[3]->Id, ReliableUdpAckPacketEventId); 
+		EXPECT_EQ(serverEmittedEvents[4]->Id, ReliableUdpPacketRttCalculatedEventId);
+		EXPECT_EQ(serverEmittedEvents[5]->Id, ReliableUdpPacketReceivedEventId); 
+		EXPECT_EQ(serverEmittedEvents[6]->Id, NetworkTrafficReceivedEventId); 
+		EXPECT_EQ(serverEmittedEvents[7]->Id, NetworkTrafficReceivedEventId); 
+		EXPECT_EQ(serverEmittedEvents[8]->Id, ReliableUdpAckPacketEventId); 
+		EXPECT_EQ(serverEmittedEvents[9]->Id, ReliableUdpPacketReceivedEventId); 
+		EXPECT_EQ(serverEmittedEvents[10]->Id, NetworkTrafficReceivedEventId);
+		EXPECT_EQ(serverEmittedEvents[11]->Id, NetworkTrafficReceivedEventId); 
+		EXPECT_EQ(serverEmittedEvents[12]->Id, NetworkTrafficReceivedEventId);
+		EXPECT_EQ(serverEmittedEvents[13]->Id, ReliableUdpAckPacketEventId);
+		EXPECT_EQ(serverEmittedEvents[14]->Id, ReliableUdpPacketReceivedEventId);
+		EXPECT_EQ(serverEmittedEvents[15]->Id, NetworkTrafficReceivedEventId);
+		EXPECT_EQ(serverEmittedEvents[16]->Id, NetworkTrafficReceivedEventId);
+		EXPECT_EQ(serverEmittedEvents[17]->Id, NetworkTrafficReceivedEventId);
+		EXPECT_EQ(serverEmittedEvents[18]->Id, NetworkTrafficReceivedEventId);
+		EXPECT_EQ(serverEmittedEvents[19]->Id, ReliableUdpAckPacketEventId);
 			
-		EXPECT_EQ(serverEmittedEvents.size(), 15);
+		EXPECT_EQ(serverEmittedEvents.size(), 20);
 
 		const int countData1 = ranges::count_if(serverEmittedEvents, [data1](shared_ptr<Event> event)
 		{
@@ -689,14 +698,15 @@ namespace gamelib
 
 
 		// Expected client events
-		EXPECT_EQ(clientEmittedEvents[0]->Id, ReliableUdpAckPacketEventId);   // Ack received for sending client's public key
+		EXPECT_EQ(clientEmittedEvents[0]->Id, ReliableUdpAckPacketEventId);
 		EXPECT_EQ(clientEmittedEvents[1]->Id, ReliableUdpPacketRttCalculatedEventId);
-		EXPECT_EQ(clientEmittedEvents[2]->Id, ReliableUdpPacketReceivedEventId); // Data received: public key
-		EXPECT_EQ(clientEmittedEvents[3]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data (server's public key)
-		EXPECT_EQ(clientEmittedEvents[4]->Id, ReliableUdpPacketLossDetectedEventId); // Loss detected of data1 while sending data2
-		EXPECT_EQ(clientEmittedEvents[5]->Id, ReliableUdpPacketLossDetectedEventId); // Loss detected of data2 while sending data1
+		EXPECT_EQ(clientEmittedEvents[2]->Id, ReliableUdpPacketReceivedEventId);
+		EXPECT_EQ(clientEmittedEvents[3]->Id, ReliableUdpAckPacketEventId);
+		EXPECT_EQ(clientEmittedEvents[4]->Id, ReliableUdpPacketLossDetectedEventId);
+		EXPECT_EQ(clientEmittedEvents[5]->Id, ReliableUdpPacketLossDetectedEventId);
+		EXPECT_EQ(clientEmittedEvents[6]->Id, ReliableUdpPacketLossDetectedEventId);
 
-		EXPECT_EQ(clientEmittedEvents.size(), 6);
+		EXPECT_EQ(clientEmittedEvents.size(), 7);
 	}
 
 	TEST_F(NetworkingTests, ReliableUdpRoutineConversation)
@@ -705,6 +715,9 @@ namespace gamelib
 		constexpr static auto ReceiveBufferMaxElements = 300;
 		constexpr static auto ReceiveBufferBytes = 300 * 32 / 8;
 		uint32_t readBuffer[ReceiveBufferMaxElements]{};
+
+		BitfieldReader<uint32_t> reader(readBuffer, ReceiveBufferBytes);
+		Message receivedMessage;
 
 		// The game server connection will unpack/process our protocol messages
 		const auto gameServerConnection = std::make_shared<ReliableUdpGameServerConnection>(ServerAddress, ListeningPort);
@@ -718,100 +731,132 @@ namespace gamelib
 
 		std::cout << "Starting client...\n";
 				
-		auto data1 = "There can be only one.";
-		auto data2 = "There can be only two.";
-		auto data3 = "There can be only three.";
+		auto thereCanBeOnlyOne = "There can be only one.";
+		auto thereCanBeOnlyTwo = "There can be only two.";
+		auto thereCanBeOnlyThree = "There can be only three.";
 
-		const PacketDatum packet1(false, data1);
-		const PacketDatum packet2(false, data2);
-		const PacketDatum packet3(false, data3);
+		std::tuple<vector<shared_ptr<Event>>, vector<shared_ptr<Event>>> allEvents;
+		vector<shared_ptr<Event>> serverEmittedEvents;
+		vector<shared_ptr<Event>> clientEmittedEvents;
 
-		cout << "Test: Establish connection and send public key" << std::endl;
-		client->Connect(ServerAddress, ListeningPort);
-		
-		cout << "Test: Receive ack for receiving pub key" << std::endl;
-		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
-		
-		cout << "Test: Receive server's public key" << std::endl;
-		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
-
-		// Send data reliably with aggregated message support if not acknowledgment received
-		
-		cout << "Test: send data1 encrypted" << std::endl;
-		client->Send(data1, static_cast<int>(strlen(data1)));
-		
-		cout << "Test: Receive ack for data1" << std::endl;
-		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
-		
-		cout << "Test: Send encrypted data2" << std::endl;
-		client->Send(data2, static_cast<int>(strlen(data2)));
-		
-		cout << "Test: Receive ack for data2" << std::endl;
-		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
-		
-		cout << "Test: Send encrypted data3" << std::endl;
-		client->Send(data3, static_cast<int>(strlen(data3)));
-		
-		cout << "Test: Receive ack for data3" << std::endl;
-		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
-			
-		cout << "Test: Wait for the server to respond" << std::endl;
-		Sleep(1000);
-			
-		// Collect events from Event Manger to see what traffic was captured
-		const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
-
-		// Expected server events:
-
-		cout << "Server events emitted:\n";
-		int serverEventCount = 0;
-		for (const shared_ptr<Event>& event : serverEmittedEvents)
+		// ReSharper disable once CppInconsistentNaming
+		auto ReadReceivedMessageAndAssertType = [&reader, &receivedMessage](MessageType expectedMessageType)
 		{
-			std::cout << serverEventCount++ << ": " << event->ToString() << "\n";
-		}
+			reader.Reset();
+			receivedMessage.Read(reader);
+			EXPECT_EQ(receivedMessage.Header.MessageType, expectedMessageType);
+		};
+
+		const PacketDatum packet1(false, thereCanBeOnlyOne);
+		const PacketDatum packet2(false, thereCanBeOnlyTwo);
+		const PacketDatum packet3(false, thereCanBeOnlyThree);
+
+		////----
+		cout << "Test: Establish connection and send public key" << '\n';
+		client->Connect(ServerAddress, ListeningPort);
+								
+		cout << "Test: Receive ack for receiving pub key" << '\n';
+		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
+
+		ReadReceivedMessageAndAssertType(MessageType::Ack); // got the ack back
+		allEvents = PartitionEvents();
+		serverEmittedEvents = std::get<1>(allEvents);
 
 		EXPECT_EQ(serverEmittedEvents[0]->Id, ReliableUdpPacketReceivedEventId); // Data received: client's public key
 		EXPECT_EQ(serverEmittedEvents[1]->Id, NetworkTrafficReceivedEventId); // Report data received: public key
 		EXPECT_EQ(serverEmittedEvents[2]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data (public key data)
 
-		//data1
-		EXPECT_EQ(serverEmittedEvents[3]->Id, ReliableUdpPacketReceivedEventId); // Data received: data1
-		EXPECT_EQ(serverEmittedEvents[4]->Id, NetworkTrafficReceivedEventId); // Report data received: data1
-		EXPECT_EQ(serverEmittedEvents[5]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data1
+		clientEmittedEvents = std::get<0>(allEvents);
 
-		// data2
-		EXPECT_EQ(serverEmittedEvents[6]->Id, ReliableUdpPacketReceivedEventId); // Data received: data2
-		EXPECT_EQ(serverEmittedEvents[7]->Id, NetworkTrafficReceivedEventId); // Report data received: data2
-		EXPECT_EQ(serverEmittedEvents[8]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data2
+		EXPECT_EQ(clientEmittedEvents[0]->Id, ReliableUdpAckPacketEventId);   // Client receives ack from server (server got the clients public key)
+		EXPECT_EQ(clientEmittedEvents[1]->Id, ReliableUdpPacketRttCalculatedEventId);		
 
-		// data3
-		EXPECT_EQ(serverEmittedEvents[9]->Id, ReliableUdpPacketReceivedEventId); // Data received: data3
-		EXPECT_EQ(serverEmittedEvents[10]->Id, NetworkTrafficReceivedEventId); // Report data received: data3
-		EXPECT_EQ(serverEmittedEvents[11]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data3
-			
-		EXPECT_EQ(serverEmittedEvents.size(), 12);
+		///----
+		cout << "Test: Receive server's public key" << '\n';
+		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 
-		// Expected client events:
+		ReadReceivedMessageAndAssertType(MessageType::SendPubKey); // got server's pub key
 
-		cout << "Client events emitted:\n";
-		int clientEventCount = 1;
-		for (const shared_ptr<Event>& event : clientEmittedEvents)
-		{
-			std::cout << clientEventCount++ << ": " << event->ToString() << "\n";
-		}
+		allEvents = PartitionEvents();
+		clientEmittedEvents = std::get<0>(allEvents);
 
-		EXPECT_EQ(clientEmittedEvents[0]->Id, ReliableUdpAckPacketEventId);   // Ack received for sending client's public key
-		EXPECT_EQ(clientEmittedEvents[1]->Id, ReliableUdpPacketRttCalculatedEventId); 
 		EXPECT_EQ(clientEmittedEvents[2]->Id, ReliableUdpPacketReceivedEventId); // Data received: public key
-		EXPECT_EQ(clientEmittedEvents[3]->Id, ReliableUdpAckPacketEventId); // sent ack for having received data (server's public key)
-		EXPECT_EQ(clientEmittedEvents[4]->Id, ReliableUdpAckPacketEventId); // received ack from server for data1
-		EXPECT_EQ(clientEmittedEvents[5]->Id, ReliableUdpPacketRttCalculatedEventId); 
-		EXPECT_EQ(clientEmittedEvents[6]->Id, ReliableUdpAckPacketEventId); // received ack from server for data2
-			EXPECT_FALSE(To<ReliableUdpAckPacketEvent>(clientEmittedEvents[6])->Sent);	
-		EXPECT_EQ(clientEmittedEvents[7]->Id, ReliableUdpPacketRttCalculatedEventId); 
-		EXPECT_EQ(clientEmittedEvents[8]->Id, ReliableUdpAckPacketEventId); // received ack from server for data3
-			EXPECT_FALSE(To<ReliableUdpAckPacketEvent>(clientEmittedEvents[8])->Sent);
-		EXPECT_EQ(clientEmittedEvents[9]->Id, ReliableUdpPacketRttCalculatedEventId);
+		EXPECT_EQ(clientEmittedEvents[3]->Id, ReliableUdpAckPacketEventId); // Send ack
+
+		serverEmittedEvents = std::get<1>(allEvents);
+
+		///----
+		// Send data1 reliably with aggregated message support if not acknowledgment received
+		
+		cout << "Test: send data1 encrypted" << '\n';
+		client->Send(thereCanBeOnlyOne, static_cast<int>(strlen(thereCanBeOnlyOne)));
+						
+		cout << "Test: Receive ack for data1" << '\n';
+		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
+
+		ReadReceivedMessageAndAssertType(MessageType::Ack);
+		allEvents = PartitionEvents();
+
+		serverEmittedEvents = std::get<1>(allEvents);
+		EXPECT_EQ(serverEmittedEvents[3]->Id, ReliableUdpAckPacketEventId); // receive ack
+		EXPECT_EQ(serverEmittedEvents[4]->Id, ReliableUdpPacketRttCalculatedEventId);
+		EXPECT_EQ(serverEmittedEvents[5]->Id, ReliableUdpPacketReceivedEventId); // receive data
+
+		clientEmittedEvents = std::get<0>(allEvents);
+
+		EXPECT_EQ(clientEmittedEvents[4]->Id, ReliableUdpPacketLossDetectedEventId); // sent aggregated message
+		EXPECT_EQ(clientEmittedEvents[5]->Id, ReliableUdpAckPacketEventId); // received ack for what was sent to server (data1)
+		EXPECT_EQ(clientEmittedEvents[6]->Id, ReliableUdpPacketRttCalculatedEventId);
+			
+
+		///----
+		cout << "Test: Send encrypted data2" << '\n';
+		client->Send(thereCanBeOnlyTwo, static_cast<int>(strlen(thereCanBeOnlyTwo)));
+						
+		cout << "Test: Receive ack for data2" << '\n';
+		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
+
+		ReadReceivedMessageAndAssertType(MessageType::Ack);
+		allEvents = PartitionEvents();
+		clientEmittedEvents = std::get<0>(allEvents);
+
+		EXPECT_EQ(clientEmittedEvents[7]->Id, ReliableUdpAckPacketEventId);
+		EXPECT_EQ(clientEmittedEvents[8]->Id, ReliableUdpPacketRttCalculatedEventId);
+		
+		serverEmittedEvents = std::get<1>(allEvents);
+
+		EXPECT_EQ(serverEmittedEvents[6]->Id, NetworkTrafficReceivedEventId); // ""
+		EXPECT_EQ(serverEmittedEvents[7]->Id, NetworkTrafficReceivedEventId); // "There can be only one"
+		EXPECT_EQ(serverEmittedEvents[8]->Id, ReliableUdpAckPacketEventId);
+
+		EXPECT_EQ(serverEmittedEvents[9]->Id, ReliableUdpPacketReceivedEventId);
+		EXPECT_EQ(serverEmittedEvents[10]->Id, NetworkTrafficReceivedEventId); // "There can be only two"
+		EXPECT_EQ(serverEmittedEvents[11]->Id, ReliableUdpAckPacketEventId);
+
+		///----
+		cout << "Test: Send encrypted data3" << '\n';
+		client->Send(thereCanBeOnlyThree, static_cast<int>(strlen(thereCanBeOnlyThree)));
+						
+		cout << "Test: Receive ack for data3" << '\n';
+		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
+
+		ReadReceivedMessageAndAssertType(MessageType::Ack);
+		allEvents = PartitionEvents();
+		clientEmittedEvents = std::get<0>(allEvents);
+
+		EXPECT_EQ(clientEmittedEvents[9]->Id, ReliableUdpAckPacketEventId);
+		EXPECT_EQ(clientEmittedEvents[10]->Id, ReliableUdpPacketRttCalculatedEventId);
+
+		serverEmittedEvents = std::get<1>(allEvents);
+
+		EXPECT_EQ(serverEmittedEvents[12]->Id, ReliableUdpPacketReceivedEventId);
+		EXPECT_EQ(serverEmittedEvents[13]->Id, NetworkTrafficReceivedEventId); // "There can be only three"
+		EXPECT_EQ(serverEmittedEvents[14]->Id, ReliableUdpAckPacketEventId);
+			
+		cout << "Test: Wait for the server to respond" << '\n';
+		Sleep(1000);
+
+
 	}
 }
 

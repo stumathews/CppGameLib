@@ -46,17 +46,13 @@ namespace gamelib
 		{
 			Logger::Get()->LogThis("Client: [Detected secure session not yet established]");
 
-			// Do not send the data if the session is not encrypted.
+			// Do not send the data if the session is not encrypted. Send the public key instead.
 
 			Logger::Get()->LogThis("Client: Sending public key...");
 
 			// Send our public key to server instead.
 			return SendInternal(reinterpret_cast<char*>(clientSecuritySide.GetPublicKey()), SecuritySide::PublicKeyLengthBytes, deltaMs, SendPubKey);
 		}
-
-		Logger::Get()->LogThis("Client: [Detected secure session not yet established]");
-
-		Logger::Get()->LogThis("Client: Sending encrypted data...");
 
 		// Send over the transport - might be an aggregated message if there were no prior acks		
 		return SendInternal(callersSendBuffer, dataLength, deltaMs, General);
@@ -75,7 +71,7 @@ namespace gamelib
 			this->RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketLossDetectedEvent(std::make_shared<Message>(*message)));
 		}
 
-		Logger::Get()->LogThis("Client: [Sending data]");
+		Logger::Get()->LogThis("Client: [Sending " + MessageTypeToString(messageType) + "]");
 
 		// Write to the packingBuffer via the BitPacker	
 		message->Write(packer);
@@ -85,7 +81,7 @@ namespace gamelib
 		
 		if(sessionEstablished && useEncryption)
 		{
-			Logger::Get()->LogThis("Client: [Session is secure]");
+			Logger::Get()->LogThis("Client: [Secure session established]");
 
 			// Use a constant nonce for now
 			*sharedNonce = 1;
@@ -98,13 +94,13 @@ namespace gamelib
 			                                clientSecuritySide.GetTransmissionSessionKey(), sharedNonce,
 			                                encryptedMessage.data());
 
-			Logger::Get()->LogThis("Client: [Sending encrypted data]");
+			Logger::Get()->LogThis("Client: Sending encrypted data...");
 
 			// send Encrypted message
-			return gameClientConnection->Send(reinterpret_cast<char*>(encryptedMessage.data()), encryptedMessage.size());
+			return gameClientConnection->Send(reinterpret_cast<char*>(encryptedMessage.data()), static_cast<int>(encryptedMessage.size()));
 		}
 
-		Logger::Get()->LogThis("Client: [Sending non-encrypted data]");
+		Logger::Get()->LogThis("Client: Sending non-encrypted data...");
 
 		const auto sendResult = gameClientConnection->Send(reinterpret_cast<char*>(packingBuffer), countBytesToSend);
 		return sendResult;
@@ -152,7 +148,6 @@ namespace gamelib
 			// copy decrypted message into caller's buffer
 			memcpy_s(callersReceiveBuffer, bufLength, decryptedMessage.data(), decryptedMessage.size());
 		}
-
 		
 		BitfieldReader packedBufferReader(reinterpret_cast<uint32_t*>(callersReceiveBuffer), count32BitBlocks);
 
@@ -175,27 +170,9 @@ namespace gamelib
 
 		reliableUdp.MarkReceived(message, deltaMs);
 
-		// SendAck - only to non-ack messages (don't ack an ack!)
-		if(message.Header.MessageType != Ack)	
-		{
-			Logger::Get()->LogThis("Client: Sending ack");
-
-			RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketReceived(std::make_shared<Message>(message)));			
-			SendAck(message, deltaMs);
-			RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), true));
-		} 		
-		
-		if (message.Header.MessageType == Ack) // ack
-		{
-			Logger::Get()->LogThis("Client: Received ack");
-			RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), false));
-			RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketRttCalculatedEvent(std::make_shared<Message>(message), 
-					PacketDatumUtils::CalculateRttStats(message, reliableUdp.SendBuffer)));
-		}
-
 		if(message.Header.MessageType == SendPubKey)
 		{
-			Logger::Get()->LogThis("Client: Received server's public key");
+			Logger::Get()->LogThis("Client: [Received server's public key]");
 
 			// Server sent us their public key
 			memcpy_s(remotePublicKey, SecuritySide::PublicKeyLengthBytes, message.Data()[0].Data(), SecuritySide::PublicKeyLengthBytes);
@@ -207,16 +184,25 @@ namespace gamelib
 			sessionEstablished = true;
 		}
 
-		
-		// Copy contents to caller's receive buffer to expose the contents of the message
-		std::stringstream ss;
-		for(auto& packet : message.Data())
+		if (message.Header.MessageType == Ack) // ack
 		{
-			ss << packet.Data();
+			Logger::Get()->LogThis("Client: [Received ack]");
+			RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), false));
+			RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketRttCalculatedEvent(std::make_shared<Message>(message),
+				PacketDatumUtils::CalculateRttStats(message, reliableUdp.SendBuffer)));
 		}
 
-		strcpy_s(callersReceiveBuffer, bufLength, ss.str().c_str());
+		// SendAck - only to non-ack messages (don't ack an ack!)
+		if (message.Header.MessageType != Ack)
+		{
+			Logger::Get()->LogThis("Client: Sending ack...");
 
+			RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketReceived(std::make_shared<Message>(message)));
+			SendAck(message, deltaMs);
+			RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), true));
+		}
+
+		// Note: received data has already been copied to the caller's provided buffer
 		return bytesReceived;
 	}
 
@@ -248,11 +234,13 @@ namespace gamelib
 		const auto countBytesToSend = static_cast<int>(ceil(static_cast<double>(packer.TotalBitsPacked()) / static_cast<double>(8)));
 		
 		// Send network buffer over udp
-		return gameClientConnection->Send(reinterpret_cast<char*>(readBuffer), countBytesToSend);
+		//return gameClientConnection->Send(reinterpret_cast<char*>(readBuffer), countBytesToSend);
+		return SendInternal(reinterpret_cast<char*>(readBuffer), countBytesToSend, 0, Ack);
 	}
 
 	void ReliableUdpProtocolManager::Update(unsigned long deltaMs)
 	{
+		// do nothing
 	}
 
 	std::shared_ptr<IConnectedNetworkSocket> ReliableUdpProtocolManager::GetConnection()

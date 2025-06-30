@@ -15,6 +15,15 @@ namespace gamelib
 		General
 	};
 
+	inline std::string MessageTypeToString(MessageType messageType)
+	{
+		if (messageType == Ack) return "Ack";
+		if (messageType == General) return "General";
+		if (messageType == SendPubKey) return "SendPubKey";
+
+		return "Unknown";
+	}
+
 	struct ReliableUdpMessageHeader
 	{
 		 // Sequence number

@@ -88,10 +88,19 @@ namespace gamelib
 
 			// Message handling:
 
-			if(message.Header.MessageType != Ack) // non-ack message
-			{
-				Logger::Get()->LogThis("Server: [Received data message (non-ack)]");
+			Logger::Get()->LogThis("Server: [Received "+ MessageTypeToString(message.Header.MessageType) +"]");				
 
+			if(message.Header.MessageType == Ack) // ack message
+			{
+				RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), false));				
+				
+				RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketRttCalculatedEvent(std::make_shared<Message>(message), 
+					PacketDatumUtils::CalculateRttStats(message, reliableUdp.ReceiveBuffer)));
+				
+			}
+
+			if (message.Header.MessageType != Ack) // non-ack message
+			{
 				RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketReceived(std::make_shared<Message>(message)));
 
 				// For the case where we've received multiple messages (aggregate).
@@ -102,7 +111,7 @@ namespace gamelib
 				// ie data[0] = current, data[1] is prior, data[2] is prior prior. So we need to process in reverse order until data[0]
 
 				const auto messageData = message.Data();
-				for(int i = static_cast<int>(message.Data().size()) -1 ; i >= 0 ; i--)
+				for (int i = static_cast<int>(message.Data().size()) - 1; i >= 0; i--)
 				{
 					const PacketDatum& datum = messageData[i];
 					const char* payloadData = datum.Data();
@@ -119,21 +128,8 @@ namespace gamelib
 				RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), true));
 			}
 
-			if(message.Header.MessageType == Ack) // ack message
+			if (message.Header.MessageType == SendPubKey)
 			{
-				Logger::Get()->LogThis("Server: [Received non-data message (ack)]");
-
-				RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), false));				
-				
-				RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketRttCalculatedEvent(std::make_shared<Message>(message), 
-					PacketDatumUtils::CalculateRttStats(message, reliableUdp.ReceiveBuffer)));
-				
-			}
-
-			if(message.Header.MessageType == SendPubKey)
-			{
-				Logger::Get()->LogThis("Server: Received client's public key");
-
 				// We got the client's public key
 				memcpy_s(remotePublicKey, SecuritySide::PublicKeyLengthBytes, message.Data()[0].Data(), SecuritySide::PublicKeyLengthBytes);
 

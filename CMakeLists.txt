@@ -1,11 +1,13 @@
 cmake_minimum_required(VERSION 3.27)
 
-project(cppgamelib2 VERSION 1.0)
+project(cppgamelib VERSION 1.0)
 
+# Use the latest C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_library(cppgamelib2 STATIC 
+# Create the library using the library source files
+add_library(cppgamelib STATIC 
 ai/ActiveSelector.h
 ai/Behavior.h
 ai/BehavioralSequence.h
@@ -286,7 +288,7 @@ utils/Statistics.h
 utils/Utils.h
 )
 
-
+# Find packages for library dependencies (these will come via vcpkg)
 find_package(unofficial-sodium CONFIG REQUIRED)
 find_package(GTest CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
@@ -295,23 +297,24 @@ find_package(SDL2_ttf CONFIG REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(SDL2_image REQUIRED)
 
-set_target_properties(cppgamelib2 PROPERTIES LINKER_LANGUAGE CXX)
+# Set a few properties for the library 
+set_target_properties(cppgamelib PROPERTIES LINKER_LANGUAGE CXX)
 
-target_link_libraries(cppgamelib2 
+# Link to external dependencies
+target_link_libraries(cppgamelib 
 SDL2::SDL2 
 SDL2_ttf::SDL2_ttf
 SDL2_mixer::SDL2_mixer
 SDL2_image::SDL2_image
 unofficial-sodium::sodium)
 
-target_include_directories(cppgamelib2 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} 
-C:/repos/2DGameDev/ThirdParty/SDL2_mixer-2.8.0/include
-C:/repos/2DGameDev/ThirdParty/SDL2_image-2.8.2/include)
-
+# Set the libraries include 
+target_include_directories(cppgamelib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Make an executable that runs all the tests the the provided files
 enable_testing()
 
+# Add an executable for running all tests. This excludes networking tests
 add_executable(AllTests
 Tests/Tests/BehaviorTreeBuilderTests.cpp 
 Tests/Tests/BehaviorTreeTests.cpp 
@@ -334,21 +337,41 @@ Tests/Tests/GraphicAssetFactoryTests.cpp
 Tests/Tests/SceneGraphTests.cpp
 Tests/Tests/SceneManagerTests.cpp
 Tests/Tests/SDLGraphicsManagerTests.cpp
+)
+
+# Add an executable for running only the networking tests
+add_executable(NetworkingTests
 Tests/Tests/NetworkingTests.cpp
 )
 
+# Set the properties for the test executables
 set_target_properties(AllTests PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(NetworkingTests PROPERTIES LINKER_LANGUAGE CXX)
 
+# Set the include directories for the test executables
 target_include_directories(AllTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Tests/Tests)
+target_include_directories(NetworkingTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Tests/Tests)
 
+# Link libraries that the test AllTests exeutable uses
 target_link_libraries(AllTests PUBLIC 
-cppgamelib2
+cppgamelib
 SDL2::SDL2
 SDL2_ttf::SDL2_ttf
 SDL2_mixer::SDL2_mixer
 SDL2_image::SDL2_image
+PRIVATE
+GTest::gmock_main winmm)
+
+# Set include directory for allTests executable
+target_include_directories(AllTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+# Link libraries that the test AllTests exeutable uses
+target_link_libraries(NetworkingTests PUBLIC 
+cppgamelib
 unofficial-sodium::sodium PRIVATE
 GTest::gmock_main winmm)
 
-target_include_directories(AllTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(NetworkingTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+install(TARGETS cppgamelib DESTINATION lib)
 

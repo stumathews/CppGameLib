@@ -434,7 +434,7 @@ set(ConfigPackageLocation lib/cmake/cppgamelib)
 install(
   FILES
     cmake/cppgamelibConfig.cmake # This file must be created by us
-    "${CMAKE_CURRENT_BINARY_DIR}/cpgamelib/cppgamelibConfigVersion.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/cppgamelib/cppgamelibConfigVersion.cmake"
   DESTINATION
     ${ConfigPackageLocation}
   COMPONENT

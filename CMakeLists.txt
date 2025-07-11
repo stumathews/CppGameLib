@@ -112,6 +112,8 @@ time/PeriodicTimer.cpp
 time/Timer.cpp
 )
 
+add_library(cppgamelib::cppgamelib ALIAS cppgamelib)
+
 target_sources(cppgamelib
  PUBLIC
   FILE_SET api
@@ -401,46 +403,14 @@ add_custom_command(
 # Note: We set the working dir of the test to the target output folder otherwise is runs tests from builddir and can't find the configuration files as they are not in the build dir, but the target dir (eg. Release/ etc)
 add_test(NAME MainTests COMMAND AllTests WORKING_DIRECTORY $<TARGET_FILE_DIR:AllTests>)
 
-install(TARGETS cppgamelib EXPORT cppgamelibTargets
+install(TARGETS cppgamelib 
+EXPORT cppgamelib
 FILE_SET api 
 DESTINATION include/cppgamelib
 INCLUDES DESTINATION include)
 
-## BEGIN package configuration support for downstream users:
-
-include(CMakePackageConfigHelpers)
-
-write_basic_package_version_file(
-  "${CMAKE_CURRENT_BINARY_DIR}/cppgamelib/cppgamelibConfigVersion.cmake"
-  VERSION ${PROJECT_VERSION}
-  COMPATIBILITY AnyNewerVersion
-)
-
-export(EXPORT cppgamelibTargets
-  FILE "${CMAKE_CURRENT_BINARY_DIR}/cppgamelib/cppgamelibTargets.cmake"
-  NAMESPACE cppgamelib::
-)
-configure_file(cmake/cppgamelibConfig.cmake
-  "${CMAKE_CURRENT_BINARY_DIR}/cppgamelib/cppgamelibConfig.cmake"
-  COPYONLY
-)
-
-# Write the targets to a file
-set(ConfigPackageLocation lib/cmake/cppgamelib)
-install(EXPORT cppgamelibTargets
-  FILE
-    cppgamelibTargets.cmake
-  NAMESPACE
-    cppgamelib::
-  DESTINATION
-    ${ConfigPackageLocation}
-)
-install(
-  FILES
-    cmake/cppgamelibConfig.cmake
-    "${CMAKE_CURRENT_BINARY_DIR}/cppgamelib/cppgamelibConfigVersion.cmake"
-  DESTINATION
-    ${ConfigPackageLocation}
-  COMPONENT
-    Devel
+# Create/export the targets to a file
+install(EXPORT cppgamelib
+DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cppgamelib
+NAMESPACE cppgamelib::
 )

@@ -318,10 +318,10 @@ SDL2_image::SDL2_image
 unofficial-sodium::sodium)
 
 # Set the libraries include
-target_include_directories(cppgamelib PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ai>
-        $<INSTALL_INTERFACE:include>
-    )
+#target_include_directories(cppgamelib PUBLIC
+#        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ai>
+#        $<INSTALL_INTERFACE:include>
+#    )
 
 # Make an executable that runs all the tests the the provided files
 enable_testing()

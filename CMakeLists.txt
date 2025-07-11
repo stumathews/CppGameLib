@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 4.0)
 
 project(cppgamelib VERSION 1.0)
 
+include(GenerateExportHeader)
+
 enable_testing()
 
 # Use the latest C++ standard
@@ -297,6 +299,9 @@ utils/Statistics.h
 utils/Utils.h
 )
 
+# Generate a header file containing preprocessor macro definitions to control C/C++ symbol visibility.
+generate_export_header(cppgamelib)
+
 # Find packages for library dependencies (these will come via vcpkg)
 find_package(unofficial-sodium CONFIG REQUIRED)
 find_package(GTest CONFIG REQUIRED)
@@ -396,7 +401,46 @@ add_custom_command(
 # Note: We set the working dir of the test to the target output folder otherwise is runs tests from builddir and can't find the configuration files as they are not in the build dir, but the target dir (eg. Release/ etc)
 add_test(NAME MainTests COMMAND AllTests WORKING_DIRECTORY $<TARGET_FILE_DIR:AllTests>)
 
-install(TARGETS cppgamelib 
+install(TARGETS cppgamelib EXPORT cppgamelibTargets
 FILE_SET api 
 DESTINATION include/cppgamelib
 INCLUDES DESTINATION include)
+
+## BEGIN package configuration support for downstream users:
+
+include(CMakePackageConfigHelpers)
+
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/cppgamelib/cppgamelibConfigVersion.cmake"
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY AnyNewerVersion
+)
+
+export(EXPORT cppgamelibTargets
+  FILE "${CMAKE_CURRENT_BINARY_DIR}/cppgamelib/cppgamelibTargets.cmake"
+  NAMESPACE cppgamelib::
+)
+configure_file(cmake/cppgamelibConfig.cmake
+  "${CMAKE_CURRENT_BINARY_DIR}/cppgamelib/cppgamelibConfig.cmake"
+  COPYONLY
+)
+
+# Write the targets to a file
+set(ConfigPackageLocation lib/cmake/cppgamelib)
+install(EXPORT cppgamelibTargets
+  FILE
+    cppgamelibTargets.cmake
+  NAMESPACE
+    cppgamelib::
+  DESTINATION
+    ${ConfigPackageLocation}
+)
+install(
+  FILES
+    cmake/cppgamelibConfig.cmake
+    "${CMAKE_CURRENT_BINARY_DIR}/cppgamelib/cppgamelibConfigVersion.cmake"
+  DESTINATION
+    ${ConfigPackageLocation}
+  COMPONENT
+    Devel
+)

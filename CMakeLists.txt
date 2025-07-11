@@ -317,8 +317,11 @@ SDL2_mixer::SDL2_mixer
 SDL2_image::SDL2_image
 unofficial-sodium::sodium)
 
-# Set the libraries include 
-target_include_directories(cppgamelib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+# Set the libraries include
+target_include_directories(cppgamelib PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ai>
+        $<INSTALL_INTERFACE:include>
+    )
 
 # Make an executable that runs all the tests the the provided files
 enable_testing()
@@ -392,6 +395,5 @@ add_custom_command(
 
 # Note: We set the working dir of the test to the target output folder otherwise is runs tests from builddir and can't find the configuration files as they are not in the build dir, but the target dir (eg. Release/ etc)
 add_test(NAME MainTests COMMAND AllTests WORKING_DIRECTORY $<TARGET_FILE_DIR:AllTests>)
-
 
 install(TARGETS cppgamelib FILE_SET api)

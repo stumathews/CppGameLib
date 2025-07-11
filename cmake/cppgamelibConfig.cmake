@@ -1,1 +1,1 @@
-include("${CMAKE_CURRENT_LIST_DIR}/cppgamelibTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cppgamelib.cmake")

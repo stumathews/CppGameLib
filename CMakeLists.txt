@@ -4,6 +4,9 @@ project(cppgamelib VERSION 1.0)
 
 include(GenerateExportHeader)
 
+# Include functionality that will help us create the package config for this project
+include(CMakePackageConfigHelpers)
+
 enable_testing()
 
 # Use the latest C++ standard
@@ -404,13 +407,36 @@ add_custom_command(
 add_test(NAME MainTests COMMAND AllTests WORKING_DIRECTORY $<TARGET_FILE_DIR:AllTests>)
 
 install(TARGETS cppgamelib 
-EXPORT cppgamelib
+EXPORT cppgamelib # produce target exports for this target
 FILE_SET api 
 DESTINATION include/cppgamelib
 INCLUDES DESTINATION include)
 
-# Create/export the targets to a file
+# Create/write the targets exports to the specified file name in the lib directory (as this is where downstream packages look for it via find_package())
+
 install(EXPORT cppgamelib
 DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cppgamelib
 NAMESPACE cppgamelib::
+)
+
+# Write a basic package config version file for us please
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/cppgamelib/cppgamelibConfigVersion.cmake"
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY AnyNewerVersion
+)
+
+# set a variable for with location of where we are going to install the config package to
+
+set(ConfigPackageLocation lib/cmake/cppgamelib)
+
+# install the package config file (this imports the exported target file previously created) and the version file
+install(
+  FILES
+    cmake/cppgamelibConfig.cmake # This file must be created by us
+    "${CMAKE_CURRENT_BINARY_DIR}/cpgamelib/cppgamelibConfigVersion.cmake"
+  DESTINATION
+    ${ConfigPackageLocation}
+  COMPONENT
+    Devel
 )

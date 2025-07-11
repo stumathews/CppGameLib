@@ -4,7 +4,7 @@
     {
       "name": "vcpkg",
       "generator" : "Visual Studio 17 2022",
-      "binaryDir": "${sourceDir}/cmake",
+      "binaryDir": "${sourceDir}/builddir",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
       }
@@ -12,7 +12,7 @@
     {
       "name": "release",
       "generator" : "Visual Studio 17 2022",
-      "binaryDir": "${sourceDir}/cmake",
+      "binaryDir": "${sourceDir}/builddir",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
         "MAKE_BUILD_TYPE" : "Release"

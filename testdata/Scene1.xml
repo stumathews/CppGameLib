@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Objects in Scene/Level 1 -->
+<scene id="1">
+
+	<!-- Player Layer -->
+	<layer name="player0" posx="0" posy="0" visible="true">
+
+		<!-- player layer Objects -->
+		<objects>
+			<!-- An object at position 400, 100 which is visible, using resource 6 and having a specific colour key -->
+			<!-- <object posx="400" posy="100" resourceId="6" visible="true" colourKey="true" r="0" g="255" b="0"></object> -->
+			<object posx="0" posy="0" resourceId="9" visible="true" colourKey="true" r="0" g="255" b="0"></object>
+		</objects>
+	</layer>
+</scene>

@@ -13,6 +13,9 @@ enable_testing()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Restrict to debug and release builds not things like MinSizeRel and RelWithDebInfo
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
+
 # Create the library using the library source files
 add_library(cppgamelib STATIC 
 ai/BehaviorTree.cpp

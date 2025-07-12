@@ -403,6 +403,12 @@ add_custom_command(
           "$<TARGET_FILE_DIR:AllTests>"
 )
 
+# Use Release version of library for MinSizeRel and RelWithDebInfo build types
+set_target_properties(cppgamelib PROPERTIES
+  MAP_IMPORTED_CONFIG_MINSIZEREL Release
+  MAP_IMPORTED_CONFIG_RELWITHDEBINFO Release
+  )
+
 # Note: We set the working dir of the test to the target output folder otherwise is runs tests from builddir and can't find the configuration files as they are not in the build dir, but the target dir (eg. Release/ etc)
 add_test(NAME MainTests COMMAND AllTests WORKING_DIRECTORY $<TARGET_FILE_DIR:AllTests>)
 

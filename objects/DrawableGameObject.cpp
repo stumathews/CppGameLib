@@ -2,6 +2,8 @@
 #include <SDL.h>
 #include <geometry/Coordinate.h>
 
+#include "file/Logger.h"
+
 using namespace std;
 
 namespace gamelib

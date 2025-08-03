@@ -4,13 +4,12 @@
 #include "GraphicAsset.h"
 #include "file/tinyxml2.h"
 #include <memory>
-#include "SDL.h"
+
 #include <functional>
 
 #include "Window.h"
-#include "events/EventManager.h"
 #include "events/EventSubscriber.h"
-
+#include "objects/GameObject.h"
 
 namespace gamelib
 {

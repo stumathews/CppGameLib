@@ -2,12 +2,13 @@
 #include <memory>
 #include <string>
 #include <net/MessageHeader.h>
-#include <events/Event.h>
-#include <events/IEventSerializationManager.h>
 #include "net/BitPacker.h"
 
 namespace gamelib
 {
+	class Event;
+	class IEventSerializationManager;
+
 	enum class Encoding : uint8_t
 	{
 		none,

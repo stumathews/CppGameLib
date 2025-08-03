@@ -7,7 +7,6 @@
 #include <utils\Utils.h>
 #include <file/TextFile.h>
 
-#include "IElapsedTimeProvider.h"
 #include "NetworkingStatistics.h"
 #include "events/EventManager.h"
 #include "events/EventSubscriber.h"
@@ -16,6 +15,7 @@
 
 namespace gamelib
 {
+	class IElapsedTimeProvider;
 	class NetworkingActivityMonitor : public gamelib::EventSubscriber
 	{
 	public:

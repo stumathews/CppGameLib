@@ -2,7 +2,6 @@
 #ifndef EVENT_H
 #define EVENT_H
 
-
 #include <string>
 #include <sstream>
 #include "EventId.h"

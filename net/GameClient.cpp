@@ -8,7 +8,11 @@
 #include <file/SerializationManager.h>
 #include "TransportOnlyProtocolManager.h"
 #include "ReliableUdpProtocolManager.h"
+#include "events/PlayerMovedEvent.h"
 #include "events/StartNetworkLevelEvent.h"
+#include "IConnectedNetworkSocket.h"
+#include "file/Logger.h"
+#include "file/SerializationManager.h"
 
 using namespace json11;
 

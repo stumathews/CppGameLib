@@ -1,30 +1,37 @@
 #pragma once
 
-#include <events/PlayerMovedEvent.h>
-#include <events/IEventSerializationManager.h>
 #include <memory>
 #include <string>
-#include <events/NetworkTrafficReceivedEvent.h>
-#include <events/SceneChangedEvent.h>
 #include <net/NetworkPlayer.h>
 
-#include "IEventSubscriber.h"
-#include "ReliableUdpCheckSumFailedEvent.h"
-#include "ReliableUdpPacketReceivedEvent.h"
-#include "ReliableUdpPacketLossDetectedEvent.h"
-#include "UpdateAllGameObjectsEvent.h"
-#include "UpdateProcessesEvent.h"
+
 #include "net/Message.h"
-#include <events/ReliableUdpAckPacketEvent.h>
-#include <events/ReliableUdpPacketRttCalculatedEvent.h>
+
+
+#include "ControllerMoveEvent.h"
+#include "character/Direction.h"
+#include "net/Rtt.h"
 
 
 namespace gamelib
 {
+	class ReliableUdpPacketRttCalculatedEvent;
+	class ReliableUdpAckPacketEvent;
+	class ReliableUdpPacketLossDetectedEvent;
+	class ReliableUdpCheckSumFailedEvent;
+	class ReliableUdpPacketReceivedEvent;
 	class SubscriberHandledEvent;
 	class NetworkPlayerJoinedEvent;
 	class AddGameObjectToCurrentSceneEvent;
 	class GameObject;
+	class IEventSerializationManager;
+	class StartNetworkLevelEvent;
+	class PlayerMovedEvent;
+	class NetworkTrafficReceivedEvent;
+	class UpdateAllGameObjectsEvent;
+	class UpdateProcessesEvent;
+	class IEventSubscriber;
+	class SceneChangedEvent;
 
 	class EventFactory
 	{

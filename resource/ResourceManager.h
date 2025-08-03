@@ -2,13 +2,16 @@
 #include <string>
 #include <map>
 #include <memory>
-#include "asset/asset.h"
-#include "events/EventManager.h"
 #include "events/EventSubscriber.h"
-#include "graphic/SDLGraphicsManager.h"
+
+namespace tinyxml2
+{
+	class XMLElement;
+}
 
 namespace gamelib
 {
+	class Asset;
 	/***
 	 * co-ordinates the resources in the game - such as holding definitions of all the resources/assets in the game
 	 */

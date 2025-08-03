@@ -1,6 +1,7 @@
 #pragma once
 #include "Event.h"
-#include "ControllerMoveEvent.h"
+#include "EventNumbers.h"
+#include "character/Direction.h"
 
 namespace gamelib
 {

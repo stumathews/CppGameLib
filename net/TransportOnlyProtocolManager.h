@@ -2,14 +2,11 @@
 #define NO_PROTOCOL_MANAGER_H
 #include <memory>
 
-#include "IGameServerConnection.h"
+#include "IConnectedNetworkSocket.h"
 #include "IProtocolManager.h"
-#include "Message.h"
 
 namespace gamelib
 {
-	class IConnectedNetworkSocket;
-
 	class TransportOnlyProtocolManager : public IProtocolManager
 	{
 	public:

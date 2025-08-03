@@ -1,6 +1,6 @@
 #pragma once
-#include <SDL.h>
 
+class SDL_Renderer;
 namespace gamelib
 {
 	class Drawing

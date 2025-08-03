@@ -1,15 +1,17 @@
 #pragma once
 #include <memory>
 #include "file/tinyxml2.h"
-#include "GameObject.h"
 #include "common/aliases.h"
-#include "asset/Asset.h"
-#include <character/AnimatedSprite.h>
+#include "geometry/Coordinate.h"
 
 namespace gamelib
 {
+	class GraphicAsset;
+	class AnimatedSprite;
 	class ResourceManager;
 	class StaticSprite;
+	class Asset;
+	class GameObject;
 
 	/// <summary>
 	/// Constructs a Game Object from the details about a game object (usually from file)

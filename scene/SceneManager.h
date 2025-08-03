@@ -2,16 +2,13 @@
 #define SCENE_MANAGER_H
 
 #include <list>
-#include "Layer.h"
 #include "events/EventSubscriber.h"
-#include "resource/ResourceManager.h"
 #include "objects/GameWorldData.h"
-#include <file/Logger.h>
-
 #include "events/EventNumbers.h"
 
 namespace gamelib
 {
+	class Layer;
 	class GameWorldData;
 	const static EventId DrawCurrentSceneEventId(DrawCurrentScene, "DrawCurrentScene");	
 	const static EventId GenerateNewLevelEventId(GenerateNewLevel, "GenerateNewLevel");

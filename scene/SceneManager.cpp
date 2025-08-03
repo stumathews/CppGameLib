@@ -11,7 +11,10 @@
 #include "events/UpdateAllGameObjectsEvent.h"
 #include "objects/GameObjectFactory.h"
 #include "file/SettingsManager.h"
+#include "graphic/SDLGraphicsManager.h"
 #include "utils/Utils.h"
+#include "objects/GameObject.h"
+#include "Layer.h"
 
 using namespace std;
 

@@ -5,6 +5,7 @@
 #include <file/SerializationManager.h>
 #include <net/PeerInfo.h>
 #include <events/Event.h>
+#include <events/NetworkTrafficReceivedEvent.h>
 
 namespace gamelib
 {

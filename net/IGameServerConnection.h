@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+
 namespace gamelib
 {
 	// Interface for a game server's connection to a client

@@ -1,7 +1,6 @@
 #pragma once
 #include <SDL.h>
 #include "asset/asset.h"
-#include "common/aliases.h"
 #include "geometry/ABCDRectangle.h"
 #include "ColourKey.h"
 

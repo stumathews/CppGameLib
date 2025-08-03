@@ -2,10 +2,10 @@
 #pragma once
 #include "Event.h"
 #include "EventNumbers.h"
-#include "net/Message.h"
 
 namespace gamelib
 {
+	class Message;
 	const static EventId ReliableUdpCheckSumFailedEventId(ReliableUdpCheckSumFailed, "ReliableUdpCheckSumFailed");
 	class ReliableUdpCheckSumFailedEvent : public Event
 	{

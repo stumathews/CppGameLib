@@ -7,12 +7,12 @@
 #include "EventSubscriber.h"
 #include <map>
 #include <queue>
-#include "Event.h"
 #include <functional>
 
 namespace gamelib
 {
-	
+	class Event;
+
 	// Raises and dispatches events to subscribers	
 	class EventManager : public EventSubscriber
 	{

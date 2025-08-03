@@ -1,5 +1,7 @@
 #include "GameStatePusher.h"
 
+#include "processes/Action.h"
+
 namespace gamelib
 {
 	GameStatePusher::GameStatePusher(const std::function<void()>& sendGameStateFunc, const int sendRateMs, const bool isGameServer,

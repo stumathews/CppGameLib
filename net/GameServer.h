@@ -2,9 +2,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <file/Logger.h>
 #include <events/EventSubscriber.h>
-
 #include "file/SerializationManager.h"
 
 

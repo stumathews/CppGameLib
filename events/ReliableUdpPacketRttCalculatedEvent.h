@@ -6,13 +6,13 @@
 #include "Event.h"
 #include "EventId.h"
 #include "EventNumbers.h"
-#include "net/Message.h"
 #include "net/Rtt.h"
 
 namespace gamelib
 {
+	class Message;
+	const static EventId ReliableUdpPacketRttCalculatedEventId(ReliableUdpPacketRttCalculated, "ReliableUdpPacketRttCalculatedEvent");
 
-const static EventId ReliableUdpPacketRttCalculatedEventId(ReliableUdpPacketRttCalculated, "ReliableUdpPacketRttCalculatedEvent");
 	class ReliableUdpPacketRttCalculatedEvent final : public Event
 	{
 	public:

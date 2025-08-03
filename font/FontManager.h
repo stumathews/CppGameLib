@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "FontAsset.h"
+
 #include "asset/asset.h"
 
 namespace tinyxml2 {
@@ -10,6 +10,7 @@ namespace tinyxml2 {
 
 namespace gamelib
 {
+	class FontAsset;
 	class FontManager
 	{
 	public:	 		

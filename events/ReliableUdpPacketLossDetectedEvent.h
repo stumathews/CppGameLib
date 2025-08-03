@@ -4,10 +4,10 @@
 
 #include "Event.h"
 #include "EventNumbers.h"
-#include "net/Message.h"
 
 namespace gamelib
 {
+	class Message;
 	const static EventId ReliableUdpPacketLossDetectedEventId(ReliableUdpPacketLossDetected, "ReliableUdpPacketLossDetected");
 	class ReliableUdpPacketLossDetectedEvent : public Event
 	{

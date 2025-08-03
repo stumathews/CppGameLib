@@ -7,7 +7,9 @@
 #include <net/IGameServerConnection.h>
 #include <net/TcpGameServerConnection.h>
 #include <net/UdpGameServerConnection.h>
+#include "events/PlayerMovedEvent.h"
 #include "events/StartNetworkLevelEvent.h"
+#include "file/Logger.h"
 #include "utils/Utils.h"
 
 using namespace json11;

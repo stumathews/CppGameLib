@@ -1,7 +1,8 @@
 #pragma once
 
+#include <functional>
+
 #include "events/EventSubscriber.h"
-#include "scene/SceneManager.h"
 
 namespace gamelib
 {

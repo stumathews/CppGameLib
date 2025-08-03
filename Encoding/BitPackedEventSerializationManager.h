@@ -6,6 +6,11 @@
 
 namespace gamelib
 {
+	class StartNetworkLevelEvent;
+	class Event;
+	class ControllerMoveEvent;
+	class PlayerMovedEvent;
+
 	class BitPackedEventSerializationManager : public IEventSerializationManager
 	{
 	public:

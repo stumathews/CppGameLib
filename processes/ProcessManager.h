@@ -5,7 +5,6 @@
 
 namespace gamelib
 {
-	class Process;
 	class ProcessManager
 	{
 	public:

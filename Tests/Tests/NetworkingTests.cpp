@@ -24,6 +24,8 @@
 #include "net/ReliableUdpGameServerConnection.h"
 #include "net/ReliableUdpProtocolManager.h"
 #include <memory>
+
+#include "net/GameClient.h"
 #pragma comment(lib, "ws2_32.lib")
 
 using namespace std;

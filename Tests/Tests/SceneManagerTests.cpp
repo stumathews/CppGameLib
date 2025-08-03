@@ -6,6 +6,7 @@
 #include "gtest/gtest.h"
 #include "objects/GameObject.h"
 #include "resource/ResourceManager.h"
+#include "scene/Layer.h"
 #include "scene/SceneManager.h"
 
 using namespace std;

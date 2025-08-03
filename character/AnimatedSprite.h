@@ -1,9 +1,12 @@
 #pragma once
 #include "character/Direction.h"
+#include "common/TypeAliases.h"
 #include "objects/GameObject.h"
 #include "graphic/KeyFrame.h"
 #include "geometry/ABCDRectangle.h"
 #include "objects/DrawableGameObject.h"
+
+struct SDL_render;
 
 namespace gamelib
 {

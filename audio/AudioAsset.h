@@ -1,7 +1,10 @@
 #pragma once
 #include <string>
-#include <SDL_mixer.h>
 #include "asset/asset.h"
+
+struct _Mix_Music;  // Forward declaration for music;
+typedef struct _Mix_Music Mix_Music; // Forward declaration for music;
+struct Mix_Chunk; // Forward declaration for sound effect
 
 namespace gamelib
 {

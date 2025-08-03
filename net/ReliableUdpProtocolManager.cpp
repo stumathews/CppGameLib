@@ -4,7 +4,11 @@
 #include "events/EventFactory.h"
 #include "file/Logger.h"
 #include "net/Message.h"
-
+#include <events/ReliableUdpPacketLossDetectedEvent.h>
+#include <events/ReliableUdpCheckSumFailedEvent.h>
+#include <events/ReliableUdpAckPacketEvent.h>
+#include <events/ReliableUdpPacketRttCalculatedEvent.h>
+#include <events/ReliableUdpPacketReceivedEvent.h>
 namespace gamelib
 {
 
@@ -22,7 +26,6 @@ namespace gamelib
 	bool ReliableUdpProtocolManager::Initialize()
 	{
 		clientSecuritySide.GenerateKeyPair();
-				
 		return true;
 	}
 
@@ -67,7 +70,7 @@ namespace gamelib
 
 		// Packet loss detected as we have unacknowledged data in send buffer that we are resending
 		if(message->DataCount() > 1)
-		{		
+		{
 			this->RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketLossDetectedEvent(std::make_shared<Message>(*message)));
 		}
 

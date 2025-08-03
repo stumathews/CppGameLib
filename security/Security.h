@@ -5,8 +5,6 @@
 
 namespace gamelib
 {
-
-
 	class Security
 	{
 		protected:

@@ -3,7 +3,6 @@
 #define GAMESERVERCONNECTIONFACTORY_H
 #include <memory>
 
-#include "IGameServerConnection.h"
 #include "ReliableUdpGameServerConnection.h"
 #include "TcpGameServerConnection.h"
 #include "UdpGameServerConnection.h"
@@ -11,6 +10,8 @@
 
 namespace gamelib
 {
+	class IGameServerConnection;
+
 	// creates connection to clients for game server
 	class GameServerConnectionFactory
 	{

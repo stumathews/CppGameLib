@@ -3,18 +3,22 @@
 #define GAMEOBJECT_H
 
 #include <map>
-#include <SDL.h>
-#include "events/EventManager.h"
-#include "character/Inventory.h"
+
+//#include "character/Inventory.h"
+#include <memory>
 #include <string>
+#include <vector>
+
+#include "events/EventSubscriber.h"
 #include "geometry/ABCDRectangle.h"
 #include "geometry/Coordinate.h"
 #include "objects/GameObjectType.h"
 
 namespace gamelib
 {
+	class Event;
 	typedef std::vector<std::shared_ptr<Event>> ListOfEvents;
-	
+
 
 	class GameObject : public EventSubscriber
 	{

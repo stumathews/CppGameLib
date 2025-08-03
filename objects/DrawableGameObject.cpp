@@ -1,7 +1,7 @@
 #include "DrawableGameObject.h"
 #include <SDL.h>
 #include <geometry/Coordinate.h>
-
+#include "graphic/GraphicAsset.h"
 #include "file/Logger.h"
 
 using namespace std;

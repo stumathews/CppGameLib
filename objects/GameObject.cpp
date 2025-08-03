@@ -5,7 +5,6 @@
 #include "events/ControllerMoveEvent.h"
 #include "graphic/SDLGraphicsManager.h"
 
-
 namespace gamelib
 {
 	using namespace std;

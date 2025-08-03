@@ -5,7 +5,7 @@
 #include <vector>
 #include <net/TcpNetworkPlayer.h>
 #include <net/MessageHeader.h>
-#include <events/Event.h>
+//#include <events/Event.h>
 #include <events/EventSubscriber.h>
 
 #include "file/SerializationManager.h"

@@ -2,6 +2,8 @@
 
 #include "SDLGraphicsManager.h"
 #include "exceptions/EngineException.h"
+#include <SDL_render.h>
+#include <SDL_video.h>
 
 namespace gamelib
 {	

@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include "events/EventManager.h"
+#include "font/FontAsset.h"
 #include "font/FontManager.h"
 #include "graphic/SDLGraphicsManager.h"
 

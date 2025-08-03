@@ -4,6 +4,12 @@
 
 namespace gamelib
 {
+	class PlayerMovedEvent;
+	class ControllerMoveEvent;
+	class Event;
+	class StartNetworkLevelEvent;
+	class IEventSerializationManager;
+
 	class JsonEventSerializationManager final :  public IEventSerializationManager
 	{
 	public:

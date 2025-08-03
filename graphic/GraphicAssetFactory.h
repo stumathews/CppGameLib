@@ -1,10 +1,16 @@
 #pragma once
+#include <map>
+
 #include "file/tinyxml2.h"
 #include <memory>
-#include "asset/SpriteAsset.h"
+#include <string>
+
 
 namespace gamelib
 {
+	class SpriteAsset;
+	class Asset;
+
 	class GraphicAssetFactory
 	{
 	public:

@@ -1,3 +1,4 @@
+#include "asset/Asset.h"
 #include "GameObjectFactory.h"
 #include "GameObject.h"
 #include "character/AnimatedSprite.h"

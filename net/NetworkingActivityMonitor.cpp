@@ -4,6 +4,8 @@
 #include <events/event.h>
 #include <events/NetworkPlayerJoinedEvent.h>
 
+#include "IElapsedTimeProvider.h"
+#include "Message.h"
 #include "events/NetworkTrafficReceivedEvent.h"
 #include "events/ReliableUdpAckPacketEvent.h"
 #include "events/ReliableUdpCheckSumFailedEvent.h"
@@ -273,7 +275,7 @@ namespace gamelib
 
 		// The last latency recorded is a smooth moving average considering last 3 packets
 		stats.AverageLatencySMA3 = rttEvent->Rtt.Sma3;
-		stats.RttMs = static_cast<int>(rttEvent->Rtt.Rtt);
+		stats.RttMs = static_cast<int>(rttEvent->Rtt.rtt);
 	}
 
 	void NetworkingActivityMonitor::SetSendRateMs(const int ms)

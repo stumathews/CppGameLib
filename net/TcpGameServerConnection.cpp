@@ -4,6 +4,7 @@
 #include <events/EventManager.h>
 #include <events/EventFactory.h>
 #include <file/SerializationManager.h>
+#include <events/NetworkTrafficReceivedEvent.h>
 
 #include "file/Logger.h"
 

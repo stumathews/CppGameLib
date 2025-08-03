@@ -1,5 +1,7 @@
 #include "StaticSprite.h"
 #include <memory>
+#include <asset/SpriteAsset.h>
+#include "graphic/GraphicAsset.h"
 using namespace std;
 
 namespace gamelib
@@ -7,7 +9,7 @@ namespace gamelib
 	StaticSprite::StaticSprite(const Coordinate<int> position, const std::shared_ptr<SpriteAsset>
 	                           & spriteAsset, const bool isVisible = true)
 		: DrawableGameObject(position.GetX(), position.GetY(), isVisible)
-	{
+	{		
 		asset = spriteAsset;
 		this->IsVisible = isVisible;
 	}

@@ -2,13 +2,14 @@
 
 #include <string>
 #include <memory>
-#include <net/GameClient.h>
-#include <net/GameServer.h>
 #include "file/SerializationManager.h"
+
 
 namespace gamelib
 {
-		/**
+	class GameServer;
+	class GameClient;
+	/**
 	 * \brief Serves as a top-level abstraction for all networking capabilities in either a game server or a game client
 	 * Setups networking to listens for network events
 	 */

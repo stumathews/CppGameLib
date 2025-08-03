@@ -1,8 +1,11 @@
 #include "NetworkManager.h"
 #include <file/SettingsManager.h>
 #include <net/Networking.h>
+
+#include "GameClient.h"
 #include "GameServerConnectionFactory.h"
 #include "GameClientConnectionFactory.h"
+#include "GameServer.h"
 #include "file/SerializationManager.h"
 
 namespace gamelib

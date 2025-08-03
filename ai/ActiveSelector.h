@@ -1,6 +1,5 @@
 #pragma once
 #include "BehaviorResult.h"
-#include "CompositeBehavior.h"
 #include "Selector.h"
 
 namespace gamelib

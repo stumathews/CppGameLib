@@ -6,6 +6,10 @@
 #include "events/EventFactory.h"
 #include "file/Logger.h"
 #include "objects/GameObject.h"
+#include "events/ReliableUdpCheckSumFailedEvent.h"
+#include "events/ReliableUdpAckPacketEvent.h"
+#include "events/ReliableUdpPacketRttCalculatedEvent.h"
+#include "events/ReliableUdpPacketReceivedEvent.h"
 
 namespace gamelib
 {

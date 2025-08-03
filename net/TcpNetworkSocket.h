@@ -2,7 +2,7 @@
 #ifndef TCPNETWORKSOCKET_H
 #define TCPNETWORKSOCKET_H
 #include "IConnectedNetworkSocket.h"
-#include "Networking.h"
+//#include "Networking.h"
 
 namespace gamelib
 {

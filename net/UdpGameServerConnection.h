@@ -2,7 +2,6 @@
 #include "IGameServerConnection.h"
 #include <string>
 #include <WinSock2.h>
-#include <net/MessageHeader.h>
 #include <vector>
 #include <net/UdpNetworkPlayer.h>
 #include <net/PeerInfo.h>
@@ -15,7 +14,6 @@ namespace gamelib
 {
 	class Networking;
 	class EventManager;
-	class SerializationManager;
 	class EventFactory;
 
 	class UdpGameServerConnection : public IGameServerConnection, public EventSubscriber

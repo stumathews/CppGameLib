@@ -1,14 +1,16 @@
 #pragma once
 #include <objects/DrawableGameObject.h>
-#include <objects/GameObject.h>
+//#include <objects/GameObject.h>
 #include <common/aliases.h>
 #include <graphic/KeyFrame.h>
-#include <asset/SpriteAsset.h>
+//#include <asset/SpriteAsset.h>
 #include <events/Event.h>
 
 namespace gamelib
 {
-    /// <summary>
+	class SpriteAsset;
+
+	/// <summary>
     /// A static sprite may advance its sprite image manually or never
     /// </summary>
     class StaticSprite final : public DrawableGameObject

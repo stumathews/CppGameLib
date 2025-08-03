@@ -1,9 +1,10 @@
 #pragma once
 #include <memory>
-#include "GameObject.h"
 
 namespace gamelib
 {
+	class GameObject;
+
 	class GameWorldData
 	{
 	public:

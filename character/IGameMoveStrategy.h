@@ -1,12 +1,12 @@
 #pragma once
 #include <memory>
-#include <character/IMovement.h>
 
 class Room;
 class Movement;
 
 namespace gamelib
 {
+	class IMovement;
 	// Makes a movement
 	class IGameObjectMoveStrategy
 	{

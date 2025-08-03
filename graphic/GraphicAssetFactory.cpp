@@ -1,5 +1,8 @@
 #include "GraphicAssetFactory.h"
 
+#include "GraphicAsset.h"
+#include "asset/SpriteAsset.h"
+
 using namespace tinyxml2;
 using namespace std;
 

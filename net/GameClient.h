@@ -3,11 +3,6 @@
 #include <WinSock2.h>
 #include <events/EventSubscriber.h>
 #include <TestMe.h>
-#include "IConnectedNetworkSocket.h"
-#include "ReliableUdp.h"
-#include "file/SerializationManager.h"
-#include "security/Security.h"
-#include "time/PeriodicTimer.h"
 
 namespace gamelib
 {
@@ -17,6 +12,7 @@ namespace gamelib
 	class Networking;
 	class EventFactory;
 	class SerializationManager;
+	class IConnectedNetworkSocket;
 
 	/**
 	 * \brief A game client connects to a game server via a network protocol and sends/received network instructions

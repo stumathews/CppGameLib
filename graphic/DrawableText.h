@@ -1,6 +1,9 @@
 #pragma once
 #include "objects/DrawableGameObject.h"
-#include "objects/GameObject.h"
+#include "objects/GameObjectType.h"
+
+struct SDL_Rect;
+struct SDL_Renderer;
 
 namespace gamelib
 {

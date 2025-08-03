@@ -4,6 +4,9 @@
 #include "DrawableText.h"
 #include "objects/DrawableGameObject.h"
 
+struct SDL_Rect; // Forward declaration for SDL_Rect
+struct SDL_Renderer; // Forward declaration for SDL_Renderer
+
 namespace gamelib
 {
 	class DrawableFrameRate final : public DrawableText

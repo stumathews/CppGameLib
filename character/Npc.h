@@ -1,15 +1,22 @@
 #pragma once
-#include "character/Hotspot.h"
-#include "character/AnimatedSprite.h"
+//#include "character/Hotspot.h"
+//#include "character/AnimatedSprite.h"
 #include "objects/DrawableGameObject.h"
 #include <memory>
-#include "ai/FSM.h"
-#include "graphic/DrawableText.h"
-#include "character/IGameMoveStrategy.h"
+
+#include "Direction.h"
+//#include "ai/FSM.h"
+//#include "graphic/DrawableText.h"
+//#include "character/IGameMoveStrategy.h"
 
 class RoomInfo;
 namespace gamelib
 {
+	class Hotspot;
+	class AnimatedSprite;
+	class DrawableText;
+	class IGameObjectMoveStrategy;
+
 	class Npc : public DrawableGameObject
 	{
 	public:

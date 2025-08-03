@@ -1,5 +1,7 @@
 ﻿#include "TcpNetworkSocket.h"
 
+#include "Networking.h"
+
 bool gamelib::TcpNetworkSocket::IsTcp()
 {
 	return true;

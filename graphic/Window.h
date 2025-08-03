@@ -1,10 +1,10 @@
 ﻿#pragma once
 #include <functional>
-#include <SDL_render.h>
-#include <SDL_video.h>
-
 #include "common/TypeAliases.h"
-#include "events/EventSubscriber.h"
+//#include "events/EventSubscriber.h"
+
+struct SDL_Renderer;
+struct SDL_Window;
 
 namespace gamelib
 {

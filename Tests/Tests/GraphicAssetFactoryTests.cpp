@@ -6,6 +6,8 @@
 #include <graphic/GraphicAssetFactory.h>
 #include <gtest/gtest.h>
 
+#include "asset/SpriteAsset.h"
+
 using namespace tinyxml2;
 using namespace std;
 namespace gamelib

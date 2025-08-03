@@ -3,8 +3,10 @@
 
 namespace gamelib
 {
+	class Behavior;
+
 	// A filter is a branch in the tree that will not execute its child behavior under specific conditions
-	class FilterSequence : public	BehavioralSequence
+	class FilterSequence : public BehavioralSequence
 	{
 	public:
 		void AddCondition(Behavior* condition)

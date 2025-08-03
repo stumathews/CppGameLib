@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+
 #include "graphic/KeyFrame.h"
 #include "graphic/GraphicAsset.h"
 #include "geometry/ABCDRectangle.h"

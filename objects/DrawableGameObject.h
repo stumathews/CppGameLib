@@ -1,11 +1,13 @@
 #pragma once
 #include "objects/GameObject.h"
-#include "graphic/GraphicAsset.h"
 #include <SDL.h>
 #include <memory>
+#include "graphic/ColourKey.h"
 
 namespace gamelib
 {
+	class GraphicAsset;
+
 	// Object Can Draw on itself in any way it wants to
 	class DrawableGameObject : public GameObject
 	{

@@ -3,10 +3,11 @@
 #pragma once
 #include "events/Event.h"
 #include "events/EventNumbers.h"
-#include "net/Message.h"
 
 namespace gamelib
 {
+	class Message;
+
 	const static EventId ReliableUdpPacketReceivedEventId(ReliableUdpPacketReceived, "ReliableUdpPacketReceived");
 	class ReliableUdpPacketReceivedEvent final : public Event
 	{

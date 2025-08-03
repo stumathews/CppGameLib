@@ -3,8 +3,6 @@
 #include <memory>
 #include <file/tinyxml2.h>
 
-
-
 namespace gamelib
 {
 	class AudioManager

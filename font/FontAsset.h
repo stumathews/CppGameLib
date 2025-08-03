@@ -1,9 +1,8 @@
 #pragma once
 
-#include "asset/asset.h"
+#include <SDL_ttf.h>
 
-struct _TTF_Font; // Forward declaration for font
-typedef struct _TTF_Font TTF_Font; // Forward declaration for font
+#include "asset/asset.h"
 
 namespace gamelib
 {

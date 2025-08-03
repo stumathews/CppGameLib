@@ -1,5 +1,4 @@
 #include "FontAsset.h"
-#include "SDL_ttf.h"
 
 using namespace std;
 

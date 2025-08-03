@@ -1,14 +1,14 @@
 #pragma once
-#include "common/Common.h"
-#include "events/EventSubscriber.h"
-#include "objects/GameWorldData.h"
-#include "scene/SceneManager.h"
 
-#include "IGameLoopStrategy.h"
-#include "VariableGameLoop.h"
+#include "events/EventSubscriber.h"
+#include "scene/SceneManager.h"
 
 namespace gamelib
 {
+	class IGameLoopStrategy;
+	class VariableGameLoop;
+	class GameWorldData;
+
 	/// <summary>
 	/// logical structure of the game such as the game initialization, game loop etc.
 	/// </summary>

@@ -10,6 +10,7 @@
 #include "events/ReliableUdpPacketLossDetectedEvent.h"
 #include "events/ReliableUdpPacketReceivedEvent.h"
 #include "events/ReliableUdpPacketRttCalculatedEvent.h"
+#include "file/Logger.h"
 
 using namespace std;
 

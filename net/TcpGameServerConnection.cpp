@@ -5,6 +5,8 @@
 #include <events/EventFactory.h>
 #include <file/SerializationManager.h>
 
+#include "file/Logger.h"
+
 namespace gamelib
 {
 	TcpGameServerConnection::TcpGameServerConnection(const std::string& host, const std::string& port, const gamelib::Encoding wireFormat)

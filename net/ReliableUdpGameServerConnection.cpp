@@ -4,6 +4,7 @@
 #include <net/PeerInfo.h>
 #include "PacketDatumUtils.h"
 #include "events/EventFactory.h"
+#include "file/Logger.h"
 #include "objects/GameObject.h"
 
 namespace gamelib

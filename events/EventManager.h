@@ -8,7 +8,7 @@
 #include <map>
 #include <queue>
 #include "Event.h"
-#include "file/Logger.h"
+#include <functional>
 
 namespace gamelib
 {

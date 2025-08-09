@@ -319,7 +319,7 @@ target_sources(
 cppgamelib 
 PUBLIC 
  FILE_SET public_headers
- TYPE HEADERS 
+ TYPE HEADERS
  FILES ${headerFiles}
 )
 
@@ -425,9 +425,13 @@ add_custom_command(
 # Note: We set the working dir of the test to the target output folder otherwise is runs tests from builddir and can't find the configuration files as they are not in the build dir, but the target dir (eg. Release/ etc)
 add_test(NAME MainTests COMMAND AllTests WORKING_DIRECTORY $<TARGET_FILE_DIR:AllTests>)
 
+include(GNUInstallDirs)
+
 install(TARGETS cppgamelib 
 EXPORT cppgamelib # produce target exports for this target
 FILE_SET public_headers
+DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
+INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 # Create/write the targets exports to the specified file name in the lib directory (as this is where downstream packages look for it via find_package())

@@ -315,6 +315,14 @@ target_include_directories(cppgamelib PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>  
         $<INSTALL_INTERFACE:include>)
 
+target_sources(
+cppgamelib 
+PUBLIC 
+ FILE_SET public_headers
+ TYPE HEADERS 
+ FILES ${headerFiles}
+)
+
 add_library(cppgamelib::cppgamelib ALIAS cppgamelib)
 
 # Generate a header file containing preprocessor macro definitions to control C/C++ symbol visibility.
@@ -334,8 +342,7 @@ set_target_properties(
 cppgamelib 
 PROPERTIES 
 LINKER_LANGUAGE CXX 
-PUBLIC_HEADER "${headerFiles}"
-PRIVATE_HEADER "${headerFiles}")
+)
 
 # Link to external dependencies
 target_link_libraries(cppgamelib 
@@ -420,8 +427,8 @@ add_test(NAME MainTests COMMAND AllTests WORKING_DIRECTORY $<TARGET_FILE_DIR:All
 
 install(TARGETS cppgamelib 
 EXPORT cppgamelib # produce target exports for this target
+FILE_SET public_headers
 )
-#PUBLIC_HEADER DESTINATION include/cppgamelib)
 
 # Create/write the targets exports to the specified file name in the lib directory (as this is where downstream packages look for it via find_package())
 

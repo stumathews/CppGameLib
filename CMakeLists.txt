@@ -13,115 +13,10 @@ enable_testing()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Create the library using the library source files
-add_library(cppgamelib STATIC 
-ai/BehaviorTree.cpp
-ai/BehaviorTreeBuilder.cpp
-ai/FSM.cpp
-ai/FSMState.cpp
-asset/asset.cpp
-asset/SpriteAsset.cpp
-audio/AudioAsset.cpp
-audio/AudioManager.cpp
-character/AnimatedSprite.cpp
-character/Component.cpp
-character/DirectionUtils.cpp
-character/Hotspot.cpp
-character/Inventory.cpp
-character/MovementAtSpeed.cpp
-character/Npc.cpp
-character/StatefulMove.cpp
-character/StaticSprite.cpp
-cppgamelib.cpp
-Encoding/BitPackedEventSerializationManager.cpp
-Encoding/JsonEventSerializationManager.cpp
-Encoding/XmlEventSerializationManager.cpp
-events/AddGameObjectToCurrentSceneEvent.cpp
-events/ControllerMoveEvent.cpp
-events/Event.cpp
-events/EventFactory.cpp
-events/EventId.cpp
-events/EventManager.cpp
-events/EventSubscriber.cpp
-events/GameObjectEvent.cpp
-events/IEventSerializationManager.cpp
-events/IEventSubscriber.cpp
-events/NetworkTrafficReceivedEvent.cpp
-events/PlayerMovedEvent.cpp
-events/ReliableUdpPacketReceivedEvent.cpp
-events/SceneChangedEvent.cpp
-events/SceneLoadedEvent.cpp
-events/UpdateAllGameObjectsEvent.cpp
-exceptions/EngineException.cpp
-file/Logger.cpp
-file/SerializationManager.cpp
-file/SettingDetail.cpp
-file/SettingsManager.cpp
-file/TextFile.cpp
-file/tinyxml2.cpp
-font/FontAsset.cpp
-font/FontManager.cpp
-geometry/ABCDRectangle.cpp
-geometry/Coordinate.cpp
-geometry/Line.cpp
-graphic/ColourKey.cpp
-graphic/DrawableFrameRate.cpp
-graphic/DrawableText.cpp
-graphic/Drawing.cpp
-graphic/GraphicAsset.cpp
-graphic/GraphicAssetFactory.cpp
-graphic/KeyFrame.cpp
-graphic/SDLGraphicsManager.cpp
-graphic/Subscribable.cpp
-graphic/Window.cpp
-input/IInputManager.cpp
-json/json11.cpp
-Logging/ErrorLogManager.cpp
-net/GameClient.cpp
-net/GameClientConnectionFactory.cpp
-net/GameServer.cpp
-net/GameStatePusher.cpp
-net/Message.cpp
-net/Networking.cpp
-net/NetworkingActivityMonitor.cpp
-net/NetworkManager.cpp
-net/NetworkPlayer.cpp
-net/PacketDatum.cpp
-net/PeerInfo.cpp
-net/ReliableUdp.cpp
-net/ReliableUdpGameServerConnection.cpp
-net/ReliableUdpMessageHeader.cpp
-net/ReliableUdpProtocolManager.cpp
-net/TcpGameServerConnection.cpp
-net/TcpNetworkPlayer.cpp
-net/TcpNetworkSocket.cpp
-net/UdpConnectedNetworkSocket.cpp
-net/UdpGameServerConnection.cpp
-net/UdpNetworkPlayer.cpp
-objects/DrawableGameObject.cpp
-objects/GameObject.cpp
-objects/GameObjectFactory.cpp
-pch.cpp
-processes/ProcessManager.cpp
-resource/ResourceManager.cpp
-scene/layer.cpp
-scene/SceneManager.cpp
-security/Security.cpp
-structure/FixedStepGameLoop.cpp
-structure/GameStructure.cpp
-structure/Profiler.cpp
-structure/VariableGameLoop.cpp
-time/PeriodicTimer.cpp
-time/Timer.cpp
-)
+# Collect all the header files into a variable called headerFiles.
+# This will make it easier to reference or update this list in the future.
 
-add_library(cppgamelib::cppgamelib ALIAS cppgamelib)
-
-target_sources(cppgamelib
- PUBLIC
-  FILE_SET api
-  TYPE HEADERS
-  FILES
+set(headerFiles
 ai/ActiveSelector.h
 ai/Behavior.h
 ai/BehavioralSequence.h
@@ -304,6 +199,124 @@ utils/Statistics.h
 utils/Utils.h
 )
 
+# Collect all the source files into a variable called sourceFiles
+# This will make updating referencing and updating this list easier in the future.
+
+set(sourceFiles
+ai/BehaviorTree.cpp
+ai/BehaviorTreeBuilder.cpp
+ai/FSM.cpp
+ai/FSMState.cpp
+asset/asset.cpp
+asset/SpriteAsset.cpp
+audio/AudioAsset.cpp
+audio/AudioManager.cpp
+character/AnimatedSprite.cpp
+character/Component.cpp
+character/DirectionUtils.cpp
+character/Hotspot.cpp
+character/Inventory.cpp
+character/MovementAtSpeed.cpp
+character/Npc.cpp
+character/StatefulMove.cpp
+character/StaticSprite.cpp
+cppgamelib.cpp
+Encoding/BitPackedEventSerializationManager.cpp
+Encoding/JsonEventSerializationManager.cpp
+Encoding/XmlEventSerializationManager.cpp
+events/AddGameObjectToCurrentSceneEvent.cpp
+events/ControllerMoveEvent.cpp
+events/Event.cpp
+events/EventFactory.cpp
+events/EventId.cpp
+events/EventManager.cpp
+events/EventSubscriber.cpp
+events/GameObjectEvent.cpp
+events/IEventSerializationManager.cpp
+events/IEventSubscriber.cpp
+events/NetworkTrafficReceivedEvent.cpp
+events/PlayerMovedEvent.cpp
+events/ReliableUdpPacketReceivedEvent.cpp
+events/SceneChangedEvent.cpp
+events/SceneLoadedEvent.cpp
+events/UpdateAllGameObjectsEvent.cpp
+exceptions/EngineException.cpp
+file/Logger.cpp
+file/SerializationManager.cpp
+file/SettingDetail.cpp
+file/SettingsManager.cpp
+file/TextFile.cpp
+file/tinyxml2.cpp
+font/FontAsset.cpp
+font/FontManager.cpp
+geometry/ABCDRectangle.cpp
+geometry/Coordinate.cpp
+geometry/Line.cpp
+graphic/ColourKey.cpp
+graphic/DrawableFrameRate.cpp
+graphic/DrawableText.cpp
+graphic/Drawing.cpp
+graphic/GraphicAsset.cpp
+graphic/GraphicAssetFactory.cpp
+graphic/KeyFrame.cpp
+graphic/SDLGraphicsManager.cpp
+graphic/Subscribable.cpp
+graphic/Window.cpp
+input/IInputManager.cpp
+json/json11.cpp
+Logging/ErrorLogManager.cpp
+net/GameClient.cpp
+net/GameClientConnectionFactory.cpp
+net/GameServer.cpp
+net/GameStatePusher.cpp
+net/Message.cpp
+net/Networking.cpp
+net/NetworkingActivityMonitor.cpp
+net/NetworkManager.cpp
+net/NetworkPlayer.cpp
+net/PacketDatum.cpp
+net/PeerInfo.cpp
+net/ReliableUdp.cpp
+net/ReliableUdpGameServerConnection.cpp
+net/ReliableUdpMessageHeader.cpp
+net/ReliableUdpProtocolManager.cpp
+net/TcpGameServerConnection.cpp
+net/TcpNetworkPlayer.cpp
+net/TcpNetworkSocket.cpp
+net/UdpConnectedNetworkSocket.cpp
+net/UdpGameServerConnection.cpp
+net/UdpNetworkPlayer.cpp
+objects/DrawableGameObject.cpp
+objects/GameObject.cpp
+objects/GameObjectFactory.cpp
+pch.cpp
+processes/ProcessManager.cpp
+resource/ResourceManager.cpp
+scene/layer.cpp
+scene/SceneManager.cpp
+security/Security.cpp
+structure/FixedStepGameLoop.cpp
+structure/GameStructure.cpp
+structure/Profiler.cpp
+structure/VariableGameLoop.cpp
+time/PeriodicTimer.cpp
+time/Timer.cpp
+)
+
+# Combine the header and source files int a variable called sourceAndHeaderFiles
+
+set(sourceAndHeaderFiles ${headerFiles})
+list (APPEND sourceAndHeaderFiles ${sourceFiles})
+
+# Create the library using the library source files
+add_library(cppgamelib STATIC ${sourceAndHeaderFiles})
+
+target_include_directories(cppgamelib PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>  
+        $<INSTALL_INTERFACE:include>)
+
+add_library(cppgamelib::cppgamelib ALIAS cppgamelib)
+
 # Generate a header file containing preprocessor macro definitions to control C/C++ symbol visibility.
 generate_export_header(cppgamelib)
 
@@ -317,7 +330,12 @@ find_package(SDL2_mixer REQUIRED)
 find_package(SDL2_image REQUIRED)
 
 # Set a few properties for the library 
-set_target_properties(cppgamelib PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(
+cppgamelib 
+PROPERTIES 
+LINKER_LANGUAGE CXX 
+PUBLIC_HEADER "${headerFiles}"
+PRIVATE_HEADER "${headerFiles}")
 
 # Link to external dependencies
 target_link_libraries(cppgamelib 
@@ -327,13 +345,7 @@ SDL2_mixer::SDL2_mixer
 SDL2_image::SDL2_image
 unofficial-sodium::sodium)
 
-# Set the libraries include
-#target_include_directories(cppgamelib PUBLIC
-#        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ai>
-#        $<INSTALL_INTERFACE:include>
-#    )
-
-# Make an executable that runs all the tests the the provided files
+# Make an executable that runs all the tests the provided files
 enable_testing()
 
 # Add an executable for running all tests. This excludes networking tests
@@ -408,9 +420,8 @@ add_test(NAME MainTests COMMAND AllTests WORKING_DIRECTORY $<TARGET_FILE_DIR:All
 
 install(TARGETS cppgamelib 
 EXPORT cppgamelib # produce target exports for this target
-FILE_SET api 
-DESTINATION include/cppgamelib
-INCLUDES DESTINATION include)
+)
+#PUBLIC_HEADER DESTINATION include/cppgamelib)
 
 # Create/write the targets exports to the specified file name in the lib directory (as this is where downstream packages look for it via find_package())
 

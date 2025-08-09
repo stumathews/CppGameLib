@@ -420,8 +420,7 @@ add_test(NAME MainTests COMMAND AllTests WORKING_DIRECTORY $<TARGET_FILE_DIR:All
 
 install(TARGETS cppgamelib 
 EXPORT cppgamelib # produce target exports for this target
-)
-#PUBLIC_HEADER DESTINATION include/cppgamelib)
+PUBLIC_HEADER DESTINATION include/cppgamelib)
 
 # Create/write the targets exports to the specified file name in the lib directory (as this is where downstream packages look for it via find_package())
 

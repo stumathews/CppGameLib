@@ -311,9 +311,11 @@ list (APPEND sourceAndHeaderFiles ${sourceFiles})
 # Create the library using the library source files
 add_library(cppgamelib STATIC ${sourceAndHeaderFiles})
 
-target_include_directories(cppgamelib PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>  
-        $<INSTALL_INTERFACE:include>)
+target_include_directories(cppgamelib
+PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
 
 target_sources(
 cppgamelib 

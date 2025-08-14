@@ -308,21 +308,21 @@ time/Timer.cpp
 set(sourceAndHeaderFiles ${headerFiles})
 list (APPEND sourceAndHeaderFiles ${sourceFiles})
 
-# Create the library using the library source files
-add_library(cppgamelib STATIC ${sourceAndHeaderFiles})
+# Create the library. 
+add_library(cppgamelib STATIC)
 
-target_include_directories(cppgamelib
-PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-)
-
-target_sources(
-cppgamelib 
-PUBLIC 
- FILE_SET public_headers
- TYPE HEADERS
- FILES ${headerFiles}
+# set the libraries source files and expose its header files as to consumers (public)
+target_sources(cppgamelib
+ # Private files are used by the library. Added to the SOURCES property of the target.
+ PRIVATE 
+  ${sourceFiles}
+ PUBLIC # Public files are added to both the SOURCES and INTERFACE_SOURCES properties of the target.
+  FILE_SET public_headers
+  # We can omit BASE_DIRS because by default it is ${CMAKE_CURRENT_SOURCE_DIR} 
+  # Each base directory will be added to the header search path
+  # This is the base directory for the public headers is
+  TYPE HEADERS
+  FILES ${headerFiles} # these are relative to CMAKE_CURRENT_SOURCE_DIR, so no need to specify the path
 )
 
 add_library(cppgamelib::cppgamelib ALIAS cppgamelib)
@@ -340,10 +340,9 @@ find_package(SDL2_mixer REQUIRED)
 find_package(SDL2_image REQUIRED)
 
 # Set a few properties for the library 
-set_target_properties(
-cppgamelib 
-PROPERTIES 
-LINKER_LANGUAGE CXX 
+set_target_properties(cppgamelib 
+ PROPERTIES 
+ LINKER_LANGUAGE CXX 
 )
 
 # Link to external dependencies
@@ -409,10 +408,13 @@ GTest::gmock_main winmm)
 target_include_directories(AllTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Link libraries that the test AllTests exeutable uses
-target_link_libraries(NetworkingTests PUBLIC 
-cppgamelib
-unofficial-sodium::sodium PRIVATE
-GTest::gmock_main winmm)
+target_link_libraries(NetworkingTests 
+ PUBLIC 
+  cppgamelib
+  unofficial-sodium::sodium 
+PRIVATE
+ GTest::gmock_main winmm
+)
 
 target_include_directories(NetworkingTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -429,11 +431,23 @@ add_test(NAME MainTests COMMAND AllTests WORKING_DIRECTORY $<TARGET_FILE_DIR:All
 
 include(GNUInstallDirs)
 
-install(TARGETS cppgamelib 
-EXPORT cppgamelib # produce target exports for this target
-FILE_SET public_headers
-DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
-INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+# Install the library and its headers
+install(
+    TARGETS cppgamelib 
+        EXPORT cppgamelib # produce target exports for this target
+    RUNTIME 
+        DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY 
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE 
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    FILE_SET public_headers
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}    
+    # Special case: All the directories given after INCLUDES DESTINATION are added to the 
+    # INTERFACE_INCLUDE_DIRECTORIES property of each installed target listed - so we've effectively 
+    # set the include directories for the installed targets (just our library), not need to do it explcitly via target_include_directories()
+    INCLUDES 
+     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 # Create/write the targets exports to the specified file name in the lib directory (as this is where downstream packages look for it via find_package())

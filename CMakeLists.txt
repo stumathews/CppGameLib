@@ -381,18 +381,14 @@ Tests/Tests/SceneManagerTests.cpp
 Tests/Tests/SDLGraphicsManagerTests.cpp
 )
 
-# Add an executable for running only the networking tests
-add_executable(NetworkingTests
-Tests/Tests/NetworkingTests.cpp
-)
 
 # Set the properties for the test executables
 set_target_properties(AllTests PROPERTIES LINKER_LANGUAGE CXX)
-set_target_properties(NetworkingTests PROPERTIES LINKER_LANGUAGE CXX)
+
 
 # Set the include directories for the test executables
 target_include_directories(AllTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Tests/Tests)
-target_include_directories(NetworkingTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Tests/Tests)
+
 
 # Link libraries that the test AllTests exeutable uses
 target_link_libraries(AllTests PUBLIC 
@@ -406,17 +402,6 @@ GTest::gmock_main winmm)
 
 # Set include directory for allTests executable
 target_include_directories(AllTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-
-# Link libraries that the test AllTests exeutable uses
-target_link_libraries(NetworkingTests 
- PUBLIC 
-  cppgamelib
-  unofficial-sodium::sodium 
-PRIVATE
- GTest::gmock_main winmm
-)
-
-target_include_directories(NetworkingTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Copy test files in the output folder of the AllTests target
 add_custom_command(

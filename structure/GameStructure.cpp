@@ -13,7 +13,7 @@
 #include "resource/ResourceManager.h"
 #include "scene/SceneManager.h"
 #include <string>
-#include <net/NetworkManager.h>
+#include <cppgamenetlib/NetworkManager.h>
 #include "Logging/ErrorLogManager.h"
 #include <events/UpdateProcessesEvent.h>
 #include "VariableGameLoop.h"
@@ -75,11 +75,11 @@ namespace gamelib
 		{
 			if (SettingsManager::Bool("global", "isNetworkGame"))
 			{
-				LogOnFailure(NetworkManager::Get()->Initialize(), "Could not initialize network manager");
+				LogOnFailure(gamenetlib::NetworkManager::Get()->Initialize(), "Could not initialize network manager");
 			}
 
 			const auto title = SettingsManager::Bool("global", "isNetworkGame")
-				                   ? NetworkManager::Get()->IsGameServer()
+				                   ? gamenetlib::NetworkManager::Get()->IsGameServer()
 					                     ? windowTitle + " (Multi-player - Server)"
 					                     : windowTitle + " (Multi-player - Client)"
 				                   : windowTitle + " - Single Player Mode";
@@ -177,7 +177,7 @@ namespace gamelib
 	void GameStructure::ReadNetwork(const unsigned long deltaMs) const
 	{
 		if(!sampleNetwork) return;
-		NetworkManager::Get()->Listen(deltaMs);
+		gamenetlib::NetworkManager::Get()->Listen(deltaMs);
 	}
 
 	void GameStructure::HandleSpareTime(long elapsedTime)

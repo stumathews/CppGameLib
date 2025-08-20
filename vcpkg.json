@@ -1,5 +1,7 @@
 {
   "dependencies": [
+    "cppgamenetlib",
+    "cppgamelib",
     "libsodium",
     "gtest",
     "sdl2",

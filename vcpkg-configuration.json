@@ -9,6 +9,13 @@
       "kind": "artifact",
       "location": "https://github.com/microsoft/vcpkg-ce-catalog/archive/refs/heads/main.zip",
       "name": "microsoft"
+    },
+    {
+      "kind": "git",
+      "repository": "https://github.com/stumathews/vcpkg-registry",
+      "reference": "master",
+      "baseline": "0f66a965848c36742f064bffe6b4ce37d96bead5",
+      "packages": [ "libmonad", "testlib", "mazer", "cppgamenetlib", "cppgamelib" ]
     }
   ]
 }

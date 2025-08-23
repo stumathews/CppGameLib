@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Event.h"
 #include "EventNumbers.h"
+#include "IEventSubscriber.h"
 
 namespace gamelib
 {

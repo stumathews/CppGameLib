@@ -425,7 +425,13 @@ add_custom_command(
           "${CMAKE_CURRENT_SOURCE_DIR}/testdata/"
           "$<TARGET_FILE_DIR:AllTests>"
 )
-
+# Also copy files to the build folder so that we can run the tests from the build folder too
+add_custom_command(
+  TARGET AllTests POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+          "${CMAKE_CURRENT_SOURCE_DIR}/testdata/"
+          ${CMAKE_BINARY_DIR}
+)
 
 
 # Note: We set the working dir of the test to the target output folder otherwise is runs tests from builddir and can't find the configuration files as they are not in the build dir, but the target dir (eg. Release/ etc)

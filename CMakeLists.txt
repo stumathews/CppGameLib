@@ -37,6 +37,7 @@ ai/Repeat.h
 ai/Selector.h
 asset/asset.h
 asset/SpriteAsset.h
+asset/ScriptAsset.h
 audio/AudioAsset.h
 audio/AudioManager.h
 character/AnimatedSprite.h
@@ -111,6 +112,7 @@ file/SettingDetail.h
 file/SettingsManager.h
 file/TextFile.h
 file/tinyxml2.h
+file/ScriptManager.h
 font/FontAsset.h
 font/FontManager.h
 framework.h
@@ -209,6 +211,7 @@ ai/FSM.cpp
 ai/FSMState.cpp
 asset/asset.cpp
 asset/SpriteAsset.cpp
+asset/ScriptAsset.cpp
 audio/AudioAsset.cpp
 audio/AudioManager.cpp
 character/AnimatedSprite.cpp
@@ -247,6 +250,7 @@ file/SettingDetail.cpp
 file/SettingsManager.cpp
 file/TextFile.cpp
 file/tinyxml2.cpp
+file/ScriptManager.cpp
 font/FontAsset.cpp
 font/FontManager.cpp
 geometry/ABCDRectangle.cpp
@@ -338,6 +342,8 @@ find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_ttf CONFIG REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(SDL2_image REQUIRED)
+find_package(Lua REQUIRED)
+#find_package(Lua51 REQUIRED)
 
 # Set a few properties for the library 
 set_target_properties(cppgamelib 
@@ -347,11 +353,15 @@ set_target_properties(cppgamelib
 
 # Link to external dependencies
 target_link_libraries(cppgamelib 
+PUBLIC
 SDL2::SDL2 
 SDL2_ttf::SDL2_ttf
 SDL2_mixer::SDL2_mixer
 SDL2_image::SDL2_image
-unofficial-sodium::sodium)
+unofficial-sodium::sodium
+PRIVATE
+${LUA_LIBRARIES}
+)
 
 # Make an executable that runs all the tests the provided files
 enable_testing()
@@ -374,11 +384,12 @@ Tests/Tests/SettingsManagerTests.cpp
 Tests/Tests/StatisticsTests.cpp
 Tests/Tests/ResourceManagerTests.cpp
 Tests/Tests/AudioManagerTests.cpp 
-Tests/Tests/FontManagerTests.cpp
+Tests/Tests/ScriptManagerTests.cpp
 Tests/Tests/GraphicAssetFactoryTests.cpp
 Tests/Tests/SceneGraphTests.cpp
 Tests/Tests/SceneManagerTests.cpp
 Tests/Tests/SDLGraphicsManagerTests.cpp
+Tests/Tests/LuaTests.cpp
 )
 
 # Add an executable for running only the networking tests
@@ -395,17 +406,24 @@ target_include_directories(AllTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Tests/Tes
 target_include_directories(NetworkingTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Tests/Tests)
 
 # Link libraries that the test AllTests exeutable uses
-target_link_libraries(AllTests PUBLIC 
-cppgamelib
-SDL2::SDL2
-SDL2_ttf::SDL2_ttf
-SDL2_mixer::SDL2_mixer
-SDL2_image::SDL2_image
+target_link_libraries(AllTests 
+PUBLIC 
+ cppgamelib
+ SDL2::SDL2
+ SDL2_ttf::SDL2_ttf
+ SDL2_mixer::SDL2_mixer
+ SDL2_image::SDL2_image
 PRIVATE
-GTest::gmock_main winmm)
+ GTest::gmock_main 
+ winmm
+ ${LUA_LIBRARIES}
+)
 
 # Set include directory for allTests executable
-target_include_directories(AllTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(AllTests 
+PUBLIC 
+ ${CMAKE_CURRENT_SOURCE_DIR} 
+ ${LUA_INCLUDE_DIR})
 
 # Link libraries that the test AllTests exeutable uses
 target_link_libraries(NetworkingTests 
@@ -413,7 +431,8 @@ target_link_libraries(NetworkingTests
   cppgamelib
   unofficial-sodium::sodium 
 PRIVATE
- GTest::gmock_main winmm
+ GTest::gmock_main
+ winmm
 )
 
 target_include_directories(NetworkingTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

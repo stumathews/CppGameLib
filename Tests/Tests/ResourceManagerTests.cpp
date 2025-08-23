@@ -56,7 +56,7 @@ namespace gamelib
 	TEST_F(ResourceManagerTests, read_resources)
 	{
 		ResourceManager::Get()->IndexResourceFile(resource_file_path);
-		EXPECT_EQ(ResourceManager::Get()->GetCountResources(), 9) << "Expected 9 assets to be loaded";
+		EXPECT_EQ(ResourceManager::Get()->GetCountResources(), 10) << "Expected 9 assets to be loaded";
 	}
 
 	TEST_F(ResourceManagerTests, get_resource_via_string)

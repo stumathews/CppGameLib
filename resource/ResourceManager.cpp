@@ -11,6 +11,7 @@
 #include <exceptions/EngineException.h>
 #include "graphic/GraphicAssetFactory.h"
 #include "file/SettingsManager.h"
+#include "file/ScriptManager.h"
 
 namespace gamelib
 {
@@ -209,6 +210,10 @@ namespace gamelib
 		{
 			// Read font asset details
 			asset = FontManager::Get()->CreateAsset(assetElement);
+		}
+		else if (strcmp(type, "script") == 0)
+		{
+			asset = ScriptManager::Get()->CreateAsset(assetElement);
 		}
 		else
 		{

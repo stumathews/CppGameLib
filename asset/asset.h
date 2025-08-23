@@ -18,6 +18,7 @@ namespace gamelib
 			Sprite,
 			Audio,
 			Font,
+			Script,
 		};
 		
 		Asset(int uid, std::string name, std::string path, std::string type, int scene);

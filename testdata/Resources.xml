@@ -29,5 +29,6 @@
 			</animation>
 		</sprite>
 	</Asset>
+	<Asset uid="10" scene="0" name="TestScript" type="script" filename="TestScript.lua"></Asset>
 	
 </Assets>

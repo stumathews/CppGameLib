@@ -4,7 +4,8 @@
 
 
 gamelib::ScriptAsset::ScriptAsset(int inUid, const std::string& inName, const std::string& inPath,
-                                  const std::string& inType, int inScene): Asset(inUid, inName, inPath, inType, inScene)
+                                  const std::string& inType, const int inScene):
+	Asset(inUid, inName, inPath, inType, inScene), scriptContent(nullptr)
 {
 	AssetType = Asset::AssetType::Script;
 }

@@ -26,6 +26,31 @@ A Basic view of how the library would be used to structure a game:
 
 ![Basic Architecture](AppGameLibArchitecture.png)
 
+
+## Build
+
+Ensure you have vcpkg and cmake configured.
+
+Generate the project files into the builddir folder:
+
+```
+cmake --preset=vcpkg
+```
+
+Build the library in the builddir folder:
+
+```
+cmake --build builddir
+```
+
+Run the tests:
+
+```
+cd builddir
+AllTests.exe
+
+```
+
 ## Core
 
 ### GameObject

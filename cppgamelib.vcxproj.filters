@@ -306,28 +306,13 @@
     <ClInclude Include="ai\Decorator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ai\Composite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ai\Sequence.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ai\BehaviorResult.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ai\LastOrNextChildSelector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ai\Parallel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ai\Monitor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ai\FirstOrNextSelector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ai\InlineActionBehavior.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ai\Repeat.h">
@@ -541,6 +526,33 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="objects\GameObjectType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\InlineBehavioralAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\ActiveSelector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\Selector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\BehavioralSequence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\CompositeBehavior.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ai\FilterSequence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="net\IElapsedTimeProvider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="file\ScriptManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="asset\ScriptAsset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -846,6 +858,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="net\GameStatePusher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="file\ScriptManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="asset\ScriptAsset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

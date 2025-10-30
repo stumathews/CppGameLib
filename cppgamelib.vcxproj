@@ -206,6 +206,7 @@
     <ClInclude Include="ai\CompositeBehavior.h" />
     <ClInclude Include="ai\FilterSequence.h" />
     <ClInclude Include="asset\asset.h" />
+    <ClInclude Include="asset\ScriptAsset.h" />
     <ClInclude Include="audio\AudioManager.h" />
     <ClInclude Include="audio\AudioAsset.h" />
     <ClInclude Include="ai\BehaviorTree.h" />
@@ -237,6 +238,7 @@
     <ClInclude Include="events\ReliableUdpCheckSumFailedEvent.h" />
     <ClInclude Include="events\ReliableUdpPacketRttCalculatedEvent.h" />
     <ClInclude Include="events\SubscriberHandledEvent.h" />
+    <ClInclude Include="file\ScriptManager.h" />
     <ClInclude Include="net\GameStatePusher.h" />
     <ClInclude Include="graphic\Subscribable.h" />
     <ClInclude Include="graphic\Window.h" />
@@ -376,6 +378,7 @@
     <ClCompile Include="ai\ConditionalSequence.h" />
     <ClCompile Include="ai\FSMState.cpp" />
     <ClCompile Include="asset\Asset.cpp" />
+    <ClCompile Include="asset\ScriptAsset.cpp" />
     <ClCompile Include="audio\AudioManager.cpp" />
     <ClCompile Include="audio\AudioAsset.cpp" />
     <ClCompile Include="ai\BehaviorTree.cpp" />
@@ -384,6 +387,7 @@
     <ClCompile Include="character\DirectionUtils.cpp" />
     <ClCompile Include="character\StatefulMove.cpp" />
     <ClCompile Include="events\ReliableUdpPacketLossDetectedEvent.h" />
+    <ClCompile Include="file\ScriptManager.cpp" />
     <ClCompile Include="net\GameStatePusher.cpp" />
     <ClCompile Include="graphic\Subscribable.cpp" />
     <ClCompile Include="graphic\Window.cpp" />

@@ -29,7 +29,23 @@ A Basic view of how the library would be used to structure a game:
 
 ## Build
 
+There are to ways to build the library, one uses cmake to generate a visual studio project file and the other maintains a static visual studio project file.
+
+The static visual studio project file is configured to find project dependecies (sdl, sodium etc) in statically defined locations specified in the Build\common.props file. This approach is legacy but does have one important advantage. Its supports loading this library (cppgamelib) in the 2dGameDev project which builds cppgamelib, libmonad, lib2dev all in the same solution meaning you can make multiple changes to these linked projects and then build and run the test game (part of 2dgamedev) to check everything works as it links to all th dependant project (including this project, cppgamelib)  
+
+Using CMake is better because it pulls down the dependencies dynamically and does not neccesitate having to down the dependencies and make sure they are referened in Build\common.props. 
+
+### Visual Studio
+
+Load cppgamelib.sln into visual studio and build
+
+### CMake
+
+You can generate a cppgamelib.sln automatically using cmake. 
+
 Ensure you have vcpkg and cmake configured.
+
+#### Generate project files
 
 Generate the project files into the builddir folder:
 
@@ -37,7 +53,11 @@ Generate the project files into the builddir folder:
 cmake --preset=vcpkg
 ```
 
-Build the library in the builddir folder:
+At this point, you can load builddir\cppgamelib.sln into visual studio and build it there.
+
+#### Build from command line
+
+Insted of opening VS to build the project, build it from the command line. This will build the library from the project files in the builddir folder and place the binaries there too:
 
 ```
 cmake --build builddir

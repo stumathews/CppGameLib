@@ -64,9 +64,10 @@ namespace gamelib
 		if (FD_ISSET(listeningSocket, &readfds))
 		{
 			PeerInfo peerInfo;
+			peerInfo.Length = sizeof(peerInfo.Address);
 			const SOCKET connectedSocket = accept(listeningSocket, (sockaddr*)&peerInfo.Address, &peerInfo.Length);			
 
-			if (connectedSocket != INVALID_SOCKET)
+			if (connectedSocket != INVALID_SOCKET_HANDLE)
 			{
 				const auto newPlayer = TcpNetworkPlayer(connectedSocket);
 				Players.push_back(newPlayer); // Store incoming player sockets so we can listen for incoming player data too
@@ -103,17 +104,17 @@ namespace gamelib
 			const auto clientSocket = player.GetSocket();
 
 			// Let the client know we're shutting them down...
-			const auto iResult = shutdown(clientSocket, SD_SEND);
+			const auto iResult = shutdown(clientSocket, SHUT_SEND);
 			if (iResult == SOCKET_ERROR) 
 			{
 				// maybe the client is already finished. Close Socket.
-				closesocket(clientSocket);
-				WSACleanup();
+				NETCLOSE(clientSocket);
+				EXIT(clientSocket);
 			}
 		}
 
 		// disconnect listening socket so its no longer binding to the listening port
-		closesocket(listeningSocket);		
+		CLOSE(listeningSocket);		
 	}
 
 	void TcpGameServerConnection::CheckForPlayerTraffic(unsigned long deltaMs)
@@ -150,8 +151,8 @@ namespace gamelib
 					if (result == SOCKET_ERROR)
 					{
 						printf("shutdown failed: %d\n", WSAGetLastError());
-						closesocket(Players[playerId].GetSocket());
-						WSACleanup();
+						NETCLOSE(Players[playerId].GetSocket());
+						EXIT(Players[playerId].GetSocket());
 					}
 				}
 			}
@@ -166,7 +167,7 @@ namespace gamelib
 		}
 
 		auto msgHeader = serializationManager->GetMessageHeader(inPayload);
-		const auto messageType = msgHeader.MessageType;
+		const auto messageType = msgHeader.TheMessageType;
 
 		if(messageType == "ping")
 		{	
@@ -241,7 +242,7 @@ namespace gamelib
 	{
 		for(const auto& player : Players)
 		{			
-			closesocket(player.GetSocket());
+			CLOSE(player.GetSocket());
 			Logger::Get()->LogThis("Closed player connection.");
 		}
 	}

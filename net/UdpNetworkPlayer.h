@@ -11,10 +11,10 @@ namespace gamelib
 	public:
 		UdpNetworkPlayer(const PeerInfo peerInfo, const std::string& nickName)
 		{
-			this->PeerInfo = peerInfo;
+			this->ThePeerInfo = peerInfo;
 			SetNickName(nickName);
 		}
 
-		PeerInfo PeerInfo;		
+		PeerInfo ThePeerInfo;		
 	};
 }

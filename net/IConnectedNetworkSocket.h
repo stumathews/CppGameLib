@@ -1,7 +1,7 @@
 ﻿#pragma once
 #ifndef INETWORKSOCKET_H
 #define INETWORKSOCKET_H
-#include <WinSock2.h>
+#include <net/Networking.h>
 
 namespace gamelib
 {

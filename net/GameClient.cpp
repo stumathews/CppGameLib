@@ -31,11 +31,9 @@ namespace gamelib
 		this->eventFactory = nullptr;
 		this->nickName = nickName;
 		this->encoding = encoding;
-		this->readfds =
-		{
-			.fd_count = 0			,
-			.fd_array = {0}
-		};
+
+		// Initialize file descriptors
+		FD_ZERO(&readfds);
 		this->sendClientEventsToServer = sendClientEventsToServer;
 
 		SetupProtocolManager(connection, useReliableUdpProtocolManager, useEncryption);
@@ -171,7 +169,7 @@ namespace gamelib
 	void GameClient::ParseReceivedServerPayload(const char* buffer, const unsigned long deltaMs) const
 	{
 		const auto msgHeader = serializationManager->GetMessageHeader(buffer);
-		const auto messageType = msgHeader.MessageType;
+		const auto messageType = msgHeader.TheMessageType;
 		
 		// Send client registration response immediately back to server
 		if(messageType == "requestPlayerDetails")
@@ -253,8 +251,9 @@ namespace gamelib
 		if (sendResult == SOCKET_ERROR) 
 		{
 			Networking::netError(0,0, "Ping Game server connect failed. Shutting down client");
-			closesocket(networkProtocolManager->GetConnection()->GetRawSocket());
-			WSACleanup();
+			
+			CLOSE(networkProtocolManager->GetConnection()->GetRawSocket());
+			EXIT(networkProtocolManager->GetConnection()->GetRawSocket());
 		}
 	}
 
@@ -270,8 +269,8 @@ namespace gamelib
 
 		if (shutdown(connectionSocket, SD_SEND) == SOCKET_ERROR) 
 		{
-			closesocket(connectionSocket);
-			WSACleanup();
+			CLOSE(connectionSocket);
+			EXIT(connectionSocket);
 		}
 	}
 }

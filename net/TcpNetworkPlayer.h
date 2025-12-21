@@ -1,6 +1,6 @@
 #pragma once
 #include "NetworkPlayer.h"
-#include <WinSock2.h>
+#include <net/Networking.h>
 
 namespace gamelib
 {

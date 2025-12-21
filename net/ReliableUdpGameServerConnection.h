@@ -3,7 +3,7 @@
 #pragma once
 
 #include <string>
-#include <WinSock2.h>
+#include <net/Networking.h>
 #include "UdpGameServerConnection.h"
 #include "net/ReliableUdp.h"
 

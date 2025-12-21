@@ -149,7 +149,7 @@ namespace gamelib
 				return bufLength;
 			}
 			// copy decrypted message into caller's buffer
-			memcpy_s(callersReceiveBuffer, bufLength, decryptedMessage.data(), decryptedMessage.size());
+			memcpy(callersReceiveBuffer, decryptedMessage.data(), decryptedMessage.size());
 		}
 		
 		BitfieldReader packedBufferReader(reinterpret_cast<uint32_t*>(callersReceiveBuffer), count32BitBlocks);
@@ -173,12 +173,12 @@ namespace gamelib
 
 		reliableUdp.MarkReceived(message, deltaMs);
 
-		if(message.Header.MessageType == SendPubKey)
+		if(message.Header.messageType == SendPubKey)
 		{
 			Logger::Get()->LogThis("Client: [Received server's public key]");
 
 			// Server sent us their public key
-			memcpy_s(remotePublicKey, SecuritySide::PublicKeyLengthBytes, message.Data()[0].Data(), SecuritySide::PublicKeyLengthBytes);
+			memcpy(remotePublicKey, message.Data()[0].Data(), SecuritySide::PublicKeyLengthBytes);
 
 			// We Can establish the session keys now
 			clientSecuritySide.GenerateClientTransmissionKeys(remotePublicKey);
@@ -187,7 +187,7 @@ namespace gamelib
 			sessionEstablished = true;
 		}
 
-		if (message.Header.MessageType == Ack) // ack
+		if (message.Header.messageType == Ack) // ack
 		{
 			Logger::Get()->LogThis("Client: [Received ack]");
 			RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), false));
@@ -196,7 +196,7 @@ namespace gamelib
 		}
 
 		// SendAck - only to non-ack messages (don't ack an ack!)
-		if (message.Header.MessageType != Ack)
+		if (message.Header.messageType != Ack)
 		{
 			Logger::Get()->LogThis("Client: Sending ack...");
 

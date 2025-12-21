@@ -1,7 +1,7 @@
 #pragma once
 #include "IGameServerConnection.h"
 #include <string>
-#include <WinSock2.h>
+#include <net/Networking.h>
 #include <vector>
 #include <net/UdpNetworkPlayer.h>
 #include <net/PeerInfo.h>
@@ -24,7 +24,7 @@ namespace gamelib
 		void Initialize() override;
 	protected:		
 		SOCKET listeningSocket{};
-		Encoding Encoding;
+		Encoding TheEncoding;
 		void RaiseNetworkTrafficReceivedEvent(const char* buffer, int bytesReceived, PeerInfo fromClient);
 		void ParseReceivedPlayerPayload(const char* inPayload, int payloadLength, PeerInfo fromClient);
 	private:

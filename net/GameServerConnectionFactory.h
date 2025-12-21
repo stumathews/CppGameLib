@@ -16,7 +16,7 @@ namespace gamelib
 	class GameServerConnectionFactory
 	{
 	public:
-		static [[nodiscard]] std::shared_ptr<IGameServerConnection> Create(
+		[[nodiscard]] static std::shared_ptr<IGameServerConnection> Create(
 			const bool isTcp, const std::string& address, const std::string& port, const bool useReliableUdp = false,
 			bool useEncryption = true, Encoding wireFormat = Encoding::json)
 		{

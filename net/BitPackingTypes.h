@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <ostream>
 #include <vector>
+#include <cstring>
 
 #include "BitfieldReader.h"
 #include "BitPacker.h"
@@ -58,7 +59,7 @@ namespace gamelib
 		    {
 				// read how many elements in this string
 				// ReSharper disable once CppDependentTemplateWithoutTemplateKeyword
-				numElements = bitfieldReader.ReadNext<int>(sizeof(T)*8);
+				numElements = bitfieldReader.template ReadNext<int>(sizeof(T)*8);
 				numBits = NumBits();
 
 				if(numElements == 0) return; // Empty string
@@ -127,7 +128,7 @@ namespace gamelib
 		    void Read(BitfieldReader<T>& bitfieldReader)
 		    {
 				// read how many elemments in this string
-		        numElements = bitfieldReader.ReadNext<int>(sizeof(T)*8);
+		        numElements = bitfieldReader.template ReadNext<int>(sizeof(T)*8);
 
 				elements.resize(numElements);
 
@@ -187,7 +188,7 @@ namespace gamelib
 			void Read(BitfieldReader<T>& bitfieldReader)
 		    {
 				// Read how many elements there will be
-				numElements = bitfieldReader.ReadNext<uint16_t>(BITS_REQUIRED(0, MaxElements));
+				numElements = bitfieldReader.template ReadNext<uint16_t>(BITS_REQUIRED(0, MaxElements));
 				for (int i = 0 ; i < numElements; i++)
 				{
 					String<T> string;
@@ -243,7 +244,7 @@ namespace gamelib
 			void Read(BitfieldReader<T>& bitfieldReader)
 		    {
 				// Read how many elements there will be
-				numElements = bitfieldReader.ReadNext<uint16_t>(BITS_REQUIRED(0, MaxElements));
+				numElements = bitfieldReader.template ReadNext<uint16_t>(BITS_REQUIRED(0, MaxElements));
 				for (uint16_t i = 0 ; i < numElements; i++)
 				{
 					ByteArray<T> byteArray;

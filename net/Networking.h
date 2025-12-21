@@ -1,41 +1,107 @@
 #pragma once
-#define HAVE_WINSOCK2_H
-#ifdef HAVE_WINSOCK2_H 
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
+#ifdef __linux__
+
+//linux code goes here:
+
+#include <arpa/inet.h>
+#include <cerrno>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <cstring>
+
+#define INIT()			( program_name = \
+							strrchr( argv[ 0 ], '/' ) ) ? \
+							program_name++ : \
+							( program_name = argv[ 0 ] )
+#define NETINIT()			do { } while(0);
+#define EXIT(s)			exit( s )
+#define NETCLOSE(s)		CLOSE(s)
+#define CLOSE(s)                                           \
+      do {                                                    \
+          if (close(s) != 0) {                                \
+              perror("close");                                \
+              std::exit(EXIT_FAILURE);                        \
+          }                                                   \
+      } while (0)
+#define set_errno(e)	errno = ( e )
+#define isvalidsock(s)	( ( s ) >= 0 )
+#define SOCKET_ERROR (-1)
+#define WSAGetLastError() errno
+#define WSAECONNRESET ECONNRESET
+#define SD_SEND SHUT_WR
+#define SD_RECEIVE SHUT_RD
+#define SD_BOTH SHUT_RDWR
+
+	typedef int SOCKET;
+
+	inline int getLastSocketError() 
+	{
+	    return errno;
+	}
+	
+	using SocketHandle = int;
+    constexpr SocketHandle INVALID_SOCKET_HANDLE = -1;
+	constexpr int SHUT_SEND = SHUT_WR;
+#define ZeroMemory(dest, size) std::memset(dest, 0, size)
+
+#elif _WIN32
+
+// Windows code goes here:
 
 #include <WinSock2.h>
 #include <Ws2tcpip.h>
 
-struct timezone
-{
-	long tz_minuteswest;
-	long tz_dsttime;
-};
-typedef unsigned int u_int32_t;
+	struct timezone
+	{
+		long tz_minuteswest;
+		long tz_dsttime;
+	};
+	typedef unsigned int u_int32_t;
 
-//#define EMSGSIZE		WSAEMSGSIZE
+	inline int getLastSocketError() 
+	{
+    		return WSAGetLastError();
+	}
+
+	using SocketHandle = SOCKET;
+    constexpr SocketHandle INVALID_SOCKET_HANDLE = INVALID_SOCKET;
+	constexpr int SHUT_SEND = SD_SEND;
+
+	//#define EMSGSIZE		WSAEMSGSIZE
 
 #define NETINIT()			do { WSADATA wsaData; WSAStartup(MAKEWORD(2,2), &wsaData); } while(0);
-#define EXIT(s)			do { WSACleanup(); exit( ( s ) ); } \
-						while ( 0 )
+#define EXIT(s)			do { WSACleanup(); }
+#define SOCKET_ERROR (-1)
 #define NETCLOSE(s)		CLOSE(s)
-#define CLOSE(s)		if ( closesocket( s ) ) \
-							netError( 1, errno, "close failed" )
 #define errorno			( GetLastError() )
+#define CLOSE(s)                                           \
+      do {                                                    \
+          if (closesocket(s) != 0) {                          \
+              std::fprintf(stderr,                            \
+                  "closesocket failed: %d\n",                \
+                  WSAGetLastError());                         \
+              std::exit(EXIT_FAILURE);                        \
+          }                                                   \
+      } while (0)
 #define set_errno(e)	SetLastError( ( e ) )
 #define isvalidsock(s)	( ( s ) != SOCKET_ERROR )
 #define bzero(b,n)		memset( ( b ), 0, ( n ) )
 #define sleep(t)		Sleep( ( t ) * 1000 )
 
-int inet_aton( const char *cp, struct in_addr *pin );
+	int inet_aton( const char *cp, struct in_addr *pin );
 
-#endif /* HAVE_WINSOCK2_H */
+#endif
 
 #define NLISTEN			5		/* max waiting connections */
 
-typedef void ( *tofunc_t )( void * );
+	typedef void ( *tofunc_t )( void * );
 
 #include <string>
+#include <netdb.h>
+#include <cstring>
+#include <memory>
+#include <vector>
 
 namespace gamelib
 {
@@ -63,6 +129,46 @@ namespace gamelib
 		// Cannot assign to an NetworkManager
 		void operator=(Networking const&) = delete;
 
+		std::unique_ptr<hostent> my_gethostbyname(const char* hostname) {
+		    struct addrinfo hints{};
+		    struct addrinfo* res = nullptr;
+
+		    hints.ai_family = AF_INET;        // IPv4
+		    hints.ai_socktype = SOCK_STREAM;
+
+		    int status = getaddrinfo(hostname, nullptr, &hints, &res);
+		    if (status != 0 || !res) {
+			return nullptr;
+		    }
+
+		    // Count addresses
+		    int count = 0;
+		    for (struct addrinfo* p = res; p != nullptr; p = p->ai_next) count++;
+
+		    // Allocate hostent
+		    hostent* he = new hostent{};
+		    he->h_name = const_cast<char*>(hostname);
+
+		    static std::vector<char*> aliases; // empty for now
+		    aliases.clear();
+		    aliases.push_back(nullptr);
+		    he->h_aliases = aliases.data();
+
+		    static std::vector<char*> addrs;
+		    addrs.clear();
+
+		    for (struct addrinfo* p = res; p != nullptr; p = p->ai_next) {
+			struct sockaddr_in* ipv4 = (struct sockaddr_in*)p->ai_addr;
+			addrs.push_back((char*)&(ipv4->sin_addr));
+		    }
+		    addrs.push_back(nullptr);
+		    he->h_addr_list = addrs.data();
+		    he->h_addrtype = AF_INET;
+		    he->h_length = sizeof(struct in_addr);
+
+		    freeaddrinfo(res);
+		    return std::unique_ptr<hostent>(he);
+		}
 	public:
 	/** \brief Print a diagnostic and optionally quit
 	 *

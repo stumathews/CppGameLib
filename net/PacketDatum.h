@@ -38,9 +38,9 @@ namespace gamelib
 		template <typename T>
 		void Read(BitfieldReader<T>& bitfieldReader)
 		{
-			IsAcked = bitfieldReader.ReadNext<uint16_t>(BITS_REQUIRED(0, 1));	// read 1 bit		
-			IsDataPacked = bitfieldReader.ReadNext<uint16_t>(BITS_REQUIRED(0, 1)); // read 1 bit
-			Sequence = bitfieldReader.ReadNext<uint16_t>(16); // read 16 bits
+			IsAcked = bitfieldReader.template ReadNext<uint16_t>(BITS_REQUIRED(0, 1));	// read 1 bit		
+			IsDataPacked = bitfieldReader.template ReadNext<uint16_t>(BITS_REQUIRED(0, 1)); // read 1 bit
+			Sequence = bitfieldReader.template ReadNext<uint16_t>(16); // read 16 bits
 
 			bit_packing_types::String<T> temp;
 			temp.Read(bitfieldReader); // read a string

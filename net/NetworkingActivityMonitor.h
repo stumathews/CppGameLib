@@ -2,20 +2,22 @@
 #ifndef NETWORKING_ACTIVITY_MONITOR_H
 #define NETWORKING_ACTIVITY_MONITOR_H
 
-#include <processes\Action.h>
-#include <processes\Process.h>
-#include <utils\Utils.h>
+#include <processes/Action.h>
+#include <processes/Process.h>
+#include <utils/Utils.h>
 #include <file/TextFile.h>
 
 #include "NetworkingStatistics.h"
-#include "events/EventManager.h"
-#include "events/EventSubscriber.h"
+#include <events/EventManager.h>
+#include <events/EventSubscriber.h>
 #include "objects/GameObject.h"
 #include "time/PeriodicTimer.h"
 
 namespace gamelib
 {
 	class IElapsedTimeProvider;
+	class ProcessManager;
+	class EventManagert;
 	class NetworkingActivityMonitor : public gamelib::EventSubscriber
 	{
 	public:

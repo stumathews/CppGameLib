@@ -58,7 +58,7 @@ namespace gamelib
 			Logger::Get()->LogThis("Server: Successfully decrypted message.");
 
 			// copy decrypted message into caller's buffer
-			memcpy_s(readBuffer, ReadBufferSizeInBytes, decryptedMessage.data(), decryptedMessage.size());
+			memcpy(readBuffer, decryptedMessage.data(), decryptedMessage.size());
 			
 		}
 		else
@@ -93,9 +93,9 @@ namespace gamelib
 
 			// Message handling:
 
-			Logger::Get()->LogThis("Server: [Received "+ MessageTypeToString(message.Header.MessageType) +"]");				
+			Logger::Get()->LogThis("Server: [Received "+ MessageTypeToString(message.Header.messageType) +"]");				
 
-			if(message.Header.MessageType == Ack) // ack message
+			if(message.Header.messageType == Ack) // ack message
 			{
 				RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), false));				
 				
@@ -104,7 +104,7 @@ namespace gamelib
 				
 			}
 
-			if (message.Header.MessageType != Ack) // non-ack message
+			if (message.Header.messageType != Ack) // non-ack message
 			{
 				RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketReceived(std::make_shared<Message>(message)));
 
@@ -133,10 +133,10 @@ namespace gamelib
 				RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), true));
 			}
 
-			if (message.Header.MessageType == SendPubKey)
+			if (message.Header.messageType == SendPubKey)
 			{
 				// We got the client's public key
-				memcpy_s(remotePublicKey, SecuritySide::PublicKeyLengthBytes, message.Data()[0].Data(), SecuritySide::PublicKeyLengthBytes);
+				memcpy(remotePublicKey, message.Data()[0].Data(), SecuritySide::PublicKeyLengthBytes);
 
 				// Generate our own public key
 				securitySide.GenerateKeyPair();

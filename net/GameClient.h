@@ -1,6 +1,6 @@
 #pragma once
 #include "GameServer.h"
-#include <WinSock2.h>
+#include <net/Networking.h>
 #include <events/EventSubscriber.h>
 #include <TestMe.h>
 

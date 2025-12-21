@@ -1,7 +1,7 @@
 #pragma once
 #include "IGameServerConnection.h"
 #include <string>
-#include <WinSock2.h>
+#include <net/Networking.h>
 #include <vector>
 #include <net/TcpNetworkPlayer.h>
 #include <net/MessageHeader.h>

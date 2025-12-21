@@ -2,6 +2,8 @@
 #ifndef BITFIELDREADER_H
 #define BITFIELDREADER_H
 #include "utils/BitFiddler.h"
+#include <exceptions/EngineException.h>
+#include <cstring>
 
 namespace gamelib
 {
@@ -33,9 +35,9 @@ namespace gamelib
 			auto startBit = (bitsRead + numBits) - 1;
 			const auto maxStartBit = fieldSizeBits-1;
 			
-			if(numBits >= (fieldSizeBits * 2)) throw std::exception("Can't read more than the double the buffer size.");
+			if(numBits >= (fieldSizeBits * 2)) THROW(99, "Can't read more than the double the buffer size.", "BitfieldReader");
 
-			if(countTimesOverflowed >= elements) throw std::exception("Buffer overflow.");
+			if(countTimesOverflowed >= elements) THROW(99, "Buffer overflow.", "BitfieldReader");
 
 			// Trying to read outside the buffer, we'll need to read some from previous buffer and this buffer
 			// to make a buffer that crosses both - a merged buffer unit
@@ -78,7 +80,7 @@ namespace gamelib
 				bitsLeftInSegment = fieldSizeBits;				
 			}
 				
-			memcpy_s(outBuffer, outBufferSize, field+countTimesOverflowed, outBufferSize);
+			memcpy(outBuffer, field+countTimesOverflowed, outBufferSize);
 			segmentsRead += (outBufferSize*8)/fieldSizeBits;
 			bitsRead = (outBufferSize*8);
 			totalBitsRead += bitsRead;
@@ -103,7 +105,7 @@ namespace gamelib
 		template<typename OType>
 		OType ReadInterval(const uint8_t startHighBit, const uint8_t numBits)
 		{
-			if(numBits >= (fieldSizeBits * 2)) throw std::exception("Can't read more than the double the buffer size.");
+			if(numBits >= (fieldSizeBits * 2)) THROW(99, "Can't read more than the double the buffer size.", "BitfieldReader");
 
 			if(startHighBit > fieldSizeBits)
 			{

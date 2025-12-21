@@ -39,7 +39,7 @@ namespace gamelib
 		 // 0 is acknowledgment,
 		 // 1 RequestPublicKey
 		 // 3 General
-		MessageType MessageType {};
+		MessageType messageType {};
 
 		 // This is so that the server can throw away messages that have a different protocol Id
 		uint16_t ProtocolId {};

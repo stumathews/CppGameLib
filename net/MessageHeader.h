@@ -6,7 +6,7 @@ namespace gamelib
 	class MessageHeader
 	{
 	public:
-		std::string MessageType;
+		std::string TheMessageType;
 		std::string MessageTarget;
 	};
 }

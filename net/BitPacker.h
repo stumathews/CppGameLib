@@ -5,6 +5,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <cmath>
+#include <exceptions/EngineException.h>
+#include <cstring>
 
 namespace gamelib
 {
@@ -31,7 +34,7 @@ namespace gamelib
 			{
 				std::stringstream message;
 				message << "can't write " << std::to_string(numBits) << " bits to a " << std::to_string(bufferSizeBits) << " bit bitfield" << std::endl;
-				throw std::exception(message.str().c_str());
+				THROW(999,message.str().c_str(), "BitPacker");
 			}
 
 			// Where to start writing in out temp buffer?
@@ -49,7 +52,7 @@ namespace gamelib
 				buffer = BitFiddler<T>::SetBits(buffer, maxStartBit, bitsLeftInSegment, value);
 
 				//The segment is now full, flush it 
-				memcpy_s(flushDestination+(countTimesOverflowed++), bufferSizeBits/8, &buffer, bufferSizeBits/8);
+				std::memcpy(flushDestination+(countTimesOverflowed++), &buffer, bufferSizeBits/8);
 
 				bitsPacked += bitsLeftInSegment;
 				segmentsWritten++;
@@ -66,7 +69,7 @@ namespace gamelib
 				// we've set some bits  in the new current segment, write it to memory so the reader can read it.
 				// otherwise the reader wont know about it until its auto flushed by completing the segment through more writes
 				// which may not happen if this is the last write/pack
-				memcpy_s(flushDestination+(countTimesOverflowed), bufferSizeBits/8, &buffer, bufferSizeBits/8);
+				memcpy(flushDestination+(countTimesOverflowed),  &buffer, bufferSizeBits/8);
 
 				bitsPacked += extraBits;
 				writeBitPointer = newStartBit+1;				
@@ -85,7 +88,7 @@ namespace gamelib
 				{
 					// we packed up to a bit boundary, we'll need to increase overflow so we can access the next unit segment in the buffer.
 					// We will do this and write the buffer at the same time
-					memcpy_s(flushDestination+(countTimesOverflowed++), bufferSizeBits/8, &buffer, bufferSizeBits/8);
+					memcpy(flushDestination+(countTimesOverflowed++), &buffer, bufferSizeBits/8);
 					segmentsWritten++;
 					bitsLeftInSegment = bufferSizeBits;
 					writeBitPointer = 0;
@@ -108,7 +111,7 @@ namespace gamelib
 			}
 
 			// copy the string directly into the buffer - no bit packing
-			memcpy_s(flushDestination+countTimesOverflowed, (destElements * bufferSizeBits)/8, pushBuffer, pushBufferSize);
+			memcpy(flushDestination+countTimesOverflowed, pushBuffer, pushBufferSize);
 						
 			writeBitPointer = (pushBufferSize*8) % bufferSizeBits;			
 			bitsPacked += (pushBufferSize*8);
@@ -119,14 +122,14 @@ namespace gamelib
 			// Set the current buffer to the last segment we wrote with memcpy
 			// because on subsequent packs it assumes the buffer contains the last segment written
 			// which has changed as we've written many segments with memcpy
-			memcpy_s(&buffer, bufferSizeBits/8, flushDestination+countTimesOverflowed, bufferSizeBits/8);
+			memcpy(&buffer,  flushDestination+countTimesOverflowed, bufferSizeBits/8);
 
 		}
 
 		// Writes the last buffered 16bits to destination and clears the buffer
 		void Flush(bool readUnusedBits = true)
 		{
-			memcpy_s(flushDestination+(countTimesOverflowed++), bufferSizeBits/8, &buffer, bufferSizeBits/8);
+			memcpy(flushDestination+(countTimesOverflowed++), &buffer, bufferSizeBits/8);
 			buffer = (buffer & 0);
 			
 			// consider the remaining bits in the segment as being written as we flushed the whole segment to memory
@@ -153,7 +156,7 @@ namespace gamelib
 		std::vector<char> ToBytes()
 		{
 			auto bytes = std::vector<char>(TotalBytesPacked());
-			memcpy_s(bytes.data(), bytes.size(), reinterpret_cast<char*>(flushDestination), TotalBytesPacked());
+			memcpy(bytes.data(), reinterpret_cast<char*>(flushDestination), TotalBytesPacked());
 			return bytes;
 		}
 

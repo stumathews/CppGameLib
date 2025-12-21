@@ -2,7 +2,7 @@
 #ifndef UDPNETWORKSOCKET_H
 #define UDPNETWORKSOCKET_H
 
-#include <WinSock2.h>
+#include <net/Networking.h>
 #include "IConnectedNetworkSocket.h"
 
 namespace gamelib

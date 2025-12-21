@@ -19,7 +19,7 @@ namespace gamelib
 		this->eventManager = nullptr;
 		this->networking = nullptr;
 		this->eventFactory = nullptr;
-		this->Encoding = wireFormat;
+		this->TheEncoding = wireFormat;
 	}
 
 	void UdpGameServerConnection::Initialize()
@@ -27,7 +27,7 @@ namespace gamelib
 		this->networking = Networking::Get();
 		this->eventFactory = EventFactory::Get();
 		this->eventManager = EventManager::Get();
-		this->serializationManager = std::make_shared<SerializationManager>(Encoding);
+		this->serializationManager = std::make_shared<SerializationManager>(TheEncoding);
 		
 	}	
 
@@ -38,8 +38,8 @@ namespace gamelib
 
 	void UdpGameServerConnection::Disconnect()
 	{		
-		closesocket(listeningSocket);
-		WSACleanup();
+		NETCLOSE(listeningSocket);
+		EXIT(listeningSocket);
 	}
 
 	void UdpGameServerConnection::Listen(const unsigned long deltaMs)
@@ -80,7 +80,7 @@ namespace gamelib
 		std::string identifier = "unknown";
 		for(auto player : players)
 		{
-			if(player.PeerInfo.Address.sin_port == fromClient.Address.sin_port)
+			if(player.ThePeerInfo.Address.sin_port == fromClient.Address.sin_port)
 			{
 				identifier = player.GetNickName();
 				break;
@@ -109,7 +109,7 @@ namespace gamelib
 				continue;
 			}
 
-			InternalSend(listeningSocket, serializedMessage.c_str(), static_cast<int>(serializedMessage.length()), 0, (sockaddr*) &player.PeerInfo.Address, player.PeerInfo.Length);
+			InternalSend(listeningSocket, serializedMessage.c_str(), static_cast<int>(serializedMessage.length()), 0, (sockaddr*) &player.ThePeerInfo.Address, player.ThePeerInfo.Length);
 			
 		}
 	}
@@ -117,7 +117,7 @@ namespace gamelib
 	void UdpGameServerConnection::ParseReceivedPlayerPayload(const char* inPayload, int payloadLength, const PeerInfo fromClient)
 	{
 		const auto msgHeader = serializationManager->GetMessageHeader(inPayload);
-		const auto messageType = msgHeader.MessageType;
+		const auto messageType = msgHeader.TheMessageType;
 
 		if(messageType == "ping")
 		{	
@@ -152,7 +152,7 @@ namespace gamelib
 		bool found = false;
 		for(const auto& player : players)
 		{
-			if(player.PeerInfo.Address.sin_port == fromClient.Address.sin_port)
+			if(player.ThePeerInfo.Address.sin_port == fromClient.Address.sin_port)
 			{
 				found = true;
 			}
@@ -172,7 +172,7 @@ namespace gamelib
 	{
 		for (auto player : players)
 		{
-			InternalSend(listeningSocket, serializedEvent.c_str(), static_cast<int>(serializedEvent.size()), 0, reinterpret_cast<sockaddr*>(&player.PeerInfo.Address), player.PeerInfo.Length);
+			InternalSend(listeningSocket, serializedEvent.c_str(), static_cast<int>(serializedEvent.size()), 0, reinterpret_cast<sockaddr*>(&player.ThePeerInfo.Address), player.ThePeerInfo.Length);
 		}
 	}
 

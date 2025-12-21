@@ -4,6 +4,8 @@
 #include <file/Logger.h>
 #include <sstream>
 #include <string>
+#include <cstring>
+#include <memory>
 
 namespace gamelib
 {
@@ -26,18 +28,8 @@ namespace gamelib
 	bool Networking::InitializeWinSock()
 	{
 		Logger::Get()->LogThis("Initializing Winsock2");
-		WSADATA wsaData;
-		int iResult;
 
-		// Initialize Winsock
-		iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
-		
-		if (iResult != 0) 
-		{
-			printf("WSAStartup failed: %d\n", iResult);
-			return false;
-		}
-
+		NETINIT();
 		return true;
 	}
 
@@ -50,22 +42,11 @@ namespace gamelib
 
 	void Networking::netError(const int status, int err, const std::string error)
     {
-		wchar_t *wideMessage = NULL;
-		FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
-						NULL, WSAGetLastError(),
-						MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-						(LPWSTR)&wideMessage, 0, NULL);
-		
-		// Convert to non-wide string
-		std::wstring ws(wideMessage);		
-		std::string narrowMessage(ws.begin(), ws.end());
-
 		std::stringstream errorMessage;
 
-		errorMessage << "Networking Error: " << "Status=" << status << " Error=" << error << " Detail=" << narrowMessage;
+		errorMessage << "Networking Error: " << getLastSocketError() << "\n";
 
 		Logger::Get()->LogThis(errorMessage.str(), true);
-		LocalFree(wideMessage);
     }
 
     int Networking::netReadn(const SOCKET fd, char* bp, const size_t len)
@@ -315,7 +296,7 @@ namespace gamelib
     void Networking::netSetAddress(const char* hname, const char* sname, sockaddr_in* sap, const char* protocol)    
     {
 	    struct servent *sp;
-	    struct hostent *hp;
+	    std::unique_ptr<hostent> hp;
 	    char *endptr;
 	    short port;
 
@@ -325,7 +306,7 @@ namespace gamelib
 	    {
 		    if ( !inet_aton( hname, &sap->sin_addr ) )
 		    {
-			    hp = gethostbyname( hname );
+			    hp = my_gethostbyname(hname);
 			    if ( hp == NULL )
 				{				
 					std::stringstream message;

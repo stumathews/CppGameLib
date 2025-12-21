@@ -9,7 +9,7 @@ gamelib::Message::Message(const uint16_t sequence, const uint16_t lastAckedSeque
 	Header.LastAckedSequence = lastAckedSequence;
 	Header.LastAckedBits = previousAckedBits;
 	Header.ProtocolId = 12;
-	Header.MessageType = messageType;
+	Header.messageType = messageType;
 	
 	// Store list of previously unsent messages
 	for(auto i = 0; i < numberOfPackets; i++)
@@ -82,7 +82,8 @@ uint32_t gamelib::Message::GenerateCheckSum()
 	Write(packer, false);	
 
 	// Create CRC value from the checksum buffer
-	return Crc32::crc32buf(reinterpret_cast<const char*>(checkSumBuffer), static_cast<size_t>(sizeInBytes));
+	Crc32 crc;
+	return crc.compute(reinterpret_cast<uint8_t*>(checkSumBuffer), static_cast<size_t>(sizeInBytes));
 }
 
 bool gamelib::Message::ValidateChecksum(const uint32_t yourChecksum)

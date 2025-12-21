@@ -1,5 +1,5 @@
 #include <memory>
-#include <xstring>
+#include <string>
 
 #include "IGameServerConnection.h"
 #include "IProtocolManager.h"

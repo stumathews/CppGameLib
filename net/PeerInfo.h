@@ -1,5 +1,5 @@
 #pragma once
-#include <WinSock2.h>
+#include <net/Networking.h>
 
 namespace gamelib
 {
@@ -18,7 +18,7 @@ namespace gamelib
 			this->Address = {};
 		}
 		sockaddr_in Address{};
-		int Length;
+		socklen_t Length;
 	};
 }
 

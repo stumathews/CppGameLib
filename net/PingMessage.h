@@ -16,7 +16,7 @@ namespace  gamelib
 		int EventType;
 		std::vector<std::string> Names;
 		std::vector<int> Ages;
-		Fish Fish;
+		Fish TheFish;
 
 		// Pack into bitPacker's associated buffer
 		void Write(BitPacker<uint32_t>& bitPacker) const
@@ -61,8 +61,8 @@ namespace  gamelib
 			bitPacker.Finish();
 			
 			// pack fish manually
-			const bit_packing_types::String<uint32_t> fishName(Fish.Name);
-			const bit_packing_types::String<uint32_t> fishSurname(Fish.Surname);
+			const bit_packing_types::String<uint32_t> fishName(TheFish.Name);
+			const bit_packing_types::String<uint32_t> fishSurname(TheFish.Surname);
 
 			fishName.Write(bitPacker);
 			fishSurname.Write(bitPacker);
@@ -103,9 +103,9 @@ namespace  gamelib
 			bit_packing_types::String<uint32_t> fishSurname;
 
 			fishName.Read(bitfieldReader);
-			Fish.Name = fishName.c_str();
+			TheFish.Name = fishName.c_str();
 			fishSurname.Read(bitfieldReader);
-			Fish.Surname = fishSurname.c_str();
+			TheFish.Surname = fishSurname.c_str();
 
 		}
 	};

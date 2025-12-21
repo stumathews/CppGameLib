@@ -1,6 +1,7 @@
 #ifndef RELIABLE_UDP_PACKET_RECEIVED_EVENT_H
 #define RELIABLE_UDP_PACKET_RECEIVED_EVENT_H
 #pragma once
+#include <memory>
 #include "events/Event.h"
 #include "events/EventNumbers.h"
 
@@ -22,4 +23,4 @@ namespace gamelib
 
 }
 
-#endif RELIABLE_UDP_PACKET_RECEIVED_EVENT_H
+#endif

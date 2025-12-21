@@ -1,6 +1,6 @@
 #pragma once
-#include <events\IEventSerializationManager.h>
-#include <json\json11.h>
+#include <events/IEventSerializationManager.h>
+#include <json/json11.h>
 
 namespace gamelib
 {

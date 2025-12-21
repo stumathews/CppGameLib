@@ -2,9 +2,9 @@
 #include <iostream>
 #include <ostream>
 #include "file/SettingsManager.h"
-#include <windows.h>
 #include "objects/GameWorldData.h"
 #include "Profiler.h"
+#include <algorithm>
 
 
 gamelib::VariableGameLoop::VariableGameLoop(std::function<void(unsigned long deltaMs)> updateFunc,
@@ -15,7 +15,7 @@ gamelib::VariableGameLoop::VariableGameLoop(std::function<void(unsigned long del
 
 long GetTimeNowMs()
 {
-	return static_cast<long>(timeGetTime());
+	return static_cast<long>(gamelib::GetTimeMs());
 }
 
 void gamelib::VariableGameLoop::Update(const unsigned long deltaMs)
@@ -112,7 +112,7 @@ void gamelib::VariableGameLoop::Loop(GameWorldData* gameWorldData)
 			if (gameWorldData->CanDraw)
 			{
 				// How much within the new 'tick' are we?
-				const auto percentWithinTick = min(1.0f, (t1 - t0) / TICK_TIME);
+				const auto percentWithinTick = std::min(1.0f, static_cast<float>((t1 - t0) / TICK_TIME));
 				// NOLINT(bugprone-integer-division, clang-diagnostic-implicit-int-float-conversion)				
 				//Draw(static_cast<unsigned int>(percentWithinTick));
 				Draw();

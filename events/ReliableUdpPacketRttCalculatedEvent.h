@@ -18,12 +18,12 @@ namespace gamelib
 	public:
 
 		explicit ReliableUdpPacketRttCalculatedEvent(std::shared_ptr<Message> message, const Rtt rtt)
-		: Event(ReliableUdpPacketRttCalculatedEventId), ReceivedMessage(std::move(message)), Rtt(rtt)
+		: Event(ReliableUdpPacketRttCalculatedEventId), ReceivedMessage(std::move(message)), TheRtt(rtt)
 		{
 		}
 
 		const std::shared_ptr<Message> ReceivedMessage;
-		Rtt Rtt;
+		Rtt TheRtt;
 	};
 }
 

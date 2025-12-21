@@ -166,7 +166,7 @@ namespace gamelib
 	{
 		auto _ = remove_if(begin(layers), end(layers), [&name](const shared_ptr<Layer>& layer)
 		{
-			return layer->Name()._Equal(name);
+			return layer->Name() == name;
 		});
 	}
 

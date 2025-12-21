@@ -1,4 +1,3 @@
-#include <windows.h>
 #include "FixedStepGameLoop.h"
 #include "objects/GameWorldData.h"
 #include "structure/Profiler.h"
@@ -42,7 +41,7 @@ void gamelib::FixedStepGameLoop::Loop(GameWorldData* gameWorldData)
 
 inline long gamelib::FixedStepGameLoop::GetTimeNowMs()
 {
-	return static_cast<long>(timeGetTime());
+	return static_cast<long>(GetTimeMs());
 }
 
 inline void gamelib::FixedStepGameLoop::Update(const unsigned long deltaMs)

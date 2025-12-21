@@ -1,5 +1,5 @@
 
-#include <Lua.hpp>
+#include <lua.h>
 #include <gtest/gtest.h>
 
 #include "asset/ScriptAsset.h"

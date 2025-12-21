@@ -5,7 +5,7 @@
 #include "character/Direction.h"
 #include "exceptions/EngineException.h"
 #include "file/SettingsManager.h"
-#include <Windows.h>
+#include <time/time.h>
 
 using namespace std;
 
@@ -45,7 +45,7 @@ namespace gamelib
 
 	void AnimatedSprite::Update(const unsigned long deltaMs)
 	{
-		const unsigned long durationSinceLastFrameMs = timeGetTime() - deltaTime;
+		const unsigned long durationSinceLastFrameMs = GetTimeMs() - deltaTime;
 		
 		// Switch to the next frame if we've been on the current frame too long
 		if (static_cast<float>(durationSinceLastFrameMs) >= frameDurationMs)
@@ -53,7 +53,7 @@ namespace gamelib
 			AdvanceCurrentFrameNumber();
 			SkipUnsupportedAnimationGroupFrames(); // Only cycle through supported animation groups
 
-			deltaTime = timeGetTime();
+			deltaTime = GetTimeMs();
 		}
 	}
 

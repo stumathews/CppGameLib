@@ -45,7 +45,7 @@ namespace gamelib
 		AbcdRectangle Dimensions{};
 
 		// NPCs also have a hotspot
-		HotspotSPtr Hotspot;
+		HotspotSPtr TheHotspot;
 
 		[[nodiscard]]
 		Direction GetDirection() const;

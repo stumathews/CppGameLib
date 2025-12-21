@@ -96,7 +96,9 @@ namespace gamelib
 			LogEventSubscription(eventId, pYou);
 
 			// Prevent same subscriber adding duplicate subscriptions
-			if(ranges::find(eventSubscribers[eventId], pYou) != eventSubscribers[eventId].end())
+
+			auto& subscribers = eventSubscribers[eventId];
+			if (std::find(subscribers.begin(), subscribers.end(), pYou) != subscribers.end())
 			{
 				return;
 			}

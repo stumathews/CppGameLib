@@ -40,7 +40,7 @@ namespace gamelib
 		pingMessage.EventType = NetworkTrafficReceivedEventId.PrimaryId;
 		pingMessage.Names = { "Stuart", "Jenny", "bruce" };
 		pingMessage.Ages = {1, 2,3 };
-		pingMessage.Fish = Fish("Neemo", "Mathews");
+		pingMessage.TheFish = Fish("Neemo", "Mathews");
 
 		pingMessage.Write(bitPacker);
 

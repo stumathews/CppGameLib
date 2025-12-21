@@ -33,7 +33,7 @@ namespace gamelib
 		pingMessage.EventType = NetworkTrafficReceivedEventId.PrimaryId;
 		pingMessage.Names = { "Stuart", "Jenny", "bruce" };
 		pingMessage.Ages = {1, 2,3 };
-		pingMessage.Fish = Fish("Neemo", "Mathews");
+		pingMessage.TheFish = Fish("Neemo", "Mathews");
 
 		uint32_t networkBuffer[20] = {0}; // 80 byte network buffer
 
@@ -63,8 +63,8 @@ namespace gamelib
 			EXPECT_EQ(pingMessage.Ages[i], deserializedPingMessage.Ages[i]);
 		}
 
-		EXPECT_STREQ(pingMessage.Fish.Name.c_str(), deserializedPingMessage.Fish.Name.c_str());
-		EXPECT_STREQ(pingMessage.Fish.Surname.c_str(), deserializedPingMessage.Fish.Surname.c_str());
+		EXPECT_STREQ(pingMessage.TheFish.Name.c_str(), deserializedPingMessage.TheFish.Name.c_str());
+		EXPECT_STREQ(pingMessage.TheFish.Surname.c_str(), deserializedPingMessage.TheFish.Surname.c_str());
 
 	}
 }

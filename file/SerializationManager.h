@@ -53,7 +53,7 @@ namespace gamelib
 		SerializationManager& operator=(SerializationManager&& other) = delete;
 
 		// Underlying serialization method
-		inline static auto Encoding = Encoding::none;	
+		inline static auto TheEncoding = Encoding::none;	
 	};
 }
 

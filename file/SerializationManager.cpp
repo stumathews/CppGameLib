@@ -12,6 +12,7 @@
 #include "Encoding/XmlEventSerializationManager.h"
 #include "net/Message.h"
 #include "utils/Utils.h"
+#include <exceptions/EngineException.h>
 
 using namespace json11;
 
@@ -19,15 +20,15 @@ namespace gamelib
 {
 	SerializationManager::SerializationManager(const gamelib::Encoding desiredEncoding = Encoding::json)
 	{
-		Encoding = desiredEncoding;
+		TheEncoding = desiredEncoding;
 		Initialize();
 	}
 
 	void SerializationManager::Initialize()
 	{
-		assert(Encoding == Encoding::json || Encoding == Encoding::xml || Encoding == Encoding::bit_packed || Encoding == Encoding::none);
+		assert(TheEncoding == Encoding::json || TheEncoding == Encoding::xml || TheEncoding == Encoding::bit_packed || TheEncoding == Encoding::none);
 
-		switch (Encoding)
+		switch (TheEncoding)
 		{
 			case Encoding::json: 
 				eventSerialization = std::make_shared<JsonEventSerializationManager>();
@@ -39,7 +40,7 @@ namespace gamelib
 				eventSerialization = std::make_shared<BitPackedEventSerializationManager>();
 				break;
 			case Encoding::none:
-				throw std::exception(std::string("Unknown serialization format").c_str());
+				THROW(99,"Unknown serialization format","SerializationManager");
 		}
 	}
 
@@ -55,7 +56,7 @@ namespace gamelib
 
 		MessageHeader header
 		{
-			.MessageType = jsonObject["messageType"].string_value(),
+			.TheMessageType = jsonObject["messageType"].string_value(),
 			.MessageTarget = jsonObject["nickname"].string_value(),
 		};
 
@@ -81,12 +82,12 @@ namespace gamelib
 
 		// TODO: Update the list of messages (serialised events) that we can be consumed by the network clients, i.e., deserialized
 		
-		if(messageHeader.MessageType == StartNetworkLevelEventId.Name)
+		if(messageHeader.TheMessageType == StartNetworkLevelEventId.Name)
 		{
 			return To<Event>(eventSerialization->DeserializeStartNetworkLevel(serializedMessage));
 		}
 
-		if(messageHeader.MessageType == PlayerMovedEventTypeEventId.Name)
+		if(messageHeader.TheMessageType == PlayerMovedEventTypeEventId.Name)
 		{
 			return To<Event>(eventSerialization->DeserializePlayerMovedEvent(serializedMessage));
 		}

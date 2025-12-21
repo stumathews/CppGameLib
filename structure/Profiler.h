@@ -1,6 +1,6 @@
 #pragma once
-#include <windows.h>
 #include <functional>
+#include <time/time.h>
 
 namespace gamelib
 {
@@ -9,7 +9,7 @@ namespace gamelib
 	public:
 		static long GetTimeNowMs()
 		{
-			return static_cast<long>(timeGetTime());
+			return static_cast<long>(GetTimeMs());
 		}
 		static long GetDuration(const std::function<void()> funcToProfile)
 		{

@@ -1,6 +1,5 @@
 #include "Timer.h"
-#include <Windows.h>
-
+#include <time/time.h>
 
 void gamelib::Timer::Update(const unsigned long deltaMs)
 {
@@ -32,7 +31,7 @@ void gamelib::Timer::Start(const long durationMs, const long startTimeMs)
 
 long gamelib::Timer::GetTimeMs()
 {
-	return static_cast<long>(timeGetTime());
+	return static_cast<long>(GetTimeMs());
 }
 
 void gamelib::Timer::Reset()

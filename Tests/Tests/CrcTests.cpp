@@ -9,8 +9,7 @@
 
 namespace gamelib
 {
-	class CrcTests : public testing::Test
-	{
+	class CrcTests : public testing::Test {
 	public:	
 
 		void SetUp() override
@@ -22,15 +21,14 @@ namespace gamelib
 		}
 	};
 
-
-
 	TEST_F(CrcTests, CRC32)
 	{
 		const auto buffer = "There can be only one.";
-		const auto crc = Crc32::crc32buf(buffer, strlen(buffer));
+		Crc32 crc32;
+		const auto crc = crc32.compute((uint8_t*)buffer, strlen(buffer));
 
 		const auto buffer1 = "Dude where is my car?";
-		const auto crc1 = Crc32::crc32buf(buffer1, strlen(buffer1));
+		const auto crc1 = crc32.compute((uint8_t*)buffer1, strlen(buffer1));
 
 		EXPECT_EQ(crc, 0x435ef19c);
 		EXPECT_NE(crc1, 0x435ef19c);

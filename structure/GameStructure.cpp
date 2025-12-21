@@ -1,5 +1,4 @@
-#include <winsock2.h>
-#include <Windows.h>
+#include <net/Networking.h>
 #include <iostream>
 #include "GameStructure.h"
 #include <functional>
@@ -20,6 +19,7 @@
 #include "events/EventFactory.h"
 #include "font/FontManager.h"
 #include "file/SettingsManager.h"
+#include <time/time.h>
 
 using namespace std;
 
@@ -197,7 +197,7 @@ namespace gamelib
 
 	long GameStructure::GetTimeNowMs()
 	{
-		return static_cast<long>(timeGetTime());
+		return static_cast<long>(GetTimeMs());
 	}
 
 	GameStructure::~GameStructure()

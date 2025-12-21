@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <cstdint>
 #include <bitset>
+#include <sstream>
 
 namespace gamelib
 {

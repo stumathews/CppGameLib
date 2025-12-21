@@ -1,4 +1,4 @@
-#include "component.h"
+#include "Component.h"
 
 namespace gamelib
 {	

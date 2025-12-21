@@ -13,7 +13,7 @@ gamelib::Npc::Npc(const std::string& name, const std::string& type, const Coordi
 {
 	currentMovingDirection = currentFacingDirection = Direction::Down;
 	Dimensions = Sprite->Dimensions;
-	Hotspot = std::make_shared<gamelib::Hotspot>(Position, Dimensions.GetWidth(), Dimensions.GetHeight(), Dimensions.GetWidth() / 2);	
+	TheHotspot = std::make_shared<gamelib::Hotspot>(Position, Dimensions.GetWidth(), Dimensions.GetHeight(), Dimensions.GetWidth() / 2);	
 	Bounds = CalculateBounds(Position, Dimensions.GetWidth(), Dimensions.GetHeight());
 	Status = std::make_shared<DrawableText>(Bounds, "", SDL_Color {255,0,0,0});
 }
@@ -29,7 +29,7 @@ void gamelib::Npc::Update(const unsigned long deltaMs)
 	Status->DrawBounds = {Bounds.x-10, Bounds.y-10, Bounds.w/2, Bounds.h /2};
 
 	// Update the hotspot position
-	Hotspot->Update(Position);
+	TheHotspot->Update(Position);
 
 	// Update the sprite position
 	Sprite->MoveSprite(Position);

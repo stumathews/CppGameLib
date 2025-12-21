@@ -1,5 +1,7 @@
 #include "SettingDetail.h"
 #include <exception>
+#include <exceptions/EngineException.h>
+#include <string>
 using namespace std;
 
 namespace gamelib
@@ -18,27 +20,27 @@ namespace gamelib
 	{
 		if (Type == "int")
 			return std::strtol(Value.c_str(), nullptr, 0);
-		throw exception("Setting is not an integer");
+		THROW(99, "Setting is not an integer", "Settings");
 	}
 
 	bool SettingDetail::ToBool() const
 	{
 		if (Type == "bool")
 			return Value == "true" ? true : false;
-		throw exception("Setting is not a bool");
+		THROW(99, "Setting is not a bool","Settings");
 	}
 
 	std::string SettingDetail::ToString() const
 	{
 		if (Type == "string")
 			return Value;
-		throw exception("Setting is not a string");
+		THROW(99, "Setting is not a string", "Settings");
 	}
 
 	long SettingDetail::ToLong() const
 	{
 		if (Type == "long")
 			return std::strtol(Value.c_str(), nullptr, 10);
-		throw exception("Setting is not a long");
+		THROW(99, "Setting is not a long", "Settings");
 	}
 }

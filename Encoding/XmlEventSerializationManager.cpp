@@ -107,7 +107,7 @@ namespace gamelib
 		        <Age>2</Age>
 		        <Age>3</Age>
 		    </Ages>
-		    <Fish Name="Neemo" Surname="Mathews"/>
+		    <TheFish Name="Neemo" Surname="Mathews"/>
 		</PingMessage>
 
 		 */
@@ -118,7 +118,7 @@ namespace gamelib
 			pingMessage.EventType = NetworkTrafficReceivedEventId.PrimaryId;
 			pingMessage.Names = { "Stuart", "Jenny", "bruce" };
 			pingMessage.Ages = {1, 2,3 };
-			pingMessage.Fish = Fish("Neemo", "Mathews");
+			pingMessage.TheFish = Fish("Neemo", "Mathews");
 
 		// <PingMessage>
 		tinyxml2::XMLDocument xmlDoc;
@@ -179,9 +179,9 @@ namespace gamelib
 		pRoot->InsertEndChild(pElement);
 
 		// <Fish Name="Neemo" Surname="Mathews" />
-		pElement = xmlDoc.NewElement("Fish");
-		pElement->SetAttribute("Name", pingMessage.Fish.Name.c_str());
-		pElement->SetAttribute("Surname", pingMessage.Fish.Surname.c_str());
+		pElement = xmlDoc.NewElement("TheFish");
+		pElement->SetAttribute("Name", pingMessage.TheFish.Name.c_str());
+		pElement->SetAttribute("Surname", pingMessage.TheFish.Surname.c_str());
 		pRoot->InsertEndChild(pElement);
 
 		tinyxml2::XMLPrinter printer;

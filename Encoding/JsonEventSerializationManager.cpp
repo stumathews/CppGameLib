@@ -16,7 +16,7 @@ namespace gamelib
 		const Json payload = Json::object
 		{
 			{ "messageType", object->Id.Name },
-			{ "direction", DirectionUtils::ToString(object->Direction) },
+			{ "direction", DirectionUtils::ToString(object->direction) },
 			{ "nickname", target }
 		};
 
@@ -46,7 +46,7 @@ namespace gamelib
 	    const Json payload = Json::object
 		{
 			{ "messageType", object->Id.Name },
-			{ "direction", DirectionUtils::ToString(object->Direction) },
+			{ "direction", DirectionUtils::ToString(object->direction) },
 			{ "nickname", target }
 		};
 
@@ -133,7 +133,7 @@ namespace gamelib
 			pingMessage.EventType = NetworkTrafficReceivedEventId.PrimaryId;
 			pingMessage.Names = { "Stuart", "Jenny", "bruce" };
 			pingMessage.Ages = {1, 2,3 };
-			pingMessage.Fish = Fish("Neemo", "Mathews");
+			pingMessage.TheFish = Fish("Neemo", "Mathews");
 
 
 		const Json sendPayload = Json::object
@@ -143,7 +143,7 @@ namespace gamelib
 			{ "eventType", pingMessage.EventType },
 			{ "names", pingMessage.Names },
 			{ "ages",  pingMessage.Ages },
-			{ "fish", Json::object{ { pingMessage.Fish.Name, pingMessage.Fish.Surname } } }
+			{ "fish", Json::object{ { pingMessage.TheFish.Name, pingMessage.TheFish.Surname } } }
 		};
 		return sendPayload.dump();
 	}

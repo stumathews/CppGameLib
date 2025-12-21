@@ -11,12 +11,12 @@ namespace gamelib
 	{
 	public:
 		explicit PlayerMovedEvent(const Direction direction) :
-			Event(PlayerMovedEventTypeEventId), Direction(direction)
+			Event(PlayerMovedEventTypeEventId), direction(direction)
 		{
 		}
 
 		std::string ToString() override;
-		const Direction Direction;
+		Direction direction;
 	};
 }
 

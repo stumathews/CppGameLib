@@ -1,4 +1,4 @@
-#include "asset/Asset.h"
+#include "asset/asset.h"
 #include "GameObjectFactory.h"
 #include "GameObject.h"
 #include "character/AnimatedSprite.h"
@@ -6,6 +6,7 @@
 #include "common/aliases.h"
 #include "asset/SpriteAsset.h"
 #include "character/StaticSprite.h"
+#include <exceptions/EngineException.h>
 
 using namespace tinyxml2;
 using namespace std;
@@ -52,12 +53,12 @@ namespace gamelib
 
 		if (asset == nullptr) 
 		{
-			throw exception("Resource manager could not determine the asset");
+			THROW(99, "Resource manager could not determine the asset", "GameObjectFactory");
 		}
 
 		ThrowCouldNotFindAssetException(asset, detailValue);
 
-		if (!asset->Type._Equal("graphic")) { throw exception("Cannot load non graphic asset yet..."); }
+		if (asset->Type != "graphic") { THROW(99,"Cannot load non graphic asset yet...", "GameObjectFactory"); }
 
 		resource = asset;
 	}
@@ -65,13 +66,13 @@ namespace gamelib
 	shared_ptr<GameObject> GameObjectFactory::InitializeGameObject(const string& name, const string& type, const Coordinate<int> position, const bool IsVisible, const shared_ptr<Asset>
 	                                                               & asset) const
 	{
-		if (asset == nullptr) { throw exception("cannot initialize game object with out an associated asset"); }
+		if (asset == nullptr) { THROW(99,"cannot initialize game object with out an associated asset","GameObjectFactory"); }
 		
 		switch (asset->AssetType)  // NOLINT(clang-diagnostic-switch-enum)
 		{
 			case Asset::AssetType::Sprite:  return BuildSprite(name, type, asset, position, IsVisible);
 			case Asset::AssetType::Graphic: return BuildGraphic(asset, position);
-			default: throw exception((string("Graphic asset not supported:") + asset->Type).c_str());
+			default: THROW(99,(std::string("Graphic asset not supported:") + asset->Type).c_str(), "GameObjectFactory");
 		}
 	}
 
@@ -122,17 +123,19 @@ namespace gamelib
 	void GameObjectFactory::OnBlueParse(uint& blue, const std::string& detailValue) const { blue = stoi(detailValue); }
 	void GameObjectFactory::OnGreenParse(uint& green, const std::string& detailValue) const { green = stoi(detailValue); }
 	void GameObjectFactory::OnRedParse(uint& red, const std::string& detailValue) const { red = stoi(detailValue); }
-	void GameObjectFactory::OnColourKeyParse(bool& color_key_enabled, const std::string& detailValue) { color_key_enabled = detailValue._Equal("true") ? true : false; }
+	void GameObjectFactory::OnColourKeyParse(bool& color_key_enabled, const std::string& detailValue) { color_key_enabled = (detailValue == "true"); }
 	void GameObjectFactory::OnPosYParse(uint& y, const std::string& detailValue) const { y = stoi(detailValue); }
-	void GameObjectFactory::OnVisibleParse(bool& visible, const std::string& detailValue) { visible = detailValue._Equal("true") ? true : false; }
+	void GameObjectFactory::OnVisibleParse(bool& visible, const std::string& detailValue) { visible = (detailValue == "true"); }
 	void GameObjectFactory::OnPosXParse(uint& x, const std::string& detailValue) const { x = stoi(detailValue); }
 	void GameObjectFactory::OnNameParse(string& x, const std::string& detailValue) { x = detailValue; }
 	void GameObjectFactory::OnTypeParse(string& x, const std::string& detailValue) { x = detailValue; }
 
 	void GameObjectFactory::ThrowCouldNotFindAssetException(const std::shared_ptr<Asset>& asset, const std::string& detailValue)
 	{
-		if (!asset->Type._Equal("graphic")) { throw exception(("Cannot load non graphic resource: " + asset->Name + " type=" + asset->Type).c_str()); }
-		if (asset == nullptr) { throw exception(("Could not load resource meta data for resource id:" + detailValue).c_str()); }
+		if (asset->Type != "graphic") { 
+			THROW(99, "Cannot load non graphic resource: ", "GameObjectFactory"); }
+		if (asset == nullptr) { 
+			THROW(99,"Could not load resource meta data for resource id:", "GameObjectFactory"); }
 	}	
 }
 

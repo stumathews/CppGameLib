@@ -1,6 +1,5 @@
 #include "Logger.h"
-#include "logging/ErrorLogManager.h"
-
+#include "Logging/ErrorLogManager.h"
 using namespace std;
 
 namespace gamelib

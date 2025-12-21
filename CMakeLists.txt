@@ -199,6 +199,7 @@ utils/BitFiddler.h
 utils/RingBuffer.h
 utils/Statistics.h
 utils/Utils.h
+time/time.h
 )
 
 # Collect all the source files into a variable called sourceFiles
@@ -305,6 +306,7 @@ structure/Profiler.cpp
 structure/VariableGameLoop.cpp
 time/PeriodicTimer.cpp
 time/Timer.cpp
+time/time.cpp
 )
 
 # Combine the header and source files int a variable called sourceAndHeaderFiles
@@ -355,9 +357,9 @@ set_target_properties(cppgamelib
 target_link_libraries(cppgamelib 
 PUBLIC
 SDL2::SDL2 
-SDL2_ttf::SDL2_ttf
-SDL2_mixer::SDL2_mixer
-SDL2_image::SDL2_image
+SDL2_ttf::SDL2_ttf-static
+SDL2_mixer::SDL2_mixer-static
+SDL2_image::SDL2_image-static
 unofficial-sodium::sodium
 PRIVATE
 ${LUA_LIBRARIES}
@@ -410,12 +412,11 @@ target_link_libraries(AllTests
 PUBLIC 
  cppgamelib
  SDL2::SDL2
- SDL2_ttf::SDL2_ttf
- SDL2_mixer::SDL2_mixer
- SDL2_image::SDL2_image
+ SDL2_ttf::SDL2_ttf-static
+ SDL2_mixer::SDL2_mixer-static
+ SDL2_image::SDL2_image-static
 PRIVATE
  GTest::gmock_main 
- winmm
  ${LUA_LIBRARIES}
 )
 
@@ -432,7 +433,7 @@ target_link_libraries(NetworkingTests
   unofficial-sodium::sodium 
 PRIVATE
  GTest::gmock_main
- winmm
+ ${LUA_LIBRARIES}
 )
 
 target_include_directories(NetworkingTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

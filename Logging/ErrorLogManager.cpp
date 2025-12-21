@@ -1,5 +1,6 @@
 #include "ErrorLogManager.h"
 #include <iomanip>
+#include <time/time.h>
 
 ErrorLogManager::~ErrorLogManager()
 {
@@ -49,10 +50,8 @@ void ErrorLogManager::LogMessage(const std::string& message)
 std::string ErrorLogManager::GetTimeString()
 {
 	std::stringstream timeString;
-	tm newTime{};
 	const time_t now = time(nullptr);
-
-	localtime_s(&newTime, &now);  // NOLINT(cert-err33-c)
+	const std::tm newTime  = gamelib::localtime_safe(now);
 
 	timeString << std::setw(2) << std::setfill('0') << newTime.tm_mday << "-";
 	timeString << std::setw(2) << std::setfill('0') << newTime.tm_mon << "-";

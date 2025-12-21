@@ -1,5 +1,9 @@
 
-#include <Lua.hpp>
+extern "C" {
+#include <lua.h>
+#include <lauxlib.h>
+#include <lualib.h>
+}
 #include <gtest/gtest.h>
 
 #include "asset/ScriptAsset.h"

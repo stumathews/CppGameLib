@@ -7,7 +7,7 @@ namespace gamelib
 	ControllerMoveEvent::ControllerMoveEvent(const gamelib::Direction dir, const KeyState keyState = KeyState::Pressed):
 		Event(ControllerMoveEventId), keyState(keyState)
 	{
-		Direction = dir;
+		direction = dir;
 	}
 
 	string ControllerMoveEvent::ToString()

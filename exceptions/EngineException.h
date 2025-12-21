@@ -13,7 +13,9 @@ namespace gamelib
 		EngineException(int errorNumber, const std::string& message, const std::string& subsystem, const std::string&
 		                srcFileName, int lineNumber);
 
-		[[nodiscard]] const char* what() const override;
+		[[nodiscard]] virtual const char* what() const noexcept override;
+
+		~EngineException() throw() override {}
 		
 	private:
 		std::string errorDescription;

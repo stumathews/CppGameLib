@@ -2,7 +2,6 @@
 #include "file/tinyxml2.h"
 #include <map>
 #include <memory>
-#include <ranges>
 #include "audio/AudioManager.h"
 #include "common/Common.h"
 #include "events/EventManager.h"
@@ -57,8 +56,9 @@ namespace gamelib
 	/// <param name="level">Scene/Level assets to load.</param>
 	void ResourceManager::LoadSceneAssets(const int level)
 	{
-		for (const auto& val : resourcesByScene | views::values) // we need access to all resources to swap in/out resources
+		for (const auto& kv : resourcesByScene) // we need access to all resources to swap in/out resources
 		{
+			const auto& val = kv.second;
 			for (const auto& asset : val)
 			{
 				const auto alwaysLoadResource = asset->SceneId == 0;

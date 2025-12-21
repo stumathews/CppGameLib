@@ -164,7 +164,7 @@ namespace gamelib
 		uint32_t all {0};
 
 		// copy 32bits that are in the output to all
-		memcpy_s(&all, sizeof(uint32_t), output, sizeof(uint32_t));
+		memcpy(&all, output, sizeof(uint32_t));
 
 		// ensure that its the same as 2 individual 16bit blocks, and that they are contiguous
 		EXPECT_EQ(BitFiddler<uint32_t>::ToString(all), "11111111111100101011110010100010");
@@ -219,7 +219,7 @@ namespace gamelib
 		uint32_t all {0};
 
 		// copy 32bits that are in the output to all
-		memcpy_s(&all, sizeof(uint32_t), output, sizeof(uint32_t));
+		memcpy(&all, output, sizeof(uint32_t));
 
 		EXPECT_EQ(BitFiddler<uint32_t>::ToString(all), "11111000000010000100100001010110");
 			

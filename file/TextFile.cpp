@@ -1,4 +1,5 @@
 #include "TextFile.h"
+#include <time/time.h>
 
 #include <iomanip>
 
@@ -51,10 +52,9 @@ namespace gamelib
 	std::string TextFile::GetTimeString()
 	{
 		std::stringstream timeString;
-		tm newTime{};
 		const time_t now = time(nullptr);
 
-		localtime_s(&newTime, &now);  // NOLINT(cert-err33-c)
+		std::tm newTime = gamelib::localtime_safe(now);  // NOLINT(cert-err33-c)
 
 		timeString << std::setw(2) << std::setfill('0') << newTime.tm_mday << "-";
 		timeString << std::setw(2) << std::setfill('0') << newTime.tm_mon << "-";

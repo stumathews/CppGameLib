@@ -19,4 +19,4 @@ namespace gamelib
 	};
 }
 
-#endif RELIABLE_UDP_CHECKSUM_FAILED_EVENT_H
+#endif

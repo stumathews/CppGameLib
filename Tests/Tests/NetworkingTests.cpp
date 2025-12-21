@@ -24,6 +24,11 @@
 #include "net/ReliableUdpGameServerConnection.h"
 #include "net/ReliableUdpProtocolManager.h"
 #include <memory>
+#include <thread>
+#include <chrono>
+#include <algorithm>
+#include <cstring>
+
 
 #include "net/GameClient.h"
 #pragma comment(lib, "ws2_32.lib")
@@ -43,7 +48,7 @@ namespace gamelib
 		const char* ServerNickName = "Bob";	
 		const string ServerOrigin = ServerAddress + string(":") + ListeningPort;
 		const Encoding WireEncoding = Encoding::json;
-		std::shared_ptr<SerializationManager> SerializationManager;
+		std::shared_ptr<SerializationManager> TheSerializationManager;
 
 		std::thread ListeningThread;
 		bool ServerListening{};
@@ -56,7 +61,7 @@ namespace gamelib
 
 		void StartNetworkServer(std::shared_ptr<IGameServerConnection> inGameServerConnection = nullptr)
 		{
-			Networking::Get()->InitializeWinSock();
+			Networking::InitializeWinSock();
 			ServerListening = true;
 			ListeningThread = thread([&]()
 			{
@@ -113,7 +118,7 @@ namespace gamelib
 
 		void SetUp() override
 		{
-			SerializationManager = std::make_shared<gamelib::SerializationManager>(WireEncoding);
+			TheSerializationManager = std::make_shared<gamelib::SerializationManager>(WireEncoding);
 		}
 
 		void TearDown() override
@@ -163,7 +168,7 @@ namespace gamelib
 		         if( event->Id == NetworkTrafficReceivedEventId)
 		         {
 		             const auto trafficReceivedEvent = To<NetworkTrafficReceivedEvent>(event);
-					 const auto& messageType = SerializationManager->GetMessageHeader(trafficReceivedEvent->Message).MessageType;
+					 const auto& messageType = TheSerializationManager->GetMessageHeader(trafficReceivedEvent->Message).TheMessageType;
 		             return messageType == requiredMessageType && trafficReceivedEvent->Identifier == trafficEventIdentifier;
 		         }
 		         return false;	
@@ -263,7 +268,8 @@ namespace gamelib
 		Client->Connect(Server);
 		
 		// Wait for the server to respond
-		Sleep(1000);
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		Client->Read();
 
 		const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
@@ -289,7 +295,8 @@ namespace gamelib
 		Client->PingGameServer(0);
 
 		// Wait for the server to respond
-		Sleep(1000);
+		
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
 		// Read pong response
 		Client->Read();
@@ -561,7 +568,7 @@ namespace gamelib
 		client3->Connect(Server);
 		
 		// Wait for the server to respond
-		Sleep(1000);
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
 		client1->Read();
 		client2->Read();
@@ -665,8 +672,10 @@ namespace gamelib
 			
 		EXPECT_EQ(serverEmittedEvents.size(), 20);
 
-		const int countData1 = ranges::count_if(serverEmittedEvents, [data1](shared_ptr<Event> event)
-		{
+		const int countData1 =
+    std::count_if(serverEmittedEvents.begin(),
+                  serverEmittedEvents.end(),
+                  [data1](const std::shared_ptr<Event>& event) {
 			if(event->Id == NetworkTrafficReceivedEventId)
 			{
 				const auto trafficEvent = To<NetworkTrafficReceivedEvent>(event);
@@ -674,25 +683,42 @@ namespace gamelib
 				return result;
 			}
 			return false;
-		});
-		const int countData2 = ranges::count_if(serverEmittedEvents, [data2](shared_ptr<Event> event)
-		{
-			if(event->Id == NetworkTrafficReceivedEventId)
+                  });
+
+		const int countData2 =
+		    std::count_if(
+			serverEmittedEvents.begin(),
+			serverEmittedEvents.end(),
+			[data2](const std::shared_ptr<Event>& event)
 			{
-				const auto trafficEvent = To<NetworkTrafficReceivedEvent>(event);
-				return strcmp(trafficEvent->GetPayload(), data2) == 0;
+			    if (event->Id == NetworkTrafficReceivedEventId)
+			    {
+				const auto trafficEvent =
+				    To<NetworkTrafficReceivedEvent>(event);
+
+				return std::strcmp(trafficEvent->GetPayload(), data2) == 0;
+			    }
+			    return false;
 			}
-			return false;
-		});
-		const int countData3 = ranges::count_if(serverEmittedEvents, [data3](shared_ptr<Event> event)
-		{
-			if(event->Id == NetworkTrafficReceivedEventId)
+		    );
+
+
+		const int countData3 =
+		    std::count_if(
+			serverEmittedEvents.begin(),
+			serverEmittedEvents.end(),
+			[data3](const std::shared_ptr<Event>& event)
 			{
-				const auto trafficEvent = To<NetworkTrafficReceivedEvent>(event);
-				return strcmp(trafficEvent->GetPayload(), data3) == 0;
+			    if (event->Id == NetworkTrafficReceivedEventId)
+			    {
+				const auto trafficEvent =
+				    To<NetworkTrafficReceivedEvent>(event);
+
+				return std::strcmp(trafficEvent->GetPayload(), data3) == 0;
+			    }
+			    return false;
 			}
-			return false;
-		});
+		    );
 
 		EXPECT_EQ(countData1, 3); // we expect data1 to be sent once, with 2 retries
 		EXPECT_EQ(countData2, 2); // we expect data2 to be sent once, with 1 retry
@@ -746,7 +772,7 @@ namespace gamelib
 		{
 			reader.Reset();
 			receivedMessage.Read(reader);
-			EXPECT_EQ(receivedMessage.Header.MessageType, expectedMessageType);
+			EXPECT_EQ(receivedMessage.Header.messageType, expectedMessageType);
 		};
 
 		const PacketDatum packet1(false, thereCanBeOnlyOne);
@@ -856,7 +882,7 @@ namespace gamelib
 		EXPECT_EQ(serverEmittedEvents[14]->Id, ReliableUdpAckPacketEventId);
 			
 		cout << "Test: Wait for the server to respond" << '\n';
-		Sleep(1000);
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
 
 	}

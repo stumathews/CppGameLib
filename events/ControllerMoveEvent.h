@@ -14,7 +14,7 @@ namespace gamelib
 		enum class KeyState { Pressed, Released, Unknown };
 		explicit ControllerMoveEvent(Direction dir, KeyState keyState);
 
-		Direction Direction;
+		Direction direction;
 		
 		std::string ToString() override;
 		[[nodiscard]] KeyState GetKeyState() const { return keyState; }

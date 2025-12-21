@@ -1,4 +1,5 @@
 #include "EventId.h"
+#include <tuple>
 
 namespace gamelib 
 {

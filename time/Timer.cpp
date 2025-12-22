@@ -31,7 +31,7 @@ void gamelib::Timer::Start(const long durationMs, const long startTimeMs)
 
 long gamelib::Timer::GetTimeMs()
 {
-	return static_cast<long>(GetTimeMs());
+	return static_cast<long>(gamelib::GetTimeMs());
 }
 
 void gamelib::Timer::Reset()

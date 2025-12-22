@@ -9,15 +9,16 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <cstring>
+#include <netdb.h>
 
 #define INIT()			( program_name = \
 							strrchr( argv[ 0 ], '/' ) ) ? \
 							program_name++ : \
 							( program_name = argv[ 0 ] )
-#define NETINIT()			do { } while(0);
+#define NETINIT()			do { } while(0)
 #define EXIT(s)			exit( s )
 #define NETCLOSE(s)		CLOSE(s)
-#define CLOSE(s)                                           \
+#define CLOSE(s)                                              \
       do {                                                    \
           if (close(s) != 0) {                                \
               perror("close");                                \
@@ -65,23 +66,22 @@
 	}
 
 	using SocketHandle = SOCKET;
-    constexpr SocketHandle INVALID_SOCKET_HANDLE = INVALID_SOCKET;
+    	constexpr SocketHandle INVALID_SOCKET_HANDLE = INVALID_SOCKET;
 	constexpr int SHUT_SEND = SD_SEND;
 
 	//#define EMSGSIZE		WSAEMSGSIZE
 
-#define NETINIT()			do { WSADATA wsaData; WSAStartup(MAKEWORD(2,2), &wsaData); } while(0);
-#define EXIT(s)			do { WSACleanup(); }
-#define SOCKET_ERROR (-1)
+#define NETINIT()		do { WSADATA wsaData; WSAStartup(MAKEWORD(2,2), &wsaData); } while(0)
+#define EXIT(s)			do { WSACleanup(); } while(0)
+#define SOCKET_ERROR 		(-1)
 #define NETCLOSE(s)		CLOSE(s)
 #define errorno			( GetLastError() )
-#define CLOSE(s)                                           \
+#define CLOSE(s)                                              \
       do {                                                    \
-          if (closesocket(s) != 0) {                          \
-              std::fprintf(stderr,                            \
-                  "closesocket failed: %d\n",                \
+          if (closesocket(s) == SOCKET_ERROR) {               \
+              printf(                            \
+                  "closesocket failed: %d\n",                 \
                   WSAGetLastError());                         \
-              std::exit(EXIT_FAILURE);                        \
           }                                                   \
       } while (0)
 #define set_errno(e)	SetLastError( ( e ) )
@@ -98,7 +98,6 @@
 	typedef void ( *tofunc_t )( void * );
 
 #include <string>
-#include <netdb.h>
 #include <cstring>
 #include <memory>
 #include <vector>

@@ -35,6 +35,7 @@ namespace gamelib
 
 	Networking::~Networking()
 	{
+
 		Instance = nullptr;
 	}
 

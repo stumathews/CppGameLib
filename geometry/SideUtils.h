@@ -44,7 +44,7 @@ namespace gamelib
 				case Direction::Right: return Side::Right;
 				case Direction::None: break;
 			}
-			THOW(99, "GetSideForDirection: unknown direction", "SideUtils");
+			THROW(99, "GetSideForDirection: unknown direction", "SideUtils");
 		}
 	};
 }

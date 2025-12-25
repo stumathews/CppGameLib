@@ -16,13 +16,12 @@
 							program_name++ : \
 							( program_name = argv[ 0 ] )
 #define NETINIT()			do { } while(0)
-#define EXIT(s)			exit( s )
+//#define EXIT(s)			exit( s )
 #define NETCLOSE(s)		CLOSE(s)
 #define CLOSE(s)                                              \
       do {                                                    \
           if (close(s) != 0) {                                \
               perror("close");                                \
-              std::exit(EXIT_FAILURE);                        \
           }                                                   \
       } while (0)
 #define set_errno(e)	errno = ( e )

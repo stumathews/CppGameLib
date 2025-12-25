@@ -40,7 +40,7 @@ namespace gamelib
 		gameServerConnection->Initialize();
 		gameServerConnection->Create();
 		
-		// We're interested in some of the our own game's events
+		// We're interested in some of our own game's events
 		eventManager->SubscribeToEvent(PlayerMovedEventTypeEventId, this);
 		eventManager->SubscribeToEvent(ControllerMoveEventId, this);
 		eventManager->SubscribeToEvent(StartNetworkLevelEventId, this);

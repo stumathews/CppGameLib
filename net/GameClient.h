@@ -46,7 +46,7 @@ namespace gamelib
 		void PingGameServer(unsigned long deltaMs) const;
 
 		// Listen for incoming traffic from the game server - see NetworkManager
-		void Read(unsigned long deltaMs = 0);
+		bool Read(unsigned long deltaMs = 0);
 		
 	private:
 		FRIEND_TEST(NetworkingTests, TestCustomBinarySend);

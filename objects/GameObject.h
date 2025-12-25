@@ -35,13 +35,13 @@ namespace gamelib
 		// Bounding boxes:
 		void UpdateBounds(unsigned int width, unsigned int height);
 		void UpdateBounds(const AbcdRectangle& dimensions);
-		static SDL_Rect CalculateBounds(const Coordinate<int> position, const int width, const int height);
-		static SDL_Rect CalculateBounds(const Coordinate<int> position, const AbcdRectangle dimensions);
+		static SDL_Rect CalculateBounds(Coordinate<int> position, int width, int height);
+		static SDL_Rect CalculateBounds(Coordinate<int> position, AbcdRectangle dimensions);
 
 		// Event functions:
-		ListOfEvents HandleEvent(const std::shared_ptr<Event>& event, const unsigned long deltaMs) override;
+		ListOfEvents HandleEvent(const std::shared_ptr<Event>& event, unsigned long deltaMs) override;
 		std::string GetSubscriberName() override;
-		virtual int GetSubscriberId() override;
+		int GetSubscriberId() override;
 
 		// Game object identification:
 		virtual GameObjectType GetGameObjectType() = 0;
@@ -51,7 +51,7 @@ namespace gamelib
 		virtual void LoadSettings();
 
 		// All game objects must perform Logic
-		virtual void Update(const unsigned long deltaMs) = 0;
+		virtual void Update(unsigned long deltaMs) = 0;
 
 		// All game objects must draw
 		virtual void Draw(SDL_Renderer* renderer) = 0;

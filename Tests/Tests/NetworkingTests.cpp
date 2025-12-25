@@ -30,6 +30,7 @@
 #include <cstring>
 
 
+#include "events/EventFactory.h"
 #include "net/GameClient.h"
 #pragma comment(lib, "ws2_32.lib")
 
@@ -48,92 +49,112 @@ namespace gamelib
 		const char* ServerNickName = "Bob";	
 		const string ServerOrigin = ServerAddress + string(":") + ListeningPort;
 		const Encoding WireEncoding = Encoding::json;
-		std::shared_ptr<SerializationManager> TheSerializationManager;
 
 		std::thread ListeningThread;
-		bool ServerListening{};
+		std::atomic<bool>  ServerListening{true};
 		std::shared_ptr<GameClient> Client = nullptr;
 		std::shared_ptr<GameServer> Server;
 
-		std::mutex m;
-		std::condition_variable cv;
-		
+		bool serverReady = false;
+		std::mutex mutex;
+		bool condition{false};
+		std::condition_variable conditional_variable;
 
-		void StartNetworkServer(std::shared_ptr<IGameServerConnection> inGameServerConnection = nullptr)
+
+
+		void StartNetworkServer(const std::shared_ptr<IGameServerConnection>& inGameServerConnection = nullptr)
 		{
-			Networking::InitializeWinSock();
-			ServerListening = true;
-			ListeningThread = thread([&]()
+			// The main thread:
+
+			std::cout << "Acquiring main lock\n";
+			// Acquire mutex (server thread below will later wait on this lock)
+			std::unique_lock<std::mutex> server_ready_lock(mutex);
+
+			// The server thread:
+			ListeningThread = std::thread(
+				[this, inGameServerConnection]()
 			{
-
-				// Lock mutex
-				std::unique_lock<std::mutex> lock(m);
-
-				// Make a new server connection
+				// Create a GameServer connection object specifying to listen on an address:port combination,
+				// and which type of protocol to use.
 				auto defaultConnection =
-					GameServerConnectionFactory::Create(false /* UDP */, ServerAddress, ListeningPort,
-					                                    false /* most tests use TCP unless they chose to override this */);
+					GameServerConnectionFactory::Create(false, ServerAddress, ListeningPort, false);
 
-				Server = std::make_shared<GameServer>(ServerAddress, ListeningPort,
-				                                      inGameServerConnection != nullptr
-					                                      ? inGameServerConnection
-					                                      : defaultConnection);
+				// Create Game server object, which will use the defaultConnection details
+				Server = std::make_shared<GameServer>(
+					ServerAddress, ListeningPort,
+					inGameServerConnection
+					 ? inGameServerConnection
+					 : defaultConnection);
+
+				// Start the server effectively
 				Server->Initialize();
 
-				auto serverReady = false;
-
-				// Wait for connections
 				while (ServerListening)
 				{
-					Server->Listen();
-
-					if (!serverReady) 
+					if (!serverReady)
 					{
+						// Wait on the main thread to release mutex (WAIT) via wait
+						std::unique_lock<std::mutex> server_ready_lock(mutex);
+
+						// fulfil condition, that is blocking the main thread
 						serverReady = true;
-						std::cout << "SERVER_THREAD: Signaling that server is listening and ready. Unlocking.\n";
+						conditional_variable.notify_all();
+					}
 
-						// Release lock
-						lock.unlock();
-
-						// Notify
-						cv.notify_one();
+					try
+					{
+						Server->Listen();
+					}
+					catch (std::exception& ex)
+					{
+						std::cout << "Exception occurred in Server listening thread: " << ex.what() << "\n";
 					}
 				}
 
-				std::cout << "SERVER_THREAD: Server listening stopped.\n";
-				// Were done
+				std::cout << "Server thread finished.\n";
+
 				Server->Disconnect();
-				std::cout << "SERVER_THREAD: Server socket disconnected\n";
+
+				std::cout << "Server disconnected.\n";
 			});
 
-			std::cout << "Waiting for server to have started..\n";
+			// Wait until the server is listening:
 
-			std::unique_lock<std::mutex> l(m);
-			cv.wait(l);
+			while (!serverReady)
+			{
+				// Give up the lock in exchange for waiting for someone to notify the conditional variable
+				conditional_variable.wait(server_ready_lock);
+				// lock is re-acquired.
+			}
 
 			std::cout << "Server started.\n";
-
 		}
-		
 
 		void SetUp() override
 		{
-			TheSerializationManager = std::make_shared<gamelib::SerializationManager>(WireEncoding);
+			Networking::InitializeWinSock();
 		}
 
 		void TearDown() override
 		{
-			// break out of server's listening loop to stop it listening
+			std::cout << "Test teardown starting...\n";
+
+			// Break out of server's listening loop to stop it listening
 			ServerListening = false;
 
-			// finish listening thread
-			ListeningThread.join();
-			std::cout << "Listening thread finished\n";
+			if (ListeningThread.joinable())
+			{
+				std::cout << "Waiting for server thread to finish...\n";
+				ListeningThread.join();
+			}
+
+			std::cout << "Listening thread finished.\n";
 			
 			Client = nullptr;
 			Server = nullptr;
 			EventManager::Get()->Reset();
 			EventManager::Get()->ClearSubscribers();
+			std::cout << "Test teardown successful\n" ;
 		}
 
 		[[nodiscard]] std::tuple<vector<shared_ptr<Event>>, vector<shared_ptr<Event>>> PartitionEvents() const
@@ -168,11 +189,15 @@ namespace gamelib
 		         if( event->Id == NetworkTrafficReceivedEventId)
 		         {
 		             const auto trafficReceivedEvent = To<NetworkTrafficReceivedEvent>(event);
-					 const auto& messageType = TheSerializationManager->GetMessageHeader(trafficReceivedEvent->Message).TheMessageType;
+					 const auto& messageType = gamelib::SerializationManager::GetMessageHeader(trafficReceivedEvent->Message).TheMessageType;
 		             return messageType == requiredMessageType && trafficReceivedEvent->Identifier == trafficEventIdentifier;
 		         }
 		         return false;	
 		     });
+			if (result == events.end())
+			{
+				return nullptr;
+			}
 			return *result;
 		}
 
@@ -245,6 +270,7 @@ namespace gamelib
 			const auto event = FindNetworkTrafficReceivedEvent(serverEmittedEvents, "requestPlayerDetails", messageIdentifier);
 			const auto trafficEvent = To<NetworkTrafficReceivedEvent>(event);
 
+			EXPECT_TRUE(trafficEvent != nullptr) << "Expected to find trafficReceivedEvent but as null";
 			EXPECT_EQ(trafficEvent->Identifier, messageIdentifier); // Ensure it came from the client
 			EXPECT_EQ(trafficEvent->Origin, expectedEventOrigin);
 
@@ -272,6 +298,7 @@ namespace gamelib
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		Client->Read();
 
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
 
 		EnsurePlayerJoinedTrafficReceivedByServer(serverEmittedEvents, ClientNickName, ServerOrigin);
@@ -295,12 +322,11 @@ namespace gamelib
 		Client->PingGameServer(0);
 
 		// Wait for the server to respond
-		
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
 		// Read pong response
 		Client->Read();
-
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		// Collect events raised
 
 		const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
@@ -340,12 +366,12 @@ namespace gamelib
 		// Establish connection and send public key
 		client->Connect(ServerAddress, ListeningPort);
 
-		sleep(0.5);
+		sleep(1);
 	
 		// Receive ack for receiving pub key
 		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 
-		sleep(0.5);
+		sleep(1);
 
 		// Receive server's public key
 		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
@@ -371,7 +397,7 @@ namespace gamelib
 		client->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 
 		// Wait for the server to respond
-		sleep(0.5);
+		sleep(1);
 
 		const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();
 		
@@ -607,7 +633,7 @@ namespace gamelib
 		const auto gameClientConnection = std::make_shared<UdpConnectedNetworkSocket>();
 		const auto reliableUdpProtocolManager = std::make_shared<ReliableUdpProtocolManager>(gameClientConnection);
 		reliableUdpProtocolManager->Initialize();
-		
+
 		StartNetworkServer(gameServerConnection);
 
 		std::cout << "Starting client...\n";
@@ -623,17 +649,17 @@ namespace gamelib
 		// Establish connection and send public key
 		reliableUdpProtocolManager->Connect(ServerAddress, ListeningPort);
 
-		sleep(0.5);
+		sleep(1);
 
 		// Receive ack for receiving pub key
 		reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 
-		sleep(0.5);
+		sleep(1);
 
 		// Receive server's public key
 		reliableUdpProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferBytes, 0);
 
-		sleep(0.5);
+		sleep(1);
 
 		// Tests: send data reliably with aggregated message support if not acknowledgment received
 		
@@ -642,7 +668,7 @@ namespace gamelib
 		reliableUdpProtocolManager->Send(data3, static_cast<int>(strlen(data3)));
 			
 		// Wait for the server to respond
-		sleep(0.5);
+		sleep(1);
 			
 		// Collect events from Event Manger to see what traffic was captured
 		const auto [clientEmittedEvents, serverEmittedEvents] = PartitionEvents();

@@ -16,7 +16,7 @@ namespace gamelib
 		[[nodiscard]] virtual const char* what() const noexcept override;
 
 		~EngineException() throw() override {}
-		
+
 	private:
 		std::string errorDescription;
 		std::string srcFileName;

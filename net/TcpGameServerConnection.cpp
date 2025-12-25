@@ -109,7 +109,6 @@ namespace gamelib
 			{
 				// maybe the client is already finished. Close Socket.
 				NETCLOSE(clientSocket);
-				EXIT(clientSocket);
 			}
 		}
 
@@ -152,7 +151,6 @@ namespace gamelib
 					{
 						printf("shutdown failed: %d\n", WSAGetLastError());
 						NETCLOSE(Players[playerId].GetSocket());
-						EXIT(Players[playerId].GetSocket());
 					}
 				}
 			}

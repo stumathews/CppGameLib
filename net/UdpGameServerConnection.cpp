@@ -7,6 +7,8 @@
 #include <events/Event.h>
 #include <events/NetworkTrafficReceivedEvent.h>
 
+#include "file/Logger.h"
+
 namespace gamelib
 {
 	UdpGameServerConnection::UdpGameServerConnection(const std::string& host, const std::string& port, const gamelib::Encoding wireFormat)
@@ -39,7 +41,6 @@ namespace gamelib
 	void UdpGameServerConnection::Disconnect()
 	{		
 		NETCLOSE(listeningSocket);
-		EXIT(listeningSocket);
 	}
 
 	void UdpGameServerConnection::Listen(const unsigned long deltaMs)
@@ -54,6 +55,7 @@ namespace gamelib
 		
 		if (dataIsAvailable)
 		{
+			std::cout << "Game server: data received\n";
 			CheckForPlayerTraffic(deltaMs);			
 		}
 	}
@@ -116,21 +118,24 @@ namespace gamelib
 
 	void UdpGameServerConnection::ParseReceivedPlayerPayload(const char* inPayload, int payloadLength, const PeerInfo fromClient)
 	{
-		const auto msgHeader = serializationManager->GetMessageHeader(inPayload);
+		std::string payload_string{inPayload};
+		const auto msgHeader = gamelib::SerializationManager::GetMessageHeader(payload_string);
 		const auto messageType = msgHeader.TheMessageType;
 
 		if(messageType == "ping")
-		{	
+		{
+			std::cout << "Server: Received ping\n";
 			ProcessPingMessage(fromClient);
 		}
 		else if(messageType == "requestPlayerDetails")
 		{
+			std::cout << "Server: Received requestPlayerDetails\n";
 			ProcessRequestPlayerDetailsMessage(msgHeader, fromClient);
 		}		
 		else
 		{
 			// Send to other network players
-			SendToConnectedPlayersExceptToSender(msgHeader.MessageTarget, inPayload);
+			SendToConnectedPlayersExceptToSender(msgHeader.MessageTarget, payload_string);
 
 			// Send to ourself
 			if(const auto event = serializationManager->Deserialize(msgHeader, inPayload))
@@ -142,8 +147,12 @@ namespace gamelib
 
 	void UdpGameServerConnection::ProcessPingMessage(PeerInfo fromClient)
 	{
+		Logger::Get()->LogThis("Server: Sending pong message\n");
 		const auto data = serializationManager->CreatePongMessage();
-		InternalSend(listeningSocket, data.c_str(), static_cast<int>(data.length()), 0, reinterpret_cast<sockaddr*>(&fromClient.Address), fromClient.Length);
+		auto bytesSent = InternalSend(listeningSocket, data.c_str(), static_cast<int>(data.length()), 0, reinterpret_cast<sockaddr*>(&fromClient.Address), fromClient.Length);
+		std::stringstream ss;
+		ss << "Server: Sent " << bytesSent << " to client" << std::endl;
+		Logger::Get()->LogThis(ss.str());
 	}
 
 

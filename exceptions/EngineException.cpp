@@ -7,7 +7,7 @@ namespace gamelib
 {
 	EngineException::EngineException(const int errorNumber, const std::string& message, const std::string& subsystem,
 	                                 const std::string& srcFileName, const int lineNumber)
-		: exception(), errorDescription(message), srcFileName(srcFileName),
+		: errorDescription(message), srcFileName(srcFileName),
 		  subsystem(subsystem)
 	{
 		stringstream errorString;

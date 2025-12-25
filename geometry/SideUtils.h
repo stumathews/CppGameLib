@@ -1,6 +1,7 @@
 #pragma once
 #include "character/Direction.h"
-#include "Side.h"
+#include "Side.h";
+#include "exceptions/EngineException.h"
 
 namespace gamelib
 {
@@ -28,9 +29,9 @@ namespace gamelib
 				case Direction::Down: return Side::Top;
 				case Direction::Left: return Side::Right;
 				case Direction::Right: return Side::Left;
-				case Direction::None: throw std::exception("GetOppositeSideForDirection: Cant get opposite direction of None");
+				case Direction::None: THROW(99, "GetOppositeSideForDirection: Cant get opposite direction of None","SideUtils");
 			}
-			throw std::exception("GetOppositeSideForDirection: unknown direction");
+			THROW(99,"GetOppositeSideForDirection: unknown direction","SideUtils");
 		}
 
 		static Side GetSideForDirection(const Direction direction)
@@ -43,7 +44,7 @@ namespace gamelib
 				case Direction::Right: return Side::Right;
 				case Direction::None: break;
 			}
-			throw std::exception("GetSideForDirection: unknown direction");
+			THOW(99, "GetSideForDirection: unknown direction", "SideUtils");
 		}
 	};
 }

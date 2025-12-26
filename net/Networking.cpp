@@ -41,7 +41,7 @@ namespace gamelib
 
 	
 
-	void Networking::netError(const int status, int err, const std::string error)
+	void Networking::netError(const int status, int err, const std::string &error)
     {
 		std::stringstream errorMessage;
 
@@ -81,7 +81,7 @@ namespace gamelib
 		send(fd, (char*) &length, sizeof(u_int32_t), 0);
 
 		// Send the data
-		int sendResult = send(fd, data, (int) strlen(data), 0);
+		const int sendResult = send(fd, data, static_cast<int>(strlen(data)), 0);
 
 		return sendResult;
 	}
@@ -126,7 +126,7 @@ namespace gamelib
 	}
     int Networking::netReadcrlf(const SOCKET s, char* buf, size_t len)
 	{
-		char *bufx = buf;
+		const char *bufx = buf;
 		int rc;
 		char c;
 		char lastc = 0;
@@ -162,7 +162,7 @@ namespace gamelib
 
     int Networking::netReadLine(const SOCKET fd, char* bufptr, size_t len)
     {
-		char *bufx = bufptr;
+		const char *bufx = bufptr;
 		static char *bp;
 		static int cnt = 0;
 		static char b[ 1500 ];
@@ -203,7 +203,7 @@ namespace gamelib
 		struct sockaddr_in local{};
 		// This is the socket the server will obtain and bind it to the address in the sockaddr_in structure
 		SOCKET s;
-		const int on = 1;
+		constexpr int on = 1;
 
 		// Construct the address : fill in the sockaddr_in structure
 		netSetAddress( hname, sname, &local, "tcp" );
@@ -286,7 +286,7 @@ namespace gamelib
 	SOCKET Networking::netConnectedUdpClient(const char* hname, const char* sname)
     {    
 		struct sockaddr_in sap{};
-	    SOCKET s = netUdpClient(hname, sname, &sap);
+	    const SOCKET s = netUdpClient(hname, sname, &sap);
 		if (connect(s, (struct sockaddr * )&sap, sizeof(sap)))		
 		{
 			netError( 1, errno, "connect failed" );
@@ -303,12 +303,12 @@ namespace gamelib
 
 	    bzero( sap, sizeof( *sap ) );
 	    sap->sin_family = AF_INET;
-	    if ( hname != NULL )
+	    if ( hname != nullptr)
 	    {
 		    if ( !inet_aton( hname, &sap->sin_addr ) )
 		    {
 			    hp = my_gethostbyname(hname);
-			    if ( hp == NULL )
+			    if ( hp == nullptr)
 				{				
 					std::stringstream message;
 					message << "unknown host:" << hname;
@@ -325,7 +325,7 @@ namespace gamelib
 	    else
 	    {
 		    sp = getservbyname( sname, protocol );
-		    if ( sp == NULL )
+		    if ( sp == nullptr)
 			{
 				std::stringstream message;
 				message << "unknown service:" << sname;

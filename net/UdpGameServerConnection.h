@@ -25,8 +25,8 @@ namespace gamelib
 	protected:		
 		SOCKET listeningSocket{};
 		Encoding TheEncoding;
-		void RaiseNetworkTrafficReceivedEvent(const char* buffer, int bytesReceived, PeerInfo fromClient);
-		void ParseReceivedPlayerPayload(const char* inPayload, int payloadLength, PeerInfo fromClient);
+		void RaiseNetworkTrafficReceivedEvent(const char* buffer, int bytesReceived, const PeerInfo &fromClient);
+		void ParseReceivedPlayerPayload(const char* inPayload, int payloadLength, const PeerInfo &fromClient);
 	private:
 		std::string host, port;
 
@@ -49,7 +49,7 @@ namespace gamelib
 
 		// Inherited via IGameServerConnection
 		void ProcessPingMessage(PeerInfo fromClient);
-		void ProcessRequestPlayerDetailsMessage(const MessageHeader& messageHeader, PeerInfo fromClient);
+		void ProcessRequestPlayerDetailsMessage(const MessageHeader& messageHeader, const PeerInfo &fromClient);
 		
 		std::vector<UdpNetworkPlayer> players;
 

@@ -29,7 +29,7 @@
 
 namespace json11 {
 
-static const int max_depth = 200;
+static constexpr int max_depth = 200;
 
 using std::string;
 using std::vector;

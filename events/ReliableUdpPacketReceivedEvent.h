@@ -14,7 +14,7 @@ namespace gamelib
 	{
 	public:
 
-		explicit ReliableUdpPacketReceivedEvent(const std::shared_ptr<Message> message) : Event(ReliableUdpPacketReceivedEventId), ReceivedMessage(message)
+		explicit ReliableUdpPacketReceivedEvent(const std::shared_ptr<Message> &message) : Event(ReliableUdpPacketReceivedEventId), ReceivedMessage(message)
 		{
 		}
 

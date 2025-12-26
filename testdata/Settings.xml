@@ -36,7 +36,7 @@
 		<setting name="gameServerPort" type="string">9090</setting>
 		<setting name="maxPlayers" type="int">4</setting>
 		<setting name="nickname" type="string">Surface4</setting>
-		<!-- If its not TCP, we're using 'connected' udp -->
+		<!-- If it's not TCP, we're using 'connected' udp -->
 		<setting name="isTcp" type="bool">false</setting>
 		<setting name="useReliableUdp" type="bool">true</setting>
 		<setting name="useEncryption" type="bool">true</setting>

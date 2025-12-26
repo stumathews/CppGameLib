@@ -10,7 +10,7 @@ namespace gamelib
     class EventId
     {
     public:
-        EventId(const int pid, std::string name, const int sid = 0);
+        EventId(int pid, std::string name, int sid = 0);
         bool operator== (const EventId& other) const;
         bool operator!=(const EventId& other) const;
         bool operator< (EventId const& other) const;

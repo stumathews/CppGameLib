@@ -26,7 +26,7 @@ namespace gamelib
 	TEST_F(StatisticsTests, SMA)
 	{
 		// consider the average over the last k entries of the dataset
-		const auto k = 3;
+		constexpr auto k = 3;
 		const std::vector<unsigned long> data1 = { 1, 2, 3, 4, 5, 6}; // n = 6
 		const std::vector<unsigned long> data2 = { 1, 2, 3, 4, 5, 6, 7}; // n =7
 		const std::vector<unsigned long> data3 = { 1, 2, 3, 4, 5, 6, 7, 8}; // n=8

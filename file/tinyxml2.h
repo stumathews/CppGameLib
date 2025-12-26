@@ -97,9 +97,9 @@ distribution.
 /* Versioning, past 1.0.14:
 	http://semver.org/
 */
-static const int TIXML2_MAJOR_VERSION = 7;
-static const int TIXML2_MINOR_VERSION = 0;
-static const int TIXML2_PATCH_VERSION = 1;
+static constexpr int TIXML2_MAJOR_VERSION = 7;
+static constexpr int TIXML2_MINOR_VERSION = 0;
+static constexpr int TIXML2_PATCH_VERSION = 1;
 
 #define TINYXML2_MAJOR_VERSION 7
 #define TINYXML2_MINOR_VERSION 0
@@ -110,7 +110,7 @@ static const int TIXML2_PATCH_VERSION = 1;
 // system, and the capacity of the stack. On the other hand, it's a trivial
 // attack that can result from ill, malicious, or even correctly formed XML,
 // so there needs to be a limit in place.
-static const int TINYXML2_MAX_ELEMENT_DEPTH = 100;
+static constexpr int TINYXML2_MAX_ELEMENT_DEPTH = 100;
 
 namespace tinyxml2
 {
@@ -966,7 +966,8 @@ private:
     MemPool*		_memPool;
     void Unlink( XMLNode* child );
     static void DeleteNode( XMLNode* node );
-    void InsertChildPreamble( XMLNode* insertThis ) const;
+
+    static void InsertChildPreamble( XMLNode* insertThis );
     const XMLElement* ToElementWithName( const char* name ) const;
 
     XMLNode( const XMLNode& );	// not supported
@@ -1835,7 +1836,7 @@ public:
     	Delete a node associated with this document.
     	It will be unlinked from the DOM.
     */
-    void DeleteNode( XMLNode* node ) const;
+    static void DeleteNode( XMLNode* node );
 
     void ClearError() {
         SetError(XML_SUCCESS, 0, nullptr);

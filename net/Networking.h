@@ -127,21 +127,21 @@ namespace gamelib
 		// Cannot assign to an NetworkManager
 		void operator=(Networking const&) = delete;
 
-		std::unique_ptr<hostent> my_gethostbyname(const char* hostname) {
+		static std::unique_ptr<hostent> my_gethostbyname(const char* hostname) {
 		    struct addrinfo hints{};
 		    struct addrinfo* res = nullptr;
 
 		    hints.ai_family = AF_INET;        // IPv4
 		    hints.ai_socktype = SOCK_STREAM;
 
-		    int status = getaddrinfo(hostname, nullptr, &hints, &res);
+		    const int status = getaddrinfo(hostname, nullptr, &hints, &res);
 		    if (status != 0 || !res) {
 			return nullptr;
 		    }
 
 		    // Count addresses
 		    int count = 0;
-		    for (struct addrinfo* p = res; p != nullptr; p = p->ai_next) count++;
+		    for (const struct addrinfo* p = res; p != nullptr; p = p->ai_next) count++;
 
 		    // Allocate hostent
 		    hostent* he = new hostent{};
@@ -155,8 +155,8 @@ namespace gamelib
 		    static std::vector<char*> addrs;
 		    addrs.clear();
 
-		    for (struct addrinfo* p = res; p != nullptr; p = p->ai_next) {
-			struct sockaddr_in* ipv4 = (struct sockaddr_in*)p->ai_addr;
+		    for (const struct addrinfo* p = res; p != nullptr; p = p->ai_next) {
+			struct sockaddr_in* ipv4 = reinterpret_cast<struct sockaddr_in *>(p->ai_addr);
 			addrs.push_back((char*)&(ipv4->sin_addr));
 		    }
 		    addrs.push_back(nullptr);
@@ -177,7 +177,7 @@ namespace gamelib
 	 * \return void 
 	 *
 	 */
-		static void netError(int status, int err, std::string error);
+		static void netError(int status, int err, const std::string &error);
 
 	/** \brief Read and wait for len bytes on socket
 	 *
@@ -210,7 +210,7 @@ namespace gamelib
 	 * \return socket configuured to listen on hname host and sname port 
 	 *
 	 */
-	 SOCKET netTcpServer(const char* hname, const char* sname );
+		static SOCKET netTcpServer(const char* hname, const char* sname );
 
 	/** \brief Set up for tcp client socket, then connect to it and return socket
 	 *
@@ -219,7 +219,7 @@ namespace gamelib
 	 * \return socket that represents the established connection  
 	 *
 	 */
-	 SOCKET netTcpClient(const char* hname, const char* sname);
+		static SOCKET netTcpClient(const char* hname, const char* sname);
 
 	/** \brief Set up for udp server: get udp socket bound to hname:sname
 	 *
@@ -228,7 +228,7 @@ namespace gamelib
 	 * \return socket that represents hname host and sname port 
 	 *
 	 */
-	 SOCKET netUdpServer(const char* hname, const char* sname);
+		static SOCKET netUdpServer(const char* hname, const char* sname);
 
 	/** \brief Set up for udp client: get a udp socket and fill address to use(this never blocks)
 	 *
@@ -238,7 +238,7 @@ namespace gamelib
 	 * \return a raw simple udp socket  
 	 *
 	 */
-	 SOCKET netUdpClient(const char* hname, const char* sname, struct sockaddr_in* sap);
+		static SOCKET netUdpClient(const char* hname, const char* sname, struct sockaddr_in* sap);
 
 	 // Creates a 'connected' UDP client see: https://www.masterraghu.com/subjects/np/introduction/unix_network_programming_v1.3/ch08lev1sec11.html
 	 SOCKET netConnectedUdpClient(const char* hname, const char* sname);
@@ -252,7 +252,7 @@ namespace gamelib
 	 * \return void the pointer sap will be filled up and available to caller
 	 *
 	 */
-	 void netSetAddress(const char* hname, const char* sname, struct sockaddr_in* sap, const char* protocol);
+		static void netSetAddress(const char* hname, const char* sname, struct sockaddr_in* sap, const char* protocol);
 		static int inet_aton(const char* cp, in_addr* pin);
 	};
 

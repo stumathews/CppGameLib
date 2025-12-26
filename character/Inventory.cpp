@@ -38,6 +38,6 @@ namespace gamelib
 	/// <returns></returns>
 	bool Inventory::HasComponent(const string& name)
 	{
-		return components.find(name) != components.end();
+		return components.contains(name);
 	}
 }

@@ -39,7 +39,7 @@ namespace gamelib
 		void ProcessAllEvents(unsigned long deltaMs = 0UL);
 				
 		bool Initialize();
-		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, unsigned long deltaMs) override;
 		std::string GetSubscriberName() override;
 		std::map<const EventId, std::vector<IEventSubscriber*>>& GetSubscriptions();
 		[[nodiscard]] size_t CountReady() const;
@@ -49,7 +49,7 @@ namespace gamelib
 		static EventManager* instance;
 	private:
 		EventManager();		
-		void Send(const std::shared_ptr<Event>& event, IEventSubscriber* pSubscriber, const unsigned long deltaMs = 0);		
+		void Send(const std::shared_ptr<Event>& event, IEventSubscriber* pSubscriber, unsigned long deltaMs = 0);		
 		void AddToSecondaryEventQueue(const std::shared_ptr<Event>& secondaryEvent, IEventSubscriber* originSubscriber);
 		void LogEventRaised(IEventSubscriber* you, const std::shared_ptr<Event>& event) const;
 		std::queue<std::shared_ptr<Event>> primaryEventQueue; // Primary queue used for event processing 		

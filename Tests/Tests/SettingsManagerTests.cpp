@@ -24,7 +24,7 @@ namespace gamelib
 
 	TEST(SettingsManagerTests, OpenFileTest)
 	{
-		const auto expected_settings_count = 57;
+		constexpr auto expected_settings_count = 57;
 		EXPECT_TRUE(SettingsManager::Get()->ReadSettingsFile("settings.xml")); 
 
 		// Should have loaded 13 settings by default from the settings file
@@ -34,8 +34,8 @@ namespace gamelib
 	TEST(SettingsManagerTests, AddSetting)
 	{
 		
-		SettingsManager::Get()->ReadSettingsFile();	
-		auto expected_settings_count = SettingsManager::Get()->Count();
+		SettingsManager::Get()->ReadSettingsFile();
+		const auto expected_settings_count = SettingsManager::Get()->Count();
 		SettingsManager::Get()->SaveSetting("global", "name", SettingDetail("name", "mazer", "string"));
 		SettingsManager::Get()->SaveSetting("global", "genre", SettingDetail("name", "platformer", "string"));
 		SettingsManager::Get()->SaveSetting("global", "platform", SettingDetail("name", "windows", "string"));

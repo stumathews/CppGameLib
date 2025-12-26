@@ -9,7 +9,7 @@ namespace gamelib
 	class InlineBehavioralAction final : public Behavior
 	{
 	public:
-		explicit InlineBehavioralAction(const std::function<BehaviorResult(const unsigned long deltaMs)>& onUpdateFunc, std::string description = "")
+		explicit InlineBehavioralAction(const std::function<BehaviorResult(unsigned long deltaMs)>& onUpdateFunc, std::string description = "")
 		: Behavior(std::move(description)), onUpdateFunc(onUpdateFunc)
 		{ }
 
@@ -20,6 +20,6 @@ namespace gamelib
 		}
 
 	private:
-		std::function<BehaviorResult(const unsigned long deltaMs)> onUpdateFunc;
+		std::function<BehaviorResult(unsigned long deltaMs)> onUpdateFunc;
 	};
 }

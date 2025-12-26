@@ -12,7 +12,7 @@ namespace gamelib
 	{
 	public:
 
-		explicit ReliableUdpAckPacketEvent(const std::shared_ptr<Message> message, const bool sent) : Event(ReliableUdpAckPacketEventId), ReceivedMessage(message), Sent(sent)
+		explicit ReliableUdpAckPacketEvent(const std::shared_ptr<Message> &message, const bool sent) : Event(ReliableUdpAckPacketEventId), ReceivedMessage(message), Sent(sent)
 		{
 		}
 

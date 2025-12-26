@@ -23,10 +23,10 @@ namespace gamelib
 		
 			~Security();
 
-			static int EncryptWithSessionKey(const unsigned char* message, const unsigned long long messageLengthBytes,
+			static int EncryptWithSessionKey(const unsigned char* message, unsigned long long messageLengthBytes,
 			                                 const unsigned char* sessionKey, const unsigned char* nonce,
 			                                 unsigned char* encryptedMessageWithAuthTag);
-			static int DecryptWithSessionKey(const unsigned char* encryptedMessageWithAuthTag, const unsigned long long encryptedMessageWithAuthTagLengthBytes, const
+			static int DecryptWithSessionKey(const unsigned char* encryptedMessageWithAuthTag, unsigned long long encryptedMessageWithAuthTagLengthBytes, const
 			                                 unsigned char* sessionKey, const unsigned char* nonce, unsigned char* decryptedMessage);
 			bool Initialize();	
 	};

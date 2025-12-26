@@ -93,7 +93,7 @@ distribution.
 	#define TIXML_VSNPRINTF	vsnprintf
 	static inline int TIXML_VSCPRINTF( const char* format, va_list va )
 	{
-		int len = vsnprintf( 0, 0, format, va );
+		const int len = vsnprintf( nullptr, 0, format, va );
 		TIXMLASSERT( len >= 0 );
 		return len;
 	}
@@ -101,20 +101,20 @@ distribution.
 #endif
 
 
-static const char LINE_FEED				= static_cast<char>(0x0a);			// all line endings are normalized to LF
-static const char LF = LINE_FEED;
-static const char CARRIAGE_RETURN		= static_cast<char>(0x0d);			// CR gets filtered out
-static const char CR = CARRIAGE_RETURN;
-static const char SINGLE_QUOTE			= '\'';
-static const char DOUBLE_QUOTE			= '\"';
+static constexpr char LINE_FEED				= static_cast<char>(0x0a);			// all line endings are normalized to LF
+static constexpr char LF = LINE_FEED;
+static constexpr char CARRIAGE_RETURN		= static_cast<char>(0x0d);			// CR gets filtered out
+static constexpr char CR = CARRIAGE_RETURN;
+static constexpr char SINGLE_QUOTE			= '\'';
+static constexpr char DOUBLE_QUOTE			= '\"';
 
 // Bunch of unicode info at:
 //		http://www.unicode.org/faq/utf_bom.html
 //	ef bb bf (Microsoft "lead bytes") - designates UTF-8
 
-static const unsigned char TIXML_UTF_LEAD_0 = 0xefU;
-static const unsigned char TIXML_UTF_LEAD_1 = 0xbbU;
-static const unsigned char TIXML_UTF_LEAD_2 = 0xbfU;
+static constexpr unsigned char TIXML_UTF_LEAD_0 = 0xefU;
+static constexpr unsigned char TIXML_UTF_LEAD_1 = 0xbbU;
+static constexpr unsigned char TIXML_UTF_LEAD_2 = 0xbfU;
 
 namespace tinyxml2
 {
@@ -125,7 +125,7 @@ struct Entity {
     char value;
 };
 
-static const int NUM_ENTITIES = 5;
+static constexpr int NUM_ENTITIES = 5;
 static const Entity entities[NUM_ENTITIES] = {
     { "quot", 4,	DOUBLE_QUOTE },
     { "amp", 3,		'&'  },
@@ -308,7 +308,7 @@ const char* StrPair::GetStr()
                     //   &#20013; or &#x4e2d;
 
                     if ( *(p+1) == '#' ) {
-                        const int buflen = 10;
+                        constexpr int buflen = 10;
                         char buf[buflen] = { 0 };
                         int len = 0;
                         const char* adjusted = const_cast<char*>( XMLUtil::GetCharacterRef( p, buf, &len ) );
@@ -403,8 +403,8 @@ const char* XMLUtil::ReadBOM( const char* p, bool* bom )
 
 void XMLUtil::ConvertUTF32ToUTF8( unsigned long input, char* output, int* length )
 {
-    const unsigned long BYTE_MASK = 0xBF;
-    const unsigned long BYTE_MARK = 0x80;
+    constexpr unsigned long BYTE_MASK = 0xBF;
+    constexpr unsigned long BYTE_MARK = 0x80;
     const unsigned long FIRST_BYTE_MARK[7] = { 0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC };
 
     if (input < 0x80) {
@@ -464,7 +464,7 @@ const char* XMLUtil::GetCharacterRef( const char* p, char* value, int* length )
         TIXMLASSERT( sizeof( ucs ) >= 4 )
         ptrdiff_t delta = 0;
         unsigned mult = 1;
-        static const char SEMICOLON = ';';
+        static constexpr char SEMICOLON = ';';
 
         if ( *(p+2) == 'x' ) {
             // Hexadecimal.
@@ -647,7 +647,7 @@ bool XMLUtil::ToInt64(const char* str, int64_t* value)
 {
 	long long v = 0;	// horrible syntax trick to make the compiler happy about %lld
 	if (TIXML_SSCANF(str, "%lld", &v) == 1) {
-		*value = (int64_t)v;
+		*value = static_cast<int64_t>(v);
 		return true;
 	}
 	return false;
@@ -674,11 +674,11 @@ char* XMLDocument::Identify( char* p, XMLNode** node )
     static const char* dtdHeader		= { "<!" };
     static const char* elementHeader	= { "<" };	// and a header for everything else; check last.
 
-    static const int xmlHeaderLen		= 2;
-    static const int commentHeaderLen	= 4;
-    static const int cdataHeaderLen		= 9;
-    static const int dtdHeaderLen		= 2;
-    static const int elementHeaderLen	= 1;
+    static constexpr int xmlHeaderLen		= 2;
+    static constexpr int commentHeaderLen	= 4;
+    static constexpr int cdataHeaderLen		= 9;
+    static constexpr int dtdHeaderLen		= 2;
+    static constexpr int elementHeaderLen	= 1;
 
     TIXMLASSERT( sizeof( XMLComment ) == sizeof( XMLUnknown ) ) // use same memory pool
     TIXMLASSERT( sizeof( XMLComment ) == sizeof( XMLDeclaration ) ) // use same memory pool
@@ -1115,7 +1115,7 @@ char* XMLNode::ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr )
     pool->Free( node );
 }
 
-void XMLNode::InsertChildPreamble( XMLNode* insertThis ) const
+void XMLNode::InsertChildPreamble( XMLNode* insertThis )
 {
     TIXMLASSERT( insertThis )
     TIXMLASSERT( insertThis->_document == _document )
@@ -2145,7 +2145,7 @@ static FILE* callfopen( const char* filepath, const char* mode )
     return fp;
 }
 
-void XMLDocument::DeleteNode( XMLNode* node ) const
+void XMLDocument::DeleteNode( XMLNode* node )
 {
     TIXMLASSERT( node )
     TIXMLASSERT(node->_document == this )
@@ -2332,7 +2332,7 @@ void XMLDocument::SetError(const XMLError error, const int lineNum, const char* 
     _errorLineNum = lineNum;
 	_errorStr.Reset();
 
-    const size_t BUFFER_SIZE = 1000;
+    constexpr size_t BUFFER_SIZE = 1000;
     char* buffer = new char[BUFFER_SIZE];
 
     TIXMLASSERT(sizeof(error) <= sizeof(int))
@@ -2549,7 +2549,7 @@ void XMLPrinter::PrintString( const char* p, const bool restricted )
 void XMLPrinter::PushHeader(const bool writeBOM, const bool writeDec )
 {
     if ( writeBOM ) {
-        static const unsigned char bom[] = { TIXML_UTF_LEAD_0, TIXML_UTF_LEAD_1, TIXML_UTF_LEAD_2, 0 };
+        static constexpr unsigned char bom[] = { TIXML_UTF_LEAD_0, TIXML_UTF_LEAD_1, TIXML_UTF_LEAD_2, 0 };
         Write( reinterpret_cast< const char* >( bom ) );
     }
     if ( writeDec ) {

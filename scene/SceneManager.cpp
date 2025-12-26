@@ -38,7 +38,7 @@ namespace gamelib
 	void SceneManager::OnPosYParse(const shared_ptr<Layer>& layer, const string& value) { layer->Position.SetY(static_cast<int>(atoi(value.c_str()))); }
 	void SceneManager::OnPosXParse(const shared_ptr<Layer>& layer, const string& value) { layer->Position.SetX(static_cast<int>(atoi(value.c_str()))); }
 	void SceneManager::OnNameParse(const shared_ptr<Layer>& layer, const string& value) { layer->SetName(value); }
-	void SceneManager::OnSceneLoaded(const std::shared_ptr<Event>& event) const { LogMessage("Scene " + to_string(dynamic_pointer_cast<SceneChangedEvent>(event)->SceneId) + " loaded."); }
+	void SceneManager::OnSceneLoaded(const std::shared_ptr<Event>& event) { LogMessage("Scene " + to_string(dynamic_pointer_cast<SceneChangedEvent>(event)->SceneId) + " loaded."); }
 	bool SceneManager::CompareLayerOrder(const shared_ptr<Layer>& rhs, const shared_ptr<Layer>& lhs) { return lhs->Zorder < rhs->Zorder; }
 	list<shared_ptr<Layer>> SceneManager::GetLayers() const { return layers; }
 	string SceneManager::GetSubscriberName() { return "SceneManager"; }
@@ -47,7 +47,7 @@ namespace gamelib
 		layers.sort([=](const shared_ptr<Layer>& rhs, const shared_ptr<Layer>& lhs) { return lhs->Zorder < rhs->Zorder; });
 	}
 
-	bool SceneManager::Initialize(const string sceneFolder)
+	bool SceneManager::Initialize(const string &sceneFolder)
 	{
 		isInitialized = LogThis("SceneManager::initialize()", SettingsManager::Get()->GetBool("global", "verbose"), [&]()
 		{
@@ -312,7 +312,7 @@ namespace gamelib
 		return false;
 	}
 
-	std::shared_ptr<GameObject> SceneManager::GetGameObjectFrom(const std::shared_ptr<Event>& event) const
+	std::shared_ptr<GameObject> SceneManager::GetGameObjectFrom(const std::shared_ptr<Event>& event)
 	{
 		if (event->Id.PrimaryId != AddGameObjectToCurrentSceneEventId.PrimaryId) { THROW(1, "Cannot extract game object from event", "SceneManager"); }
 

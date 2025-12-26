@@ -122,7 +122,7 @@ namespace gamelib
 
 	TEST_F(BitFiddlerTests, SetBit)
 	{
-		const int i = 1;
+		constexpr int i = 1;
 		EXPECT_EQ(gamelib::BitFiddler<int>::ToString(i), "00000000000000000000000000000001");
 		
 		// setting bit 20 (bit 0 is the last digit on the right, i.e we're little-endian)
@@ -236,7 +236,7 @@ namespace gamelib
 
 	TEST_F(BitFiddlerTests, SetBitsFirstPrinciplesTests)
 	{
-		const uint16_t t = 62139; // 1111001010111011
+		constexpr uint16_t t = 62139; // 1111001010111011
 
 		EXPECT_EQ(gamelib::BitFiddler<uint16_t>::ToString(t), "1111001010111011");
 		EXPECT_EQ(gamelib::BitFiddler<uint16_t>::ToString(std::numeric_limits<uint16_t>::max()),"1111111111111111");
@@ -245,7 +245,7 @@ namespace gamelib
 		EXPECT_EQ(gamelib::BitFiddler<uint16_t>::ToString(std::numeric_limits<uint16_t>::max() >> 13),"0000000000000111"); // 16 - 3 = 3 bits to set
 		EXPECT_EQ(gamelib::BitFiddler<uint16_t>::ToString(std::numeric_limits<uint16_t>::max() >> 12),"0000000000001111"); // 16 - 4 = 4 bits to set
 
-		 auto bitLength = 4;
+		constexpr auto bitLength = 4;
 
 		EXPECT_EQ(gamelib::BitFiddler<uint16_t>::ToString((std::numeric_limits<uint16_t>::max() >> (sizeof(uint16_t)*8) - bitLength) 
 		<< (sizeof(uint16_t)*8) - bitLength),
@@ -273,11 +273,11 @@ namespace gamelib
 				max = ~(max & 0);
 
 		// get a mask that sets all bits in interval concerned
-		uint16_t mask = (max >> (sizeof(uint16_t)*8) - bitLength) 	<< startBit-(bitLength-1);
+		const uint16_t mask = (max >> (sizeof(uint16_t)*8) - bitLength) 	<< startBit-(bitLength-1);
 		EXPECT_EQ(gamelib::BitFiddler<uint16_t>::ToString(mask), "0000000001111000");
 
 		// invert the mask so that that interval is all set to 0
-		uint16_t i_mask = ~mask;
+		const uint16_t i_mask = ~mask;
 
 		// apply mask to set the interval to all 0
 		y &= i_mask;

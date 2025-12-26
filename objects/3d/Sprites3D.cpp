@@ -46,7 +46,7 @@ namespace gamelib
 		Scales[id].y = y;
 	}
 
-	bool Sprites3D::loadFromFile(int id, std::wstring filename)
+	bool Sprites3D::loadFromFile(int id, const std::wstring &filename)
 	{
 		if(!textures[id].loadFromFile(filename))
 			return false;

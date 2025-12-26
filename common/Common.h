@@ -69,7 +69,7 @@ namespace gamelib
 	template <typename ENUM>
 	auto ToInteger(ENUM const value)
 	{
-		return static_cast<typename std::underlying_type<ENUM>::type>(value);
+		return static_cast<std::underlying_type_t<ENUM>>(value);
 	}
 
 	inline bool LogOnFailure(const bool condition, const std::string& message)

@@ -116,7 +116,7 @@ namespace gamelib
                 auto attributes = GetNodeAttributes(pAnimationChild);
                 float duration = 0;
 
-                if (attributes.count("duration") > 0)
+                if (attributes.contains("duration"))
                 {
                     duration = stof(attributes.at("duration"));
                 }
@@ -141,7 +141,7 @@ namespace gamelib
         }        
     }
 
-    void GraphicAssetFactory::ParseSpriteKeyFrames(XMLNode* pKeyFrames, const shared_ptr<SpriteAsset>& sprite) const
+    void GraphicAssetFactory::ParseSpriteKeyFrames(XMLNode* pKeyFrames, const shared_ptr<SpriteAsset>& sprite)
     {
         for (auto pKeyFrameChild = pKeyFrames->FirstChild(); pKeyFrameChild; pKeyFrameChild = pKeyFrameChild->NextSibling())
         {
@@ -154,14 +154,14 @@ namespace gamelib
         }
     }
 
-    void GraphicAssetFactory::ParseSpriteKeyFrame(XMLNode* pKeyFrame, const shared_ptr<SpriteAsset>& sprite) const
+    void GraphicAssetFactory::ParseSpriteKeyFrame(XMLNode* pKeyFrame, const shared_ptr<SpriteAsset>& sprite)
     {
         auto keyFrameAttributes = GetNodeAttributes(pKeyFrame);
         const auto x = stoi(keyFrameAttributes.at("x"));
         const auto y = stoi(keyFrameAttributes.at("y"));
         const auto w = stoi(keyFrameAttributes.at("w"));
         const auto h = stoi(keyFrameAttributes.at("h"));
-        const auto hasGroup = keyFrameAttributes.count("group") > 0;
+        const auto hasGroup = keyFrameAttributes.contains("group");
         const string group = hasGroup ? keyFrameAttributes["group"] : "";
         
         sprite->KeyFrames.emplace_back(x, y, w, h, group);

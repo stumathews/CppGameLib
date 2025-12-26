@@ -136,7 +136,7 @@ namespace gamelib
 			std::vector<unsigned char> decryptedMessage(bytesReceived - crypto_secretbox_MACBYTES);
 
 			// decrypt message
-			auto decrptResult = Security::Get()->DecryptWithSessionKey(
+			const auto decrptResult = Security::Get()->DecryptWithSessionKey(
 				reinterpret_cast<const unsigned char*>(callersReceiveBuffer),
 				bytesReceived,
 				clientSecuritySide.GetReceiveSessionKey(), 
@@ -228,7 +228,7 @@ namespace gamelib
 		const auto data = PacketDatum(true, ackMessageContents.str().c_str(), sendTimeMs);		
 
 		// Add data to message and mark message as having been sent (we sent it later)
-		auto* ackMessage = reliableUdp.MarkSent(data, Ack);
+		const auto* ackMessage = reliableUdp.MarkSent(data, Ack);
 
 		// Write message to network buffer		
 		ackMessage->Write(packer);

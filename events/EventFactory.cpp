@@ -46,7 +46,7 @@ namespace gamelib
 		instance = nullptr;
 	}
 
-	std::shared_ptr<Event> EventFactory::CreateGenericEvent(const EventId& id, const std::string& origin = "") const
+	std::shared_ptr<Event> EventFactory::CreateGenericEvent(const EventId& id, const std::string& origin = "")
 	{
 		auto event = std::make_shared<Event>(id);
 		event->Origin = origin;
@@ -55,7 +55,7 @@ namespace gamelib
 	
 
 	std::shared_ptr<PlayerMovedEvent> EventFactory::CreatePlayerMovedEvent(const Direction direction, const std::string
-	                                                                       & target) const
+	                                                                       & target)
 	{
 		return std::make_shared<PlayerMovedEvent>(direction);
 	}
@@ -66,7 +66,7 @@ namespace gamelib
 	}
 
 	std::shared_ptr<NetworkTrafficReceivedEvent> EventFactory::CreateNetworkTrafficReceivedEvent(const std::string&
-		message, const std::string& identifier, const int bytesReceived, const std::string& origin) const
+		message, const std::string& identifier, const int bytesReceived, const std::string& origin)
 	{
 		auto event = std::make_shared<NetworkTrafficReceivedEvent>();
 		event->Message = message;
@@ -76,67 +76,67 @@ namespace gamelib
 		return event;
 	}
 
-	std::shared_ptr<SceneChangedEvent> EventFactory::CreateLevelEvent(const int level) const
+	std::shared_ptr<SceneChangedEvent> EventFactory::CreateLevelEvent(const int level)
 	{
 		return std::make_shared<SceneChangedEvent>(level);
 	}
 
-	std::shared_ptr<UpdateAllGameObjectsEvent> EventFactory::CreateUpdateAllGameObjectsEvent() const
+	std::shared_ptr<UpdateAllGameObjectsEvent> EventFactory::CreateUpdateAllGameObjectsEvent()
 	{
 		return std::make_shared<UpdateAllGameObjectsEvent>();
 	}
 
-	std::shared_ptr<UpdateProcessesEvent> EventFactory::CreateUpdateProcessesEvent() const
+	std::shared_ptr<UpdateProcessesEvent> EventFactory::CreateUpdateProcessesEvent()
 	{
 		return std::make_shared<UpdateProcessesEvent>();
 	}
 
-	std::shared_ptr<StartNetworkLevelEvent> EventFactory::CreateStartNetworkLevelEvent(const int level) const
+	std::shared_ptr<StartNetworkLevelEvent> EventFactory::CreateStartNetworkLevelEvent(const int level)
 	{
 		return std::make_shared<StartNetworkLevelEvent>(level);
 	}
 
-	std::shared_ptr<Event> EventFactory::CreateNetworkPlayerJoinedEvent(const NetworkPlayer& player) const
+	std::shared_ptr<Event> EventFactory::CreateNetworkPlayerJoinedEvent(const NetworkPlayer& player)
 	{
 		return std::make_shared<NetworkPlayerJoinedEvent>(player);
 	}
 
 	std::shared_ptr<ControllerMoveEvent> EventFactory::CreateControllerMoveEvent(Direction direction,
-		ControllerMoveEvent::KeyState keyState) const
+		ControllerMoveEvent::KeyState keyState)
 	{
 		return std::make_shared<ControllerMoveEvent>(direction, keyState);
 	}
 
 	std::shared_ptr<Event> EventFactory::CreateSubscriberHandledEvent(IEventSubscriber* value,
 	                                                                  const std::shared_ptr<Event>& event,
-	                                                                  unsigned long deltaMs) const
+	                                                                  unsigned long deltaMs)
 	{
 		return std::make_shared<SubscriberHandledEvent>(value, event, deltaMs);
 	}
 
-	std::shared_ptr<ReliableUdpPacketReceivedEvent> EventFactory::CreateReliableUdpPacketReceived(std::shared_ptr<Message> message) const
+	std::shared_ptr<ReliableUdpPacketReceivedEvent> EventFactory::CreateReliableUdpPacketReceived(std::shared_ptr<Message> message)
 	{
 		return std::make_shared<ReliableUdpPacketReceivedEvent>(message);
 	}
 
-	std::shared_ptr<ReliableUdpCheckSumFailedEvent> EventFactory::CreateReliableUdpCheckSumFailedEvent(std::shared_ptr<Message> failedMessage) const
+	std::shared_ptr<ReliableUdpCheckSumFailedEvent> EventFactory::CreateReliableUdpCheckSumFailedEvent(std::shared_ptr<Message> failedMessage)
 	{
 		return std::make_shared<ReliableUdpCheckSumFailedEvent>(failedMessage);
 	}
 
-	std::shared_ptr<ReliableUdpPacketLossDetectedEvent> EventFactory::CreateReliableUdpPacketLossDetectedEvent(const std::shared_ptr<Message>& messageBundle) const
+	std::shared_ptr<ReliableUdpPacketLossDetectedEvent> EventFactory::CreateReliableUdpPacketLossDetectedEvent(const std::shared_ptr<Message>& messageBundle)
 	{
 		return std::make_shared<ReliableUdpPacketLossDetectedEvent>(messageBundle);
 	}
 
 	std::shared_ptr<ReliableUdpAckPacketEvent> EventFactory::CreateReliableUdpAckPacketEvent(
-		const std::shared_ptr<Message>& message, bool isSent) const
+		const std::shared_ptr<Message>& message, bool isSent)
 	{
 		return std::make_shared<ReliableUdpAckPacketEvent>(message, isSent);
 	}
 
 	std::shared_ptr<ReliableUdpPacketRttCalculatedEvent> EventFactory::CreateReliableUdpPacketRttCalculatedEvent(
-		const std::shared_ptr<Message>& message, Rtt rtt) const
+		const std::shared_ptr<Message>& message, Rtt rtt)
 	{
 		return std::make_shared<ReliableUdpPacketRttCalculatedEvent>(message, rtt);
 	}
@@ -146,7 +146,7 @@ namespace gamelib
 		return std::make_shared<AddGameObjectToCurrentSceneEvent>(obj);
 	}
 
-	std::shared_ptr<SceneChangedEvent> EventFactory::CreateSceneChangedEventEvent(const int newLevel) const
+	std::shared_ptr<SceneChangedEvent> EventFactory::CreateSceneChangedEventEvent(const int newLevel)
 	{
 		return std::make_shared<SceneChangedEvent>(newLevel);
 	}

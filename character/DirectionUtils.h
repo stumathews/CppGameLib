@@ -8,7 +8,7 @@ class DirectionUtils
 	{
 	public:
 				
-		static const char* ToString(const Direction direction);
+		static const char* ToString(Direction direction);
 
 		static Direction GetRandomDirection();
 

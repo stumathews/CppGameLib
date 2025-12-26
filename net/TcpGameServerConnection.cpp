@@ -65,7 +65,7 @@ namespace gamelib
 		{
 			PeerInfo peerInfo;
 			peerInfo.Length = sizeof(peerInfo.Address);
-			const SOCKET connectedSocket = accept(listeningSocket, (sockaddr*)&peerInfo.Address, &peerInfo.Length);			
+			const SOCKET connectedSocket = accept(listeningSocket, reinterpret_cast<sockaddr *>(&peerInfo.Address), &peerInfo.Length);
 
 			if (connectedSocket != INVALID_SOCKET_HANDLE)
 			{
@@ -127,7 +127,7 @@ namespace gamelib
 
 			if (FD_ISSET(Players[playerId].GetSocket(), &readfds))
 			{
-				const int DEFAULT_BUFLEN = 512;
+				constexpr int DEFAULT_BUFLEN = 512;
 				char buffer[DEFAULT_BUFLEN];
 				constexpr int bufferLength = DEFAULT_BUFLEN;
 				ZeroMemory(buffer, bufferLength);
@@ -164,7 +164,7 @@ namespace gamelib
 			return;
 		}
 
-		auto msgHeader = serializationManager->GetMessageHeader(inPayload);
+		const auto msgHeader = serializationManager->GetMessageHeader(inPayload);
 		const auto messageType = msgHeader.TheMessageType;
 
 		if(messageType == "ping")

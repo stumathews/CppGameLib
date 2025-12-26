@@ -36,7 +36,7 @@ namespace gamelib
 	TEST_F(FontManagerTests, to_resource)
 	{
 		// When casting a Asset* to a FontAsset...
-		auto resource = FontManager::Get()->ToFontAsset(font_asset_ptr);
+		const auto resource = FontManager::Get()->ToFontAsset(font_asset_ptr);
 
 		// Ensure that...
 		EXPECT_STREQ(resource->Name.c_str(), resource_name.c_str()) << "Resource name is invalid";

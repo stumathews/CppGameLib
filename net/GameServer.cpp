@@ -18,7 +18,7 @@ using namespace json11;
 namespace gamelib
 {
 	GameServer::GameServer(const std::string& address, const std::string& port,
-	                       const std::shared_ptr<IGameServerConnection> gameServerConnection,
+	                       const std::shared_ptr<IGameServerConnection> &gameServerConnection,
 	                       const std::string& nickName, const gamelib::Encoding wireFormat)
 	{		
 		this->gameServerConnection = gameServerConnection;

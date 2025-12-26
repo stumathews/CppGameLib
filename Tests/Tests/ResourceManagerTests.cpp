@@ -32,7 +32,7 @@ namespace gamelib
 	  const string resource_file_path = "Resources.xml";
 	   
 
-	  void test_asset_against_baseline(shared_ptr<Asset> asset) const
+	  void test_asset_against_baseline(const shared_ptr<Asset> &asset) const
 	  {
 		EXPECT_EQ(asset->Uid, exp_uid) << "uid is incorrect";
 		EXPECT_EQ(asset->SceneId, exp_scene) << "Scene was incorrect";

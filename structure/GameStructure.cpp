@@ -84,7 +84,7 @@ namespace gamelib
 					                     : windowTitle + " (Multi-player - Client)"
 				                   : windowTitle + " - Single Player Mode";
 
-			// Final check to see if all subsystems are initialized ok
+			// Final check to see if all subsystems are initialized OK
 			if (IsFailedOrFalse(LogOnFailure(InitializeSdl(screenWidth, screenHeight, title),
 			                                 "Could not initialize SDL, aborting.")) ||
 				IsFailedOrFalse(LogOnFailure(EventManager::Get()->Initialize(),
@@ -132,7 +132,7 @@ namespace gamelib
 			return false;
 		}
 
-		// Initialise Graphics, Audio and Font subsystems
+		// Initialize Graphics, Audio and Font subsystems
 		const auto graphicsSystemInitialized = SdlGraphicsManager::Get()->Initialize(
 			screenWidth, screenHeight, windowTitle.c_str());
 		const auto audioSystemInitialized = AudioManager::Initialize();

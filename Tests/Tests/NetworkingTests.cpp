@@ -76,7 +76,7 @@ namespace gamelib
 			{
 				// Create a GameServer connection object specifying to listen on an address:port combination,
 				// and which type of protocol to use.
-				auto defaultConnection =
+				const auto defaultConnection =
 					GameServerConnectionFactory::Create(false, ServerAddress, ListeningPort, false);
 
 				// Create Game server object, which will use the defaultConnection details
@@ -181,7 +181,7 @@ namespace gamelib
 			return {clientEmittedEvents, serverEmittedEvents};
 		}
 
-		[[nodiscard]] shared_ptr<Event> FindNetworkTrafficReceivedEvent(std::vector<shared_ptr<Event>> events, const std::string requiredMessageType, const std::string& trafficEventIdentifier) const
+		[[nodiscard]] static shared_ptr<Event> FindNetworkTrafficReceivedEvent(std::vector<shared_ptr<Event>> events, const std::string &requiredMessageType, const std::string& trafficEventIdentifier)
 		{
 			const auto result = std::find_if(events.begin(), events.end(), 
 		     [&](const shared_ptr<Event> & event)
@@ -201,7 +201,7 @@ namespace gamelib
 			return *result;
 		}
 
-		[[nodiscard]] shared_ptr<Event> FindEmittedEvent(const std::vector<shared_ptr<Event>>& events, const EventId& eventId, bool findLast = false) const
+		[[nodiscard]] static shared_ptr<Event> FindEmittedEvent(const std::vector<shared_ptr<Event>>& events, const EventId& eventId, bool findLast = false)
 		{
 			auto pred =  [&](const shared_ptr<Event> & event)
 		     {
@@ -219,7 +219,7 @@ namespace gamelib
 			
 		}
 
-		[[nodiscard]] shared_ptr<NetworkPlayerJoinedEvent> FindPlayerJoinedEvent(const std::vector<shared_ptr<Event>>& events, const string& playerNick) const
+		[[nodiscard]] static shared_ptr<NetworkPlayerJoinedEvent> FindPlayerJoinedEvent(const std::vector<shared_ptr<Event>>& events, const string& playerNick)
 		{
 			const auto result = std::find_if(events.begin(), events.end(), 
 		     [&](const shared_ptr<Event> & event)
@@ -229,7 +229,7 @@ namespace gamelib
 			return To<NetworkPlayerJoinedEvent>(*result);
 		}
 
-		void EnsureNetworkJoinedEventEmittedByServer(const std::vector<shared_ptr<Event>>& events, const std::string playerNick) const
+		void EnsureNetworkJoinedEventEmittedByServer(const std::vector<shared_ptr<Event>>& events, const std::string &playerNick) const
 		{
 			const auto resultEvent = FindEmittedEvent(events, NetworkPlayerJoinedEventId);
 			const auto joinedEvent = To<NetworkPlayerJoinedEvent>(resultEvent);
@@ -237,8 +237,8 @@ namespace gamelib
 			EXPECT_EQ(joinedEvent->Origin, ServerOrigin);
 			EXPECT_EQ(joinedEvent->Player.GetNickName(), playerNick);
 		}
-		
-		void EnsurePongTrafficReceivedByClient(const std::vector<shared_ptr<Event>>& clientEmittedEvents, const std::string& messageIdentifier, const std::string& expectedEventOrigin) const
+
+		static void EnsurePongTrafficReceivedByClient(const std::vector<shared_ptr<Event>>& clientEmittedEvents, const std::string& messageIdentifier, const std::string& expectedEventOrigin)
 		{
 			EXPECT_EQ(clientEmittedEvents.size(), 1) << "Expected the client to receive a pong in response to its ping request";
 
@@ -250,8 +250,8 @@ namespace gamelib
 			EXPECT_EQ(trafficEvent->Identifier, messageIdentifier);
 			EXPECT_EQ(trafficEvent->Origin, expectedEventOrigin);
 		}
-			
-		void EnsurePlayerPingTrafficReceivedByServer(const std::vector<shared_ptr<Event>>& serverEmittedEvents, const std::string& messageIdentifier, const std::string& expectedEventOrigin) const
+
+		static void EnsurePlayerPingTrafficReceivedByServer(const std::vector<shared_ptr<Event>>& serverEmittedEvents, const std::string& messageIdentifier, const std::string& expectedEventOrigin)
 		{
 			const auto event = FindNetworkTrafficReceivedEvent(serverEmittedEvents, "ping", messageIdentifier);
 			const auto trafficEvent = To<NetworkTrafficReceivedEvent>(event);
@@ -265,7 +265,7 @@ namespace gamelib
 
 		}
 
-		void EnsurePlayerJoinedTrafficReceivedByServer(const std::vector<shared_ptr<Event>>& serverEmittedEvents, const std::string& messageIdentifier, const std::string& expectedEventOrigin) const
+		static void EnsurePlayerJoinedTrafficReceivedByServer(const std::vector<shared_ptr<Event>>& serverEmittedEvents, const std::string& messageIdentifier, const std::string& expectedEventOrigin)
 		{
 			const auto event = FindNetworkTrafficReceivedEvent(serverEmittedEvents, "requestPlayerDetails", messageIdentifier);
 			const auto trafficEvent = To<NetworkTrafficReceivedEvent>(event);

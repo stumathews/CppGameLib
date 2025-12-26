@@ -11,7 +11,7 @@ namespace gamelib
 		{
 			return static_cast<long>(GetTimeMs());
 		}
-		static long GetDuration(const std::function<void()> funcToProfile)
+		static long GetDuration(const std::function<void()> &funcToProfile)
 		{
 			const auto before = GetTimeNowMs();
 			funcToProfile();

@@ -36,7 +36,7 @@ namespace gamelib
 		void UpdateBounds(unsigned int width, unsigned int height);
 		void UpdateBounds(const AbcdRectangle& dimensions);
 		static SDL_Rect CalculateBounds(Coordinate<int> position, int width, int height);
-		static SDL_Rect CalculateBounds(Coordinate<int> position, AbcdRectangle dimensions);
+		static SDL_Rect CalculateBounds(Coordinate<int> position, const AbcdRectangle &dimensions);
 
 		// Event functions:
 		ListOfEvents HandleEvent(const std::shared_ptr<Event>& event, unsigned long deltaMs) override;

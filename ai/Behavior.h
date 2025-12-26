@@ -24,7 +24,7 @@ namespace gamelib
 		}
 
 		// Called exactly once each time the behaviour tree is updated, until it signals it has terminated thanks to its return status
-		virtual BehaviorResult Update(const unsigned long deltaMs = 0) = 0;
+		virtual BehaviorResult Update(unsigned long deltaMs) = 0;
 
 		// Called once immediately after the previous update signals it's no longer running.
 		virtual void OnTerminate()
@@ -40,7 +40,7 @@ namespace gamelib
 			}
 
 			// Update ourselves (this is inherited by descendants)
-			status = Update();
+			status = Update(deltaMs);
 
 			// Check if the last update caused us to stop running, in which case call onTerminate gracefully
 			if (status != BehaviorResult::Running)

@@ -41,8 +41,8 @@ namespace  gamelib
 			 */
 
 
-			bit_packing_types::String<uint32_t> type(Type);			
-			bit_packing_types::ArrayOfStrings<uint32_t> names(Names.data(), Names.size());
+			const bit_packing_types::String<uint32_t> type(Type);
+			const bit_packing_types::ArrayOfStrings<uint32_t> names(Names.data(), Names.size());
 
 			auto constexpr eventTypeBitsRequired = BitPacker<uint32_t>::BitsRequired(0, 2000);
 			auto constexpr bitsRequiredFor3Ints = BitPacker<uint32_t>::BitsRequired(0, 3);

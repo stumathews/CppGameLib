@@ -18,7 +18,7 @@ namespace gamelib
 
     public:
         void Draw(SDL_Renderer* renderer) override;
-        ListOfEvents HandleEvent(const std::shared_ptr<Event>& event, const unsigned long deltaMs) override;
+        ListOfEvents HandleEvent(const std::shared_ptr<Event>& event, unsigned long deltaMs) override;
 
         GameObjectType GetGameObjectType() override;
         void Update(const unsigned long deltaMs) override {}

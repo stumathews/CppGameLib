@@ -60,7 +60,7 @@ namespace gamelib
 		/// <summary>
 		/// Handle any game Structure events
 		/// </summary>
-		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& event, const unsigned long deltaMs) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& event, unsigned long deltaMs) override;
 
 		/// <summary>
 		/// Name we register with the event system
@@ -79,7 +79,7 @@ namespace gamelib
 		/// </summary>
 		void ReadKeyboard(unsigned long deltaMs) const;
 
-		void ReadNetwork(const unsigned long deltaMs) const;
+		void ReadNetwork(unsigned long deltaMs) const;
 
 		/// <summary>
 		/// Gte the Time now in MS

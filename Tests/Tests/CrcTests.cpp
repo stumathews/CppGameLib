@@ -24,7 +24,7 @@ namespace gamelib
 	TEST_F(CrcTests, CRC32)
 	{
 		const auto buffer = "There can be only one.";
-		Crc32 crc32;
+		const Crc32 crc32;
 		const auto crc = crc32.compute((uint8_t*)buffer, strlen(buffer));
 
 		const auto buffer1 = "Dude where is my car?";
@@ -39,9 +39,9 @@ namespace gamelib
 
 	TEST_F(CrcTests, CheckSumTest)
 	{
-		auto seq1 = 6;
-		auto lastAckedSeq = 2;
-		auto previousAckedBits = 1;
+		const auto seq1 = 6;
+		const auto lastAckedSeq = 2;
+		const auto previousAckedBits = 1;
 		std::vector<PacketDatum> data;
 
 		const auto datum1 = PacketDatum(false, "data for datum1");

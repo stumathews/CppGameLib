@@ -34,7 +34,7 @@ namespace gamelib
 		return {position.GetX(), position.GetY(), width, height};
 	}
 
-	SDL_Rect GameObject::CalculateBounds(const Coordinate<int> position, const AbcdRectangle dimensions)
+	SDL_Rect GameObject::CalculateBounds(const Coordinate<int> position, const AbcdRectangle &dimensions)
 	{
 		return {position.GetX(), position.GetY(), dimensions.GetWidth(), dimensions.GetHeight()};
 	}

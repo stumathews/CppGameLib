@@ -82,7 +82,7 @@ uint32_t gamelib::Message::GenerateCheckSum()
 	Write(packer, false);	
 
 	// Create CRC value from the checksum buffer
-	Crc32 crc;
+	const Crc32 crc;
 	return crc.compute(reinterpret_cast<uint8_t*>(checkSumBuffer), static_cast<size_t>(sizeInBytes));
 }
 

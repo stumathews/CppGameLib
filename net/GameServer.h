@@ -21,7 +21,7 @@ namespace gamelib
 	{
 	public:
 		GameServer(const std::string& address, const std::string& port,
-		           std::shared_ptr<IGameServerConnection> gameServerConnection, const std::string& nickName = "Server",
+		           const std::shared_ptr<IGameServerConnection> &gameServerConnection, const std::string& nickName = "Server",
 			Encoding wireFormat = Encoding::json);
 		GameServer(const GameServer& other) = delete;
 		GameServer(const GameServer&& other) = delete;

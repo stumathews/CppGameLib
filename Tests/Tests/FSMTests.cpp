@@ -11,7 +11,7 @@ namespace gamelib
 	class StateOne : public FSMState
 	{
 	public:
-		StateOne(std::function<void()> onEnter = nullptr, std::function<void(unsigned long deltaMs)> onUpdate = nullptr, std::function<void()> onExit = nullptr)
+		StateOne(const std::function<void()> &onEnter = nullptr, const std::function<void(unsigned long deltaMs)> &onUpdate = nullptr, const std::function<void()> &onExit = nullptr)
 			: FSMState("StateOne", onUpdate, onEnter, onExit) {}
 
 		int updateTicks = 0;
@@ -24,7 +24,7 @@ namespace gamelib
 	class StateTwo : public FSMState
 	{
 	public:
-		StateTwo(std::function<void()> onEnter = nullptr, std::function<void(unsigned long deltaMs)> onUpdate = nullptr, std::function<void()> onExit = nullptr)
+		StateTwo(const std::function<void()> &onEnter = nullptr, const std::function<void(unsigned long deltaMs)> &onUpdate = nullptr, const std::function<void()> &onExit = nullptr)
 			: FSMState("StateTwo", onUpdate, onEnter,onExit) {}
 
 		int updateTicks = 0;

@@ -8,7 +8,7 @@ using namespace std;
 
 namespace gamelib
 {
-	shared_ptr<Asset> FontManager::CreateAsset(const tinyxml2::XMLElement* assetXmlElement) const
+	shared_ptr<Asset> FontManager::CreateAsset(const tinyxml2::XMLElement* assetXmlElement)
 	{
 		int uuid;
 		const char* type;

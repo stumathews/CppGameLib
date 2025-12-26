@@ -64,7 +64,7 @@ namespace gamelib
 	}
 
 	shared_ptr<GameObject> GameObjectFactory::InitializeGameObject(const string& name, const string& type, const Coordinate<int> position, const bool IsVisible, const shared_ptr<Asset>
-	                                                               & asset) const
+	                                                               & asset)
 	{
 		if (asset == nullptr) { THROW(99,"cannot initialize game object with out an associated asset","GameObjectFactory"); }
 		
@@ -77,7 +77,7 @@ namespace gamelib
 	}
 
 	shared_ptr<StaticSprite> GameObjectFactory::BuildGraphic(const std::shared_ptr<Asset>
-	                                                         & asset, const Coordinate<int>& position) const
+	                                                         & asset, const Coordinate<int>& position)
 	{
 		
 		const auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
@@ -91,7 +91,7 @@ namespace gamelib
 
 	}
 
-	std::shared_ptr<StaticSprite> GameObjectFactory::BuildStaticSprite(const std::shared_ptr<Asset>& asset, const Coordinate<int>& position) const
+	std::shared_ptr<StaticSprite> GameObjectFactory::BuildStaticSprite(const std::shared_ptr<Asset>& asset, const Coordinate<int>& position)
 	{
 		return StaticSprite::Create(position, dynamic_pointer_cast<SpriteAsset>(asset));
 	}
@@ -120,13 +120,13 @@ namespace gamelib
 		sprite->SupportsColourKey(graphicAsset->GetColourKey().IsSet());
 	}
 
-	void GameObjectFactory::OnBlueParse(uint& blue, const std::string& detailValue) const { blue = stoi(detailValue); }
-	void GameObjectFactory::OnGreenParse(uint& green, const std::string& detailValue) const { green = stoi(detailValue); }
-	void GameObjectFactory::OnRedParse(uint& red, const std::string& detailValue) const { red = stoi(detailValue); }
+	void GameObjectFactory::OnBlueParse(uint& blue, const std::string& detailValue) { blue = stoi(detailValue); }
+	void GameObjectFactory::OnGreenParse(uint& green, const std::string& detailValue) { green = stoi(detailValue); }
+	void GameObjectFactory::OnRedParse(uint& red, const std::string& detailValue) { red = stoi(detailValue); }
 	void GameObjectFactory::OnColourKeyParse(bool& color_key_enabled, const std::string& detailValue) { color_key_enabled = (detailValue == "true"); }
-	void GameObjectFactory::OnPosYParse(uint& y, const std::string& detailValue) const { y = stoi(detailValue); }
+	void GameObjectFactory::OnPosYParse(uint& y, const std::string& detailValue) { y = stoi(detailValue); }
 	void GameObjectFactory::OnVisibleParse(bool& visible, const std::string& detailValue) { visible = (detailValue == "true"); }
-	void GameObjectFactory::OnPosXParse(uint& x, const std::string& detailValue) const { x = stoi(detailValue); }
+	void GameObjectFactory::OnPosXParse(uint& x, const std::string& detailValue) { x = stoi(detailValue); }
 	void GameObjectFactory::OnNameParse(string& x, const std::string& detailValue) { x = detailValue; }
 	void GameObjectFactory::OnTypeParse(string& x, const std::string& detailValue) { x = detailValue; }
 

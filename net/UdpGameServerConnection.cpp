@@ -45,7 +45,7 @@ namespace gamelib
 
 	void UdpGameServerConnection::Listen(const unsigned long deltaMs)
 	{
-		const auto maxSockets = 5; // Number of pending connections to have in the queue at any one moment
+		constexpr auto maxSockets = 5; // Number of pending connections to have in the queue at any one moment
 		
 		FD_ZERO(&readfds); // Clear the list of sockets that we are listening for/on			
 		FD_SET(listeningSocket, &readfds); // Add it to the list of file descriptors to listen for readability					
@@ -77,7 +77,7 @@ namespace gamelib
 	}
 
 	void UdpGameServerConnection::RaiseNetworkTrafficReceivedEvent(const char* buffer, const int bytesReceived,
-	                                                               const PeerInfo fromClient) 
+	                                                               const PeerInfo &fromClient)
 	{
 		std::string identifier = "unknown";
 		for(auto player : players)
@@ -111,14 +111,14 @@ namespace gamelib
 				continue;
 			}
 
-			InternalSend(listeningSocket, serializedMessage.c_str(), static_cast<int>(serializedMessage.length()), 0, (sockaddr*) &player.ThePeerInfo.Address, player.ThePeerInfo.Length);
+			InternalSend(listeningSocket, serializedMessage.c_str(), static_cast<int>(serializedMessage.length()), 0, reinterpret_cast<sockaddr *>(&player.ThePeerInfo.Address), player.ThePeerInfo.Length);
 			
 		}
 	}
 
-	void UdpGameServerConnection::ParseReceivedPlayerPayload(const char* inPayload, int payloadLength, const PeerInfo fromClient)
+	void UdpGameServerConnection::ParseReceivedPlayerPayload(const char* inPayload, int payloadLength, const PeerInfo &fromClient)
 	{
-		std::string payload_string{inPayload};
+		const std::string payload_string{inPayload};
 		const auto msgHeader = gamelib::SerializationManager::GetMessageHeader(payload_string);
 		const auto messageType = msgHeader.TheMessageType;
 
@@ -149,14 +149,14 @@ namespace gamelib
 	{
 		Logger::Get()->LogThis("Server: Sending pong message\n");
 		const auto data = serializationManager->CreatePongMessage();
-		auto bytesSent = InternalSend(listeningSocket, data.c_str(), static_cast<int>(data.length()), 0, reinterpret_cast<sockaddr*>(&fromClient.Address), fromClient.Length);
+		const auto bytesSent = InternalSend(listeningSocket, data.c_str(), static_cast<int>(data.length()), 0, reinterpret_cast<sockaddr*>(&fromClient.Address), fromClient.Length);
 		std::stringstream ss;
 		ss << "Server: Sent " << bytesSent << " to client" << std::endl;
 		Logger::Get()->LogThis(ss.str());
 	}
 
 
-	void UdpGameServerConnection::ProcessRequestPlayerDetailsMessage(const MessageHeader& messageHeader, const PeerInfo fromClient)
+	void UdpGameServerConnection::ProcessRequestPlayerDetailsMessage(const MessageHeader& messageHeader, const PeerInfo &fromClient)
 	{
 		bool found = false;
 		for(const auto& player : players)

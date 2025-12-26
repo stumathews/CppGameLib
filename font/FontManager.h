@@ -23,7 +23,7 @@ namespace gamelib
 		FontManager& operator=(const FontManager& other) = delete;
 		FontManager& operator=(const FontManager&& other) = delete;
 
-		std::shared_ptr<Asset> CreateAsset(const tinyxml2::XMLElement * assetXmlElement) const;
+		static std::shared_ptr<Asset> CreateAsset(const tinyxml2::XMLElement * assetXmlElement);
 		static std::shared_ptr<FontAsset> ToFontAsset(const std::shared_ptr<Asset>& asset);
 	protected:
 		static FontManager* instance;

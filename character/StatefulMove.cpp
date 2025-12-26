@@ -8,7 +8,7 @@ namespace gamelib
 
 		auto move = [&](const Direction dir)
 		{
-			if(movementAcceleration.find(dir) == movementAcceleration.end()) return 0;
+			if(!movementAcceleration.contains(dir)) return 0;
 			return 1 * speed * (movementAcceleration[dir] == ControllerMoveEvent::KeyState::Pressed ? 1 : 0);
 		};
 

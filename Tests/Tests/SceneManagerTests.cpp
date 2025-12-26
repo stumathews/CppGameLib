@@ -46,9 +46,9 @@ namespace gamelib
 		sceneManager->Initialize("");
 		sceneManager->StartScene(1);
 		EventManager::Get()->ProcessAllEvents();
-		
-		auto layers = sceneManager->GetLayers();
-		auto& layer = layers.front();
+
+		const auto layers = sceneManager->GetLayers();
+		const auto& layer = layers.front();
 		auto& game_object = layer->Objects.front();
 		
 		EXPECT_EQ(layers.size(), 1) << "Expected one layer";

@@ -35,7 +35,7 @@ namespace gamelib
 	template <int64_t min, int64_t max> struct BitsRequired
 	{
 	    static const uint32_t result = 
-	        ( min == max ) ? 0 : ( Log2<uint32_t(max-min)>::result + 1 );
+	        ( min == max ) ? 0 : ( Log2<static_cast<uint32_t>(max - min)>::result + 1 );
 	};
 
 
@@ -47,28 +47,28 @@ namespace gamelib
 		// Set bit n on number (zero-indexed)
 		static T SetBit(T number, T n)
 		{
-			return number | ((T)1 << n);
+			return number | (static_cast<T>(1) << n);
 		}
 
 		// clear bt n on number
 		static T ClearBit(T number, T n) {
-			return number & ~((T)1 << n);
+			return number & ~(static_cast<T>(1) << n);
 		}
 
 		// toggle/invert bit n on number
 		static T ToggleBit(T number, T n) {
-	    return number ^ ((T)1 << n);
+	    return number ^ (static_cast<T>(1) << n);
 		}
 
 		// test bit n if set on number
 		static bool BitCheck(T number, T n)
 		{
-		    return (number >> n) & (T)1;
+		    return (number >> n) & static_cast<T>(1);
 		}
 
 		// set bit n or not
 		static T SetBitTo(T number, T n, bool x) {
-			return (number & ~((T)1 << n)) | ((T)x << n);
+			return (number & ~(static_cast<T>(1) << n)) | (static_cast<T>(x) << n);
 		}
 		
 		/**

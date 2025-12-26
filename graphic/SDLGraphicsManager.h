@@ -49,7 +49,7 @@ namespace gamelib
 		SdlGraphicsManager();	
 		std::shared_ptr<Window> mainWindow; //The window we'll be rendering to
 		std::map<std::string, std::shared_ptr<Window>> windows;
-		ListOfEvents HandleEvent(const std::shared_ptr<Event>& event, const unsigned long deltaMs) override;
+		ListOfEvents HandleEvent(const std::shared_ptr<Event>& event, unsigned long deltaMs) override;
 	};
 }
 #endif

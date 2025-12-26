@@ -31,7 +31,7 @@ namespace gamelib
 
 		// NPCs override certain behavior:
 		void Draw(SDL_Renderer* renderer) override;
-		void Update(const unsigned long deltaMs) override;
+		void Update(unsigned long deltaMs) override;
 		GameObjectType GetGameObjectType() override;
 
 		// NPCs can turn around

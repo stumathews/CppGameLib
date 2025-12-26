@@ -19,7 +19,7 @@ namespace gamelib
 		void setColor(int id, float r, float g, float b, float a=1.0f);
 		void setPos(int id, float m_xPos, float m_yPos);
 		void setScale(int id, float m_xPos, float m_yPos);
-		bool loadFromFile(int id, std::wstring filename);
+		bool loadFromFile(int id, const std::wstring &filename);
 		void free();
 		void update();
 	};

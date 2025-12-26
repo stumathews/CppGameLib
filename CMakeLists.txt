@@ -540,7 +540,7 @@ install(
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}    
     # Special case: All the directories given after INCLUDES DESTINATION are added to the 
     # INTERFACE_INCLUDE_DIRECTORIES property of each installed target listed - so we've effectively 
-    # set the include directories for the installed targets (just our library), not need to do it explcitly via target_include_directories()
+    # set the include directories for the installed targets (just our library), not need to do it explicitly via target_include_directories()
     INCLUDES 
      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )

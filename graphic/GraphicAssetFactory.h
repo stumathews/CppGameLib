@@ -30,8 +30,10 @@ namespace gamelib
 		std::shared_ptr<Asset> Parse(tinyxml2::XMLElement* assetNode) const;
 		void ParseSpriteAnimation(tinyxml2::XMLNode* animation, const std::shared_ptr<SpriteAsset>& sprite) const;
 		void ParseSprite(tinyxml2::XMLNode* pSprite, const std::shared_ptr<SpriteAsset>& sprite) const;
-		void ParseSpriteKeyFrames(tinyxml2::XMLNode* pKeyFrames, const std::shared_ptr<SpriteAsset>& sprite) const;
-		void ParseSpriteKeyFrame(tinyxml2::XMLNode* pKeyFrame, const std::shared_ptr<SpriteAsset>& sprite) const;
+
+		static void ParseSpriteKeyFrames(tinyxml2::XMLNode* pKeyFrames, const std::shared_ptr<SpriteAsset>& sprite);
+
+		static void ParseSpriteKeyFrame(tinyxml2::XMLNode* pKeyFrame, const std::shared_ptr<SpriteAsset>& sprite);
 		static std::map<std::string, std::string> GetNodeAttributes(tinyxml2::XMLNode* pAssetNode);
 	protected:
 		static GraphicAssetFactory* instance;

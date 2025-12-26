@@ -1,6 +1,6 @@
 #include "SceneManager.h"
 #include <list>
-#include "file/tinyxml2.h"
+#include <tinyxml2.h>
 #include <memory>
 #include "events/GameObjectEvent.h"
 #include "common/Common.h"

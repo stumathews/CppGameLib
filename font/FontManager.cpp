@@ -1,7 +1,7 @@
 #include "FontManager.h"
 #include <SDL_ttf.h>
 #include "FontAsset.h"
-#include "file/tinyxml2.h"
+#include <tinyxml2.h>
 #include "common/Common.h"
 
 using namespace std;

@@ -1,7 +1,7 @@
 //#include "gtest/gtest.h"
 #include "pch.h"
 #include <graphic/GraphicAsset.h>
-#include "file/tinyxml2.h"
+#include <tinyxml2.h>
 #include <graphic/KeyFrame.h>
 #include <graphic/GraphicAssetFactory.h>
 #include <gtest/gtest.h>

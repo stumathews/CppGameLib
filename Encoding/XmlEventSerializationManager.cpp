@@ -1,7 +1,7 @@
 #include "XmlEventSerializationManager.h"
 
 #include "events/NetworkTrafficReceivedEvent.h"
-#include "file/tinyxml2.h"
+#include <tinyxml2.h>
 #include "net/Fish.h"
 #include "net/PingMessage.h"
 

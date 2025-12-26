@@ -1,7 +1,7 @@
 #pragma once
 #include "AudioAsset.h"
 #include <memory>
-#include <file/tinyxml2.h>
+#include <tinyxml2.h>
 
 namespace gamelib
 {

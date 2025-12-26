@@ -1,5 +1,5 @@
 #include "SettingsManager.h"
-#include "file/tinyxml2.h"
+#include <tinyxml2.h>
 #include <exceptions/EngineException.h>
 using namespace std;
 

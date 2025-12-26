@@ -111,7 +111,6 @@ file/SerializationManager.h
 file/SettingDetail.h
 file/SettingsManager.h
 file/TextFile.h
-file/tinyxml2.h
 file/ScriptManager.h
 font/FontAsset.h
 font/FontManager.h
@@ -250,7 +249,6 @@ file/SerializationManager.cpp
 file/SettingDetail.cpp
 file/SettingsManager.cpp
 file/TextFile.cpp
-file/tinyxml2.cpp
 file/ScriptManager.cpp
 font/FontAsset.cpp
 font/FontManager.cpp
@@ -339,6 +337,7 @@ generate_export_header(cppgamelib)
 # Find packages for library dependencies (these will come via vcpkg)
 find_package(unofficial-sodium CONFIG REQUIRED)
 find_package(GTest CONFIG REQUIRED)
+find_package(tinyxml2 CONFIG REQUIRED)
 
 find_package(SDL2 CONFIG REQUIRED)
 find_package(SDL2_ttf CONFIG REQUIRED)
@@ -407,6 +406,7 @@ if(WIN32)
             unofficial-sodium::sodium
             PRIVATE
             ${LUA_LIBRARIES}
+	    tinyxml2::tinyxml2
     )
 elseif(UNIX)
     # On Linux, static SDL2 targets require explicit dependencies
@@ -424,6 +424,7 @@ elseif(UNIX)
             pthread
             PRIVATE
             ${LUA_LIBRARIES}
+	    tinyxml2::tinyxml2
     )
 endif()
 
@@ -485,6 +486,7 @@ PUBLIC
 PRIVATE
  GTest::gmock_main 
  ${LUA_LIBRARIES}
+ tinyxml2::tinyxml2
 )
 
 # Set include directory for allTests executable
@@ -501,6 +503,7 @@ target_link_libraries(NetworkingTests
 PRIVATE
  GTest::gmock_main
  ${LUA_LIBRARIES}
+ tinyxml2::tinyxml2
 )
 
 target_include_directories(NetworkingTests PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

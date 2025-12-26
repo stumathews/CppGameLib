@@ -3,7 +3,7 @@
 #include "asset/ScriptAsset.h"
 #include "common/Common.h"
 #include "exceptions/EngineException.h"
-#include "file/tinyxml2.h"
+#include <tinyxml2.h>
 
 namespace gamelib
 {

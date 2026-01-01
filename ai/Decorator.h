@@ -2,6 +2,7 @@
 
 namespace gamelib
 {
+	// A decorator is an augmented behavior that has a single unaugmented child behavior
 	class Decorator : public Behavior
 	{
 	protected:
@@ -9,5 +10,6 @@ namespace gamelib
 
 	public:
 	    Decorator(Behavior* child) : child(child) {}
-	};	
+	    Status Update(unsigned long deltaMs) override = 0;
+	};
 }

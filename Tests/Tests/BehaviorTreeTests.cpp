@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "ai/BehaviorTree.h"
 #include "ai/ActiveSelector.h"
-#include "ai/InlineBehavioralAction.h"
-#include "ai/BehavioralSequence.h"
+#include "ai/InlineAction.h"
+#include "ai/Sequence.h"
 #include "file/Logger.h"
 #include <gmock/gmock-more-matchers.h>
 
@@ -27,9 +27,9 @@ namespace gamelib
 	{	
 		bool crawled = false, walked = false, ran = false;
 
-		InlineBehavioralAction crawl([&](const unsigned long deltaMs) { crawled = true; return BehaviorResult::Success; });
-		InlineBehavioralAction walk([&](const unsigned long deltaMs) { walked = true; return BehaviorResult::Success; });
-		InlineBehavioralAction run([&](const unsigned long deltaMs) { ran = true; return BehaviorResult::Success; });
+		ai::InlineAction crawl([&](const unsigned long deltaMs) { crawled = true; return Status::Success; });
+		ai::InlineAction walk([&](const unsigned long deltaMs) { walked = true; return Status::Success; });
+		ai::InlineAction run([&](const unsigned long deltaMs) { ran = true; return Status::Success; });
 
 		ActiveSelector root;
 		root.AddChild(&crawl);

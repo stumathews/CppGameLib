@@ -1,9 +1,10 @@
 #pragma once
-#include "BehaviorResult.h"
+#include "Status.h"
 #include "Decorator.h"
 
 namespace gamelib
 {
+	// A repeat decorator will repeat its child a set number of times or until failure
 	class Repeat final : public Decorator
 	{
 	public:
@@ -11,6 +12,7 @@ namespace gamelib
 		{
 		}
 
+		// Sets the number of times to repeat the child behavior
 	    void SetCount(const int count)
 	    {
 	        limit = count;
@@ -21,20 +23,24 @@ namespace gamelib
 	        counter = 0;
 	    }
 
-	    BehaviorResult Update(const unsigned long deltaMs) override
+	    Status Update(const unsigned long deltaMs) override
 	    {
 	        for (;;)
 	        {
-	            child->DoUpdate();
-	            if (child->GetStatus() == BehaviorResult::Running) 
+	            child->Tick();
+
+	            if (child->GetStatus() == Status::Running) 
 					break;
-	            if (child->GetStatus() == BehaviorResult::Failure) 
-					return BehaviorResult::Failure;
+
+	            if (child->GetStatus() == Status::Failure) 
+					return Status::Failure;
+
 	            if (++counter == limit) 
-					return BehaviorResult::Success;
+					return Status::Success;
+
 	            child->Reset();
 	        }
-	        return BehaviorResult::Invalid;
+	        return Status::Invalid;
 	    }
 
 	protected:

@@ -4,7 +4,7 @@
 
 #include "ai/BehaviorTree.h"
 #include "ai/BehaviorTreeBuilder.h"
-#include "ai/InlineBehavioralAction.h"
+#include "ai/InlineAction.h"
 #include "ai/Repeat.h"
 
 using namespace std;
@@ -32,98 +32,98 @@ namespace gamelib
 		bool isPlayerVisible = true;
 		bool isPlayerInRange = true;
 		bool haveWeGotASuspectedLocation = true;
-		auto dummyAction5Result = gamelib::BehaviorResult::Success;
+		auto dummyAction5Result = gamelib::Status::Success;
 
-		auto* checkIsPlayerVisible = new gamelib::InlineBehavioralAction ([&](const unsigned long deltaMs)
+		auto* checkIsPlayerVisible = new gamelib::ai::InlineAction ([&](const unsigned long deltaMs)
 		{
 			return isPlayerVisible
-					? gamelib::BehaviorResult::Success
-					: gamelib::BehaviorResult::Failure;
+					? gamelib::Status::Success
+					: gamelib::Status::Failure;
 		}, "IsPlayerVisible");
 
-		auto* checkPlayerInRange = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
+		auto* checkPlayerInRange = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
 		{
 			return isPlayerInRange
-					? gamelib::BehaviorResult::Success
-					: gamelib::BehaviorResult::Failure;
+					? gamelib::Status::Success
+					: gamelib::Status::Failure;
 		}, "IsPlayerInRange");
 
-		auto* checkHaveWeGotASuspectedLocation = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
+		auto* checkHaveWeGotASuspectedLocation = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
 		{
 			return haveWeGotASuspectedLocation
-					? gamelib::BehaviorResult::Success
-					: gamelib::BehaviorResult::Failure;
+					? gamelib::Status::Success
+					: gamelib::Status::Failure;
 		});
 
-		auto* doFireAtPlayer = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
+		auto* doFireAtPlayer = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
 		{
 			fireAtPlayer++; 
-			return gamelib::BehaviorResult::Success;
+			return gamelib::Status::Success;
 		}, "FireAtPlayer");
 
-		auto* doMoveTowardsPlayer = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
+		auto* doMoveTowardsPlayer = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
 		{
 			moveTowardsPlayer++;
-			return gamelib::BehaviorResult::Success;
+			return gamelib::Status::Success;
 		});
-		auto* doMovePlayerToLastKnownLocation = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
+		auto* doMovePlayerToLastKnownLocation = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
 		{
 			movePlayerToLastKnownLocation++;
-			return gamelib::BehaviorResult::Success;
+			return gamelib::Status::Success;
 		}, "MovePlayerToLastKnownLocation");
-		auto* doLookAround = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
+		auto* doLookAround = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
 		{
 			lookAround++;
-			return gamelib::BehaviorResult::Success;
+			return gamelib::Status::Success;
 		}, "LookAround");
-		auto* doMoveToRandomPosition = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
+		auto* doMoveToRandomPosition = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
 		{
 			moveToRandomPosition++;
 			return dummyAction5Result;
 		}, "MoveToRandomPosition");
-		auto* doLookAroundSomeMore = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
+		auto* doLookAroundSomeMore = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
 		{
 			lookAroundSomeMore++;
-			return gamelib::BehaviorResult::Success;
+			return gamelib::Status::Success;
 		});
-		auto* doDummyAction7 = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
+		auto* doDummyAction7 = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
 		{
 			dummyAction7++;
-			return gamelib::BehaviorResult::Success;
+			return gamelib::Status::Success;
 		}, "DummyAction7");
-		auto* doDummyAction8 = new gamelib::InlineBehavioralAction([&](const unsigned long deltaMs)
+		auto* doDummyAction8 = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
 		{
 			dummyAction8++;
-			return gamelib::BehaviorResult::Success;
+			return gamelib::Status::Success;
 		}, "DummyAction8");
 
 		gamelib::BehaviorTree* behaviorTree = BehaviorTreeBuilder()
-			.ActiveNodeSelector() //1
-				.Sequence("Check if player is visible") //2
-					.Condition(checkIsPlayerVisible) // 3
-				    .ActiveNodeSelector() // 4
-						.Sequence("") // 5
-							.Condition(checkPlayerInRange) // 6
-							.Sequence() // 7 (this sequence will repeat while player is in range)
-								.Action(doFireAtPlayer) // 8
-		                    .Finish() // finish sequence 7
-		                .Finish() // finish sequence 5
-		            .Action(doMoveTowardsPlayer) // 9
-		            .Finish() // finish active selector 4
-		        .Finish() // finish sequence 2
-	            .Sequence("Check if player spotted") //10
-					.Condition(checkHaveWeGotASuspectedLocation) //11
-				    .Action(doMovePlayerToLastKnownLocation) //12
-					.Action(doLookAround) //13
-				.Finish() // finish sequence
-				.Sequence("Act normal") //14
-					.Action(doMoveToRandomPosition) //15
-					.Action(doLookAroundSomeMore) //16
-					.Finish() // finish sequence
-				.Sequence("Do something else") // 17
-					.Action(doDummyAction7)  //18
-					.Action(doDummyAction8) //19
-				.Finish() // finish sequence
+			.ActiveSelector() // AS will always start from the highest priority child on each update, effectively re-evaluating past decisions
+				.Sequence("Check if player is visible")
+					.Condition(checkIsPlayerVisible)
+				    .ActiveSelector()
+						.Sequence("")
+							.Condition(checkPlayerInRange)
+							.Sequence()
+								.Action(doFireAtPlayer)
+							.Finish()
+						.Finish()
+		            .Action(doMoveTowardsPlayer)
+		            .Finish()
+		        .Finish()
+	            .Sequence("Check if player spotted")
+					.Condition(checkHaveWeGotASuspectedLocation)
+				    .Action(doMovePlayerToLastKnownLocation)
+					.Action(doLookAround)
+				.Finish()
+				.Sequence("Act normal")
+					.Action(doMoveToRandomPosition)
+					.Action(doLookAroundSomeMore)
+				.Finish()
+				.Sequence("Do something else")
+					.Action(doDummyAction7)
+					.Action(doDummyAction8)
+				.Finish()
 			.Finish()
 		.Finish()
 		.End();
@@ -183,7 +183,7 @@ namespace gamelib
 		EXPECT_THAT(dummyAction8, testing::Eq(0));
 		
 		// Now make the previous sequence fail and we should run...
-		dummyAction5Result = gamelib::BehaviorResult::Failure;
+		dummyAction5Result = gamelib::Status::Failure;
 		behaviorTree->Update();
 		behaviorTree->Update();
 		behaviorTree->Update();

@@ -1,5 +1,5 @@
 #pragma once
-#include "BehavioralSequence.h"
+#include "Sequence.h"
 
 namespace gamelib
 {

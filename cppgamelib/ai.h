@@ -2,10 +2,10 @@
 #pragma once
 #include "framework.h"
 #include <ai/Behavior.h>
-#include <ai/BehaviorResult.h>
+#include <ai/Status.h>
 #include <ai/BehaviorTree.h>
 #include <ai/BehaviorTreeBuilder.h>
-#include <ai/CompositeBehavior.h>
+#include <ai/Composite.h>
 #include <ai/ConditionalSequence.h>
 #include <ai/Decorator.h>
 #include <ai/ActiveSelector.h>

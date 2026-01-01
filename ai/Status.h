@@ -1,7 +1,7 @@
 #pragma once
 namespace gamelib
 {
-	enum class BehaviorResult
+	enum class Status
 	{
 		Invalid,
 		Success,

@@ -1,24 +1,30 @@
 #pragma once
-#include "BehaviorResult.h"
-#include "CompositeBehavior.h"
+#include "Status.h"
+#include "Composite.h"
 
 namespace gamelib
 {
-	class Parallel : public CompositeBehavior
+	// A parallel composite runs all child behaviors simultaneously
+	class Parallel : public Composite
 	{
 	public:
+
+		// The policy for determining success or failure
 		enum class Policy : uint8_t
 		{
 			require_one,
 			require_all
 		};
+
 		Parallel(const Policy success, const Policy failure): successPolicy(success), failurePolicy(failure){}
+
 		~Parallel() override = default;
 
 	protected:
 		Policy successPolicy;
 		Policy failurePolicy;
-		virtual BehaviorResult Update(const unsigned long deltaMs) override
+
+		virtual Status Update(const unsigned long deltaMs) override
 		{
 			size_t successCount = 0, failureCount = 0;
 
@@ -27,42 +33,43 @@ namespace gamelib
 			{
 				if(!childBehavior->IsTerminated())
 				{
-					childBehavior->DoUpdate();
+					childBehavior->Tick();
 				}
 
 				const auto childResult = childBehavior->GetStatus();
 
 				// Finish/short-circuit as soon as the policy is met
-				if(childResult == BehaviorResult::Success)
+				if(childResult == Status::Success)
 				{
 					++successCount;
+
 					if(successPolicy == Policy::require_one)
 					{
-						return BehaviorResult::Success;
+						return Status::Success;
 					}
 				}
 
-				if(childResult == BehaviorResult::Failure)
+				if(childResult == Status::Failure)
 				{
 					++failureCount;
 					if(failurePolicy == Policy::require_one)
 					{
-						return BehaviorResult::Failure;
+						return Status::Failure;
 					}
 				}
 			}
 
 			if(failurePolicy == Policy::require_all && failureCount == children.size())
 			{
-				return BehaviorResult::Failure;
+				return Status::Failure;
 			}
 
 			if(successPolicy == Policy::require_all && successCount == children.size())
 			{
-				return BehaviorResult::Success;
+				return Status::Success;
 			}
 
-			return BehaviorResult::Running;
+			return Status::Running;
 		}
 
 		void OnTerminate() override

@@ -1,25 +1,27 @@
 #pragma once
-#include "BehaviorResult.h"
+#include "Status.h"
 #include "Selector.h"
 
 namespace gamelib
 {
+	// An active selector will always start from the highest priority child behavior on each update.
 	class ActiveSelector : public Selector
 	{
 	protected:
-		BehaviorResult Update(const unsigned long deltaMs) override
+
+		Status Update(const unsigned long deltaMs) override
 		{
-			const auto prevChildBehavior = lastChild;
+			const auto prevChildBehavior = child;
 
 			// Rewind the current child selector back to the first child, effectively
-			// allowing the decision-making sequence to start again from beginning
-			Selector::OnInitialize(); // reset to select the first (hightest priority) behavior in list of child behaviors
+			// allowing the decision-making sequence to start again from beginning thereby re-evaluating past decisions
+			Selector::OnInitialize();
 
-			// Update/Run last successful child or move to next child if it failed (Skipping failed behaviors)
+			// Update/Run last successful child or move to next child if it failed
 			const auto result = Selector::Update(deltaMs);
 
-			// previous active child was not the end && current active child has changed 
-			if(prevChildBehavior != children.end() && lastChild != prevChildBehavior)
+			// Previous active child was not the end && current active child has changed 
+			if(prevChildBehavior != children.end() && child != prevChildBehavior)
 			{
 				// abort failing child
 				(*prevChildBehavior)->Abort();

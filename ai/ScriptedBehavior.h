@@ -19,11 +19,10 @@ extern "C" {
 #include "file/ScriptManager.h"
 #include "resource/ResourceManager.h"
 
-
 namespace gamelib
 {
     class ScriptAsset;
-    class ScriptedBehavior : gamelib::Behavior
+    class ScriptedBehavior : public Behavior
     {
     public:
         explicit ScriptedBehavior(std::string resourceName, unsigned long runEveryMs = 0) : scriptName(std::move(resourceName))

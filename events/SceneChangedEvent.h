@@ -4,11 +4,11 @@
 
 namespace gamelib
 {
-	const static EventId LevelChangedEventTypeEventId(LevelChangedEventType, "LevelChangedEventType");	
+	const static EventId SceneChangedEventTypeEventId(SceneChangedEventType, "SceneChangedEventType");
 	class SceneChangedEvent final : public Event
 	{
 	public:
-		explicit SceneChangedEvent(const int level) : Event(LevelChangedEventTypeEventId)
+		explicit SceneChangedEvent(const int level) : Event(SceneChangedEventTypeEventId)
 		{
 			SceneId = level;
 		}

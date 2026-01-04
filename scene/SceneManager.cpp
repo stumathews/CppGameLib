@@ -53,7 +53,7 @@ namespace gamelib
 		{
 			SetSceneFolder(sceneFolder);
 
-			EventManager::Get()->SubscribeToEvent(LevelChangedEventTypeEventId, this);
+			EventManager::Get()->SubscribeToEvent(SceneChangedEventTypeEventId, this);
 			EventManager::Get()->SubscribeToEvent(AddGameObjectToCurrentSceneEventId, this);
 			EventManager::Get()->SubscribeToEvent(GenerateNewLevelEventId, this);
 			EventManager::Get()->SubscribeToEvent(GameObjectTypeEventId, this);
@@ -71,7 +71,7 @@ namespace gamelib
 
 		// ReSharper disable once CppDefaultCaseNotHandledInSwitchStatement
 		if(event->Id.PrimaryId == DrawCurrentSceneEventId.PrimaryId) { DrawScene(); }
-		if(event->Id.PrimaryId == LevelChangedEventTypeEventId.PrimaryId) { LoadNewScene(event); }
+		if(event->Id.PrimaryId == SceneChangedEventTypeEventId.PrimaryId) { LoadNewScene(event); }
 		if(event->Id.PrimaryId == UpdateAllGameObjectsEventTypeEventId.PrimaryId) { UpdateAllObjects(deltaMs); }
 		if(event->Id.PrimaryId == AddGameObjectToCurrentSceneEventId.PrimaryId) { AddGameObjectToScene(event);}
 		if(event->Id.PrimaryId == GameObjectTypeEventId.PrimaryId) { OnGameObjectEventReceived(event); }

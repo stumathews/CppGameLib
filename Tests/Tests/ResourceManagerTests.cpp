@@ -47,9 +47,9 @@ namespace gamelib
 	{
 		SettingsManager::Get()->ReadSettingsFile();
 		EXPECT_TRUE(ResourceManager::Get()->Initialize("Resources.xml")) << "Expected resource manager initialization to succeed";
-		EXPECT_EQ(EventManager::Get()->GetSubscriptions()[LevelChangedEventTypeEventId].size(), 1) << "Expected to subscribe to LevelChangedEventType";
+		EXPECT_EQ(EventManager::Get()->GetSubscriptions()[SceneChangedEventTypeEventId].size(), 1) << "Expected to subscribe to LevelChangedEventType";
 		EXPECT_STREQ(
-			EventManager::Get()->GetSubscriptions()[LevelChangedEventTypeEventId][0]->GetSubscriberName().c_str(),
+			EventManager::Get()->GetSubscriptions()[SceneChangedEventTypeEventId][0]->GetSubscriberName().c_str(),
 			ResourceManager::Get()->GetSubscriberName().c_str()) << "Unexpected subscriber";
 	}
 

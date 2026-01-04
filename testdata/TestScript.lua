@@ -1,1 +1,2 @@
-print('Hello from Lua!')
+print('This message is coming from a script');
+print(_VERSION)

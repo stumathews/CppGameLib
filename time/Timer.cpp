@@ -19,7 +19,7 @@ void gamelib::Timer::Start(const long durationMs, const long startTimeMs)
 {
 	if (startTimeMs == 0)
 	{
-		Reset();
+		Restart();
 	}
 
 	TimerDurationMs = durationMs;
@@ -34,7 +34,7 @@ long gamelib::Timer::GetTimeMs()
 	return static_cast<long>(gamelib::GetTimeMs());
 }
 
-void gamelib::Timer::Reset()
+void gamelib::Timer::Restart()
 {
 	StartTimeMs = GetTimeMs();
 	ElapsedTimeMs = 0;

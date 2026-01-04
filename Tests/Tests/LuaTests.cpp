@@ -45,7 +45,6 @@ namespace gamelib
 	TEST_F(LuaTests, TestScriptLoadedFromFile)
 	{
 		const auto resourceManager = ResourceManager::Get();
-		const auto scriptManager = ScriptManager::Get();
 
 		// Create a new Lua state
 		lua_State* luaState = luaL_newstate();
@@ -62,7 +61,7 @@ namespace gamelib
 		// Load the script into memory
 		asset->Load();
 
-		const auto scriptAsset = scriptManager->ToScriptAsset(asset);
+		const auto scriptAsset = ScriptManager::ToScriptAsset(asset);
 
 		// Execute a simple Lua script
 		luaL_dostring(luaState, scriptAsset->GetScriptContent()->c_str());

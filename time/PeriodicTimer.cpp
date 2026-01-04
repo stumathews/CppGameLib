@@ -28,6 +28,6 @@ void gamelib::PeriodicTimer::SetFrequency(const int everyMs)
 
 void gamelib::PeriodicTimer::Reset()
 {
-	timer.Reset();
+	timer.Restart();
 	timer.Start(everyMs);
 }

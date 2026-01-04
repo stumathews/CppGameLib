@@ -13,16 +13,16 @@ namespace gamelib
 
 		static long GetTimeMs();
 
-		void Reset();
+		void Restart();
 
 		void Stop();
 
 		bool IsElapsed;
 		bool IsStopped;
 
-		long StartTimeMs;
-		long ElapsedTimeMs;
-		long TimerDurationMs;
+		unsigned long StartTimeMs;
+		unsigned long ElapsedTimeMs;
+		unsigned long TimerDurationMs;
 	};
 }
 

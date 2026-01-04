@@ -13,7 +13,10 @@ namespace gamelib
 		{
 		}
 
-		void Update(const unsigned long deltaMs = 0) const { root->Tick(deltaMs);}
+		void Update(const unsigned long deltaMs = 0) const
+		{
+			root->Tick(deltaMs);
+		}
 	};
 }
 

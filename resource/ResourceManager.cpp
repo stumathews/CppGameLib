@@ -30,7 +30,7 @@ namespace gamelib
 		debug = SettingsManager::Get()->GetBool("global", "verbose");
 		return LogThis("ResourceManager::initialize()", debug, [&]()
 			{
-				EventManager::Get()->SubscribeToEvent(LevelChangedEventTypeEventId, this);
+				EventManager::Get()->SubscribeToEvent(SceneChangedEventTypeEventId, this);
 				// we will load the resources for the level that has been loaded
 				return true;
 			}, true, true);
@@ -38,7 +38,7 @@ namespace gamelib
 
 	vector<shared_ptr<Event>> ResourceManager::HandleEvent(const std::shared_ptr<Event>& event, const unsigned long deltaMs)
 	{
-		if (event->Id.PrimaryId == LevelChangedEventTypeEventId.PrimaryId)
+		if (event->Id.PrimaryId == SceneChangedEventTypeEventId.PrimaryId)
 		{
 			LogThis("Detected level change. Loading level assets...", debug, [&]()
 			{
@@ -283,8 +283,14 @@ namespace gamelib
 		countUnloadedResources = 0;
 	}
 
-	shared_ptr<Asset> ResourceManager::GetAssetInfo(const string& name) { return resourcesByName[name]; }
-	shared_ptr<Asset> ResourceManager::GetAssetInfo(const int uuid) { return resourcesById[uuid]; }
+	shared_ptr<Asset> ResourceManager::GetAssetInfo(const string& name)
+	{
+		return resourcesByName[name];
+	}
+	shared_ptr<Asset> ResourceManager::GetAssetInfo(const int uuid)
+	{
+		return resourcesById[uuid];
+	}
 
 	ResourceManager* ResourceManager::Get()
 	{

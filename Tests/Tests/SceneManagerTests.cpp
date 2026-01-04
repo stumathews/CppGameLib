@@ -32,7 +32,7 @@ namespace gamelib
 		GameWorldData data;
 		
 		EXPECT_TRUE(SceneManager::Get()->Initialize("data\\"));
-		EXPECT_EQ(EventManager::Get()->GetSubscriptions()[LevelChangedEventTypeEventId].size(), 1) << "Scene manager not automatically subscribed to LevelChangedEventType event";
+		EXPECT_EQ(EventManager::Get()->GetSubscriptions()[SceneChangedEventTypeEventId].size(), 1) << "Scene manager not automatically subscribed to LevelChangedEventType event";
 		EXPECT_EQ(EventManager::Get()->GetSubscriptions()[AddGameObjectToCurrentSceneEventId].size(), 1) << "Scene manager not automatically subscribed to AddGameObjectToCurrentScene event";
 		EXPECT_EQ(EventManager::Get()->GetSubscriptions().size(), 6) << "Expected only 6 subscriptions to be made initially, included subscription by graphics manager";
 	}

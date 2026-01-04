@@ -35,6 +35,7 @@ ai/Monitor.h
 ai/Parallel.h
 ai/Repeat.h
 ai/Selector.h
+ai/ScriptedBehavior.h
 asset/asset.h
 asset/SpriteAsset.h
 asset/ScriptAsset.h

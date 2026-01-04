@@ -6,6 +6,8 @@
 #include "file/Logger.h"
 #include <gmock/gmock-more-matchers.h>
 
+#include "ai/ScriptedBehavior.h"
+
 using namespace std;
 namespace gamelib
 {
@@ -15,10 +17,12 @@ namespace gamelib
 
 		void SetUp() override
 		{
+			gamelib::ResourceManager::Get()->Initialize("./Resources.xml");
 		}
 
 		void TearDown() override
 		{
+			gamelib::ResourceManager::Get()->Unload();
 		}
 	};
 
@@ -46,5 +50,13 @@ namespace gamelib
 		EXPECT_THAT(crawled, testing::IsTrue());
 		EXPECT_THAT(walked, testing::IsFalse());
 		EXPECT_THAT(ran, testing::IsFalse());
+	}
+
+	TEST_F(BehaviorTreeTests, ScriptedBehavior_Test)
+	{
+		const auto behavior = std::make_shared<ScriptedBehavior>("TestScript");
+
+		behavior->OnInitialize();
+		EXPECT_NO_THROW(behavior->Update(0));
 	}
 }

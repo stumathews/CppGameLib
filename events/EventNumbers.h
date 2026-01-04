@@ -9,7 +9,7 @@ namespace gamelib
 	{
 		Unknown = 1000,
 		ControllerMove,
-		LevelChangedEventType,
+		SceneChangedEventType,
 		UpdateAllGameObjectsEventType,
 		AddGameObjectToCurrentScene,
 		PlayerMovedEventType,

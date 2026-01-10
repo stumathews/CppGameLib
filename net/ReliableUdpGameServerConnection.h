@@ -33,6 +33,12 @@ namespace gamelib
 		// Send acknowledgment to client
 		int SendAck(SOCKET socket, const Message& messageToAck, int flags, PeerInfo& peerInfo, unsigned long sendTimeMs = 0);
 
+	public:
+		std::string GetAddress() override;;
+
+		std::string GetPort() override;;
+
+	private:
 		// Used to keep track of packets send/received
 		ReliableUdp reliableUdp;
 

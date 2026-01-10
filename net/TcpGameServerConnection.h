@@ -64,6 +64,10 @@ namespace gamelib
 
 	public:
 		void Disconnect() override;
+
+		std::string GetAddress() override;
+
+		std::string GetPort() override;
 	};
 }
 

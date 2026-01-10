@@ -60,8 +60,6 @@ namespace gamelib
 		bool condition{false};
 		std::condition_variable conditional_variable;
 
-
-
 		void StartNetworkServer(const std::shared_ptr<IGameServerConnection>& inGameServerConnection = nullptr)
 		{
 			// The main thread:
@@ -81,7 +79,6 @@ namespace gamelib
 
 				// Create Game server object, which will use the defaultConnection details
 				Server = std::make_shared<GameServer>(
-					ServerAddress, ListeningPort,
 					inGameServerConnection
 					 ? inGameServerConnection
 					 : defaultConnection);

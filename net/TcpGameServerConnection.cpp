@@ -116,6 +116,16 @@ namespace gamelib
 		CLOSE(listeningSocket);		
 	}
 
+	std::string TcpGameServerConnection::GetAddress()
+	{
+		return host;
+	}
+
+	std::string TcpGameServerConnection::GetPort()
+	{
+		return port;
+	}
+
 	void TcpGameServerConnection::CheckForPlayerTraffic(unsigned long deltaMs)
 	{
 		for (size_t playerId = 0; playerId < Players.size(); playerId++)

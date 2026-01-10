@@ -37,7 +37,7 @@ namespace gamelib
 		                                                                useReliableUdp, useEncryption, encoding);
 		// Game server object needs to be created when Network Manager is acting
 		// as a game server (will initialize it) or game client (will connect to game server)
-		Server = std::make_shared<GameServer>(gameServerAddress, gameServerPort, gameServerConnection, nickName, encoding);
+		Server = std::make_shared<GameServer>(gameServerConnection, nickName, encoding);
 
 		if(isGameServer)
 		{

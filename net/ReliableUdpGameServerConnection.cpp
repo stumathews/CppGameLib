@@ -213,6 +213,16 @@ namespace gamelib
 		return InternalSend(socket, ackMessage.str().c_str(), static_cast<int>(ackMessage.str().size()), flags,
 		                    reinterpret_cast<sockaddr*>(&peerInfo.Address), peerInfo.Length, sendTimeMs, Ack);
 	}
+
+	std::string ReliableUdpGameServerConnection::GetAddress()
+	{
+		return UdpGameServerConnection::GetAddress();
+	}
+
+	std::string ReliableUdpGameServerConnection::GetPort()
+	{
+		return UdpGameServerConnection::GetPort();
+	}
 }
 
 

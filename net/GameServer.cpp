@@ -17,14 +17,11 @@ using namespace json11;
 
 namespace gamelib
 {
-	GameServer::GameServer(const std::string& address, const std::string& port,
-	                       const std::shared_ptr<IGameServerConnection> &gameServerConnection,
+	GameServer::GameServer(const std::shared_ptr<IGameServerConnection> &gameServerConnection,
 	                       const std::string& nickName, const gamelib::Encoding wireFormat)
 	{		
 		this->gameServerConnection = gameServerConnection;
 		this->nickname = nickName;
-		this->Address = address;
-		this->Port = port;
 		this->encoding = wireFormat;
 	}
 
@@ -61,6 +58,16 @@ namespace gamelib
 	void GameServer::Disconnect() const
 	{
 		gameServerConnection->Disconnect();
+	}
+
+	std::string GameServer::GetAddress() const
+	{
+		return gameServerConnection->GetAddress();
+	}
+
+	std::string GameServer::GetPort() const
+	{
+		return gameServerConnection->GetPort();
 	}
 
 	std::vector<std::shared_ptr<Event>> GameServer::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs)

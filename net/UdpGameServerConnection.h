@@ -74,6 +74,8 @@ namespace gamelib
 		unsigned char sharedNonce[SecuritySide::NonceLengthBytes]{0};
 	public:
 		void Disconnect() override;
+		std::string GetAddress() override;
+		std::string GetPort() override;
 	};
 }
 

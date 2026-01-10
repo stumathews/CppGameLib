@@ -24,5 +24,8 @@ namespace gamelib
 
 		// Closes the game server's listening socket
 		virtual void Disconnect() = 0;
+
+		virtual std::string GetAddress() = 0;
+		virtual std::string GetPort() = 0;
 	};
 }

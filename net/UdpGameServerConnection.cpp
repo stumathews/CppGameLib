@@ -43,6 +43,16 @@ namespace gamelib
 		NETCLOSE(listeningSocket);
 	}
 
+	std::string UdpGameServerConnection::GetAddress()
+	{
+		return host;
+	}
+
+	std::string UdpGameServerConnection::GetPort()
+	{
+		return port;
+	}
+
 	void UdpGameServerConnection::Listen(const unsigned long deltaMs)
 	{
 		constexpr auto maxSockets = 5; // Number of pending connections to have in the queue at any one moment

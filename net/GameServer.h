@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 #include <events/EventSubscriber.h>
+
+#include "IGameServerConnection.h"
 #include "file/SerializationManager.h"
 
 
@@ -20,8 +22,7 @@ namespace gamelib
 	class GameServer final : public EventSubscriber
 	{
 	public:
-		GameServer(const std::string& address, const std::string& port,
-		           const std::shared_ptr<IGameServerConnection> &gameServerConnection, const std::string& nickName = "Server",
+		GameServer(const std::shared_ptr<IGameServerConnection> &gameServerConnection, const std::string& nickName = "Server",
 			Encoding wireFormat = Encoding::json);
 		GameServer(const GameServer& other) = delete;
 		GameServer(const GameServer&& other) = delete;
@@ -38,10 +39,11 @@ namespace gamelib
 		// Disconnect all clients by closing game server's listening socket
 		void Disconnect() const;
 
-		// Information about the Game server
-		std::string Address;
-		std::string Port;
-		
+		// Information about the Game server's connection:
+
+		std::string GetAddress() const;
+		std::string GetPort() const;
+
 	private:
 				
 		// Game server connection manages the network protocol used between server and client

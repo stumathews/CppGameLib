@@ -91,10 +91,10 @@ namespace gamelib
 
 	void GameClient::Connect(const std::shared_ptr<GameServer>& inGameServer)
 	{
-		std::stringstream message; message << "Client: Connecting to game server: " << inGameServer->Address << ":" << inGameServer->Port;
+		std::stringstream message; message << "Client: Connecting to game server: " << inGameServer->GetAddress() << ":" << inGameServer->GetPort();
 		Logger::Get()->LogThis(message.str());
 		
-		networkProtocolManager->Connect(inGameServer->Address.c_str(), inGameServer->Port.c_str());
+		networkProtocolManager->Connect(inGameServer->GetAddress().c_str(), inGameServer->GetPort().c_str());
 		
 		Logger::Get()->LogThis("Client: Server socket created. Connected to server.");
 				

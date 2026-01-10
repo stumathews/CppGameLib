@@ -63,7 +63,8 @@ namespace gamelib
 									int screenHeight,
 									const string& windowTitle,
 	                                const string& resourceFilePath, 
-								    const string& sceneFolderPath)
+								    const string& sceneFolderPath,
+								    const bool hideWindow = false)
 	{
 		// Read config about the game's settings
 		const auto beVerbose = SettingsManager::Bool("global", "verbose");
@@ -89,7 +90,7 @@ namespace gamelib
 				                   : windowTitle + " - Single Player Mode";
 
 			// Final check to see if all subsystems are initialized OK
-			if (IsFailedOrFalse(LogOnFailure(InitializeSdl(screenWidth, screenHeight, title),
+			if (IsFailedOrFalse(LogOnFailure(InitializeSdl(screenWidth, screenHeight, title, hideWindow),
 			                                 "Could not initialize SDL, aborting.")) ||
 				IsFailedOrFalse(LogOnFailure(EventManager::Get()->Initialize(),
 				                             "Could not initialize event manager")) ||
@@ -123,7 +124,7 @@ namespace gamelib
 	}
 
 
-	bool GameStructure::InitializeSdl(const int screenWidth, const int screenHeight, const string& windowTitle)
+	bool GameStructure::InitializeSdl(const int screenWidth, const int screenHeight, const string& windowTitle, const bool hideWindow = false)
 	{
 		// Initialize SDL Video and Audio subsystems
 		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
@@ -138,7 +139,7 @@ namespace gamelib
 
 		// Initialize Graphics, Audio and Font subsystems
 		const auto graphicsSystemInitialized = SdlGraphicsManager::Get()->Initialize(
-			screenWidth, screenHeight, windowTitle.c_str());
+			screenWidth, screenHeight, windowTitle.c_str(), hideWindow);
 		const auto audioSystemInitialized = AudioManager::Initialize();
 		const auto fontSystemInitialized = FontManager::Initialize();
 

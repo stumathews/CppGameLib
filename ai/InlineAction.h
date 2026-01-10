@@ -11,8 +11,9 @@ namespace gamelib
 		class InlineAction final : public Behavior
 		{
 		public:
-			explicit InlineAction(const std::function<Status(unsigned long deltaMs)>& onUpdateFunc, std::string description = "")
-				: Behavior(std::move(description)), onUpdateFunc(onUpdateFunc)
+			explicit InlineAction(const std::function<Status(unsigned long deltaMs)>& onUpdateFunc, std::string description = "", std::function<float(void)> calculateUtilityFunc = nullptr)
+				: Behavior(std::move(description)), onUpdateFunc(onUpdateFunc),
+				  calculate_utility_func(std::move(calculateUtilityFunc))
 			{
 			}
 
@@ -22,8 +23,16 @@ namespace gamelib
 				return onUpdateFunc(deltaMs);
 			}
 
+			float CalculateUtility() override
+			{
+				if (calculate_utility_func == nullptr) return 0.0f;
+
+				return calculate_utility_func();
+			}
+
 		private:
 			std::function<Status(unsigned long deltaMs)> onUpdateFunc;
+			std::function<float()> calculate_utility_func;
 		};
 	}
 }

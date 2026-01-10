@@ -28,9 +28,10 @@ namespace gamelib
 		// Use the specified game loop
 		explicit GameStructure(std::shared_ptr<IGameLoopStrategy> gameLoop);
 
-		// Initialize all dependnecies and requirements
+		// Initialize all dependencies and requirements
 		bool Initialize(int screenWidth, int screenHeight, const std::string &windowTitle,
-		                const std::string &resourceFilePath, const std::string &sceneFolderPath);
+		                const std::string &resourceFilePath, const std::string &sceneFolderPath,
+		                bool hideWindow );
 
 		// Finish up and unload the Game structure
 		~GameStructure() override;
@@ -59,7 +60,7 @@ namespace gamelib
 		std::string GetSubscriberName() override;
 
 		// Initialize SDL
-		static bool InitializeSdl(int screenWidth, int screenHeight, const std::string& windowTitle);
+		static bool InitializeSdl(int screenWidth, int screenHeight, const std::string& windowTitle, const bool hideWindow);
 
 		// Read keyboard/controller input
 		void ReadKeyboard(unsigned long deltaMs) const;

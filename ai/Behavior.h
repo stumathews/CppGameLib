@@ -23,6 +23,13 @@ namespace gamelib
 		{
 		}
 
+		// Calculate the utility of this behavior
+		virtual float CalculateUtility()
+		{
+			// By default, there is no utility unless the behaviour explicitly calculates it
+			return 0.0f;
+		}
+
 		// Called exactly once each time the behaviour tree is updated, until it signals it has terminated thanks to its return status
 		virtual Status Update(unsigned long deltaMs) = 0;
 

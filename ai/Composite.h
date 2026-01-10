@@ -28,6 +28,26 @@ namespace gamelib
 			children.clear();
 		}
 
+		// Calculate the Utility of this branch
+		float CalculateUtility() override
+		{
+			// We'll use the child with the largest Utility to indicate the utility of this branch
+			auto largestChildUtility = 0.0f;
+
+			for (auto child = children.begin(); child != children.end(); ++child)
+			{
+				// Keep track of the largest utility for far
+				auto childUtility = (*child)->CalculateUtility();
+				if ( childUtility > largestChildUtility )
+				{
+					largestChildUtility = childUtility;
+				}
+			}
+
+			// Return our utility value as the largest utility value found in the children
+			return largestChildUtility;
+		}
+
 	protected:
 		// A list of child behaviors
 		typedef std::vector<Behavior*> Behaviors;

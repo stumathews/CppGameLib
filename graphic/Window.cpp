@@ -48,7 +48,7 @@ namespace gamelib
 			return;
 		}
 
-		// Backup current render color
+		// Backup current render colour
 		SDL_Color oldColour = {0, 0, 0, 0};
 		SDL_GetRenderDrawColor(windowRenderer, &oldColour.r, &oldColour.g, &oldColour.b, &oldColour.a);
 		
@@ -59,7 +59,7 @@ namespace gamelib
 		drawObjectsFn(windowRenderer);
 		
 		// Set draw colour
-		SDL_SetRenderDrawColor(windowRenderer, oldColour.r, oldColour.g, oldColour.b, oldColour.a); // nb: restore whatever the render routine set as the draw color to
+		SDL_SetRenderDrawColor(windowRenderer, oldColour.r, oldColour.g, oldColour.b, oldColour.a); // nb: restore whatever the render routine set as the draw colour to
 		
 		// Show what we've drawn
 		PresentOnly();

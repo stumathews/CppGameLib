@@ -17,95 +17,72 @@ namespace gamelib
 	{
 	public:
 
-		/// <summary>
-		/// Create a game structure
-		/// </summary>
-		explicit GameStructure(std::function<void(unsigned long deltaMs)> getInputFunction);
-		GameStructure(std::shared_ptr<IGameLoopStrategy> gameLoop);
-		std::shared_ptr<VariableGameLoop> MakeVariableGameLoop() const;
 		GameStructure(const GameStructure& other) = delete;
 		GameStructure(const GameStructure&& other) = delete;
 		GameStructure& operator=(const GameStructure& other) = delete;
 		GameStructure& operator=(const GameStructure&& other) = delete;
 
-		// What we do when we unload the Game structure
+		// Use default game loop
+		explicit GameStructure(std::function<void(unsigned long deltaMs)> getInputFunction);
+
+		// Use the specified game loop
+		explicit GameStructure(std::shared_ptr<IGameLoopStrategy> gameLoop);
+
+		// Initialize all dependnecies and requirements
+		bool Initialize(int screenWidth, int screenHeight, const std::string &windowTitle,
+		                const std::string &resourceFilePath, const std::string &sceneFolderPath);
+
+		// Finish up and unload the Game structure
 		~GameStructure() override;
 
-		bool Initialize(int screenWidth, int screenHeight, const std::string& windowTitle, const std::string& resourceFilePath, const std::string& sceneFolderPath);
-
-		/// <summary>
-		/// releases resources incl. resource admin and other game subsystems
-		/// </summary>
+		// Releases resources incl. resource admin and other game subsystems
 		static bool Unload();
 
-		/// <summary>
-		/// Do the Game Loop
-		/// </summary>
-		/// <returns></returns>
+		// Do the Game Loop
 		bool DoGameLoop(GameWorldData* gameWorldData) const;	
 		
 
 	private:
 
-		/// <summary>
-		/// Draw the game 
-		/// </summary>
+		[[nodiscard]] std::shared_ptr<VariableGameLoop> MakeVariableGameLoop() const;
+
+		// Draw the game
 		static void Draw(unsigned long);
 
-		/// <summary>
-		/// Update the game
-		/// </summary>
+		// Update the game
 		void Update(unsigned long deltaMs) const;
 		
-		/// <summary>
-		/// Handle any game Structure events
-		/// </summary>
+		// Handle any game Structure events
 		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& event, unsigned long deltaMs) override;
 
-		/// <summary>
-		/// Name we register with the event system
-		/// </summary>
-		/// <returns></returns>
+		// Name we register with the event system
 		std::string GetSubscriberName() override;
 
-		/// <summary>
-		/// Initialize SDL
-		/// </summary>
-		// ReSharper disable once CppInconsistentNaming
+		// Initialize SDL
 		static bool InitializeSdl(int screenWidth, int screenHeight, const std::string& windowTitle);
 
-		/// <summary>
-		/// Read keyboard/controller input
-		/// </summary>
+		// Read keyboard/controller input
 		void ReadKeyboard(unsigned long deltaMs) const;
 
+		// Read from the network
 		void ReadNetwork(unsigned long deltaMs) const;
 
-		/// <summary>
-		/// Gte the Time now in MS
-		/// </summary>
+		// Get the Time now in MS
 		static long GetTimeNowMs();
 
-		/// <summary>
-		/// Spare time (Not drawing and not updating)
-		/// </summary>
+		// Spare time (Not drawing and not updating)
 		static void HandleSpareTime(long);
 
-		/// <summary>
-		/// Input function (get physical player/controller input)
-		/// </summary>
+		// Store the input function (get physical player/controller input)
 		std::function<void(unsigned long deltaMs)> getControllerInputFunction;
 
-		/**
-		 * \brief If we should routinely check for keyboard events
-		 */
+		// If we should routinely check for keyboard events
 		bool sampleInput{};
 
-		/**
-		 * \brief If we should routinely check for network events
-		 */
+		// If we should routinely check for network events
 		bool sampleNetwork{};
 
+		// Reference to the provided game loop
 		std::shared_ptr<IGameLoopStrategy> gameLoop;
 	};
 }

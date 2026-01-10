@@ -6,22 +6,31 @@
 #include <SDL.h>
 #include <functional>
 #include <SDL_mixer.h>
-
 #include "Window.h"
 #include "audio/AudioManager.h"
 #include "common/Common.h"
 #include "events/EventManager.h"
-#include "common/aliases.h"
 #include "file/SettingsManager.h"
 
 using namespace std;
 
 namespace gamelib
 {
-	SDL_Window* SdlGraphicsManager::CreateSdlWindow(const int screenWidth, const int screenHeight, const char* windowTitle)
+	SDL_Window* SdlGraphicsManager::CreateSdlWindow(const int screenWidth, const int screenHeight, const char* windowTitle, const bool hideWindow)
 	{
+		Uint32 windowCreationFlags = 0;
+
+		if (hideWindow)
+		{
+			windowCreationFlags = windowCreationFlags | SDL_WINDOW_HIDDEN;
+		}
+		else
+		{
+			windowCreationFlags = windowCreationFlags | SDL_WINDOW_RESIZABLE;
+		}
+
 		const auto outWindow = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
-			screenWidth, screenHeight, SDL_WINDOW_RESIZABLE);
+			screenWidth, screenHeight, windowCreationFlags);
 
 		if (outWindow == nullptr)
 		{
@@ -43,7 +52,7 @@ namespace gamelib
 		return renderer;
 	}
 	
-	bool SdlGraphicsManager::Initialize(const uint width, const uint height, const char * windowTitle)
+	bool SdlGraphicsManager::Initialize(const uint width, const uint height, const char * windowTitle, const bool hideWindow)
 	{
 		Logger::Get()->LogThis("SDLGraphicsManager::Initialize()", SettingsManager::Bool("global", "verbose"));
 				
@@ -58,8 +67,8 @@ namespace gamelib
 			THROW(12, message.str(), "SDLGraphicsManager");
 		}
 
-		// Create the main window
-		mainWindow = std::make_shared<Window>(MainWindowName, width, height, windowTitle);
+		// Create the SdlGraphicsManager's main window
+		mainWindow = std::make_shared<Window>(MainWindowName, width, height, windowTitle, hideWindow);
 		mainWindow->Initialize();
 			
 		Logger::Get()->LogThis("SDLGraphicsManager ready.");
@@ -71,7 +80,17 @@ namespace gamelib
 	{
 		mainWindow->ClearAndDraw(drawObjects);
 	}
-	
+
+	uint SdlGraphicsManager::GetScreenWidth() const
+	{
+		return mainWindow->Width();
+	}
+
+	uint SdlGraphicsManager::GetScreenHeight() const
+	{
+		return mainWindow->Height();
+	}
+
 	SdlGraphicsManager::~SdlGraphicsManager()
 	{
 	    IMG_Quit();
@@ -79,7 +98,10 @@ namespace gamelib
 		instance = nullptr;
 	}
 
-	shared_ptr<Window> SdlGraphicsManager::GetMainWindow() { return mainWindow; }
+	shared_ptr<Window> SdlGraphicsManager::GetMainWindow()
+	{
+		return mainWindow;
+	}
 		
 	SdlGraphicsManager* SdlGraphicsManager::Get()
 	{
@@ -96,10 +118,10 @@ namespace gamelib
 	SdlGraphicsManager::SdlGraphicsManager() = default;
 
 	vector<shared_ptr<Event>> SdlGraphicsManager::HandleEvent(const std::shared_ptr<Event>& event, const unsigned long deltaMs)
-	{ 
+	{
+		// We don't subscribe to any events
 		return {};	
 	}	
-
 
 	string SdlGraphicsManager::GetSubscriberName()
 	{

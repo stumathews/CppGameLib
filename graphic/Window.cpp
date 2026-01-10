@@ -7,9 +7,12 @@
 
 namespace gamelib
 {	
-	Window::Window(const char* windowName, const uint width, const uint height, const char* windowTitle): width(width), height(height),
-	                                                                              windowTitle(windowTitle), windowRenderer(nullptr), windowName(windowName)
+	Window::Window(const char *windowName, const uint width, const uint height, const char *windowTitle,
+	               const bool hideWindow) : width(width), height(height),
+	                                        windowTitle(windowTitle), windowName(windowName), windowRenderer(nullptr),
+	                                        hideWindow(hideWindow)
 	{
+		// Empty
 	}
 
 	Window::~Window()
@@ -20,7 +23,10 @@ namespace gamelib
 
 	void Window::Initialize()
 	{
-		window = SdlGraphicsManager::CreateSdlWindow(static_cast<int>(width), static_cast<int>(height), windowTitle);	
+		// Create a new Window
+		window = SdlGraphicsManager::CreateSdlWindow(static_cast<int>(width), static_cast<int>(height), windowTitle, hideWindow);
+
+		// Get the Window's renderer
 		windowRenderer = SdlGraphicsManager::GetSdlRendererFromWindow(window);
 
 		if(windowRenderer == nullptr)
@@ -36,6 +42,12 @@ namespace gamelib
 
 	void Window::ClearAndDraw(const std::function<void(SDL_Renderer* renderer)> &drawObjectsFn) const
 	{
+		if (hideWindow)
+		{
+			// Window is hidden, don't draw
+			return;
+		}
+
 		// Backup current render color
 		SDL_Color oldColour = {0, 0, 0, 0};
 		SDL_GetRenderDrawColor(windowRenderer, &oldColour.r, &oldColour.g, &oldColour.b, &oldColour.a);
@@ -51,6 +63,26 @@ namespace gamelib
 		
 		// Show what we've drawn
 		PresentOnly();
+	}
+
+	SDL_Renderer * Window::GetRenderer() const
+	{
+		return windowRenderer;
+	}
+
+	uint Window::Height() const
+	{
+		return height;
+	}
+
+	uint Window::Width() const
+	{
+		return width;
+	}
+
+	const char * Window::GetName() const
+	{
+		return windowName;
 	}
 
 	void Window::PresentOnly() const

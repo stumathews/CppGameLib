@@ -170,38 +170,44 @@ namespace gamelib
 		});
 	}
 
-	void SceneManager::DrawScene() const
+	void SceneManager::DrawScene(bool skipHiddenLayers) const
 	{
+		// Function that collects all game objects in the loaded scene and draws them in layered order
 		const auto renderAllObjectsFn = static_cast<RenderFunc>([&](SDL_Renderer* windowRenderer)
 		{
-			// Draw all objects in the layer
+			// Draw all objects in each layer
 			for (const auto& layer : GetLayers())
 			{
-				// Only draw visible layers
-				if (layer->Visible)
+				// Skip drawing objects in hidden layers
+				if (skipHiddenLayers && !layer->Visible)
+					continue;
+
+				// Draw objects
+				for (const auto& gameObject : layer->Objects)
 				{
-					// Draw objects within the layer
-					for (const auto& gameObject : layer->Objects)
+					// If it is active
+					if (const auto theGameObject = gameObject.lock())
 					{
-						// If it is active
-						if (const auto ptr = gameObject.lock())
-						{
-							// draw yourself!
-							ptr->Draw(windowRenderer);
-						}						
+						// Draw game object
+						theGameObject->Draw(windowRenderer);
 					}
 				}
 			}
 		});
 
+		// Draw all objects in the scene
 		SdlGraphicsManager::Get()->ClearAndDraw(renderAllObjectsFn);
 	}
 
 	std::vector <std::weak_ptr<GameObject>> SceneManager::GetAllObjects() const
 	{
+		// We'll store all the game objects we find in the scene
 		std::vector<std::weak_ptr<GameObject>> gameObjects;
+
+		// Go through all the layers in te scene and extract all the objects
 		for (const auto& layer : GetLayers())
 		{
+			// Add the layer's objects to store of game objects
 			for (const auto& gameObject : layer->Objects)
 			{
 				gameObjects.push_back(gameObject);				
@@ -243,7 +249,8 @@ namespace gamelib
 
 			if(scene) // <scene id="2">
 			{
-				for(auto layerNode = scene->FirstChild(); layerNode; layerNode = layerNode->NextSibling()) //  <layer ...>
+				// for each <layer ...>
+				for(auto layerNode = scene->FirstChild(); layerNode; layerNode = layerNode->NextSibling())
 				{				
 					// ReSharper disable once CppTooWideScope
 					auto layerElement = layerNode->ToElement();
@@ -253,10 +260,10 @@ namespace gamelib
 						auto currentLayer = std::make_shared<Layer>();
 						currentLayer->Zorder = static_cast<unsigned>(layers.size());					
 
-						// Loop through layer attributes
-						for(auto layerAttributes = layerElement->FirstAttribute(); layerAttributes; layerAttributes = layerAttributes->Next()) // <layer name="layer0" posx="0" posy="0" visible="true"
+						// Loop through layer attributes (<layer name="layer0" posx="0" posy="0" visible="true" ... )
+						for(auto layerAttributes = layerElement->FirstAttribute(); layerAttributes; layerAttributes = layerAttributes->Next())
 						{						
-							// populate the new layer object:
+							// Populate the new layer object:
 							
 							const string name(layerAttributes->Name());
 							const string value(layerAttributes->Value());						

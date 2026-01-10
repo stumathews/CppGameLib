@@ -109,9 +109,9 @@ namespace gamelib
 
 	GraphicAsset::~GraphicAsset()
 	{
-		// Unload the asset if if not longer be used/referenced anywhere/more
+		// Unload the asset if not longer be used/referenced anywhere/more
 		
-		Logger::Get()->LogThis(string("Unloading asset: " + this->FilePath));
+		Logger::Get()->LogThis(string("GraphicAsset: Unloading asset: " + this->FilePath));
 
 		GraphicAsset::Unload();
 	}

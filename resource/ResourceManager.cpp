@@ -28,19 +28,21 @@ namespace gamelib
 		IndexResourceFile(filePath);
 
 		debug = SettingsManager::Get()->GetBool("global", "verbose");
-		return LogThis("ResourceManager::initialize()", debug, [&]()
-			{
-				EventManager::Get()->SubscribeToEvent(SceneChangedEventTypeEventId, this);
-				// we will load the resources for the level that has been loaded
-				return true;
-			}, true, true);
+
+		// We will load the resources for the level that has been loaded
+
+		EventManager::Get()->SubscribeToEvent(SceneChangedEventTypeEventId, this);
+
+		Logger::Get()->LogThis("ResourceManager::initialize()");
+
+		return true;
 	}
 
 	vector<shared_ptr<Event>> ResourceManager::HandleEvent(const std::shared_ptr<Event>& event, const unsigned long deltaMs)
 	{
 		if (event->Id.PrimaryId == SceneChangedEventTypeEventId.PrimaryId)
 		{
-			LogThis("Detected level change. Loading level assets...", debug, [&]()
+			LogThis("ResourceManager: Detected level change. Loading level assets...", debug, [&]()
 			{
 				LoadSceneAssets(dynamic_pointer_cast<SceneChangedEvent>(event)->SceneId);
 				return true;
@@ -67,9 +69,15 @@ namespace gamelib
 				{
 					asset->Load();
 
-					Logger::Get()->LogThis(
-						string("scene " + to_string(asset->SceneId)) + string(": ") + string(asset->Name) +
-						" asset loaded.");
+					std::stringstream message;
+
+					message << "LoadSceneAssets: Scene "
+					<< to_string(asset->SceneId)
+					<< ": "
+					<< string(asset->Name)
+					<< " asset loaded.";
+
+					Logger::Get()->LogThis(message.str());
 
 					countLoadedResources++;
 					countUnloadedResources--;
@@ -78,8 +86,16 @@ namespace gamelib
 				{
 					asset->Unload();
 
-					Logger::Get()->LogThis(
-						string("scene: " + to_string(asset->SceneId)) + string(asset->Name) + " asset unloaded.");
+					std::stringstream message;
+
+					message <<
+					"LoadSceneAssets: Scene "
+					<< to_string(asset->SceneId)
+					<<  string(asset->Name)
+					<< " asset unloaded.";
+
+					Logger::Get()->LogThis(message.str());
+
 					countUnloadedResources++;
 					countLoadedResources--;
 				}
@@ -117,9 +133,8 @@ namespace gamelib
 		// Start again from fresh - no resources
 		Reset();
 
-		message << "ResourceManager: reading file: " << resourcesFilePath.c_str() << "\n";
+		message << "Indexing resources file: " << resourcesFilePath.c_str();
 		Logger::Get()->LogThis(message.str());
-		message.clear();
 
 		// Index resources from resource file (no loading occurs)
 		XMLDocument xmlDocument;
@@ -131,7 +146,9 @@ namespace gamelib
 		if (xmlDocument.ErrorID() == 0)
 		{
 
-			message << "Loading Assets...\n";
+			message.str("");
+			message.clear();
+			message << "Reading Assets...";
 			Logger::Get()->LogThis(message.str());
 
 			// Get the Assets XML node
@@ -156,12 +173,16 @@ namespace gamelib
 						// Create the asset based on the asset type
 						theAsset = CreateAssetFromElement(ptrAssetType, theAsset, assetElement);
 
+						message.str("");
+						message.clear();
+
 						message << "Found asset Name="
 								<< theAsset->Name
 								<< " Type=" << theAsset->Type
 								<< " SceneId=" << theAsset->SceneId
 								<< " Uid=" << theAsset->Uid
-								<< " FilePath="<< theAsset->FilePath << "\n";
+								<< " FilePath="<< theAsset->FilePath;
+
 						Logger::Get()->LogThis(message.str());
 
 						if (theAsset != nullptr)
@@ -171,14 +192,14 @@ namespace gamelib
 
 							// Keep track of how many assets we have
 							countResources++;
-
-							Logger::Get()->LogThis(std::string("Asset: ") + theAsset->Name + " indexed by resource manager");
 						}
 						else
 						{
 							message.clear();
-							message << "No asset manager defined for " << ptrAssetType << "\n";
+							message << "No asset manager defined for " << ptrAssetType;
+
 							Logger::Get()->LogThis(message.str());
+
 							THROW(static_cast<int>(ResourceManager::ErrorNumbers::NoAssetManagerForType), message.str(),
 							      this->GetSubscriberName());
 						}
@@ -192,8 +213,10 @@ namespace gamelib
 		}
 		else
 		{
+			message.str("");
 			message.clear();
-			message << "Failed to load resources file '"
+
+			message << "Failed to read resources file '"
 			<< resourcesFilePath.c_str()
 			<< "'. ErrorId=" << xmlDocument.ErrorID()
 			<< " ErrorName=" << xmlDocument.ErrorName()
@@ -264,10 +287,6 @@ namespace gamelib
 
 		// Index the asset by its id
 		resourcesById.insert(pair(asset->Uid, asset));
-
-		LogMessage(
-			"Discovered " + string(asset->Type) + string(" asset#: ") + to_string(asset->Uid) + string(" ") + string(
-				asset->Name));
 	}
 
 	string ResourceManager::GetSubscriberName() { return "resource manager"; }

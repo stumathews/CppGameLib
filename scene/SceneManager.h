@@ -33,7 +33,9 @@ namespace gamelib
 
 	private:
 		SceneManager();
-		void DrawScene() const;
+
+		// Draw all objects in the scene (skips hidden objects)
+		void DrawScene(const bool skipHiddenLayers = true) const;
 		void AddGameObjectToScene(const std::shared_ptr<Event>& event) const;
 		void LoadNewScene(const std::shared_ptr<Event> &event);
 
@@ -50,6 +52,8 @@ namespace gamelib
 		std::shared_ptr<Layer> FindLayer(const std::string &name);
 		[[nodiscard]] static std::shared_ptr<GameObject> GetGameObjectFrom(const std::shared_ptr<Event>& event);
 		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& event, unsigned long deltaMs) override;
+
+		// Gets all game objects that are in the scene (including hidden objects)
 		[[nodiscard]] std::vector <std::weak_ptr<GameObject>> GetAllObjects() const;
 		void UpdateAllObjects(unsigned long deltaMs) const;
 		std::string GetSubscriberName() override;

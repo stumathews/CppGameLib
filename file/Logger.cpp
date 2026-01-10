@@ -50,7 +50,7 @@ namespace gamelib
 
 	void Logger::LogToStdOut(const string& message)
 	{
-		cout << message << endl;
+		cout << message << "\n";
 	}
 
 }

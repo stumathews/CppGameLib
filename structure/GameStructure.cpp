@@ -28,13 +28,19 @@ namespace gamelib
 
 	GameStructure::GameStructure(std::shared_ptr<IGameLoopStrategy> gameLoop): gameLoop(std::move(gameLoop))
 	{
+		// Empty
 	}
 
 	shared_ptr<VariableGameLoop> GameStructure::MakeVariableGameLoop() const
 	{
-		return make_shared<VariableGameLoop>(
-			[&](const unsigned long deltaMs) { Update(deltaMs); },
-			[&]() { Draw(0UL); });
+		// Specify the update function that variable game loop will use
+		auto onUpdateFn = [&](const unsigned long deltaMs) { Update(deltaMs); };
+
+		// Specify the drawing function the variable game loop will use
+		auto drawFn = [&]() { Draw(0UL); };
+
+		// Create a variable game loop clas that calls the above functions
+		return make_shared<VariableGameLoop>(onUpdateFn, drawFn);
 	}
 
 	GameStructure::GameStructure(std::function<void(unsigned long deltaMs)> getInputFunction)
@@ -44,14 +50,12 @@ namespace gamelib
 		gameLoop =  MakeVariableGameLoop();		
 	}
 
-	/// <summary>
-	/// Update & Draw until the game ends
-	/// </summary>
-	/// <returns></returns>
 	bool GameStructure::DoGameLoop(GameWorldData* gameWorldData) const
 	{
 		gameLoop->Loop(gameWorldData);
+
 		std::cout << "Game done" << '\n';
+
 		return true;
 	}
 
@@ -106,8 +110,8 @@ namespace gamelib
 		ReadNetwork(deltaMs);
 
 		EventManager::Get()->ProcessAllEvents(deltaMs);
-		EventManager::Get()->DispatchEventToSubscriber(EventFactory::Get()->CreateUpdateAllGameObjectsEvent(), deltaMs);
-		EventManager::Get()->DispatchEventToSubscriber(EventFactory::Get()->CreateUpdateProcessesEvent(), deltaMs);
+		EventManager::Get()->DispatchEventToSubscriber(EventFactory::CreateUpdateAllGameObjectsEvent(), deltaMs);
+		EventManager::Get()->DispatchEventToSubscriber(EventFactory::CreateUpdateProcessesEvent(), deltaMs);
 		std::cout << deltaMs <<  " ";
 		
 	}
@@ -115,7 +119,7 @@ namespace gamelib
 	void GameStructure::Draw(unsigned long percentWithinTick)
 	{
 		// Time-sensitive, skip queue. Draws the current scene
-		EventManager::Get()->DispatchEventToSubscriber(EventFactory::Get()->CreateGenericEvent(DrawCurrentSceneEventId, "GameStructure"), 0UL);
+		EventManager::Get()->DispatchEventToSubscriber(EventFactory::CreateGenericEvent(DrawCurrentSceneEventId, "GameStructure"), 0UL);
 	}
 
 
@@ -170,29 +174,41 @@ namespace gamelib
 
 	void GameStructure::ReadKeyboard(const unsigned long deltaMs) const
 	{
-		if(!sampleInput) return;
+		if(!sampleInput)
+		{
+			// Asked not to sample or read from the player's input controller
+			return;
+		}
 
+		// Sample input
 		getControllerInputFunction(deltaMs);
 	}
 	void GameStructure::ReadNetwork(const unsigned long deltaMs) const
 	{
-		if(!sampleNetwork) return;
+		if(!sampleNetwork)
+		{
+			// Asked not to sample/read from the network during game loop
+			return;
+		}
+
+		// Listen for any network traffic sent to us (Network Manager abstracts away if we are a Game server or Game Client)
 		NetworkManager::Get()->Listen(deltaMs);
 	}
 
 	void GameStructure::HandleSpareTime(long elapsedTime)
 	{
-		
+		// Do nothing
 	}
 
 	vector<shared_ptr<Event>> GameStructure::HandleEvent(const std::shared_ptr<Event>& the_event, const unsigned long deltaMs)
 	{
+		// Do nothing - we don't subscribe to any events yet
 		return {};
 	}
 
 	string GameStructure::GetSubscriberName()
 	{
-		return "Game";
+		return "Game Structure";
 	}
 
 	long GameStructure::GetTimeNowMs()
@@ -202,6 +218,7 @@ namespace gamelib
 
 	GameStructure::~GameStructure()
 	{
+		// Ensure we unload when this object is about to die/destruct
 		Unload();
 	}
 }

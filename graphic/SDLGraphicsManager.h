@@ -26,26 +26,38 @@ namespace gamelib
 		SdlGraphicsManager & operator=(SdlGraphicsManager &&other) = delete;
 		SdlGraphicsManager& operator=(SdlGraphicsManager const&)  = delete;
 		~SdlGraphicsManager() override;
+
+		// Setup/initialize everything
+		bool Initialize(uint width = 800, uint height = 600, const char* windowTitle = nullptr, bool hideWindow = false);
+
+		// Returns the main Window
 		std::shared_ptr<Window> GetMainWindow();
 
-		static SDL_Window* CreateSdlWindow(int screenWidth, int screenHeight, const char* windowTitle);
+		// Returns the Windows's renderer
 		static SDL_Renderer* GetSdlRendererFromWindow(SDL_Window* window);
-		bool Initialize(uint width = 800, uint height = 600, const char* windowTitle = nullptr);
+
+		// Returns a new SDL Window (does not show it)
+		static SDL_Window* CreateSdlWindow(int screenWidth, int screenHeight, const char* windowTitle, bool hideWindow = false);
+
+		// Finish up
 		static void Unload();
-		
+
+		// Clears the contents of the buffer and draws objects onto it
 		void ClearAndDraw(const std::function<void(SDL_Renderer* renderer)>& drawObjects) const;
 
-		[[nodiscard]] uint GetScreenWidth() const { return mainWindow->Width();}
-		[[nodiscard]] uint GetScreenHeight() const { return mainWindow->Height();}
-		
-	    std::string GetSubscriberName() override;
-		
+		[[nodiscard]] uint GetScreenWidth() const;
+		[[nodiscard]] uint GetScreenHeight() const;
 
+		std::string GetSubscriberName() override;
+
+		// Casts a standard Asset to a Graphics Asset
 		static std::shared_ptr<GraphicAsset> ToGraphicAsset(const std::shared_ptr<Asset>& asset);
+
 		const char* MainWindowName = "main";
 	protected:		
 		static SdlGraphicsManager* instance;
-	private:		
+	private:
+
 		SdlGraphicsManager();	
 		std::shared_ptr<Window> mainWindow; //The window we'll be rendering to
 		std::map<std::string, std::shared_ptr<Window>> windows;

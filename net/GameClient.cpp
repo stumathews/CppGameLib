@@ -10,7 +10,7 @@
 #include "ReliableUdpProtocolManager.h"
 #include "events/PlayerMovedEvent.h"
 #include "events/StartNetworkLevelEvent.h"
-#include "IConnectedNetworkSocket.h"
+#include "IGameClientConnection.h"
 #include "file/Logger.h"
 #include "file/SerializationManager.h"
 
@@ -18,7 +18,7 @@ using namespace json11;
 
 namespace gamelib
 {
-	GameClient::GameClient(const std::string& nickName, const std::shared_ptr<IConnectedNetworkSocket>& connection,
+	GameClient::GameClient(const std::string& nickName, const std::shared_ptr<IGameClientConnection>& connection,
 	                       const bool useReliableUdpProtocolManager, const bool useEncryption, const Encoding encoding,
 	                       const bool sendClientEventsToServer)
 	{				
@@ -63,15 +63,15 @@ namespace gamelib
 	}
 
 	// Protocol manager that connections to the server are made, and that network events are listened for
-	void GameClient::SetupProtocolManager(const std::shared_ptr<IConnectedNetworkSocket>& connection,
+	void GameClient::SetupProtocolManager(const std::shared_ptr<IGameClientConnection>& connection,
 	                                      const bool useReliableUdpProtocolManager, bool useEncryption)
 	{
 		// Layers reliable protocol over transport
-		const auto reliableUdpProtocolManager = std::dynamic_pointer_cast<IProtocolManager>(
+		const auto reliableUdpProtocolManager = std::dynamic_pointer_cast<IGameClientConnetionProtocolManager>(
 			std::make_shared<ReliableUdpProtocolManager>(connection, useEncryption));
 
 		// Passes data directly to transports i.e., udp or tcp
-		const auto transportOnlyProtocolManager = std::dynamic_pointer_cast<IProtocolManager>(
+		const auto transportOnlyProtocolManager = std::dynamic_pointer_cast<IGameClientConnetionProtocolManager>(
 			std::make_shared<TransportOnlyProtocolManager>(connection));
 
 		this->networkProtocolManager = useReliableUdpProtocolManager

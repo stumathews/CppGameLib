@@ -6,13 +6,13 @@
 
 namespace gamelib
 {
-	class IProtocolManager;
+	class IGameClientConnetionProtocolManager;
 	class ReliableUdpProtocolManager;
 	class EventManager;
 	class Networking;
 	class EventFactory;
 	class SerializationManager;
-	class IConnectedNetworkSocket;
+	class IGameClientConnection;
 
 	/**
 	 * \brief A game client connects to a game server via a network protocol and sends/received network instructions
@@ -22,7 +22,7 @@ namespace gamelib
 	public:
 		~GameClient() override;
 
-		GameClient(const std::string& nickName, const std::shared_ptr<IConnectedNetworkSocket>& connection,
+		GameClient(const std::string& nickName, const std::shared_ptr<IGameClientConnection>& connection,
 		           bool useReliableUdpProtocolManager = false, bool useEncryption = true,
 		           Encoding encoding = Encoding::json, bool sendClientEventsToServer = true);
 		GameClient(const GameClient& other) = delete;
@@ -30,7 +30,7 @@ namespace gamelib
 		const GameClient& operator=(const GameClient& other) = delete;
 		const GameClient& operator=(const GameClient&& other) = delete;
 
-		void SetupProtocolManager(const std::shared_ptr<IConnectedNetworkSocket>& connection,
+		void SetupProtocolManager(const std::shared_ptr<IGameClientConnection>& connection,
 			bool useReliableUdpProtocolManager, bool useEncryption);
 
 		/// <summary>
@@ -62,7 +62,7 @@ namespace gamelib
 		void SendPlayerDetails() const;
 
 		// Interface to working with the networking protocol
-		std::shared_ptr<IProtocolManager> networkProtocolManager;		
+		std::shared_ptr<IGameClientConnetionProtocolManager> networkProtocolManager;
 
 		// Network file descriptor set used to track if data is waiting on the network socket
 		fd_set readfds{};

@@ -32,6 +32,9 @@
 
 #include "events/EventFactory.h"
 #include "net/GameClient.h"
+#include "net/LocalNetworkSocket.h"
+#include "net/LocalSocketProtocolManager.h"
+#include "net/LocalSocketServerConnection.h"
 #pragma comment(lib, "ws2_32.lib")
 
 using namespace std;
@@ -154,7 +157,7 @@ namespace gamelib
 			std::cout << "Test teardown successful\n" ;
 		}
 
-		[[nodiscard]] std::tuple<vector<shared_ptr<Event>>, vector<shared_ptr<Event>>> PartitionEvents() const
+		[[nodiscard]] std::tuple<vector<shared_ptr<Event>>, vector<shared_ptr<Event>>> PartitionEvents(const std::string &serverOriginLabel = "") const
 		{
 			auto events = EventManager::Get()->GetEvents();
 
@@ -164,7 +167,7 @@ namespace gamelib
 			while(!events.empty())
 			{
 				const auto& event = events.front();
-				if(event->Origin == ServerOrigin)
+				if(event->Origin == (serverOriginLabel == "" ? ServerOrigin: serverOriginLabel))
 				{
 					serverEmittedEvents.push_back(event);
 				}
@@ -906,8 +909,77 @@ namespace gamelib
 			
 		cout << "Test: Wait for the server to respond" << '\n';
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
-
 	}
+
+	TEST_F(NetworkingTests, LocalSocketTest)
+	{
+		// We'll be sending data to a local socket and getting a response via it
+
+		// Note: This is early days, this functionality (Unix Domain Socket) is not used anywhere but in this test
+		// where it only proves that it fundamentally works
+
+
+		// We'll keep track of any events that are emitted as part of the communication
+		std::tuple<vector<shared_ptr<Event>>, vector<shared_ptr<Event>>> allEvents;
+		vector<shared_ptr<Event>> serverEmittedEvents;
+		vector<shared_ptr<Event>> clientEmittedEvents;
+
+		constexpr auto SOCKET_PATH =
+#ifdef _WIN32
+	"C:\\temp\\my_unix_socket";
+#else
+		"/tmp/my_unix_socket";
+#endif
+
+		// The game server connection
+		const auto gameServerConnection = std::make_shared<LocalSocketGameServerConnection>(SOCKET_PATH, Encoding::none);
+
+		// The game server that will use that connection
+		const auto gameServer = std::make_shared<GameServer>(gameServerConnection);
+
+		// This will cause the game server to create a listening server socket (local unix domain socket)
+		gameServer->Initialize();
+
+		// The game client connection
+		const auto gameClientConnection = std::make_shared<LocalNetworkSocket>();
+
+		// The protocol manager which would normally be used by the GameServer to talk over the game client connection
+		// but, we're directly going to use a partial implementation of only the protocol manager.
+		// In this way the protocol manager is simulating the game client
+		const auto gameClient = std::make_shared<LocalSocketProtocolManager>(gameClientConnection);
+
+		gameClient->Initialize();
+
+		// Ask game client to connect to the local socket
+		gameClient->Connect(SOCKET_PATH, "");
+
+		// ask game client to send some data on the local socket
+		const auto testData = "Hello I am the client!";
+		gameClient->Send(testData, strlen(testData),0);
+
+		// Ask the server to listen for data that we just sent.
+		gameServer->Listen();
+
+		// The game server is set to send back a fixed message apon receiving data; ask the game client to read it
+		char buf[1024] {0};
+		gameClient->Receive(buf, 1024-1, 0);
+
+		allEvents = PartitionEvents("LocalSocketGameServerConnection");
+
+		serverEmittedEvents = std::get<1>(allEvents);
+		clientEmittedEvents = std::get<0>(allEvents);
+
+		// Check that the server received the data the game client initially sent it
+		const auto resultEvent = FindEmittedEvent(serverEmittedEvents, NetworkTrafficReceivedEventId);
+		const auto trafficReceivedOnServer = To<NetworkTrafficReceivedEvent>(resultEvent);
+		EXPECT_TRUE(resultEvent != nullptr);
+		EXPECT_STREQ(trafficReceivedOnServer->Message.c_str(), testData);
+		EXPECT_EQ(trafficReceivedOnServer->Identifier, "LocalSocketGameClient");
+		EXPECT_EQ(trafficReceivedOnServer->BytesReceived, 22);
+
+		// Check that the game client received the response from the game server
+		EXPECT_STREQ(buf, "Hello client, I'm the server");
+	}
+
 }
 

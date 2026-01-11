@@ -1,13 +1,12 @@
 ﻿#pragma once
 #ifndef TCPNETWORKSOCKET_H
 #define TCPNETWORKSOCKET_H
-#include "IConnectedNetworkSocket.h"
+#include "IGameClientConnection.h"
 //#include "Networking.h"
 
 namespace gamelib
 {
-
-	class TcpNetworkSocket final : public IConnectedNetworkSocket
+	class TcpNetworkSocket final : public IGameClientConnection
 	{
 	public:
 		explicit TcpNetworkSocket(): socket(0) {  }

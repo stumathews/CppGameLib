@@ -10,6 +10,8 @@
 #include <sys/socket.h>
 #include <cstring>
 #include <netdb.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 
 #define INIT()			( program_name = \
 							strrchr( argv[ 0 ], '/' ) ) ? \
@@ -51,6 +53,9 @@
 
 #include <WinSock2.h>
 #include <Ws2tcpip.h>
+#include <afunix.h>
+#pragma comment(lib, "Ws2_32.lib")
+using socklen_t = int;
 
 	struct timezone
 	{
@@ -221,7 +226,11 @@ namespace gamelib
 	 */
 		static SOCKET netTcpClient(const char* hname, const char* sname);
 
-	/** \brief Set up for udp server: get udp socket bound to hname:sname
+		static SOCKET netLocalSocketClient(const char *socketPath);
+
+		static SOCKET netLocalSocketServer(const char *socketPath);
+
+		/** \brief Set up for udp server: get udp socket bound to hname:sname
 	 *
 	 * \param hname char* hostname that we'll bind the socket to
 	 * \param sname char* the port number for the socket

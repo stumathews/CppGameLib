@@ -6,13 +6,13 @@
 
 namespace gamelib
 {
-	class IConnectedNetworkSocket;
+	class IGameClientConnection;
 
 	// Interface for game client's networking protocol
-	class IProtocolManager
+	class IGameClientConnetionProtocolManager
 	{
 	public:
-		virtual ~IProtocolManager() = default;
+		virtual ~IGameClientConnetionProtocolManager() = default;
 
 		// connect to server
 		virtual void Connect(const char* address, const char* port) = 0;
@@ -30,7 +30,7 @@ namespace gamelib
 		virtual bool Initialize() = 0;
 
 		// Get client's socket to game server
-		virtual std::shared_ptr<IConnectedNetworkSocket> GetConnection() = 0;
+		virtual std::shared_ptr<IGameClientConnection> GetConnection() = 0;
 	};
 }
 

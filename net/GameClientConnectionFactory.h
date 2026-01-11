@@ -14,12 +14,12 @@ namespace gamelib
 	{
 	public:
 
-		static std::shared_ptr<IConnectedNetworkSocket> Create(const bool isTcp)
+		static std::shared_ptr<IGameClientConnection> Create(const bool isTcp)
 		{
 			auto networkSocket =  
 				isTcp
-					? std::dynamic_pointer_cast<IConnectedNetworkSocket>(std::make_shared<TcpNetworkSocket>(TcpNetworkSocket()))
-					: std::dynamic_pointer_cast<IConnectedNetworkSocket>(
+					? std::dynamic_pointer_cast<IGameClientConnection>(std::make_shared<TcpNetworkSocket>(TcpNetworkSocket()))
+					: std::dynamic_pointer_cast<IGameClientConnection>(
 						std::make_shared<UdpConnectedNetworkSocket>(UdpConnectedNetworkSocket()));
 
 			return networkSocket;

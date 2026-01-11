@@ -146,9 +146,9 @@ net/GameClientConnectionFactory.h
 net/GameServer.h
 net/GameServerConnectionFactory.h
 net/GameStatePusher.h
-net/IConnectedNetworkSocket.h
+        net/IGameClientConnection.h
 net/IGameServerConnection.h
-net/IProtocolManager.h
+        net/IGameClientConnetionProtocolManager.h
 net/Message.h
 net/MessageHeader.h
 net/Networking.h
@@ -289,7 +289,10 @@ net/TcpNetworkPlayer.cpp
 net/TcpNetworkSocket.cpp
 net/UdpConnectedNetworkSocket.cpp
 net/UdpGameServerConnection.cpp
+net/LocalNetworkSocket.cpp
+net/LocalSocketServerConnection.cpp
 net/UdpNetworkPlayer.cpp
+net/LocalSocketProtocolManager.cpp
 objects/DrawableGameObject.cpp
 objects/GameObject.cpp
 objects/GameObjectFactory.cpp

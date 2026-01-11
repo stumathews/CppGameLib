@@ -18,7 +18,7 @@ using namespace json11;
 
 namespace gamelib
 {
-	SerializationManager::SerializationManager(const gamelib::Encoding desiredEncoding = Encoding::json)
+	SerializationManager::SerializationManager(Encoding desiredEncoding)
 	{
 		TheEncoding = desiredEncoding;
 		Initialize();

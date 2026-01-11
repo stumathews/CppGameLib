@@ -2,15 +2,15 @@
 #define NO_PROTOCOL_MANAGER_H
 #include <memory>
 
-#include "IConnectedNetworkSocket.h"
-#include "IProtocolManager.h"
+#include "IGameClientConnection.h"
+#include "IGameClientConnetionProtocolManager.h"
 
 namespace gamelib
 {
-	class TransportOnlyProtocolManager : public IProtocolManager
+	class TransportOnlyProtocolManager : public IGameClientConnetionProtocolManager
 	{
 	public:
-		TransportOnlyProtocolManager(std::shared_ptr<IConnectedNetworkSocket> gameClientConnection): gameClientConnection(std::move(gameClientConnection)), isGameServer(false)
+		TransportOnlyProtocolManager(std::shared_ptr<IGameClientConnection> gameClientConnection): gameClientConnection(std::move(gameClientConnection)), isGameServer(false)
 		{
 			
 		}
@@ -41,7 +41,7 @@ namespace gamelib
 		{
 			return true;
 		}
-		std::shared_ptr<IConnectedNetworkSocket> GetConnection() override
+		std::shared_ptr<IGameClientConnection> GetConnection() override
 		{
 			return gameClientConnection;
 		}
@@ -52,7 +52,7 @@ namespace gamelib
 		}
 
 	private:
-		std::shared_ptr<IConnectedNetworkSocket> gameClientConnection;
+		std::shared_ptr<IGameClientConnection> gameClientConnection;
 		std::shared_ptr<IGameServerConnection> gameServerConnection;
 		bool isGameServer;
 	};

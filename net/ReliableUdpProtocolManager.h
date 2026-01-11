@@ -2,11 +2,11 @@
 #include <string>
 
 #include "IGameServerConnection.h"
-#include "IProtocolManager.h"
+#include "IGameClientConnetionProtocolManager.h"
 #include "ai/FSM.h"
 #include "events/EventSubscriber.h"
 #include "net/BitPacker.h"
-#include "net/IConnectedNetworkSocket.h"
+#include "net/IGameClientConnection.h"
 #include "net/ReliableUdp.h"
 #include "security/Security.h"
 #include <time/PeriodicTimer.h>
@@ -18,7 +18,7 @@ namespace gamelib
 {
 	
 
-	class ReliableUdpProtocolManager : public IProtocolManager, public EventSubscriber
+	class ReliableUdpProtocolManager : public IGameClientConnetionProtocolManager, public EventSubscriber
 	{
 		private:
 			bool initialized{};
@@ -26,7 +26,7 @@ namespace gamelib
 			/// <summary>
 			/// The socket the game client will use to communicate with the game server
 			/// </summary>
-			std::shared_ptr<IConnectedNetworkSocket> gameClientConnection;
+			std::shared_ptr<IGameClientConnection> gameClientConnection;
 			SecuritySide clientSecuritySide;
 			std::shared_ptr<IGameServerConnection> gameServerConnection;
 			constexpr static auto PackingBufferElements = 300;
@@ -44,7 +44,7 @@ namespace gamelib
 		
 
 		public:
-			ReliableUdpProtocolManager(std::shared_ptr<IConnectedNetworkSocket> gameClientConnection, bool useEncryption = true);
+			ReliableUdpProtocolManager(std::shared_ptr<IGameClientConnection> gameClientConnection, bool useEncryption = true);
 			ReliableUdpProtocolManager(std::shared_ptr<IGameServerConnection> gameServerConnection, bool useEncryption = true);
 
 			// Cannot copy
@@ -54,7 +54,7 @@ namespace gamelib
 			void operator=(ReliableUdpProtocolManager const&) = delete;
 		
 			bool Initialize() override;		
-			std::shared_ptr<IConnectedNetworkSocket> GetConnection() override;
+			std::shared_ptr<IGameClientConnection> GetConnection() override;
 			void Connect(const char* address, const char* port) override;
 
 			int Send(const char* callersSendBuffer, int dataLength, unsigned long deltaMs = 0) override;

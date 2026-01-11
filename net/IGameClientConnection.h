@@ -6,10 +6,10 @@
 namespace gamelib
 {
 	// Interface to a client's connection to server
-	class IConnectedNetworkSocket
+	class IGameClientConnection
 	{
 	public:
-		virtual ~IConnectedNetworkSocket() = default;
+		virtual ~IGameClientConnection() = default;
 		virtual void Connect(const char* address, const char* port) = 0;
 		virtual bool IsTcp() = 0;
 		virtual int Send(const char* data, int dataLength, unsigned long deltaMs = 0) = 0;

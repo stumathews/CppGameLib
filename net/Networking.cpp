@@ -258,6 +258,62 @@ namespace gamelib
 
 		return s;
 	}
+
+	SOCKET Networking::netLocalSocketClient(const char* socketPath)
+	{
+		const SOCKET s = socket(AF_UNIX, SOCK_DGRAM, 0);
+		if (s < 0)
+		{
+			perror("socket");
+			return 1;
+		}
+
+		sockaddr_un addr{};
+		addr.sun_family = AF_UNIX;
+		std::strncpy(addr.sun_path, socketPath, sizeof(addr.sun_path) - 1);
+
+		if (connect(s, (sockaddr*)&addr, sizeof(addr)) < 0)
+		{
+			perror("connect");
+			return -1;
+		}
+
+		// This allows the client to send to the socket with specifying the destination (i think)
+		sockaddr_un clientAddr{};
+		clientAddr.sun_family = AF_UNIX;
+		strncpy(clientAddr.sun_path, socketPath, sizeof(clientAddr.sun_path)-1);
+		unlink(clientAddr.sun_path); // remove old file
+		bind(s, (struct sockaddr*)&clientAddr, sizeof(clientAddr));
+
+		return s;
+	}
+
+	SOCKET Networking::netLocalSocketServer(const char* socketPath)
+	{
+		const SOCKET s = socket(AF_UNIX, SOCK_DGRAM, 0);
+		if (s < 0)
+		{
+			perror("socket");
+			return 1;
+		}
+
+		sockaddr_un addr{};
+		addr.sun_family = AF_UNIX;
+		std::strncpy(addr.sun_path, socketPath, sizeof(addr.sun_path) - 1);
+
+#ifndef _WIN32
+		unlink(socketPath); // remove existing socket file
+#endif
+
+		if (bind(s, (sockaddr*)&addr, sizeof(addr)) < 0)
+		{
+			perror("bind");
+			return 1;
+		}
+
+		return s;
+	}
+
     SOCKET Networking::netUdpServer(const char* hname, const char* sname)
     {
 		SOCKET s;

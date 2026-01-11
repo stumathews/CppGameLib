@@ -12,7 +12,7 @@
 namespace gamelib
 {
 
-	ReliableUdpProtocolManager::ReliableUdpProtocolManager(std::shared_ptr<IConnectedNetworkSocket> gameClientConnection, bool useEncryption)
+	ReliableUdpProtocolManager::ReliableUdpProtocolManager(std::shared_ptr<IGameClientConnection> gameClientConnection, bool useEncryption)
 	: gameClientConnection(std::move(gameClientConnection)), useEncryption(useEncryption)
 {
 		ReliableUdpProtocolManager::Initialize();
@@ -246,7 +246,7 @@ namespace gamelib
 		// do nothing
 	}
 
-	std::shared_ptr<IConnectedNetworkSocket> ReliableUdpProtocolManager::GetConnection()
+	std::shared_ptr<IGameClientConnection> ReliableUdpProtocolManager::GetConnection()
 	{
 		return gameClientConnection;
 	}

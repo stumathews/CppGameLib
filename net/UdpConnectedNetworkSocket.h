@@ -3,11 +3,11 @@
 #define UDPNETWORKSOCKET_H
 
 #include <net/Networking.h>
-#include "IConnectedNetworkSocket.h"
+#include "IGameClientConnection.h"
 
 namespace gamelib
 {
-	class UdpConnectedNetworkSocket final : public IConnectedNetworkSocket
+	class UdpConnectedNetworkSocket final : public IGameClientConnection
 	{
 	public:
 		explicit UdpConnectedNetworkSocket();

@@ -13,7 +13,7 @@ namespace gamelib
 {
 	class BehaviorTreeBuilderTests : public testing::Test 
 	{
-	 protected:
+	protected:
 
 		void SetUp() override
 		{
@@ -32,88 +32,88 @@ namespace gamelib
 		bool isPlayerVisible = true;
 		bool isPlayerInRange = true;
 		bool haveWeGotASuspectedLocation = true;
-		auto dummyAction5Result = gamelib::Status::Success;
+		auto dummyAction5Result = Status::Success;
 
-		auto* checkIsPlayerVisible = new gamelib::ai::InlineAction ([&](const unsigned long deltaMs)
+		auto* checkIsPlayerVisible = new ai::InlineAction ([&](const unsigned long deltaMs)
 		{
 			return isPlayerVisible
-					? gamelib::Status::Success
-					: gamelib::Status::Failure;
+					? Status::Success
+					: Status::Failure;
 		}, "IsPlayerVisible");
 
-		auto* checkPlayerInRange = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
+		auto* checkPlayerInRange = new ai::InlineAction([&](const unsigned long deltaMs)
 		{
 			return isPlayerInRange
-					? gamelib::Status::Success
-					: gamelib::Status::Failure;
+					? Status::Success
+					: Status::Failure;
 		}, "IsPlayerInRange");
 
-		auto* checkHaveWeGotASuspectedLocation = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
+		auto* checkHaveWeGotASuspectedLocation = new ai::InlineAction([&](const unsigned long deltaMs)
 		{
 			return haveWeGotASuspectedLocation
-					? gamelib::Status::Success
-					: gamelib::Status::Failure;
+					? Status::Success
+					: Status::Failure;
 		});
 
-		auto* doFireAtPlayer = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
+		auto* doFireAtPlayer = new ai::InlineAction([&](const unsigned long deltaMs)
 		{
-			fireAtPlayer++; 
-			return gamelib::Status::Success;
+			fireAtPlayer++;
+			return Status::Success;
 		}, "FireAtPlayer");
 
-		auto* doMoveTowardsPlayer = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
+		auto* doMoveTowardsPlayer = new ai::InlineAction([&](const unsigned long deltaMs)
 		{
 			moveTowardsPlayer++;
-			return gamelib::Status::Success;
+			return Status::Success;
 		});
-		auto* doMovePlayerToLastKnownLocation = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
+		auto* doMovePlayerToLastKnownLocation = new ai::InlineAction([&](const unsigned long deltaMs)
 		{
 			movePlayerToLastKnownLocation++;
-			return gamelib::Status::Success;
+			return Status::Success;
 		}, "MovePlayerToLastKnownLocation");
-		auto* doLookAround = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
+		auto* doLookAround = new ai::InlineAction([&](const unsigned long deltaMs)
 		{
 			lookAround++;
-			return gamelib::Status::Success;
+			return Status::Success;
 		}, "LookAround");
-		auto* doMoveToRandomPosition = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
+		auto* doMoveToRandomPosition = new ai::InlineAction([&](const unsigned long deltaMs)
 		{
 			moveToRandomPosition++;
 			return dummyAction5Result;
 		}, "MoveToRandomPosition");
-		auto* doLookAroundSomeMore = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
+		auto* doLookAroundSomeMore = new ai::InlineAction([&](const unsigned long deltaMs)
 		{
 			lookAroundSomeMore++;
-			return gamelib::Status::Success;
+			return Status::Success;
 		});
-		auto* doDummyAction7 = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
+		auto* doDummyAction7 = new ai::InlineAction([&](const unsigned long deltaMs)
 		{
 			dummyAction7++;
-			return gamelib::Status::Success;
+			return Status::Success;
 		}, "DummyAction7");
-		auto* doDummyAction8 = new gamelib::ai::InlineAction([&](const unsigned long deltaMs)
+		auto* doDummyAction8 = new ai::InlineAction([&](const unsigned long deltaMs)
 		{
 			dummyAction8++;
-			return gamelib::Status::Success;
+			return Status::Success;
 		}, "DummyAction8");
 
-		gamelib::BehaviorTree* behaviorTree = BehaviorTreeBuilder()
+		BehaviorTree* behaviorTree = BehaviorTreeBuilder()
 			.ActiveSelector() // AS will always start from the highest priority child on each update, effectively re-evaluating past decisions
 				.Sequence("Check if player is visible")
 					.Condition(checkIsPlayerVisible)
-				    .ActiveSelector()
+					.ActiveSelector()
 						.Sequence("")
 							.Condition(checkPlayerInRange)
 							.Sequence()
 								.Action(doFireAtPlayer)
 							.Finish()
 						.Finish()
-		            .Action(doMoveTowardsPlayer)
-		            .Finish()
-		        .Finish()
-	            .Sequence("Check if player spotted")
+					.Action(doMoveTowardsPlayer)
+					.Finish()
+				.Finish()
+				.Sequence("Check if player spotted")
 					.Condition(checkHaveWeGotASuspectedLocation)
-				    .Action(doMovePlayerToLastKnownLocation)
+					.Action(doMovePlayerToLastKnownLocation)
 					.Action(doLookAround)
 				.Finish()
 				.Sequence("Act normal")
@@ -183,7 +183,7 @@ namespace gamelib
 		EXPECT_THAT(dummyAction8, testing::Eq(0));
 		
 		// Now make the previous sequence fail and we should run...
-		dummyAction5Result = gamelib::Status::Failure;
+		dummyAction5Result = Status::Failure;
 		behaviorTree->Update();
 		behaviorTree->Update();
 		behaviorTree->Update();
@@ -203,4 +203,34 @@ namespace gamelib
 		EXPECT_THAT(moveTowardsPlayer, testing::Eq(4));
 
 	}
+
+	TEST_F(BehaviorTreeBuilderTests, Test_NotCondition)
+	{
+		auto count = 0;
+		const auto success  = new ai::InlineAction([](unsigned long deltaMs) { return Status::Success; });
+		const auto notSuccess  = new ai::InlineAction([](unsigned long deltaMs) { return Status::Failure; });
+		const auto action  = new ai::InlineAction([&count](unsigned long deltaMs) {
+			count++;
+			return Status::Success;
+		});
+
+		const auto tree = BehaviorTreeBuilder()
+			.ActiveSelector()
+				.Sequence("Check if player is visible")
+					.Condition(success) // This should succeed
+					.Not(notSuccess) // This should invert the failure to success
+					.Action(action) // This should execute
+				.Finish()
+			.Finish()
+		.End();
+
+		// All conditions in the sequence should not fail and so action should be executed
+		tree->Update(0);
+		tree->Update(0);
+		tree->Update(0);
+
+		// 3 times for each update
+		ASSERT_EQ(count, 3);
+	}
+
 }

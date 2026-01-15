@@ -9,7 +9,8 @@ namespace gamelib
 	class Monitor final : public Parallel
 	{
 	public:
-		Monitor() : Parallel(Policy::require_one, Policy::require_one) { }
+		explicit Monitor(const Policy successPolicy = Policy::require_one, const Policy failurePolicy = Policy::require_one) :
+		Parallel(successPolicy, failurePolicy) { }
 
 		void AddCondition(Behavior* condition)
 		{

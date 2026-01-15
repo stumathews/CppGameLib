@@ -36,6 +36,7 @@ ai/Parallel.h
 ai/Repeat.h
 ai/Selector.h
 ai/ScriptedBehavior.h
+ai/Condition.h
 asset/asset.h
 asset/SpriteAsset.h
 asset/ScriptAsset.h
@@ -146,9 +147,9 @@ net/GameClientConnectionFactory.h
 net/GameServer.h
 net/GameServerConnectionFactory.h
 net/GameStatePusher.h
-        net/IGameClientConnection.h
+net/IGameClientConnection.h
 net/IGameServerConnection.h
-        net/IGameClientConnetionProtocolManager.h
+net/IGameClientConnetionProtocolManager.h
 net/Message.h
 net/MessageHeader.h
 net/Networking.h

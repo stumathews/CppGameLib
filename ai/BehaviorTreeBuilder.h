@@ -4,7 +4,9 @@
 #include "ai/Sequence.h"
 #include <stack>
 
+#include "Condition.h"
 #include "Filter.h"
+#include "Monitor.h"
 #include "Parallel.h"
 
 class BehaviorTreeBuilder
@@ -29,25 +31,31 @@ public:
 	// Adds a Condition behavior to the behavior tree
 	BehaviorTreeBuilder& Condition(gamelib::Behavior* condition)
 	{
-		CurrentNode()->AddChild(condition);
+		CurrentNode()->AddChild(new gamelib::Condition(false, condition));
 		return *this;
 	}
 
-	// Adds an Action behavior to the behavior tree
+	BehaviorTreeBuilder& Not(gamelib::Behavior* condition)
+	{
+		CurrentNode()->AddChild(new gamelib::Condition(true, condition));
+		return *this;
+	}
+
+	// Adds an Action behaviour to the behaviour tree
 	BehaviorTreeBuilder& Action(gamelib::Behavior* action)
 	{
 		CurrentNode()->AddChild(action);
 		return *this;
 	}
 
-	// Adds a Filter composite to the behavior tree
+	// Adds a Filter composite to the behaviour tree
 	BehaviorTreeBuilder& Filter(gamelib::Filter* filter)
 	{
 		AddChildToCurrentNode(filter);
 		return *this;
 	}
 
-	// Adds a Parallel composite to the behavior tree
+	// Adds a Parallel composite to the behaviour tree
 	BehaviorTreeBuilder& Parallel(const gamelib::Parallel::Policy successPolicy, const gamelib::Parallel::Policy failurePolicy)
 	{
 		// Not Tested.
@@ -55,7 +63,14 @@ public:
 		return *this;
 	}
 
-	// Finalizes the behavior tree and returns the constructed BehaviorTree object
+	BehaviorTreeBuilder& Monitor(const gamelib::Parallel::Policy successPolicy, const gamelib::Parallel::Policy failurePolicy)
+	{
+		// Not Tested.
+		AddChildToCurrentNode(new gamelib::Monitor(successPolicy, failurePolicy));
+		return *this;
+	}
+
+	// Finalizes the behaviour tree and returns the constructed BehaviorTree object
 	[[nodiscard]] gamelib::BehaviorTree* End() const
 	{
 		return new gamelib::BehaviorTree(root);
@@ -72,7 +87,7 @@ public:
 
 private:
 
-	// The root of the behavior tree
+	// The root of the behaviour tree
 	gamelib::Composite* root = nullptr;
 
 	// The stack used to keep track of the current node in the tree
@@ -89,7 +104,7 @@ private:
 			return;
 		}
 
-		// Otherwise, add the new behavior as a child of the current node
+		// Otherwise, add the new behaviour as a child of the current node
 		tree.top()->AddChild(behavior);
 		tree.push(behavior);
 	}

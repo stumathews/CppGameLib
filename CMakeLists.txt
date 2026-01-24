@@ -37,6 +37,9 @@ ai/Repeat.h
 ai/Selector.h
 ai/ScriptedBehavior.h
 ai/Condition.h
+ai/Blackboard.h
+        ai/BlackboardKey.h
+ai/BlackboardKeyRegistry.h
 asset/asset.h
 asset/SpriteAsset.h
 asset/ScriptAsset.h
@@ -211,6 +214,8 @@ ai/BehaviorTree.cpp
 ai/BehaviorTreeBuilder.cpp
 ai/FSM.cpp
 ai/FSMState.cpp
+ai/Blackboard.cpp
+        ai/BlackboardKeyRegistry.cpp
 asset/asset.cpp
 asset/SpriteAsset.cpp
 asset/ScriptAsset.cpp
@@ -465,6 +470,7 @@ Tests/Tests/SceneGraphTests.cpp
 Tests/Tests/SceneManagerTests.cpp
 Tests/Tests/SDLGraphicsManagerTests.cpp
 Tests/Tests/LuaTests.cpp
+Tests/Tests/BlackboardTests.cpp
 )
 
 # Add an executable for running only the networking tests

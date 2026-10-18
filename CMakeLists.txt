@@ -204,6 +204,9 @@ utils/RingBuffer.h
 utils/Statistics.h
 utils/Utils.h
 time/time.h
+buffering/DoubleBuffer.h
+multitasking/CooperativeScheduler.h
+multitasking/Task.h
 )
 
 # Collect all the source files into a variable called sourceFiles
@@ -215,7 +218,7 @@ ai/BehaviorTreeBuilder.cpp
 ai/FSM.cpp
 ai/FSMState.cpp
 ai/Blackboard.cpp
-        ai/BlackboardKeyRegistry.cpp
+ai/BlackboardKeyRegistry.cpp
 asset/asset.cpp
 asset/SpriteAsset.cpp
 asset/ScriptAsset.cpp
@@ -471,6 +474,8 @@ Tests/Tests/SceneManagerTests.cpp
 Tests/Tests/SDLGraphicsManagerTests.cpp
 Tests/Tests/LuaTests.cpp
 Tests/Tests/BlackboardTests.cpp
+Tests/Tests/DoubleBufferTests.cpp
+Tests/Tests/CooperativeSchedulerTests.cpp
 )
 
 # Add an executable for running only the networking tests
@@ -506,7 +511,7 @@ PUBLIC
  ${CMAKE_CURRENT_SOURCE_DIR} 
  ${LUA_INCLUDE_DIR})
 
-# Link libraries that the test AllTests exeutable uses
+ # Link libraries that the test AllTests exeutable uses
 target_link_libraries(NetworkingTests 
  PUBLIC 
   cppgamelib

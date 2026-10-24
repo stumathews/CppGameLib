@@ -207,6 +207,9 @@ time/time.h
 buffering/DoubleBuffer.h
 multitasking/CooperativeScheduler.h
 multitasking/Task.h
+multitasking/BackgroundWorker.h
+multitasking/Job.h
+multitasking/JobQueue.h
 )
 
 # Collect all the source files into a variable called sourceFiles
@@ -476,6 +479,7 @@ Tests/Tests/LuaTests.cpp
 Tests/Tests/BlackboardTests.cpp
 Tests/Tests/DoubleBufferTests.cpp
 Tests/Tests/CooperativeSchedulerTests.cpp
+Tests/Tests/BackgroundWorkerTests.cpp
 )
 
 # Add an executable for running only the networking tests

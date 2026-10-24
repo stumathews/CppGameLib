@@ -26,6 +26,7 @@ A Basic view of how the library would be used to structure a game:
 
 ![Basic Architecture](AppGameLibArchitecture.png)
 
+A minimalist skeleton game environment can be found at: https://github.com/stumathews/game-skeleton
 
 ## Build
 

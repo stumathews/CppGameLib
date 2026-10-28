@@ -8,6 +8,7 @@
 #include <map>
 #include <queue>
 #include <functional>
+#include <mutex>
 
 namespace gamelib
 {
@@ -41,21 +42,21 @@ namespace gamelib
 		bool Initialize();
 		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, unsigned long deltaMs) override;
 		std::string GetSubscriberName() override;
-		std::map<const EventId, std::vector<IEventSubscriber*>>& GetSubscriptions();
+		std::map<const EventId, std::vector<IEventSubscriber*>> GetSubscriptions();
 		[[nodiscard]] size_t CountReady() const;
 		std::queue<std::shared_ptr<Event>> GetEvents();
 		void SetEventTap(const std::function<void(const std::shared_ptr<Event>& event, const IEventSubscriber* pSubscriber)>& tapFn);
-	protected:
-		static EventManager* instance;
 	private:
 		EventManager();		
 		void Send(const std::shared_ptr<Event>& event, IEventSubscriber* pSubscriber, unsigned long deltaMs = 0);		
 		void AddToSecondaryEventQueue(const std::shared_ptr<Event>& secondaryEvent, IEventSubscriber* originSubscriber);
 		void LogEventRaised(IEventSubscriber* you, const std::shared_ptr<Event>& event) const;
+		
 		std::queue<std::shared_ptr<Event>> primaryEventQueue; // Primary queue used for event processing 		
 		std::queue<std::shared_ptr<Event>> secondaryEventQueue; // used to hold events occurring out of processing of primary events
 		std::map<const EventId, std::vector<IEventSubscriber*>> eventSubscribers;
 		std::map<EventId, int> eventsDispatched {};
+		
 		int badSubscribersDuringDispatch {};
 		int noSubscribersDuringDispatch {};
 		int dispatchCalledTimes {};
@@ -63,6 +64,7 @@ namespace gamelib
 		bool logEvents;
 		bool printStatistics;
 		std::function<void(const std::shared_ptr<Event>& event, IEventSubscriber* pSubscriber)> tap = nullptr;
+		mutable std::mutex mutex;
 	};
 }
 

@@ -19,33 +19,59 @@ namespace gamelib
 	{
 	}
 
-	std::map<const EventId, std::vector<IEventSubscriber*>>& EventManager::GetSubscriptions() { return eventSubscribers; }
-	std::string EventManager::GetSubscriberName() { return "EventManager"; }
-	void EventManager::ClearSubscribers() { this->eventSubscribers.clear(); }
+	std::map<const EventId, std::vector<IEventSubscriber*>> EventManager::GetSubscriptions()
+	{
+		std::scoped_lock lock(mutex);
+
+		return eventSubscribers;
+	}
+
+	std::string EventManager::GetSubscriberName()
+	{
+		return "EventManager";
+	}
+
+	void EventManager::ClearSubscribers()
+	{
+		{
+			std::scoped_lock lock(mutex);
+			this->eventSubscribers.clear();
+		}
+	}
 
 	EventManager* EventManager::Get()
 	{
-		if (instance == nullptr)
-		{
-			instance = new EventManager();
-		}
-		return instance;
+		static EventManager instance;
+		return &instance;
 	}
 
-	EventManager* EventManager::instance = nullptr;
+	size_t EventManager::CountReady() const
+	{
+		std::scoped_lock lock(mutex);
+		return primaryEventQueue.size() + secondaryEventQueue.size();
+	}
 
-	size_t EventManager::CountReady() const { return primaryEventQueue.size() + secondaryEventQueue.size(); }
-
-	std::queue<shared_ptr<Event>> EventManager::GetEvents() { return primaryEventQueue;}
+	std::queue<shared_ptr<Event>> EventManager::GetEvents()
+	{
+		std::scoped_lock lock(mutex);
+		return primaryEventQueue;
+	}
 
 	void EventManager::Reset()
 	{
-		std::queue<shared_ptr<Event>> empty;
-		std::swap( primaryEventQueue, empty );
-		std::swap( secondaryEventQueue, empty );		  
+		{
+			std::scoped_lock lock(mutex);
+
+			std::queue<shared_ptr<Event>> empty;
+			std::swap(primaryEventQueue, empty);
+			std::swap(secondaryEventQueue, empty);
+		}
 	}
 
-	EventManager::~EventManager() { Logger::Get()->LogThis("Event manager dying."); instance = nullptr; }
+	EventManager::~EventManager()
+	{
+		Logger::Get()->LogThis("Event manager dying.");
+	}
 
 	
 	bool EventManager::Initialize() 
@@ -60,7 +86,11 @@ namespace gamelib
 		if(!you) { Logger::Get()->LogThis("Invalid sender", true); return; }
 		
 		event->Origin = you->GetSubscriberName();
-		primaryEventQueue.push(event);		
+		
+		{
+			std::scoped_lock lock(mutex);
+			primaryEventQueue.push(event);
+		}
 
 		LogEventRaised(you, event);
 	}
@@ -76,7 +106,12 @@ namespace gamelib
 		}
 	}
 
-	void EventManager::RaiseEventWithNoLogging(const std::shared_ptr<Event>& event) { primaryEventQueue.push(event); }
+	void EventManager::RaiseEventWithNoLogging(const std::shared_ptr<Event>& event)
+	{
+		std::scoped_lock lock(mutex);
+
+		primaryEventQueue.push(event);
+	}
 
 	void EventManager::LogEventSubscription(const EventId& eventId, IEventSubscriber* pYou) const
 	{
@@ -91,20 +126,19 @@ namespace gamelib
 
 	void EventManager::SubscribeToEvent(const EventId& eventId, IEventSubscriber* pYou)
 	{
-		if(pYou)
+		if (!pYou) return;
+
+		LogEventSubscription(eventId, pYou);
+
+		std::scoped_lock lock(mutex);
+
+		auto& subscribers = eventSubscribers[eventId];
+		if (std::find(subscribers.begin(), subscribers.end(), pYou) != subscribers.end())
 		{
-			LogEventSubscription(eventId, pYou);
-
-			// Prevent same subscriber adding duplicate subscriptions
-
-			auto& subscribers = eventSubscribers[eventId];
-			if (std::find(subscribers.begin(), subscribers.end(), pYou) != subscribers.end())
-			{
-				return;
-			}
-
-			eventSubscribers[eventId].push_back(pYou);
+			return;
 		}
+
+		subscribers.push_back(pYou);
 	}
 
 	void EventManager::Send(const shared_ptr<Event>& event, IEventSubscriber* pSubscriber, const unsigned long deltaMs)
@@ -130,98 +164,145 @@ namespace gamelib
 	/// </summary>
 	/// <param name="event">Event to send to subscribers</param>
 	/// <param name="deltaMs">delta time</param>
-	void EventManager::DispatchEventToSubscriber(const shared_ptr<Event>& event, const unsigned long deltaMs)
+	void EventManager::DispatchEventToSubscriber(const shared_ptr<Event>& event, unsigned long deltaMs)
 	{
-		// Go through each subscriber of the event and have the subscriber handle it
-		for (const auto& pSubscriber :  eventSubscribers[event->Id])
+		// Find the subscribers of this event
+		std::vector<IEventSubscriber*> localSubscribers;
 		{
-			if (eventSubscribers.empty())
+			std::scoped_lock lock(mutex);
+			auto it = eventSubscribers.find(event->Id);
+			if (it != eventSubscribers.end())
 			{
-				noSubscribersDuringDispatch++;
-				return;
+				localSubscribers = it->second;   // copy only the vector
 			}
+		}
 
+		for (auto* pSubscriber : localSubscribers)
+		{
 			if (!pSubscriber)
 			{
+				std::scoped_lock lock(mutex);
 				badSubscribersDuringDispatch++;
 				continue;
-			}					
-			
-			// allow subscriber to process the event
+			}
+
 			Send(event, pSubscriber, deltaMs);
 
-			eventsDispatched[event->Id]++;			
-		}	
+			{
+				std::scoped_lock lock(mutex);
+				eventsDispatched[event->Id]++;
+			}
+		}
 
 		event->Processed = true;
-		
-		if(printStatistics)
-		{			
+
+		if (printStatistics)
+		{
+			std::scoped_lock lock(mutex);
 			elapsedTimeMs += deltaMs;
 			dispatchCalledTimes++;
-			if(std::isgreater(elapsedTimeMs, 1000))
+			if (std::isgreater(elapsedTimeMs, 1000))
 			{
 				int totalPrimaryEvents = 0;
 				std::stringstream str;
-				for(const auto& [eventId, count] : eventsDispatched)
+				for (const auto& [eventId, count] : eventsDispatched)
 				{
 					str << eventId.Name << " " << count << "/s ";
 					totalPrimaryEvents += count;
 				}
-				std::cout << totalPrimaryEvents  << " events/s over " << dispatchCalledTimes << " dispatches. " << str.str() << '\n';
+				std::cout << totalPrimaryEvents << " events/s over " << dispatchCalledTimes
+					<< " dispatches. " << str.str() << '\n';
+
 				eventsDispatched.clear();
 				elapsedTimeMs = 0;
 				noSubscribersDuringDispatch = badSubscribersDuringDispatch = dispatchCalledTimes = 0;
 			}
- 		}
+		}
 	}
 
 	void EventManager::AddToSecondaryEventQueue(const std::shared_ptr<Event>& secondaryEvent, IEventSubscriber* originSubscriber)
 	{
 		// any results from processing are put onto the secondary queue
 		secondaryEvent->Origin = originSubscriber->GetSubscriberName();
-		secondaryEventQueue.push(secondaryEvent);
+
+		{
+			std::scoped_lock lock(mutex);
+			secondaryEventQueue.push(secondaryEvent);
+		}
 	}
 
 	void EventManager::DispatchEventToSubscriber(const shared_ptr<Event>& event, const std::string& target)
 	{
-		// Go through each subscriber of the event and have the subscriber handle it
-		for (const auto& pSubscriber :  eventSubscribers[event->Id])
+		std::vector<IEventSubscriber*> local;
+		
 		{
-			if (eventSubscribers.empty()) { return; } // if reset()
+			std::scoped_lock lock(mutex);
+			local = eventSubscribers[event->Id];
+		}
+
+
+		if (local.empty())
+		{
+			event->Processed = true;
+			return;
+		} // if reset()
+
+		// Go through each subscriber of the event and have the subscriber handle it
+		for (const auto& pSubscriber : local)
+		{
 			if (!pSubscriber) { continue; }
-			if (pSubscriber->GetSubscriberName() != target) { return; }
+			if (pSubscriber->GetSubscriberName() != target) { continue; }
 						
 			// allow subscriber to process the event
 			Send(event, pSubscriber);
+			event->Processed = true;
+			return;
 		}
 		event->Processed = true;
 	}
 
 	void EventManager::ProcessAllEvents(const unsigned long deltaMs)
 	{			
-		while(!primaryEventQueue.empty())
+		std::queue<std::shared_ptr<Event>> local_primaryEventQueue; // swap to this so no others have access to it while processing.
 		{
-			const auto& event = primaryEventQueue.front();
+			std::scoped_lock lock(mutex);
+			std::swap(local_primaryEventQueue, primaryEventQueue);
+		}
+
+		std::queue<std::shared_ptr<Event>> local_secondaryEventQueue; // swap to this so no others have access to it while processing.
+
+		{
+			std::scoped_lock lock(mutex);
+			std::swap(local_secondaryEventQueue, secondaryEventQueue);
+		}
+
+		while(!local_primaryEventQueue.empty())
+		{
+			const auto& event = local_primaryEventQueue.front();
 							
 			if (event->Processed)
 			{
-				primaryEventQueue.pop();
+				local_primaryEventQueue.pop();
 				continue;
 			}
 			
 			// Ask each subscriber to deal with event			
 			DispatchEventToSubscriber(event, deltaMs);
 
-			if (!primaryEventQueue.empty()) { primaryEventQueue.pop(); }
+			if (!local_primaryEventQueue.empty()) { local_primaryEventQueue.pop(); }
 		}
 
-		// Process the secondary queue once primary queue is processed
-		while(!secondaryEventQueue.empty())
 		{
-			// put the secondary queue onto the back of the the primary queue for next cycle of processing
-			primaryEventQueue.push(secondaryEventQueue.front());
-			secondaryEventQueue.pop();
+			std::scoped_lock lock(mutex);
+
+			// Process the secondary queue once primary queue is processed
+			while (!local_secondaryEventQueue.empty())
+			{
+				// put the secondary queue onto the back of the the primary queue for next cycle of processing
+
+				primaryEventQueue.push(local_secondaryEventQueue.front());
+				local_secondaryEventQueue.pop();
+			}
 		}
 	}
 	
@@ -234,7 +315,7 @@ namespace gamelib
 		return {};
 	}
 
-	bool IsSameSubscriber(IEventSubscriber* candidate, const int subscriptionId) 
+	static bool IsSameSubscriber(IEventSubscriber* candidate, const int subscriptionId) 
 	{
 		if(candidate)
 		{
@@ -246,26 +327,28 @@ namespace gamelib
 		return false;
 	};
 		
-	void EventManager::RemoveEventSubscription(const int subscriptionId, const EventId& id)
+	void EventManager::RemoveEventSubscription(int subscriptionId, const EventId& id)
 	{
-		for(auto & [eventId, subscribers] : eventSubscribers )
+		std::scoped_lock lock(mutex);
+
+		for (auto& [eventId, subscribers] : eventSubscribers)
 		{
-			// We only remove subscriptions for the specific event type provided
-			if(eventId != id) { continue; }
+			if (eventId != id) continue;
 
-			// The subscriber's id must match what we have in our subscriptions
 			auto matchFn = [&](IEventSubscriber* candidate) { return IsSameSubscriber(candidate, subscriptionId); };
-
-			// Look for the subscriber in list of subscribers for this event type
-			auto findResult = std::find_if(begin(subscribers), end(subscribers), matchFn);
-			
-			// Remove if found
-			if(findResult != std::end(subscribers)) { subscribers.erase(findResult); }
-		}		
+			auto it = std::find_if(begin(subscribers), end(subscribers), matchFn);
+			if (it != end(subscribers))
+			{
+				subscribers.erase(it);
+			}
+		}
 	}
+
 
 	void EventManager::Unsubscribe(const int subscriptionId)
 	{
+		std::scoped_lock lock(mutex);
+
 		for(auto & [eventId, subscribers] : eventSubscribers )
 		{
 			auto matchFn = [&](IEventSubscriber* candidate) { return IsSameSubscriber(candidate, subscriptionId); };
@@ -275,7 +358,7 @@ namespace gamelib
 
 			if(findResult != std::end(subscribers))
 			{
-				subscribers.erase(findResult);
+				subscribers.erase(findResult);				
 			}
 		}
 	}

@@ -79,7 +79,7 @@ namespace gamelib
 		EXPECT_EQ(0, EventManager::Get()->CountReady()) << "Expected there to be no events waiting to be dispatched after processing all events";
 		EXPECT_TRUE(subscriber.HandleEventReceived) << "Subscriber was not notified after processing events";
 
-		const auto& all_event_subscribers = EventManager::Get()->GetSubscriptions()[Id];
+		const auto all_event_subscribers = EventManager::Get()->GetSubscriptions()[Id];
 		
 		EXPECT_EQ(1, all_event_subscribers.size()) << "Expect 1 subscriber to exist";
 		//EXPECT_STREQ(all_event_subscribers[0].lock()->GetSubscriberName().c_str(), subscriber->GetSubscriberName().c_str()) << "Our subscriber was not the subscription w eexepcted";
@@ -100,12 +100,14 @@ namespace gamelib
 		EventManager::Get()->RaiseEvent(dynamic_pointer_cast<Event>(the_event), &subscriber);
 		EventManager::Get()->ProcessAllEvents();
 
-		const auto& all_event_subscribers = EventManager::Get()->GetSubscriptions();
+		auto all_event_subscribers = EventManager::Get()->GetSubscriptions();
 
 		EXPECT_EQ(1, all_event_subscribers.size()) << "Expect more than 0 subscriber to exist";
 
 		//Clear subscriptions
 		EventManager::Get()->ClearSubscribers();
+
+		all_event_subscribers = EventManager::Get()->GetSubscriptions();
 
 		EXPECT_EQ(0, all_event_subscribers.size()) << "Expected all the subscribers to have been removed";
 
@@ -116,7 +118,7 @@ namespace gamelib
 		EventManager::Get()->SubscribeToEvent(Id, &subscriber);
 		EventManager::Get()->SubscribeToEvent(Id, &subscriber);
 
-		auto& all_event_subscribers = EventManager::Get()->GetSubscriptions();
+		auto all_event_subscribers = EventManager::Get()->GetSubscriptions();
 
 		EXPECT_EQ(all_event_subscribers[Id].size(), 1);
 

@@ -35,9 +35,6 @@ namespace gamelib
 			message << "Could not get Window Renderer: " << SDL_GetError();
 			THROW(12, message.str(), "SDLGraphicsManager");
 		}
-
-		// Set drawing colour to Grey background
-		SDL_SetRenderDrawColor(windowRenderer, 192,192,192, 0);
 	}
 
 	void Window::ClearAndDraw(const std::function<void(SDL_Renderer* renderer)> &drawObjectsFn) const
@@ -48,23 +45,10 @@ namespace gamelib
 			return;
 		}
 
-		// Backup current render colour
-		SDL_Color oldColour = { 0, 0, 0, 0 };
-		SDL_GetRenderDrawColor(windowRenderer, &oldColour.r, &oldColour.g, &oldColour.b, &oldColour.a);
-
-		// 1. FORCE THE COLOR TO BACKGROUND (e.g., Black) BEFORE CLEARING
-		SDL_SetRenderDrawColor(windowRenderer, 0, 0, 0, 255);
-
-		// 2. Clear (Now it will correctly wipe the screen to black)
+		SDL_SetRenderDrawColor(windowRenderer, 192, 192, 192, 255);
 		SDL_RenderClear(windowRenderer);
-
-		// 3. Draw everything (Your objects will set their own colors inside here)
 		drawObjectsFn(windowRenderer);
 
-		// Restore whatever the render routine set as the draw colour to originally
-		SDL_SetRenderDrawColor(windowRenderer, oldColour.r, oldColour.g, oldColour.b, oldColour.a);
-
-		// Show what we've drawn
 		PresentOnly();
 	}
 

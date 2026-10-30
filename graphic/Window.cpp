@@ -49,18 +49,21 @@ namespace gamelib
 		}
 
 		// Backup current render colour
-		SDL_Color oldColour = {0, 0, 0, 0};
+		SDL_Color oldColour = { 0, 0, 0, 0 };
 		SDL_GetRenderDrawColor(windowRenderer, &oldColour.r, &oldColour.g, &oldColour.b, &oldColour.a);
-		
-		// Clear
+
+		// 1. FORCE THE COLOR TO BACKGROUND (e.g., Black) BEFORE CLEARING
+		SDL_SetRenderDrawColor(windowRenderer, 0, 0, 0, 255);
+
+		// 2. Clear (Now it will correctly wipe the screen to black)
 		SDL_RenderClear(windowRenderer);
 
-		// Draw everything
+		// 3. Draw everything (Your objects will set their own colors inside here)
 		drawObjectsFn(windowRenderer);
-		
-		// Set draw colour
-		SDL_SetRenderDrawColor(windowRenderer, oldColour.r, oldColour.g, oldColour.b, oldColour.a); // nb: restore whatever the render routine set as the draw colour to
-		
+
+		// Restore whatever the render routine set as the draw colour to originally
+		SDL_SetRenderDrawColor(windowRenderer, oldColour.r, oldColour.g, oldColour.b, oldColour.a);
+
 		// Show what we've drawn
 		PresentOnly();
 	}

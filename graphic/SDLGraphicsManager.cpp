@@ -42,7 +42,7 @@ namespace gamelib
 
 	SDL_Renderer* SdlGraphicsManager::GetSdlRendererFromWindow(SDL_Window* window)
 	{
-		const auto renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+		const auto renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 		
 		if (renderer == nullptr)
 		{			

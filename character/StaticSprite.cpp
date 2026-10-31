@@ -14,7 +14,7 @@ namespace gamelib
 		this->IsVisible = isVisible;
 	}
 
-	std::shared_ptr<StaticSprite> StaticSprite::Create(const int x, const int y, const std::shared_ptr<SpriteAsset>& spriteAsset)
+	std::shared_ptr<StaticSprite> StaticSprite::Create(const float x, const float y, const std::shared_ptr<SpriteAsset>& spriteAsset)
 	{
 		auto sprite = shared_ptr<StaticSprite>(new StaticSprite(gamelib::Coordinate<int>(x, y), spriteAsset));
 
@@ -25,7 +25,7 @@ namespace gamelib
 		return sprite;
 	}
 
-	std::shared_ptr<StaticSprite> StaticSprite::Create(const Coordinate<int> coordinate, const std::shared_ptr<SpriteAsset>& spriteAsset)
+	std::shared_ptr<StaticSprite> StaticSprite::Create(const Coordinate<float> coordinate, const std::shared_ptr<SpriteAsset>& spriteAsset)
 	{
 		return Create(coordinate.GetX(), coordinate.GetY(), spriteAsset);
 	}

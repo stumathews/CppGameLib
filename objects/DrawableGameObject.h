@@ -15,8 +15,8 @@ namespace gamelib
 		DrawableGameObject() = default;
 		explicit DrawableGameObject(bool isVisible);
 		DrawableGameObject(int x, int y, bool isVisible);
-		DrawableGameObject(const std::string& name, const std::string& type, Coordinate<int> coordinate, bool isVisible);
-		DrawableGameObject(const std::shared_ptr<GraphicAsset>& graphic, Coordinate<int> coordinate, bool isVisible);
+		DrawableGameObject(const std::string& name, const std::string& type, Coordinate<float> coordinate, bool isVisible);
+		DrawableGameObject(const std::shared_ptr<GraphicAsset>& graphic, Coordinate<float> coordinate, bool isVisible);
 
 		[[nodiscard]] bool HasColourKey() const;
 		[[nodiscard]] bool HasGraphic() const;

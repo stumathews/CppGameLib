@@ -15,13 +15,13 @@ namespace gamelib
 		SetDefaults(isVisible, 0, 0);
 	}
 
-	GameObject::GameObject(const int x, const int y, const bool isVisible)
+	GameObject::GameObject(const float x, const float y, const bool isVisible)
 	{
 		GameObject::LoadSettings();
 		SetDefaults(isVisible, x, y);
 	}
 
-	GameObject::GameObject(const Coordinate<int> coordinate, const bool isVisible)
+	GameObject::GameObject(const Coordinate<float> coordinate, const bool isVisible)
 	{
 		GameObject::LoadSettings();
 		SetDefaults(isVisible, coordinate.GetX(), coordinate.GetY());
@@ -29,14 +29,14 @@ namespace gamelib
 
 	void GameObject::Draw(SDL_Renderer* renderer) { }
 
-	SDL_Rect GameObject::CalculateBounds(const Coordinate<int> position, const int width, const int height)
+	SDL_Rect GameObject::CalculateBounds(const Coordinate<float> position, const int width, const int height)
 	{
-		return {position.GetX(), position.GetY(), width, height};
+		return {static_cast<int>(position.GetX()), static_cast<int>(position.GetY()), width, height};
 	}
 
-	SDL_Rect GameObject::CalculateBounds(const Coordinate<int> position, const AbcdRectangle &dimensions)
+	SDL_Rect GameObject::CalculateBounds(const Coordinate<float> position, const AbcdRectangle &dimensions)
 	{
-		return {position.GetX(), position.GetY(), dimensions.GetWidth(), dimensions.GetHeight()};
+		return {static_cast<int>(position.GetX()), static_cast<int>(position.GetY()), dimensions.GetWidth(), dimensions.GetHeight()};
 	}
 
 	void GameObject::LoadSettings()
@@ -66,7 +66,7 @@ namespace gamelib
 
 	int GameObject::GetSubscriberId() { return Id; }
 
-	void GameObject::SetDefaults(const bool isVisible, const int x, const int y)
+	void GameObject::SetDefaults(const bool isVisible, const float x, const float y)
 	{
 		this->IsVisible = isVisible;
 
@@ -74,7 +74,7 @@ namespace gamelib
 		Position.SetY(y);
 
 		// In this sensible?
-		Bounds = {Position.GetX(), Position.GetY(), 0, 0};
+		Bounds = {static_cast<int>(Position.GetX()), static_cast<int>(Position.GetY()), 0, 0};
 
 		// Increase the Internal Object Id
 		Id = lastGameObjectId++;

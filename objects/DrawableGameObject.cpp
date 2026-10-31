@@ -21,14 +21,14 @@ namespace gamelib
 	}
 
 
-	DrawableGameObject::DrawableGameObject(const std::string& name, const std::string& type, const Coordinate<int>
+	DrawableGameObject::DrawableGameObject(const std::string& name, const std::string& type, const Coordinate<float>
 	                                       coordinate, const bool isVisible)
 		: GameObject(coordinate, isVisible)
 	{
 		SetDefaults(name, type, isVisible, coordinate.GetX(), coordinate.GetY());
 	}
 
-	DrawableGameObject::DrawableGameObject(const std::shared_ptr<GraphicAsset>& graphic, const Coordinate<int> coordinate,
+	DrawableGameObject::DrawableGameObject(const std::shared_ptr<GraphicAsset>& graphic, const Coordinate<float> coordinate,
 	                                       const bool isVisible)
 	{
 		SetDefaults(graphic->Name, graphic->Type, isVisible, coordinate.GetX(), coordinate.GetY());
@@ -41,7 +41,7 @@ namespace gamelib
 		Position.SetX(x);
 		Position.SetY(y);
 
-		Bounds = {.x = Position.GetX(), .y = Position.GetY(), .w = 0 , .h = 0 };
+		Bounds = {.x = static_cast<int>(Position.GetX()), .y = static_cast<int>(Position.GetY()), .w = 0 , .h = 0 };
 		Name = inName;
 		Type = inType;
 		IsColorKeyEnabled = false;
@@ -130,7 +130,7 @@ namespace gamelib
 				// Draw graphic at the game object's current location
 				const SDL_Rect drawLocation =
 				{
-					Position.GetX(), Position.GetY(),
+					static_cast<int>(Position.GetX()), static_cast<int>(Position.GetY()),
 					graphicAsset->GetViewPort().w,
 					graphicAsset->GetViewPort().h
 				};

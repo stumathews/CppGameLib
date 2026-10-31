@@ -6,7 +6,7 @@
 #include "character/AnimatedSprite.h"
 #include "graphic/DrawableText.h"
 
-gamelib::Npc::Npc(const std::string& name, const std::string& type, const Coordinate<int> position,
+gamelib::Npc::Npc(const std::string& name, const std::string& type, const Coordinate<float> position,
                   const bool visible,
                   std::shared_ptr<AnimatedSprite> sprite, std::shared_ptr<IGameObjectMoveStrategy> moveStrategy)
 	: DrawableGameObject(name, type, position, visible), Sprite(std::move(sprite)), gameObjectMoveStrategy(std::move(moveStrategy))

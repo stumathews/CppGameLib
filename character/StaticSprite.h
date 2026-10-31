@@ -23,8 +23,8 @@ namespace gamelib
         GameObjectType GetGameObjectType() override;
         void Update(const unsigned long deltaMs) override {}
 
-        static std::shared_ptr<StaticSprite> Create(int x, int y, const std::shared_ptr<SpriteAsset>& spriteAsset);
-        static std::shared_ptr<StaticSprite> Create(Coordinate<int> coordinate, const std::shared_ptr<SpriteAsset>& spriteAsset);
+        static std::shared_ptr<StaticSprite> Create(float x, float y, const std::shared_ptr<SpriteAsset>& spriteAsset);
+        static std::shared_ptr<StaticSprite> Create(Coordinate<float> coordinate, const std::shared_ptr<SpriteAsset>& spriteAsset);
         
         void LoadSettings() override;
         void SetFrame(uint frameNumber);

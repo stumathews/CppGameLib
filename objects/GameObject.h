@@ -25,8 +25,8 @@ namespace gamelib
 	public:
 		explicit GameObject(bool isVisible);
 		GameObject() = default;
-		GameObject(int x, int y, bool isVisible);
-		GameObject(Coordinate<int> coordinate, bool isVisible);
+		GameObject(float x, float y, bool isVisible);
+		GameObject(Coordinate<float> coordinate, bool isVisible);
 
 		// Get/Set tag:
 		void SetTag(const std::string& tag);
@@ -35,8 +35,8 @@ namespace gamelib
 		// Bounding boxes:
 		void UpdateBounds(unsigned int width, unsigned int height);
 		void UpdateBounds(const AbcdRectangle& dimensions);
-		static SDL_Rect CalculateBounds(Coordinate<int> position, int width, int height);
-		static SDL_Rect CalculateBounds(Coordinate<int> position, const AbcdRectangle &dimensions);
+		static SDL_Rect CalculateBounds(Coordinate<float> position, int width, int height);
+		static SDL_Rect CalculateBounds(Coordinate<float> position, const AbcdRectangle &dimensions);
 
 		// Event functions:
 		ListOfEvents HandleEvent(const std::shared_ptr<Event>& event, unsigned long deltaMs) override;
@@ -68,7 +68,7 @@ namespace gamelib
 		bool IsVisible{};
 		bool IsActive = true;
 
-		Coordinate<int> Position;
+		Coordinate<float> Position;
 
 		SDL_Rect Bounds{};
 
@@ -80,7 +80,7 @@ namespace gamelib
 		static int lastGameObjectId;
 
 		// Initialize game objects defaults
-		void SetDefaults(bool isVisible, int x, int y);
+		void SetDefaults(bool isVisible, float x, float y);
 	};
 }
 

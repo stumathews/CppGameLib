@@ -25,7 +25,7 @@ namespace gamelib
 		using DrawableTextSPtr = std::shared_ptr<DrawableText>;
 		using GameObjectMoveStrategySPtr = std::shared_ptr<IGameObjectMoveStrategy>;
 
-		Npc(const std::string& name, const std::string& type, Coordinate<int> position, bool visible,
+		Npc(const std::string& name, const std::string& type, Coordinate<float> position, bool visible,
 		    AnimatedSpriteSPtr sprite,
 		    GameObjectMoveStrategySPtr moveStrategy = nullptr);
 

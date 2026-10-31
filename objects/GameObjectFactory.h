@@ -33,12 +33,12 @@ namespace gamelib
 		std::shared_ptr<GameObject> BuildGameObject(const tinyxml2::XMLElement* sceneObjectXml) const;
 
 		[[nodiscard]] static std::shared_ptr<StaticSprite> BuildGraphic(
-			const std::shared_ptr<Asset>& asset, const Coordinate<int>& position);
+			const std::shared_ptr<Asset>& asset, const Coordinate<float>& position);
 		[[nodiscard]] static std::shared_ptr<AnimatedSprite> BuildSprite(const std::string& name, const std::string& type,
 		                                                          const std::shared_ptr<
-			                                                          Asset>& asset, const Coordinate<int>& position, bool isVisible);
+			                                                          Asset>& asset, const Coordinate<float>& position, bool isVisible);
 		[[nodiscard]] static std::shared_ptr<StaticSprite> BuildStaticSprite(
-			const std::shared_ptr<Asset>& asset, const Coordinate<int>& position);
+			const std::shared_ptr<Asset>& asset, const Coordinate<float>& position);
 
 	private:
 		static GameObjectFactory& instance;
@@ -62,7 +62,7 @@ namespace gamelib
 		static void OnTypeParse(std::string& x, const std::string& detailValue);
 		static void GetAssetForResourceIdParse(const std::string& detailValue, std::shared_ptr<Asset>& resource);
 
-		[[nodiscard]] static std::shared_ptr<GameObject> InitializeGameObject(const std::string& name, const std::string& type, Coordinate<int> position, bool IsVisible,
+		[[nodiscard]] static std::shared_ptr<GameObject> InitializeGameObject(const std::string& name, const std::string& type, Coordinate<float> position, bool IsVisible,
 		                                                                      const std::shared_ptr<Asset>& asset);
 
 		// Private constructor 

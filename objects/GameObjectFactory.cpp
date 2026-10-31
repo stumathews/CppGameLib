@@ -40,7 +40,7 @@ namespace gamelib
 			if (attributeName == "type") { OnTypeParse(name, attributeValue); continue; }
 		}
 				
-		return InitializeGameObject(name, type, Coordinate<int>(static_cast<int>(x), static_cast<int>(y)), isVisible, asset);		
+		return InitializeGameObject(name, type, Coordinate<float>(static_cast<float>(x), static_cast<float>(y)), isVisible, asset);
 	}
 
 
@@ -63,7 +63,7 @@ namespace gamelib
 		resource = asset;
 	}
 
-	shared_ptr<GameObject> GameObjectFactory::InitializeGameObject(const string& name, const string& type, const Coordinate<int> position, const bool IsVisible, const shared_ptr<Asset>
+	shared_ptr<GameObject> GameObjectFactory::InitializeGameObject(const string& name, const string& type, const Coordinate<float> position, const bool IsVisible, const shared_ptr<Asset>
 	                                                               & asset)
 	{
 		if (asset == nullptr) { THROW(99,"cannot initialize game object with out an associated asset","GameObjectFactory"); }
@@ -77,7 +77,7 @@ namespace gamelib
 	}
 
 	shared_ptr<StaticSprite> GameObjectFactory::BuildGraphic(const std::shared_ptr<Asset>
-	                                                         & asset, const Coordinate<int>& position)
+	                                                         & asset, const Coordinate<float>& position)
 	{
 		
 		const auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);
@@ -91,13 +91,13 @@ namespace gamelib
 
 	}
 
-	std::shared_ptr<StaticSprite> GameObjectFactory::BuildStaticSprite(const std::shared_ptr<Asset>& asset, const Coordinate<int>& position)
+	std::shared_ptr<StaticSprite> GameObjectFactory::BuildStaticSprite(const std::shared_ptr<Asset>& asset, const Coordinate<float>& position)
 	{
 		return StaticSprite::Create(position, dynamic_pointer_cast<SpriteAsset>(asset));
 	}
 
 	shared_ptr<AnimatedSprite> GameObjectFactory::BuildSprite(const string& name, const string& type, const std::shared_ptr<Asset>
-	                                                          & asset, const Coordinate<int>& position, const bool isVisible) 
+	                                                          & asset, const Coordinate<float>& position, const bool isVisible)
 	{
 		const auto spriteAsset = dynamic_pointer_cast<SpriteAsset>(asset);
 		const auto graphicAsset = dynamic_pointer_cast<GraphicAsset>(asset);

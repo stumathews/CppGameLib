@@ -19,19 +19,19 @@ namespace gamelib
 	{	
 	public:
 		
-		AnimatedSprite(const std::string& name, const std::string& type, Coordinate<int> position, float frameDuration,
+		AnimatedSprite(const std::string& name, const std::string& type, Coordinate<float> position, float frameDuration,
 		               bool isVisible,
 		               const std::shared_ptr<SpriteAsset>& spriteAsset);
 		AnimatedSprite() = default;
 
-		static std::shared_ptr<AnimatedSprite> Create(Coordinate<int> position, const std::shared_ptr<SpriteAsset>& asset);
+		static std::shared_ptr<AnimatedSprite> Create(Coordinate<float> position, const std::shared_ptr<SpriteAsset>& asset);
 		static void Initialize();
 
 		GameObjectType GetGameObjectType() override { return GameObjectType::animated_sprite; }
 		void Draw(SDL_Renderer* renderer) override;	
 		void LoadSettings() override;
-		void MoveSprite(int x, int y);
-		void MoveSprite(Coordinate<int> position);
+		void MoveSprite(float x, float y);
+		void MoveSprite(Coordinate<float> position);
 		void Update(unsigned long deltaMs) override;
 		void Update(unsigned long deltaMs, const std::string& animationGroup);
 		void AdvanceCurrentFrameNumber();

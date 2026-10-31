@@ -11,7 +11,7 @@ using namespace std;
 
 namespace gamelib
 {
-	AnimatedSprite::AnimatedSprite(const std::string& name, const std::string& type, const Coordinate<int> position,
+	AnimatedSprite::AnimatedSprite(const std::string& name, const std::string& type, const Coordinate<float> position,
 	                               const float frameDuration, const bool isVisible, const shared_ptr<SpriteAsset>&
 	                               spriteAsset) 
 		: DrawableGameObject(name, type, position, isVisible)
@@ -23,7 +23,7 @@ namespace gamelib
 		LoadSettings();
 	}
 
-	shared_ptr<AnimatedSprite> AnimatedSprite::Create(const Coordinate<int> position, const std::shared_ptr<SpriteAsset>& asset)
+	shared_ptr<AnimatedSprite> AnimatedSprite::Create(const Coordinate<float> position, const std::shared_ptr<SpriteAsset>& asset)
 	{
 		auto sprite = std::make_shared<AnimatedSprite>("", "", position, asset->FrameDurationMs, true, asset);
 		
@@ -106,8 +106,8 @@ namespace gamelib
 		}
 	}
 	void AnimatedSprite::LoadSettings() { debug = SettingsManager::Get()->GetBool("sprite", "debug"); }
-	void AnimatedSprite::MoveSprite(const int x, const int y) { Position.SetX(x); Position.SetY(y); }
-	void AnimatedSprite::MoveSprite(const Coordinate<int> position) { Position = position; }
+	void AnimatedSprite::MoveSprite(const float x, const float y) { Position.SetX(x); Position.SetY(y); }
+	void AnimatedSprite::MoveSprite(const Coordinate<float> position) { Position = position; }
 	bool AnimatedSprite::IsCurrentFrameInAnimationGroup() const { return KeyFrames[currentFrameNumber].Group == animationFrameGroup; }
 	void AnimatedSprite::PlayAnimation() { stopped = false; }
 	void AnimatedSprite::DisableAnimation() { stopped = true; }

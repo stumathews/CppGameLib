@@ -110,6 +110,7 @@ events/StartNetworkLevelEvent.h
 events/SubscriberHandledEvent.h
 events/UpdateAllGameObjectsEvent.h
 events/UpdateProcessesEvent.h
+events/DeterministicEventScheduler.h
 exceptions/EngineException.h
 file/Logger.h
 file/SerializationManager.h
@@ -203,6 +204,7 @@ utils/BitFiddler.h
 utils/RingBuffer.h
 utils/Statistics.h
 utils/Utils.h
+utils/Random.h
 time/time.h
 buffering/DoubleBuffer.h
 multitasking/CooperativeScheduler.h
@@ -480,6 +482,8 @@ Tests/Tests/BlackboardTests.cpp
 Tests/Tests/DoubleBufferTests.cpp
 Tests/Tests/CooperativeSchedulerTests.cpp
 Tests/Tests/BackgroundWorkerTests.cpp
+Tests/Tests/RandomnessTests.cpp
+Tests/Tests/DeterministicEventSchedulerTests.cpp
 )
 
 # Add an executable for running only the networking tests

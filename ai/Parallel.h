@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 #include "Status.h"
 #include "Composite.h"
 
@@ -10,7 +11,7 @@ namespace gamelib
 	public:
 
 		// The policy for determining success or failure
-		enum class Policy : uint8_t
+		enum class Policy : std::uint8_t
 		{
 			require_one,
 			require_all

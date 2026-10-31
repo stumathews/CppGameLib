@@ -4,6 +4,8 @@
 #include "Job.h"
 #include "JobQueue.h"
 
+#include <thread>
+
 namespace gamelib
 {
 	// A background worker that runs jobs in a separate thread.

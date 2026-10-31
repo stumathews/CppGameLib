@@ -3,7 +3,7 @@
 
 #include <mutex>
 #include <queue>
-
+#include <condition_variable>
 #include "Job.h"
 
 namespace gamelib

@@ -43,7 +43,7 @@ namespace gamelib
 		}
 	}
 
-	int ReliableUdpProtocolManager::Send(const char* callersSendBuffer, const int dataLength, const unsigned long deltaMs)
+	int ReliableUdpProtocolManager::Send(const char* callersSendBuffer, const int dataLength, const cppgamelib::DeltaTime* deltaTime)
 	{
 		if(!sessionEstablished)
 		{
@@ -54,19 +54,19 @@ namespace gamelib
 			Logger::Get()->LogThis("Client: Sending public key...");
 
 			// Send our public key to server instead.
-			return SendInternal(reinterpret_cast<char*>(clientSecuritySide.GetPublicKey()), SecuritySide::PublicKeyLengthBytes, deltaMs, SendPubKey);
+			return SendInternal(reinterpret_cast<char*>(clientSecuritySide.GetPublicKey()), SecuritySide::PublicKeyLengthBytes, deltaTime, SendPubKey);
 		}
 
 		// Send over the transport - might be an aggregated message if there were no prior acks		
-		return SendInternal(callersSendBuffer, dataLength, deltaMs, General);
+		return SendInternal(callersSendBuffer, dataLength, deltaTime, General);
 	}	
 
-	int ReliableUdpProtocolManager::SendInternal(const char* callersSendBuffer, const int dataLength, const unsigned long deltaMs, const MessageType messageType)
+	int ReliableUdpProtocolManager::SendInternal(const char* callersSendBuffer, const int dataLength, const cppgamelib::DeltaTime* deltaTime, const MessageType messageType)
 	{
 		BitPacker packer(packingBuffer, PackingBufferElements);
 
 		// Track/store message as sent
-		const auto message = reliableUdp.MarkSent(PacketDatum(false, callersSendBuffer, deltaMs), messageType);
+		const auto message = reliableUdp.MarkSent(PacketDatum(false, callersSendBuffer, deltaTime->milliseconds), messageType);
 
 		// Packet loss detected as we have unacknowledged data in send buffer that we are resending
 		if(message->DataCount() > 1)
@@ -109,10 +109,10 @@ namespace gamelib
 		return sendResult;
 	}
 
-	int ReliableUdpProtocolManager::ReceiveInternal(char* callersReceiveBuffer, const int bufLength, const unsigned long deltaMs)
+	int ReliableUdpProtocolManager::ReceiveInternal(char* callersReceiveBuffer, const int bufLength, const cppgamelib::DeltaTime* deltaTime)
 	{
 		// Read the payload off the network, wait for all the data
-		const int bytesReceived = gameClientConnection->Receive(callersReceiveBuffer, bufLength, deltaMs);
+		const int bytesReceived = gameClientConnection->Receive(callersReceiveBuffer, bufLength, deltaTime);
 
 		if(bytesReceived < 0)
 		{
@@ -171,7 +171,7 @@ namespace gamelib
 			return 0;
 		}
 
-		reliableUdp.MarkReceived(message, deltaMs);
+		reliableUdp.MarkReceived(message, deltaTime->milliseconds);
 
 		if(message.Header.messageType == SendPubKey)
 		{
@@ -201,7 +201,7 @@ namespace gamelib
 			Logger::Get()->LogThis("Client: Sending ack...");
 
 			RaiseEvent(EventFactory::Get()->CreateReliableUdpPacketReceived(std::make_shared<Message>(message)));
-			SendAck(message, deltaMs);
+			SendAck(message, deltaTime->milliseconds);
 			RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), true));
 		}
 
@@ -209,10 +209,10 @@ namespace gamelib
 		return bytesReceived;
 	}
 
-	int ReliableUdpProtocolManager::Receive(char* callersReceiveBuffer, const int bufLength, const unsigned long deltaMs)
+	int ReliableUdpProtocolManager::Receive(char* callersReceiveBuffer, const int bufLength, const cppgamelib::DeltaTime* deltaTime)
 	{
 
-		const auto bytesReceived = ReceiveInternal(callersReceiveBuffer, bufLength, deltaMs);
+		const auto bytesReceived = ReceiveInternal(callersReceiveBuffer, bufLength, deltaTime);
 
 		return bytesReceived;
 	}
@@ -241,7 +241,7 @@ namespace gamelib
 		return SendInternal(reinterpret_cast<char*>(readBuffer), countBytesToSend, 0, Ack);
 	}
 
-	void ReliableUdpProtocolManager::Update(unsigned long deltaMs)
+	void ReliableUdpProtocolManager::Update(const cppgamelib::DeltaTime* deltaTime)
 	{
 		// do nothing
 	}
@@ -256,7 +256,7 @@ namespace gamelib
 		return "ReliableUdpProtocolManager";
 	}
 
-	std::vector<std::shared_ptr<Event>> ReliableUdpProtocolManager::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs)
+	std::vector<std::shared_ptr<Event>> ReliableUdpProtocolManager::HandleEvent(const std::shared_ptr<Event>& evt, const cppgamelib::DeltaTime* deltaTime)
 	{
 		return {};
 	}

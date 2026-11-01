@@ -4,6 +4,8 @@
 #include "Message.h"
 #include <memory>
 
+#include "time/DeltaTime.h"
+
 namespace gamelib
 {
 	class IGameClientConnection;
@@ -18,10 +20,10 @@ namespace gamelib
 		virtual void Connect(const char* address, const char* port) = 0;
 
 		// send data to server
-		virtual int Send(const char* data, int dataLength, unsigned long deltaMs = 0) = 0;
+		virtual int Send(const char* data, int dataLength, const cppgamelib::DeltaTime* deltaTime = 0) = 0;
 
 		// read data from server
-		virtual int Receive(char* receivedBuffer, int bufLength, unsigned long deltaMs = 0) = 0;
+		virtual int Receive(char* receivedBuffer, int bufLength, const cppgamelib::DeltaTime* deltaTime = 0) = 0;
 
 		// send ack to server
 		virtual int SendAck(const Message& messageToAck, unsigned long sendTimeMs) = 0;

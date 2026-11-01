@@ -12,7 +12,7 @@ gamelib::DrawableText::DrawableText(const AbcdRectangle& bounds, std::string tex
 {
 }
 
-void gamelib::DrawableText::Update(unsigned long deltaMs)
+void gamelib::DrawableText::Update(const cppgamelib::DeltaTime* deltaTime)
 {
 }
 

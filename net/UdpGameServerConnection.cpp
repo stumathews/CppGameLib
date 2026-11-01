@@ -53,7 +53,7 @@ namespace gamelib
 		return port;
 	}
 
-	void UdpGameServerConnection::Listen(const unsigned long deltaMs)
+	void UdpGameServerConnection::Listen(const cppgamelib::DeltaTime* deltaTime)
 	{
 		constexpr auto maxSockets = 5; // Number of pending connections to have in the queue at any one moment
 		
@@ -66,11 +66,11 @@ namespace gamelib
 		if (dataIsAvailable)
 		{
 			std::cout << "Game server: data received\n";
-			CheckForPlayerTraffic(deltaMs);			
+			CheckForPlayerTraffic(deltaTime);
 		}
 	}
 
-	void UdpGameServerConnection::CheckForPlayerTraffic(unsigned long deltaMs)
+	void UdpGameServerConnection::CheckForPlayerTraffic(const cppgamelib::DeltaTime* deltaTime)
 	{
 				
 		PeerInfo fromClient; // Identifier who the client sending the data is
@@ -105,7 +105,7 @@ namespace gamelib
 	}
 
 	int UdpGameServerConnection::InternalSend(const SOCKET socket, const char* buf, const int len, const int flags,
-	                                          const sockaddr* to, const int toLen, unsigned long sendTimeMs)
+	                                          const sockaddr* to, const int toLen, const cppgamelib::DeltaTime* deltaTime)
 	{		
 		return sendto(socket, buf, len, flags, to, toLen);
 	}
@@ -195,7 +195,7 @@ namespace gamelib
 		}
 	}
 
-	std::vector<std::shared_ptr<Event>> UdpGameServerConnection::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs)
+	std::vector<std::shared_ptr<Event>> UdpGameServerConnection::HandleEvent(const std::shared_ptr<Event>& evt, const cppgamelib::DeltaTime* deltaTime)
 	{
 		// We don't handle events yet
 		return {};

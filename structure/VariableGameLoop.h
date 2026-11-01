@@ -11,15 +11,15 @@ namespace gamelib
 		
 	public:
 		
-		VariableGameLoop(std::function<void(unsigned long deltaMs)> updateFunc, std::function<void()> drawFunc);
-		void Update(unsigned long deltaMs) override;
+		VariableGameLoop(std::function<void(const cppgamelib::DeltaTime* deltaTime)> updateFunc, std::function<void()> drawFunc);
+		void Update(const cppgamelib::DeltaTime* deltaTime) override;
 		void Draw() override;
 		void Loop(GameWorldData* gameWorldData) override;
 	private:
-		std::function<void(unsigned long deltaMs)> updateFunction;
+		std::function<void(const cppgamelib::DeltaTime* deltaTime)> updateFunction;
 		std::function<void()> drawFunction;
 
-		std::function<void(unsigned long deltaMs)> updateFunc;
+		std::function<void(const cppgamelib::DeltaTime* deltaTime)> UpdateFunc;
 		std::function<void()> drawFunc;
 		GameWorldData gameWorldData;
 	};

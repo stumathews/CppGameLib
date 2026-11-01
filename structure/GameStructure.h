@@ -3,6 +3,7 @@
 #include <functional>
 
 #include "events/EventSubscriber.h"
+#include "time/DeltaTime.h"
 
 namespace gamelib
 {
@@ -23,7 +24,7 @@ namespace gamelib
 		GameStructure& operator=(const GameStructure&& other) = delete;
 
 		// Use default game loop
-		explicit GameStructure(std::function<void(unsigned long deltaMs)> getInputFunction);
+		explicit GameStructure(std::function<void(const cppgamelib::DeltaTime* deltaTime)> getInputFunction);
 
 		// Use the specified game loop
 		explicit GameStructure(std::shared_ptr<IGameLoopStrategy> gameLoop);
@@ -51,10 +52,10 @@ namespace gamelib
 		static void Draw(unsigned long);
 
 		// Update the game
-		void Update(unsigned long deltaMs) const;
+		void Update(const cppgamelib::DeltaTime* deltaTime) const;
 		
 		// Handle any game Structure events
-		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& event, unsigned long deltaMs) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& event, const cppgamelib::DeltaTime* deltaTime) override;
 
 		// Name we register with the event system
 		std::string GetSubscriberName() override;
@@ -63,10 +64,10 @@ namespace gamelib
 		static bool InitializeSdl(int screenWidth, int screenHeight, const std::string& windowTitle, const bool hideWindow);
 
 		// Read keyboard/controller input
-		void ReadKeyboard(unsigned long deltaMs) const;
+		void ReadKeyboard(const cppgamelib::DeltaTime* deltaTime) const;
 
 		// Read from the network
-		void ReadNetwork(unsigned long deltaMs) const;
+		void ReadNetwork(const cppgamelib::DeltaTime* deltaTime) const;
 
 		// Get the Time now in MS
 		static long GetTimeNowMs();
@@ -75,7 +76,7 @@ namespace gamelib
 		static void HandleSpareTime(long);
 
 		// Store the input function (get physical player/controller input)
-		std::function<void(unsigned long deltaMs)> getControllerInputFunction;
+		std::function<void(const cppgamelib::DeltaTime* deltaTime)> getControllerInputFunction;
 
 		// If we should routinely check for keyboard events
 		bool sampleInput{};

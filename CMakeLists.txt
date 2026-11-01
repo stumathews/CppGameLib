@@ -206,6 +206,7 @@ utils/Statistics.h
 utils/Utils.h
 utils/Random.h
 time/time.h
+time/SimulationClock.h
 buffering/DoubleBuffer.h
 multitasking/CooperativeScheduler.h
 multitasking/Task.h

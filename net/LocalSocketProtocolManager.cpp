@@ -15,14 +15,14 @@ void gamelib::LocalSocketProtocolManager::Connect(const char *address, const cha
     gameClientConnection->Connect(address, port);
 }
 
-int gamelib::LocalSocketProtocolManager::Send(const char *data, int dataLength, unsigned long deltaMs)
+int gamelib::LocalSocketProtocolManager::Send(const char *data, int dataLength, const cppgamelib::DeltaTime* deltaTime)
 {
     return gameClientConnection->Send(data, dataLength);
 }
 
-int gamelib::LocalSocketProtocolManager::Receive(char *receivedBuffer, int bufLength, unsigned long deltaMs)
+int gamelib::LocalSocketProtocolManager::Receive(char *receivedBuffer, int bufLength, const cppgamelib::DeltaTime* deltaTime)
 {
-    const int bytesReceived = gameClientConnection->Receive(receivedBuffer, bufLength, deltaMs);
+    const int bytesReceived = gameClientConnection->Receive(receivedBuffer, bufLength, deltaTime);
     return bytesReceived;
 }
 
@@ -48,7 +48,7 @@ std::string gamelib::LocalSocketProtocolManager::GetSubscriberName()
 }
 
 std::vector<std::shared_ptr<gamelib::Event>> gamelib::LocalSocketProtocolManager::HandleEvent(
-    const std::shared_ptr<Event> &evt, unsigned long deltaMs)
+    const std::shared_ptr<Event> &evt, const cppgamelib::DeltaTime* deltaTime)
 {
     return {};
 }

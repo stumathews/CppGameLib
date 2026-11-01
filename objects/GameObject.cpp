@@ -59,7 +59,7 @@ namespace gamelib
 	string GameObject::GetSubscriberName() { return GetName(); }
 	string GameObject::GetTag() const { return this->tag; }
 
-	ListOfEvents GameObject::HandleEvent(const std::shared_ptr<Event>& event, const unsigned long deltaMs)
+	ListOfEvents GameObject::HandleEvent(const std::shared_ptr<Event>& event, const cppgamelib::DeltaTime* deltaTime)
 	{
 		return {};
 	}

@@ -6,10 +6,12 @@
 #include "Profiler.h"
 #include <algorithm>
 
+#include "time/DeltaTime.h"
 
-gamelib::VariableGameLoop::VariableGameLoop(std::function<void(unsigned long deltaMs)> updateFunc,
+
+gamelib::VariableGameLoop::VariableGameLoop(std::function<void(const cppgamelib::DeltaTime* deltaTime)> updateFunc,
                                             std::function<void()> drawFunc)
-	: updateFunc(std::move(updateFunc)), drawFunc(std::move(drawFunc)), gameWorldData(std::move(gameWorldData))
+	: UpdateFunc(std::move(updateFunc)), drawFunc(std::move(drawFunc)), gameWorldData(std::move(gameWorldData))
 {
 }
 
@@ -18,11 +20,11 @@ long GetTimeNowMs()
 	return static_cast<long>(gamelib::GetTimeMs());
 }
 
-void gamelib::VariableGameLoop::Update(const unsigned long deltaMs)
+void gamelib::VariableGameLoop::Update(const cppgamelib::DeltaTime* deltaTime)
 {
 	const auto duration = Profiler::GetDuration([&]()
 	{
-		updateFunc(deltaMs);
+		UpdateFunc(deltaTime);
 	});
 	std::cout << "Update Cost: " << duration << "ms" << std::endl;
 }
@@ -55,7 +57,7 @@ void gamelib::VariableGameLoop::Loop(GameWorldData* gameWorldData)
 
 		auto elapsedTimeMs = 0;
 		auto countUpdates = 0; // Number of loops
-
+		cppgamelib::DeltaTime deltaTime;
 		// Initialize/prepare process by saying last update occured right now.
 		auto t0 = GetTimeNowMs();
 
@@ -68,8 +70,9 @@ void gamelib::VariableGameLoop::Loop(GameWorldData* gameWorldData)
 			// However: Update might run longer than a tick, so the next scheduled tick start time could be missed.
 			auto loops = 0;
 			while ((t1 - t0) >= TICK_TIME && loops <  maxCatchupLoops)
-			{				
-				Update(t1 - t0);
+			{
+				deltaTime.milliseconds = t1 - t0;
+				Update(&deltaTime);
 				
 				t0 += TICK_TIME;
 				loops++;

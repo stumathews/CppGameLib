@@ -9,17 +9,17 @@ namespace gamelib
 	{
 	public:
 		FixedStepGameLoop(unsigned int timeStepMs,
-			std::function<void(unsigned long deltaMs)> updateFunc, 
+			std::function<void(const cppgamelib::DeltaTime* deltaTime)> updateFunc,
 			std::function<void()> drawFunc,
-			std::function<void(unsigned long deltaMs)> inputFunc);		
+			std::function<void(const cppgamelib::DeltaTime* deltaTime)> inputFunc);
 		void Loop(GameWorldData* gameWorldData) override;
 	private:
 		static long GetTimeNowMs();
-		void Update(unsigned long deltaMs) override;
+		void Update(const cppgamelib::DeltaTime* deltaTime) override;
 		void Draw() override;
-		std::function<void(unsigned long deltaMs)> UpdateFunc;
+		std::function<void(const cppgamelib::DeltaTime* deltaTime)> UpdateFunc;
 		std::function<void()> DrawFunc;
-		std::function<void(unsigned long deltaMs)> InputFunc;
+		std::function<void(const cppgamelib::DeltaTime* deltaTime)> InputFunc;
 		const unsigned TimeStepMs;
 	};
 }

@@ -38,7 +38,7 @@ namespace gamelib
 		return true;
 	}
 
-	vector<shared_ptr<Event>> ResourceManager::HandleEvent(const std::shared_ptr<Event>& event, const unsigned long deltaMs)
+	vector<shared_ptr<Event>> ResourceManager::HandleEvent(const std::shared_ptr<Event>& event, const cppgamelib::DeltaTime* deltaTime)
 	{
 		if (event->Id.PrimaryId == SceneChangedEventTypeEventId.PrimaryId)
 		{

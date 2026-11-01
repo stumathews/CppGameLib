@@ -17,9 +17,9 @@ namespace gamelib
 
         void Connect(const char *address, const char *port) override;
 
-        int Send(const char *data, int dataLength, unsigned long deltaMs) override;
+        int Send(const char *data, int dataLength, const cppgamelib::DeltaTime* deltaTime) override;
 
-        int Receive(char *receivedBuffer, int bufLength, unsigned long deltaMs) override;
+        int Receive(char *receivedBuffer, int bufLength, const cppgamelib::DeltaTime* deltaTime) override;
 
         int SendAck(const Message &messageToAck, unsigned long sendTimeMs) override;
 
@@ -30,7 +30,7 @@ namespace gamelib
         std::string GetSubscriberName() override;
 
         std::vector<std::shared_ptr<Event>>
-        HandleEvent(const std::shared_ptr<Event> &evt, unsigned long deltaMs) override;
+        HandleEvent(const std::shared_ptr<Event> &evt, const cppgamelib::DeltaTime* deltaTime) override;
     private:
         std::shared_ptr<IGameClientConnection> gameClientConnection;
         std::shared_ptr<IGameServerConnection> gameServerConnection;

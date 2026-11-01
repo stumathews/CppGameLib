@@ -57,26 +57,26 @@ namespace gamelib
 		return true;
 	}
 
-	void NetworkManager::Listen(const unsigned long deltaMs) const
+	void NetworkManager::Listen(const cppgamelib::DeltaTime* deltaTime) const
 	{
 		if (SettingsManager::Get()->GetBool("global", "isNetworkGame"))
 		{
 			if (isGameServer)
 			{
-				Server->Listen(deltaMs);
+				Server->Listen(deltaTime);
 			}
 			else
 			{
-				Client->Read(deltaMs);
+				Client->Read(deltaTime);
 			}
 		}
 	}
 	
-	void NetworkManager::PingGameServer(const unsigned long deltaMs) const
+	void NetworkManager::PingGameServer(const cppgamelib::DeltaTime* deltaTime) const
 	{
 		if(!isGameServer)
 		{
-			Client->PingGameServer(deltaMs);
+			Client->PingGameServer(deltaTime);
 		}
 	}
 		

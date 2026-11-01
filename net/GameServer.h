@@ -34,7 +34,7 @@ namespace gamelib
 		~GameServer() override;
 
 		// Checks to see if there is any data waiting to be read or written.
-		void Listen(unsigned long deltaMs = 0) const;
+		void Listen(const cppgamelib::DeltaTime* deltaTime = 0) const;
 
 		// Disconnect all clients by closing game server's listening socket
 		void Disconnect() const;
@@ -56,10 +56,10 @@ namespace gamelib
 		std::string nickname;
 
 		// Check if there is any data waiting to be ready from any of the connected player sockets
-		void CheckForPlayerTraffic(unsigned long deltaMs) const;
+		void CheckForPlayerTraffic(const cppgamelib::DeltaTime* deltaTime) const;
 
 		// Inherited via EventSubscriber
-		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, unsigned long deltaMs) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const cppgamelib::DeltaTime* deltaTime) override;
 
 		std::string GetSubscriberName() override;
 

@@ -51,11 +51,11 @@ namespace gamelib
 		std::shared_ptr<Layer> AddLayer(const std::string &name);
 		std::shared_ptr<Layer> FindLayer(const std::string &name);
 		[[nodiscard]] static std::shared_ptr<GameObject> GetGameObjectFrom(const std::shared_ptr<Event>& event);
-		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& event, unsigned long deltaMs) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& event, const cppgamelib::DeltaTime* deltaTime) override;
 
 		// Gets all game objects that are in the scene (including hidden objects)
 		[[nodiscard]] std::vector <std::weak_ptr<GameObject>> GetAllObjects() const;
-		void UpdateAllObjects(unsigned long deltaMs) const;
+		void UpdateAllObjects(const cppgamelib::DeltaTime* deltaTime) const;
 		std::string GetSubscriberName() override;
 		bool ReadSceneFile(const std::string& filename);
 		static bool CompareLayerOrder(const std::shared_ptr<Layer>& rhs, const std::shared_ptr<Layer>& lhs);

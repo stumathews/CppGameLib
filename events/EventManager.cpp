@@ -141,9 +141,9 @@ namespace gamelib
 		subscribers.push_back(pYou);
 	}
 
-	void EventManager::Send(const shared_ptr<Event>& event, IEventSubscriber* pSubscriber, const unsigned long deltaMs)
+	void EventManager::Send(const shared_ptr<Event>& event, IEventSubscriber* pSubscriber, const cppgamelib::DeltaTime* deltaTime)
 	{
-		for(const auto &secondaryEvent : pSubscriber->HandleEvent(event, deltaMs))
+		for(const auto &secondaryEvent : pSubscriber->HandleEvent(event, deltaTime))
 		{
 			AddToSecondaryEventQueue(secondaryEvent, pSubscriber);
 		}
@@ -164,7 +164,7 @@ namespace gamelib
 	/// </summary>
 	/// <param name="event">Event to send to subscribers</param>
 	/// <param name="deltaMs">delta time</param>
-	void EventManager::DispatchEventToSubscriber(const shared_ptr<Event>& event, unsigned long deltaMs)
+	void EventManager::DispatchEventToSubscriber(const shared_ptr<Event>& event, const cppgamelib::DeltaTime* deltaTime)
 	{
 		// Find the subscribers of this event
 		std::vector<IEventSubscriber*> localSubscribers;
@@ -186,7 +186,7 @@ namespace gamelib
 				continue;
 			}
 
-			Send(event, pSubscriber, deltaMs);
+			Send(event, pSubscriber, deltaTime);
 
 			{
 				std::scoped_lock lock(mutex);
@@ -199,7 +199,7 @@ namespace gamelib
 		if (printStatistics)
 		{
 			std::scoped_lock lock(mutex);
-			elapsedTimeMs += deltaMs;
+			elapsedTimeMs += deltaTime->milliseconds;
 			dispatchCalledTimes++;
 			if (std::isgreater(elapsedTimeMs, 1000))
 			{
@@ -261,7 +261,7 @@ namespace gamelib
 		event->Processed = true;
 	}
 
-	void EventManager::ProcessAllEvents(const unsigned long deltaMs)
+	void EventManager::ProcessAllEvents(const cppgamelib::DeltaTime* deltaTime)
 	{			
 		std::queue<std::shared_ptr<Event>> local_primaryEventQueue; // swap to this so no others have access to it while processing.
 		{
@@ -287,7 +287,7 @@ namespace gamelib
 			}
 			
 			// Ask each subscriber to deal with event			
-			DispatchEventToSubscriber(event, deltaMs);
+			DispatchEventToSubscriber(event, deltaTime);
 
 			if (!local_primaryEventQueue.empty()) { local_primaryEventQueue.pop(); }
 		}
@@ -309,7 +309,7 @@ namespace gamelib
 	/// <summary>
 	/// Handles events that the event manager subscribes to itself
 	/// </summary>
-	std::vector<std::shared_ptr<Event>> EventManager::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs)
+	std::vector<std::shared_ptr<Event>> EventManager::HandleEvent(const std::shared_ptr<Event>& evt, const cppgamelib::DeltaTime* deltaTime)
 	{
 		// Does not handle any events in the event queue itself
 		return {};

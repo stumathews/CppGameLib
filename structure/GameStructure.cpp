@@ -34,7 +34,7 @@ namespace gamelib
 	shared_ptr<VariableGameLoop> GameStructure::MakeVariableGameLoop() const
 	{
 		// Specify the update function that variable game loop will use
-		auto onUpdateFn = [&](const unsigned long deltaMs) { Update(deltaMs); };
+		auto onUpdateFn = [&](const cppgamelib::DeltaTime* deltaTime) { Update(deltaTime); };
 
 		// Specify the drawing function the variable game loop will use
 		auto drawFn = [&]() { Draw(0UL); };
@@ -43,7 +43,7 @@ namespace gamelib
 		return make_shared<VariableGameLoop>(onUpdateFn, drawFn);
 	}
 
-	GameStructure::GameStructure(std::function<void(unsigned long deltaMs)> getInputFunction)
+	GameStructure::GameStructure(std::function<void(const cppgamelib::DeltaTime* deltaTime)> getInputFunction)
 		: getControllerInputFunction(std::move(getInputFunction)), gameLoop(nullptr)
 	{
 		// We use the old variable game loop if we don't specify a specific one
@@ -104,16 +104,16 @@ namespace gamelib
 		}, true, true);
 	}
 
-	void GameStructure::Update(const unsigned long deltaMs) const
+	void GameStructure::Update(const cppgamelib::DeltaTime* deltaTime) const
 	{
 		
-		ReadKeyboard(deltaMs);
-		ReadNetwork(deltaMs);
+		ReadKeyboard(deltaTime);
+		ReadNetwork(deltaTime);
 
-		EventManager::Get()->ProcessAllEvents(deltaMs);
-		EventManager::Get()->DispatchEventToSubscriber(EventFactory::CreateUpdateAllGameObjectsEvent(), deltaMs);
-		EventManager::Get()->DispatchEventToSubscriber(EventFactory::CreateUpdateProcessesEvent(), deltaMs);
-		std::cout << deltaMs <<  " ";
+		EventManager::Get()->ProcessAllEvents(deltaTime);
+		EventManager::Get()->DispatchEventToSubscriber(EventFactory::CreateUpdateAllGameObjectsEvent(), deltaTime);
+		EventManager::Get()->DispatchEventToSubscriber(EventFactory::CreateUpdateProcessesEvent(), deltaTime);
+		std::cout << deltaTime <<  " ";
 		
 	}
 
@@ -173,7 +173,7 @@ namespace gamelib
 		}
 	}
 
-	void GameStructure::ReadKeyboard(const unsigned long deltaMs) const
+	void GameStructure::ReadKeyboard(const cppgamelib::DeltaTime* deltaTime) const
 	{
 		if(!sampleInput)
 		{
@@ -182,9 +182,9 @@ namespace gamelib
 		}
 
 		// Sample input
-		getControllerInputFunction(deltaMs);
+		getControllerInputFunction(deltaTime);
 	}
-	void GameStructure::ReadNetwork(const unsigned long deltaMs) const
+	void GameStructure::ReadNetwork(const cppgamelib::DeltaTime* deltaTime) const
 	{
 		if(!sampleNetwork)
 		{
@@ -193,7 +193,7 @@ namespace gamelib
 		}
 
 		// Listen for any network traffic sent to us (Network Manager abstracts away if we are a Game server or Game Client)
-		NetworkManager::Get()->Listen(deltaMs);
+		NetworkManager::Get()->Listen(deltaTime);
 	}
 
 	void GameStructure::HandleSpareTime(long elapsedTime)
@@ -201,7 +201,7 @@ namespace gamelib
 		// Do nothing
 	}
 
-	vector<shared_ptr<Event>> GameStructure::HandleEvent(const std::shared_ptr<Event>& the_event, const unsigned long deltaMs)
+	vector<shared_ptr<Event>> GameStructure::HandleEvent(const std::shared_ptr<Event>& the_event, const cppgamelib::DeltaTime* deltaTime)
 	{
 		// Do nothing - we don't subscribe to any events yet
 		return {};

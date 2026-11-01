@@ -24,13 +24,13 @@ namespace gamelib
 		{
 			gameClientConnection->Connect(address, port);
 		}
-		int Send(const char* data, int dataLength, unsigned long deltaMs) override
+		int Send(const char* data, int dataLength, const cppgamelib::DeltaTime* deltaTime) override
 		{
-			return gameClientConnection->Send(data, dataLength, deltaMs);
+			return gameClientConnection->Send(data, dataLength, deltaTime);
 		}
-		int Receive(char* receivedBuffer, int bufLength, unsigned long deltaMs) override
+		int Receive(char* receivedBuffer, int bufLength, const cppgamelib::DeltaTime* deltaTime) override
 		{
-			return gameClientConnection->Receive(receivedBuffer, bufLength, deltaMs);
+			return gameClientConnection->Receive(receivedBuffer, bufLength, deltaTime);
 		}
 		int SendAck(const Message& messageToAck, unsigned long sendTimeMs) override
 		{

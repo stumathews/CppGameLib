@@ -117,7 +117,7 @@ namespace gamelib
 		Logger::Get()->LogThis(sendResult == 0 ? "Client Error: 0 bytes sent." : "Client: client/player details successfully sent.");
 	}
 
-	bool GameClient::Read(const unsigned long deltaMs)
+	bool GameClient::Read(const cppgamelib::DeltaTime* deltaTime)
 	{
 		if(this->isDisconnectedFromGameServer)
 		{
@@ -140,25 +140,25 @@ namespace gamelib
 
 		if (dataIsAvailable)
 		{
-			CheckSocketForTraffic(deltaMs);
+			CheckSocketForTraffic(deltaTime);
 		}
 		return dataIsAvailable;
 	}
 
-	void GameClient::CheckSocketForTraffic(const unsigned long deltaMs)
+	void GameClient::CheckSocketForTraffic(const cppgamelib::DeltaTime* deltaTime)
 	{
 		// Process network data coming from the game server
 		if (FD_ISSET(networkProtocolManager->GetConnection()->GetRawSocket(), &readfds))
 		{
 			// Read the payload off the network, wait for all the data
-			const int bytesReceived = networkProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferMaxElements * 32 /8, deltaMs);
+			const int bytesReceived = networkProtocolManager->Receive(reinterpret_cast<char*>(readBuffer), ReceiveBufferMaxElements * 32 /8, deltaTime);
 
 			if (bytesReceived > 0)
 			{
 				std::stringstream message;
 				message << "Client: received " << bytesReceived << " bytes" << std::endl;
 				Logger::Get()->LogThis(message.str());
-				ParseReceivedServerPayload(reinterpret_cast<char*>(readBuffer), deltaMs);
+				ParseReceivedServerPayload(reinterpret_cast<char*>(readBuffer), deltaTime);
 				RaiseNetworkTrafficReceivedEvent(reinterpret_cast<char*>(readBuffer), bytesReceived);
 
 				this->isDisconnectedFromGameServer = false;
@@ -173,7 +173,7 @@ namespace gamelib
 		}
 	}
 
-	void GameClient::ParseReceivedServerPayload(const char* buffer, const unsigned long deltaMs) const
+	void GameClient::ParseReceivedServerPayload(const char* buffer, const cppgamelib::DeltaTime* deltaTime) const
 	{
 		const auto msgHeader = serializationManager->GetMessageHeader(buffer);
 		const auto messageType = msgHeader.TheMessageType;
@@ -186,7 +186,7 @@ namespace gamelib
 			std::cout << "Client: received requestPlayerDetails response\n";
 			const auto response = serializationManager->CreateRequestPlayerDetailsMessageResponse(nickName);
 			
-			networkProtocolManager->Send(response.c_str(), static_cast<int>(response.size()), deltaMs);
+			networkProtocolManager->Send(response.c_str(), static_cast<int>(response.size()), deltaTime);
 
 			return;
 		}
@@ -217,17 +217,17 @@ namespace gamelib
 			                                                this->GetSubscriberName()));
 	}
 
-	int GameClient::InternalSend(const std::string& message, const unsigned long deltaMs) const
+	int GameClient::InternalSend(const std::string& message, const cppgamelib::DeltaTime* deltaTime) const
 	{
-		return networkProtocolManager->Send(message.c_str(), static_cast<int>(message.size()), deltaMs);
+		return networkProtocolManager->Send(message.c_str(), static_cast<int>(message.size()), deltaTime);
 	}
 
-	int GameClient::InternalSend(const char* array, const size_t size, const unsigned long deltaMs) const
+	int GameClient::InternalSend(const char* array, const size_t size, const cppgamelib::DeltaTime* deltaTime) const
 	{
-		return networkProtocolManager->Send(array, static_cast<int>(size), deltaMs);
+		return networkProtocolManager->Send(array, static_cast<int>(size), deltaTime);
 	}
 
-	std::vector<std::shared_ptr<Event>> GameClient::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long deltaMs)
+	std::vector<std::shared_ptr<Event>> GameClient::HandleEvent(const std::shared_ptr<Event>& evt, const cppgamelib::DeltaTime* deltaTime)
 	{
 		if (sendClientEventsToServer)
 		{
@@ -235,7 +235,7 @@ namespace gamelib
 			Logger::Get()->LogThis(evt->ToString());
 
 			const auto message = serializationManager->SerializeEvent(evt, nickName);
-			const int sendResult = InternalSend(message, deltaMs);
+			const int sendResult = InternalSend(message, deltaTime);
 
 			Logger::Get()->LogThis(sendResult > 0 
 				? "Successfully sent."
@@ -249,10 +249,10 @@ namespace gamelib
 		return nickName;
 	}
 
-	void GameClient::PingGameServer(const unsigned long deltaMs) const
+	void GameClient::PingGameServer(const cppgamelib::DeltaTime* deltaTime) const
 	{
 		const auto message = serializationManager->CreatePingMessage();
-		const int sendResult = InternalSend(message, deltaMs);
+		const int sendResult = InternalSend(message, deltaTime);
 
 		Logger::Get()->LogThis(sendResult > 0 
 			? "Sent ping request"

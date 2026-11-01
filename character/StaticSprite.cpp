@@ -30,7 +30,7 @@ namespace gamelib
 		return Create(coordinate.GetX(), coordinate.GetY(), spriteAsset);
 	}
 
-	ListOfEvents StaticSprite::HandleEvent(const std::shared_ptr<Event>& event, const unsigned long deltaMs)
+	ListOfEvents StaticSprite::HandleEvent(const std::shared_ptr<Event>& event, const cppgamelib::DeltaTime* deltaTime)
 	{
 		return {};
 	}

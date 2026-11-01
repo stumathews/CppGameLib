@@ -20,7 +20,7 @@ namespace gamelib
 	{
 	}
 	
-	void ReliableUdpGameServerConnection::CheckForPlayerTraffic(const unsigned long deltaMs)
+	void ReliableUdpGameServerConnection::CheckForPlayerTraffic(const cppgamelib::DeltaTime* deltaTime)
 	{
 		// Identifier who the client sending the data is
 		PeerInfo fromClient;
@@ -89,7 +89,7 @@ namespace gamelib
 			}
 			
 			// Mark this sequence as having been received
-			reliableUdp.MarkReceived(message, deltaMs);			
+			reliableUdp.MarkReceived(message, deltaTime->milliseconds);
 
 			// Message handling:
 
@@ -127,7 +127,7 @@ namespace gamelib
 					RaiseNetworkTrafficReceivedEvent(payloadData, dataSize, fromClient);
 				}
 
-				SendAck(listeningSocket, message, 0, fromClient, deltaMs);
+				SendAck(listeningSocket, message, 0, fromClient, deltaTime);
 
 				// sent ack
 				RaiseEvent(EventFactory::Get()->CreateReliableUdpAckPacketEvent(std::make_shared<Message>(message), true));
@@ -146,7 +146,7 @@ namespace gamelib
 				// Send it to the server
 				InternalSend(listeningSocket, reinterpret_cast<char*>(securitySide.GetPublicKey()),
 					SecuritySide::PublicKeyLengthBytes, 0, reinterpret_cast<sockaddr*>(&fromClient.Address),
-					fromClient.Length, deltaMs, SendPubKey);
+					fromClient.Length, deltaTime, SendPubKey);
 
 				// We can derive the session keys
 				securitySide.GenerateServerTransmissionKeys(remotePublicKey);
@@ -160,12 +160,12 @@ namespace gamelib
 		}
 	}
 
-	int ReliableUdpGameServerConnection::InternalSend(const SOCKET socket, const char* buf, int len, const int flags,  const sockaddr* to, const int toLen, const unsigned long sendTimeMs, MessageType messageType)
+	int ReliableUdpGameServerConnection::InternalSend(const SOCKET socket, const char* buf, int len, const int flags,  const sockaddr* to, const int toLen, const cppgamelib::DeltaTime* deltaTime, MessageType messageType)
 	{
 		BitPacker packer(readBuffer, ReadBufferMaxElements);
 				
 		// Prepare data to be sent
-		const auto data = PacketDatum(false, buf, sendTimeMs);		
+		const auto data = PacketDatum(false, buf, deltaTime->milliseconds);
 
 		// Add data to message and mark message as having been sent (we sent it later)
 		const auto message = reliableUdp.MarkSent(data, messageType);
@@ -197,12 +197,12 @@ namespace gamelib
 		return sendto(socket, reinterpret_cast<char*>(readBuffer), countBytesToSend, flags, to, toLen);
 	}
 	
-	int ReliableUdpGameServerConnection::InternalSend(const SOCKET socket, const char* buf, int len, const int flags,  const sockaddr* to, const int toLen, const unsigned long sendTimeMs)
+	int ReliableUdpGameServerConnection::InternalSend(const SOCKET socket, const char* buf, int len, const int flags,  const sockaddr* to, const int toLen, const cppgamelib::DeltaTime* deltaTime)
 	{		
-		return InternalSend(socket, buf, len, flags, to, toLen, sendTimeMs, General);
+		return InternalSend(socket, buf, len, flags, to, toLen, deltaTime, General);
 	}
 
-	int ReliableUdpGameServerConnection::SendAck(const SOCKET socket, const Message& messageToAck, const int flags, PeerInfo& peerInfo, const unsigned long sendTimeMs)
+	int ReliableUdpGameServerConnection::SendAck(const SOCKET socket, const Message& messageToAck, const int flags, PeerInfo& peerInfo, const cppgamelib::DeltaTime* deltaTime)
 	{
 		std::stringstream ackMessage;
 
@@ -211,7 +211,7 @@ namespace gamelib
 		Logger::Get()->LogThis("Server: Sending ack.");
 
 		return InternalSend(socket, ackMessage.str().c_str(), static_cast<int>(ackMessage.str().size()), flags,
-		                    reinterpret_cast<sockaddr*>(&peerInfo.Address), peerInfo.Length, sendTimeMs, Ack);
+		                    reinterpret_cast<sockaddr*>(&peerInfo.Address), peerInfo.Length, deltaTime, Ack);
 	}
 
 	std::string ReliableUdpGameServerConnection::GetAddress()

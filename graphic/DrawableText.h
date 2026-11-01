@@ -17,7 +17,7 @@ namespace gamelib
 		/// Update the frame rate
 		/// </summary>
 		/// <param name="deltaMs"></param>
-		void Update(unsigned long deltaMs) override;
+		void Update(const cppgamelib::DeltaTime* deltaTime) override;
 
 		/// <summary>
 		/// All game objects can be drawn uniformly

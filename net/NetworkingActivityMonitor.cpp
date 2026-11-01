@@ -49,7 +49,7 @@ namespace gamelib
 	}
 
 	// Handle events
-	ListOfEvents NetworkingActivityMonitor::HandleEvent(const std::shared_ptr<Event>& evt, const unsigned long inDeltaMs)
+	ListOfEvents NetworkingActivityMonitor::HandleEvent(const std::shared_ptr<Event>& evt, const cppgamelib::DeltaTime* deltaTime)
 	{
 		if (evt->Id.PrimaryId == NetworkPlayerJoinedEventId.PrimaryId) { OnNetworkPlayerJoinedEvent(evt); }
 		if (evt->Id.PrimaryId == ReliableUdpPacketReceivedEventId.PrimaryId) { OnReliableUdpPacketReceivedEvent(evt); }

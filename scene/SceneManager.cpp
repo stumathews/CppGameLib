@@ -65,14 +65,14 @@ namespace gamelib
 		return isInitialized;
 	}
 
-	vector<shared_ptr<Event>> SceneManager::HandleEvent(const std::shared_ptr<Event>& event, const unsigned long deltaMs)
+	vector<shared_ptr<Event>> SceneManager::HandleEvent(const std::shared_ptr<Event>& event, const cppgamelib::DeltaTime* deltaTime)
 	{
 		vector<shared_ptr<Event>> secondaryEvents;
 
 		// ReSharper disable once CppDefaultCaseNotHandledInSwitchStatement
 		if(event->Id.PrimaryId == DrawCurrentSceneEventId.PrimaryId) { DrawScene(); }
 		if(event->Id.PrimaryId == SceneChangedEventTypeEventId.PrimaryId) { LoadNewScene(event); }
-		if(event->Id.PrimaryId == UpdateAllGameObjectsEventTypeEventId.PrimaryId) { UpdateAllObjects(deltaMs); }
+		if(event->Id.PrimaryId == UpdateAllGameObjectsEventTypeEventId.PrimaryId) { UpdateAllObjects(deltaTime); }
 		if(event->Id.PrimaryId == AddGameObjectToCurrentSceneEventId.PrimaryId) { AddGameObjectToScene(event);}
 		if(event->Id.PrimaryId == GameObjectTypeEventId.PrimaryId) { OnGameObjectEventReceived(event); }
 		if(event->Id.PrimaryId == SceneLoadedEventId.PrimaryId) { OnSceneLoaded(event);}
@@ -81,11 +81,11 @@ namespace gamelib
 		return secondaryEvents;
 	}
 
-	void SceneManager::UpdateAllObjects(const unsigned long deltaMs) const
+	void SceneManager::UpdateAllObjects(const cppgamelib::DeltaTime* deltaTime) const
 	{
 		for (auto& object : GetAllObjects()) 
 		{
-			if (const auto ptr = object.lock()) { ptr->Update(deltaMs); }
+			if (const auto ptr = object.lock()) { ptr->Update(deltaTime); }
 		}
 	}
 

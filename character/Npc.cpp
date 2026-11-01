@@ -24,7 +24,7 @@ void gamelib::Npc::Draw(SDL_Renderer* renderer)
 	Status->Draw(renderer);
 }
 
-void gamelib::Npc::Update(const unsigned long deltaMs)
+void gamelib::Npc::Update(const cppgamelib::DeltaTime* deltaTime)
 {
 	Status->DrawBounds = {Bounds.x-10, Bounds.y-10, Bounds.w/2, Bounds.h /2};
 
@@ -34,7 +34,7 @@ void gamelib::Npc::Update(const unsigned long deltaMs)
 	// Update the sprite position
 	Sprite->MoveSprite(Position);
 
-	Sprite->Update(deltaMs, gamelib::AnimatedSprite::GetStdDirectionAnimationFrameGroup(currentFacingDirection));
+	Sprite->Update(deltaTime, gamelib::AnimatedSprite::GetStdDirectionAnimationFrameGroup(currentFacingDirection));
 
 	// Update our bounds too
 	UpdateBounds(Dimensions);

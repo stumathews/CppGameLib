@@ -7,12 +7,12 @@ bool gamelib::TcpNetworkSocket::IsTcp()
 	return true;
 }
 
-int gamelib::TcpNetworkSocket::Send(const char* data, const int dataLength, const unsigned long deltaMs)
+int gamelib::TcpNetworkSocket::Send(const char* data, const int dataLength, const cppgamelib::DeltaTime* deltaTime)
 {
 	return Networking::netSendVRec(socket, data, dataLength);
 }
 
-int gamelib::TcpNetworkSocket::Receive(char* readBuffer, const int bufLength, unsigned long deltaMs)
+int gamelib::TcpNetworkSocket::Receive(char* readBuffer, const int bufLength, const cppgamelib::DeltaTime* deltaTime)
 {
 	return Networking::netReadVRec(socket, readBuffer, bufLength);
 }

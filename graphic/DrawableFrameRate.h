@@ -18,7 +18,7 @@ namespace gamelib
 		/// Update the frame rate
 		/// </summary>
 		/// <param name="deltaMs"></param>
-		void Update(unsigned long deltaMs) override;
+		void Update(const cppgamelib::DeltaTime* deltaTime) override;
 		void Draw(SDL_Renderer* renderer) override;
 
 	private:

@@ -32,8 +32,8 @@ namespace gamelib
 		void LoadSettings() override;
 		void MoveSprite(float x, float y);
 		void MoveSprite(Coordinate<float> position);
-		void Update(unsigned long deltaMs) override;
-		void Update(unsigned long deltaMs, const std::string& animationGroup);
+		void Update(const cppgamelib::DeltaTime* deltaTime) override;
+		void Update(const cppgamelib::DeltaTime* deltaTime, const std::string& animationGroup);
 		void AdvanceCurrentFrameNumber();
 		void SkipUnsupportedAnimationGroupFrames();
 		[[nodiscard]] bool IsCurrentFrameInAnimationGroup() const;

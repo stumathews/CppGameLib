@@ -19,7 +19,6 @@ void gamelib::FixedStepGameLoop::Loop(GameWorldData* gameWorldData)
 	unsigned long lag = 0;
 	cppgamelib::DeltaTime deltaTime;
 	deltaTime.milliseconds = TimeStepMs;
-	deltaTime.seconds = TimeStepMs / 1000.0f;
 
 	while (!gameWorldData->IsGameDone)
 	{

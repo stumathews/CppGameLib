@@ -11,7 +11,10 @@ namespace cppgamelib
     {
     public:
         unsigned long milliseconds;
-        unsigned long seconds;
+        float GetSeconds() const
+        {
+            return milliseconds / 1000.0f;
+        };
     };
 
 }

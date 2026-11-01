@@ -73,7 +73,7 @@ namespace gamelib
 				const auto& frame = keyFrames[frameNumber];
 				
 				const SDL_Rect srcLocation = { frame.X, frame.Y, frame.W, frame.H };
-				const SDL_Rect drawLocation = { Position.GetX(), Position.GetY(), frame.W, frame.H };
+				const SDL_Rect drawLocation = { static_cast<int>(Position.GetX()), static_cast<int>(Position.GetY()), frame.W, frame.H };
 
 				// Copy the texture (restricted by viewport) to the drawLocation on the screen
 				SDL_RenderCopy(renderer, graphicAsset->GetTexture(), &srcLocation, &drawLocation);

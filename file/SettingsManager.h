@@ -37,8 +37,6 @@ namespace gamelib
 
 		std::vector<std::string> GetStringArray(const std::string &section, const std::string &name);
 
-		std::vector<std::string> splitCSV(const std::string &line);
-
 		static int Int(const std::string& section, const std::string& name);
 
 		// Long settings
@@ -59,5 +57,7 @@ namespace gamelib
 		std::map<std::string, InternalSettings> settings;
 		const char* settingsSection = "settings";
 		std::string filePath;
+
+		static std::vector<std::string> SplitCSV(const std::string &line);
 	};
 }

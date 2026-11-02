@@ -195,7 +195,7 @@ namespace gamelib
 	{
 		try
 		{
-			const auto parts = splitCSV(settings[section][name].Value);
+			const auto parts = SplitCSV(settings[section][name].Value);
 			std::vector<int> intVector;
 
 			for (auto part : parts)
@@ -215,7 +215,7 @@ namespace gamelib
 	{
 		try
 		{
-			return splitCSV(settings[section][name].Value);
+			return SplitCSV(settings[section][name].Value);
 		}
 		catch (exception&)
 		{
@@ -223,7 +223,7 @@ namespace gamelib
 		}
 	}
 
-	std::vector<std::string> SettingsManager::splitCSV(const std::string& line)
+	std::vector<std::string> SettingsManager::SplitCSV(const std::string& line)
 	{
 		std::vector<std::string> parts;
 		std::stringstream ss(line);

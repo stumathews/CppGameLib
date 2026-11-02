@@ -1,6 +1,8 @@
 #pragma once
 #include <map>
 #include <string>
+#include <vector>
+
 #include "SettingDetail.h"
 #include "tinyxml2.h"
 
@@ -30,6 +32,13 @@ namespace gamelib
 
 		// Integer settings
 		int GetInt(const std::string& section, const std::string& name);
+
+		std::vector<int> GetIntArray(const std::string &section, const std::string &name);
+
+		std::vector<std::string> GetStringArray(const std::string &section, const std::string &name);
+
+		std::vector<std::string> splitCSV(const std::string &line);
+
 		static int Int(const std::string& section, const std::string& name);
 
 		// Long settings

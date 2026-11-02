@@ -26,8 +26,26 @@
 		<setting name="disableCharacters" type="bool">false</setting>
 	</global>
 
+	<test>
+		<setting name="numbers" type="int[]">
+			<item>1</item>
+			<item>2</item>
+			<item>3</item>
+		</setting>
+		<setting name="names" type="string[]">
+			<item>Stuart</item>
+			<item>Bruce</item>
+			<item>Jenny</item>
+		</setting>
+	</test>
+
 	<gamecommands>
 		<setting name="logCommands" type="bool">false</setting>
+		<setting name="types" type="string[]">
+			<item>Info</item>
+			<item>Warning</item>
+			<item>Error</item>
+		</setting>
 	</gamecommands>
 
 	<networking>

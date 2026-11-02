@@ -60,4 +60,50 @@ namespace gamelib
 		SettingsManager::Get()->ReadSettingsFile();
 		EXPECT_EQ(4, SettingsManager::Get()->GetInt("global", "max_loops"));
 	}
+
+	TEST(SettingsManagerTests, ReadArray)
+	{
+		SettingsManager::Get()->ReadSettingsFile();
+		/*
+		<test>
+			<setting name="numbers" type="int[]">
+				<item>1</item>
+				<item>2</item>
+				<item>3</item>
+			</setting>
+			<setting name="names" type="string[]">
+				<item>Stuart</item>
+				<item>Bruce</item>
+				<item>Jenny</item>
+			</setting>
+		</test>
+		 */
+		auto numbers =  SettingsManager::Get()->GetIntArray("test", "numbers");
+		EXPECT_EQ(numbers.size(), 3);
+		EXPECT_EQ(numbers[0], 1);
+		EXPECT_EQ(numbers[1], 2);
+		EXPECT_EQ(numbers[2], 3);
+		auto names =  SettingsManager::Get()->GetStringArray("test", "names");
+		EXPECT_EQ(numbers.size(), 3);
+		EXPECT_STREQ(names[0].c_str(), "Stuart");
+		EXPECT_STREQ(names[1].c_str(), "Bruce");
+		EXPECT_STREQ(names[2].c_str(), "Jenny");
+
+		/*
+			<gamecommands>
+				<setting name="logCommands" type="bool">false</setting>
+				<setting name="types" type="string[]">
+					<item>Info</item>
+					<item>Warning</item>
+					<item>Error</item>
+				</setting>
+			</gamecommands>
+		 */
+
+		auto logTypes =  SettingsManager::Get()->GetStringArray("gamecommands", "types");
+		EXPECT_EQ(logTypes.size(), 3);
+		EXPECT_STREQ(logTypes[0].c_str(), "Info");
+		EXPECT_STREQ(logTypes[1].c_str(), "Warning");
+		EXPECT_STREQ(logTypes[2].c_str(), "Error");
+	}
 }

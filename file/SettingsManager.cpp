@@ -1,5 +1,8 @@
 #include "SettingsManager.h"
+
+#include <sstream>
 #include <tinyxml2.h>
+#include <vector>
 #include <exceptions/EngineException.h>
 using namespace std;
 
@@ -51,6 +54,13 @@ namespace gamelib
 					<setting name="player_init_pos_y" type="int">100</setting>
 					<setting name="move_interval" type="int">2</setting>
 				</player>
+				<test>
+					<setting name"numbers" type="int[]">
+						<item>1</item>
+						<item>2</item>
+						<item>3</item>
+					</setting>
+				</test>
 			</settings>
 		 */
 
@@ -98,6 +108,23 @@ namespace gamelib
 							settingType = value;
 						}
 					}
+
+					// its it an array, we need to iterate through it
+					if (settingType.ends_with("[]"))
+					{
+						auto arrayType = settingType.substr(0, settingType.size() - 2);
+						std::stringstream ss;
+						for(auto* array = setting->FirstChild(); array; array = array->NextSibling())
+						{
+							auto settingElement = array->ToElement();
+							auto val = settingElement->GetText();
+							ss << settingElement->GetText()<< ",";
+						}
+						SaveSetting(sectionName, settingName, SettingDetail(settingName, ss.str(), settingType));
+
+						continue;
+					}
+
 
 					// Persist the setting into the SettingsManager
 					SaveSetting(sectionName, settingName,  SettingDetail(settingName, settingElement->GetText(), settingType));
@@ -162,6 +189,52 @@ namespace gamelib
 		{
 			THROW(12, "Could not find setting [" + section + "][" + name + "]", "Settings");
 		}
+	}
+
+	std::vector<int> SettingsManager::GetIntArray(const std::string& section, const std::string& name)
+	{
+		try
+		{
+			const auto parts = splitCSV(settings[section][name].Value);
+			std::vector<int> intVector;
+
+			for (auto part : parts)
+			{
+				intVector.push_back(atoi(part.c_str()));
+			}
+
+			return intVector;
+		}
+		catch (exception&)
+		{
+			THROW(12, "Could not find setting [" + section + "][" + name + "]", "Settings");
+		}
+	}
+
+	std::vector<string> SettingsManager::GetStringArray(const std::string& section, const std::string& name)
+	{
+		try
+		{
+			return splitCSV(settings[section][name].Value);
+		}
+		catch (exception&)
+		{
+			THROW(12, "Could not find setting [" + section + "][" + name + "]", "Settings");
+		}
+	}
+
+	std::vector<std::string> SettingsManager::splitCSV(const std::string& line)
+	{
+		std::vector<std::string> parts;
+		std::stringstream ss(line);
+		std::string part;
+
+		while (std::getline(ss, part, ','))
+		{
+			parts.push_back(part);
+		}
+
+		return parts;
 	}
 
 	int SettingsManager::Int(const std::string& section, const std::string& name)

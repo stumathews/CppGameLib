@@ -24,7 +24,7 @@ void gamelib::Npc::Draw(SDL_Renderer* renderer)
 	Status->Draw(renderer);
 }
 
-void gamelib::Npc::Update(const cppgamelib::DeltaTime* deltaTime)
+void gamelib::Npc::Update(const gamelib::DeltaTime* deltaTime)
 {
 	Status->DrawBounds = {Bounds.x-10, Bounds.y-10, Bounds.w/2, Bounds.h /2};
 

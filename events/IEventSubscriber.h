@@ -35,7 +35,7 @@ namespace gamelib
 		/// <param name="evt">Incoming event to handle</param>
 		/// <param name="deltaMs"></param>
 		/// <returns>List of generated events while handling current event</returns>
-		virtual std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const cppgamelib::DeltaTime* deltaTime) = 0;
+		virtual std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const gamelib::DeltaTime* deltaTime) = 0;
 	};
 }
 

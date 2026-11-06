@@ -45,12 +45,12 @@ namespace gamelib
 		Logger::Get()->LogThis("Game server initialization complete.");
 	}
 	
-	void GameServer::Listen(const cppgamelib::DeltaTime* deltaTime) const
+	void GameServer::Listen(const gamelib::DeltaTime* deltaTime) const
 	{		
 		gameServerConnection->Listen(deltaTime);
 	}
 		
-	void GameServer::CheckForPlayerTraffic(const cppgamelib::DeltaTime* deltaTime) const
+	void GameServer::CheckForPlayerTraffic(const gamelib::DeltaTime* deltaTime) const
 	{
 		gameServerConnection->CheckForPlayerTraffic(deltaTime);
 	}
@@ -70,7 +70,7 @@ namespace gamelib
 		return gameServerConnection->GetPort();
 	}
 
-	std::vector<std::shared_ptr<Event>> GameServer::HandleEvent(const std::shared_ptr<Event>& evt, const cppgamelib::DeltaTime* deltaTime)
+	std::vector<std::shared_ptr<Event>> GameServer::HandleEvent(const std::shared_ptr<Event>& evt, const gamelib::DeltaTime* deltaTime)
 	{
 		gameServerConnection->SendEventToAllPlayers(serializationManager->SerializeEvent(evt, nickname)); 
 

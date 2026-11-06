@@ -14,14 +14,14 @@ bool LocalNetworkSocket::IsTcp()
     return false;
 }
 
-int LocalNetworkSocket::Send(const char *data, int dataLength, const cppgamelib::DeltaTime* deltaTime)
+int LocalNetworkSocket::Send(const char *data, int dataLength, const gamelib::DeltaTime* deltaTime)
 {
 
 
     return send(socket, data, dataLength, 0);
 }
 
-int LocalNetworkSocket::Receive(char *readBuffer, int bufLength, const cppgamelib::DeltaTime* deltaTime)
+int LocalNetworkSocket::Receive(char *readBuffer, int bufLength, const gamelib::DeltaTime* deltaTime)
 {
     return recv(socket, readBuffer, bufLength, 0);
 }

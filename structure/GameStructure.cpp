@@ -34,7 +34,7 @@ namespace gamelib
 	shared_ptr<VariableGameLoop> GameStructure::MakeVariableGameLoop() const
 	{
 		// Specify the update function that variable game loop will use
-		auto onUpdateFn = [&](const cppgamelib::DeltaTime* deltaTime) { Update(deltaTime); };
+		auto onUpdateFn = [&](const gamelib::DeltaTime* deltaTime) { Update(deltaTime); };
 
 		// Specify the drawing function the variable game loop will use
 		auto drawFn = [&]() { Draw(0UL); };
@@ -43,7 +43,7 @@ namespace gamelib
 		return make_shared<VariableGameLoop>(onUpdateFn, drawFn);
 	}
 
-	GameStructure::GameStructure(std::function<void(const cppgamelib::DeltaTime* deltaTime)> getInputFunction)
+	GameStructure::GameStructure(std::function<void(const gamelib::DeltaTime* deltaTime)> getInputFunction)
 		: getControllerInputFunction(std::move(getInputFunction)), gameLoop(nullptr)
 	{
 		// We use the old variable game loop if we don't specify a specific one
@@ -104,7 +104,7 @@ namespace gamelib
 		}, true, true);
 	}
 
-	void GameStructure::Update(const cppgamelib::DeltaTime* deltaTime) const
+	void GameStructure::Update(const gamelib::DeltaTime* deltaTime) const
 	{
 		
 		ReadKeyboard(deltaTime);
@@ -173,7 +173,7 @@ namespace gamelib
 		}
 	}
 
-	void GameStructure::ReadKeyboard(const cppgamelib::DeltaTime* deltaTime) const
+	void GameStructure::ReadKeyboard(const gamelib::DeltaTime* deltaTime) const
 	{
 		if(!sampleInput)
 		{
@@ -184,7 +184,7 @@ namespace gamelib
 		// Sample input
 		getControllerInputFunction(deltaTime);
 	}
-	void GameStructure::ReadNetwork(const cppgamelib::DeltaTime* deltaTime) const
+	void GameStructure::ReadNetwork(const gamelib::DeltaTime* deltaTime) const
 	{
 		if(!sampleNetwork)
 		{
@@ -201,7 +201,7 @@ namespace gamelib
 		// Do nothing
 	}
 
-	vector<shared_ptr<Event>> GameStructure::HandleEvent(const std::shared_ptr<Event>& the_event, const cppgamelib::DeltaTime* deltaTime)
+	vector<shared_ptr<Event>> GameStructure::HandleEvent(const std::shared_ptr<Event>& the_event, const gamelib::DeltaTime* deltaTime)
 	{
 		// Do nothing - we don't subscribe to any events yet
 		return {};

@@ -141,7 +141,7 @@ namespace gamelib
 		subscribers.push_back(pYou);
 	}
 
-	void EventManager::Send(const shared_ptr<Event>& event, IEventSubscriber* pSubscriber, const cppgamelib::DeltaTime* deltaTime)
+	void EventManager::Send(const shared_ptr<Event>& event, IEventSubscriber* pSubscriber, const gamelib::DeltaTime* deltaTime)
 	{
 		for(const auto &secondaryEvent : pSubscriber->HandleEvent(event, deltaTime))
 		{
@@ -164,7 +164,7 @@ namespace gamelib
 	/// </summary>
 	/// <param name="event">Event to send to subscribers</param>
 	/// <param name="deltaMs">delta time</param>
-	void EventManager::DispatchEventToSubscriber(const shared_ptr<Event>& event, const cppgamelib::DeltaTime* deltaTime)
+	void EventManager::DispatchEventToSubscriber(const shared_ptr<Event>& event, const gamelib::DeltaTime* deltaTime)
 	{
 		// Find the subscribers of this event
 		std::vector<IEventSubscriber*> localSubscribers;
@@ -261,7 +261,7 @@ namespace gamelib
 		event->Processed = true;
 	}
 
-	void EventManager::ProcessAllEvents(const cppgamelib::DeltaTime* deltaTime)
+	void EventManager::ProcessAllEvents(const gamelib::DeltaTime* deltaTime)
 	{			
 		std::queue<std::shared_ptr<Event>> local_primaryEventQueue; // swap to this so no others have access to it while processing.
 		{
@@ -309,7 +309,7 @@ namespace gamelib
 	/// <summary>
 	/// Handles events that the event manager subscribes to itself
 	/// </summary>
-	std::vector<std::shared_ptr<Event>> EventManager::HandleEvent(const std::shared_ptr<Event>& evt, const cppgamelib::DeltaTime* deltaTime)
+	std::vector<std::shared_ptr<Event>> EventManager::HandleEvent(const std::shared_ptr<Event>& evt, const gamelib::DeltaTime* deltaTime)
 	{
 		// Does not handle any events in the event queue itself
 		return {};

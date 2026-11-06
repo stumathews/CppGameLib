@@ -31,7 +31,7 @@ namespace gamelib
 		this->serializationManager = std::make_shared<SerializationManager>(encoding);		
 	}
 
-	void TcpGameServerConnection::Listen(const cppgamelib::DeltaTime* deltaTime)
+	void TcpGameServerConnection::Listen(const gamelib::DeltaTime* deltaTime)
 	{
 		constexpr auto maxSockets = 5; // Number of pending connections to have in the queue at any one moment
 		
@@ -79,7 +79,7 @@ namespace gamelib
 		}
 	}
 
-	std::vector<std::shared_ptr<Event>> TcpGameServerConnection::HandleEvent(const std::shared_ptr<Event>& evt, const cppgamelib::DeltaTime* deltaTime)
+	std::vector<std::shared_ptr<Event>> TcpGameServerConnection::HandleEvent(const std::shared_ptr<Event>& evt, const gamelib::DeltaTime* deltaTime)
 	{
 		return {};
 	}
@@ -126,7 +126,7 @@ namespace gamelib
 		return port;
 	}
 
-	void TcpGameServerConnection::CheckForPlayerTraffic(const cppgamelib::DeltaTime* deltaTime)
+	void TcpGameServerConnection::CheckForPlayerTraffic(const gamelib::DeltaTime* deltaTime)
 	{
 		for (size_t playerId = 0; playerId < Players.size(); playerId++)
 		{

@@ -24,7 +24,7 @@ namespace gamelib
 		GameStructure& operator=(const GameStructure&& other) = delete;
 
 		// Use default game loop
-		explicit GameStructure(std::function<void(const cppgamelib::DeltaTime* deltaTime)> getInputFunction);
+		explicit GameStructure(std::function<void(const gamelib::DeltaTime* deltaTime)> getInputFunction);
 
 		// Use the specified game loop
 		explicit GameStructure(std::shared_ptr<IGameLoopStrategy> gameLoop);
@@ -52,10 +52,10 @@ namespace gamelib
 		static void Draw(unsigned long);
 
 		// Update the game
-		void Update(const cppgamelib::DeltaTime* deltaTime) const;
+		void Update(const gamelib::DeltaTime* deltaTime) const;
 		
 		// Handle any game Structure events
-		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& event, const cppgamelib::DeltaTime* deltaTime) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& event, const gamelib::DeltaTime* deltaTime) override;
 
 		// Name we register with the event system
 		std::string GetSubscriberName() override;
@@ -64,10 +64,10 @@ namespace gamelib
 		static bool InitializeSdl(int screenWidth, int screenHeight, const std::string& windowTitle, const bool hideWindow);
 
 		// Read keyboard/controller input
-		void ReadKeyboard(const cppgamelib::DeltaTime* deltaTime) const;
+		void ReadKeyboard(const gamelib::DeltaTime* deltaTime) const;
 
 		// Read from the network
-		void ReadNetwork(const cppgamelib::DeltaTime* deltaTime) const;
+		void ReadNetwork(const gamelib::DeltaTime* deltaTime) const;
 
 		// Get the Time now in MS
 		static long GetTimeNowMs();
@@ -76,7 +76,7 @@ namespace gamelib
 		static void HandleSpareTime(long);
 
 		// Store the input function (get physical player/controller input)
-		std::function<void(const cppgamelib::DeltaTime* deltaTime)> getControllerInputFunction;
+		std::function<void(const gamelib::DeltaTime* deltaTime)> getControllerInputFunction;
 
 		// If we should routinely check for keyboard events
 		bool sampleInput{};

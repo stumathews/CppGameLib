@@ -9,7 +9,7 @@ gamelib::DrawableFrameRate::DrawableFrameRate(SDL_Rect* bounds)
 	drawBounds = bounds;
 }
 
-void gamelib::DrawableFrameRate::Update(const cppgamelib::DeltaTime* deltaTime)
+void gamelib::DrawableFrameRate::Update(const gamelib::DeltaTime* deltaTime)
 {	
 	accumulatedUpdateTime += deltaTime->milliseconds;
 	currentSampleTimeMs += static_cast<int>(deltaTime->milliseconds);

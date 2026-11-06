@@ -16,10 +16,10 @@ namespace gamelib
 
 		// Create listening socket
 		virtual void Create() = 0;
-		virtual void CheckForPlayerTraffic(const cppgamelib::DeltaTime* deltaTime) = 0;
+		virtual void CheckForPlayerTraffic(const gamelib::DeltaTime* deltaTime) = 0;
 
 		// Listen for, read and then handle network traffic
-		virtual void Listen(const cppgamelib::DeltaTime* deltaTime) = 0;
+		virtual void Listen(const gamelib::DeltaTime* deltaTime) = 0;
 
 		// Radiate duplicate serialized event to all connected players
 		virtual void SendEventToAllPlayers(std::string serializedEvent) = 0;

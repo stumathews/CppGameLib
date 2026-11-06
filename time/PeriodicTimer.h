@@ -17,6 +17,6 @@ namespace gamelib
 		Timer timer{};
 		unsigned everyMs {};
 		bool ready {};
-	};
+	};	
 }
 

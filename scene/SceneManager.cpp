@@ -65,7 +65,7 @@ namespace gamelib
 		return isInitialized;
 	}
 
-	vector<shared_ptr<Event>> SceneManager::HandleEvent(const std::shared_ptr<Event>& event, const cppgamelib::DeltaTime* deltaTime)
+	vector<shared_ptr<Event>> SceneManager::HandleEvent(const std::shared_ptr<Event>& event, const gamelib::DeltaTime* deltaTime)
 	{
 		vector<shared_ptr<Event>> secondaryEvents;
 
@@ -81,7 +81,7 @@ namespace gamelib
 		return secondaryEvents;
 	}
 
-	void SceneManager::UpdateAllObjects(const cppgamelib::DeltaTime* deltaTime) const
+	void SceneManager::UpdateAllObjects(const gamelib::DeltaTime* deltaTime) const
 	{
 		for (auto& object : GetAllObjects()) 
 		{

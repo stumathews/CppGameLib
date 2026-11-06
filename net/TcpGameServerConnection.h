@@ -36,7 +36,7 @@ namespace gamelib
 
 
 		// Inherited via IGameServerConnection
-		void CheckForPlayerTraffic(const cppgamelib::DeltaTime* deltaTime) override;
+		void CheckForPlayerTraffic(const gamelib::DeltaTime* deltaTime) override;
 		void ProcessPingMessage(const size_t& playerId) const;
 		void SendToConnectedPlayersExceptToSender(const std::string& senderNickname, const std::string&
 		                                          serializedMessage, const size_t& playerId) const;
@@ -47,7 +47,7 @@ namespace gamelib
 		fd_set readfds{};
 
 		// Inherited via IGameServerConnection
-		void Listen(const cppgamelib::DeltaTime* deltaTime) override;
+		void Listen(const gamelib::DeltaTime* deltaTime) override;
 		void CheckForNewTcpPlayers();
 		/// <summary>
 		/// How long to wait for network data the arrive {0,0} means non-blocking
@@ -56,7 +56,7 @@ namespace gamelib
 		std::vector<TcpNetworkPlayer> Players;
 
 		// Inherited via EventSubscriber
-		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const cppgamelib::DeltaTime* deltaTime) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const gamelib::DeltaTime* deltaTime) override;
 		std::string GetSubscriberName() override;
 
 		// Inherited via IGameServerConnection

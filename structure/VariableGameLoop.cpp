@@ -9,7 +9,7 @@
 #include "time/DeltaTime.h"
 
 
-gamelib::VariableGameLoop::VariableGameLoop(std::function<void(const cppgamelib::DeltaTime* deltaTime)> updateFunc,
+gamelib::VariableGameLoop::VariableGameLoop(std::function<void(const gamelib::DeltaTime* deltaTime)> updateFunc,
                                             std::function<void()> drawFunc)
 	: UpdateFunc(std::move(updateFunc)), drawFunc(std::move(drawFunc)), gameWorldData(std::move(gameWorldData))
 {
@@ -20,7 +20,7 @@ long GetTimeNowMs()
 	return static_cast<long>(gamelib::GetTimeMs());
 }
 
-void gamelib::VariableGameLoop::Update(const cppgamelib::DeltaTime* deltaTime)
+void gamelib::VariableGameLoop::Update(const gamelib::DeltaTime* deltaTime)
 {
 	const auto duration = Profiler::GetDuration([&]()
 	{
@@ -57,7 +57,7 @@ void gamelib::VariableGameLoop::Loop(GameWorldData* gameWorldData)
 
 		auto elapsedTimeMs = 0;
 		auto countUpdates = 0; // Number of loops
-		cppgamelib::DeltaTime deltaTime;
+		gamelib::DeltaTime deltaTime;
 		// Initialize/prepare process by saying last update occured right now.
 		auto t0 = GetTimeNowMs();
 

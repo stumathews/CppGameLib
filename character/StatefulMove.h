@@ -13,7 +13,7 @@ namespace gamelib
 		~StatefulMove() override = default;
 		Direction GetDirection() override;
 		unsigned short GetPixelsToMove() override {return 0;}
-		Coordinate<int> GetPosition(Coordinate<int> currentPosition) override;
+		Coordinate<float> GetPosition(Coordinate<float> currentPosition) override;
 		bool SupportsPositionalMovement() override { return true;}
 		std::map<Direction, ControllerMoveEvent::KeyState> movementAcceleration;
 		int speed;

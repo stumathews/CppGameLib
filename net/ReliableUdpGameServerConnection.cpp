@@ -20,7 +20,7 @@ namespace gamelib
 	{
 	}
 	
-	void ReliableUdpGameServerConnection::CheckForPlayerTraffic(const cppgamelib::DeltaTime* deltaTime)
+	void ReliableUdpGameServerConnection::CheckForPlayerTraffic(const gamelib::DeltaTime* deltaTime)
 	{
 		// Identifier who the client sending the data is
 		PeerInfo fromClient;
@@ -160,7 +160,7 @@ namespace gamelib
 		}
 	}
 
-	int ReliableUdpGameServerConnection::InternalSend(const SOCKET socket, const char* buf, int len, const int flags,  const sockaddr* to, const int toLen, const cppgamelib::DeltaTime* deltaTime, MessageType messageType)
+	int ReliableUdpGameServerConnection::InternalSend(const SOCKET socket, const char* buf, int len, const int flags,  const sockaddr* to, const int toLen, const gamelib::DeltaTime* deltaTime, MessageType messageType)
 	{
 		BitPacker packer(readBuffer, ReadBufferMaxElements);
 				
@@ -197,12 +197,12 @@ namespace gamelib
 		return sendto(socket, reinterpret_cast<char*>(readBuffer), countBytesToSend, flags, to, toLen);
 	}
 	
-	int ReliableUdpGameServerConnection::InternalSend(const SOCKET socket, const char* buf, int len, const int flags,  const sockaddr* to, const int toLen, const cppgamelib::DeltaTime* deltaTime)
+	int ReliableUdpGameServerConnection::InternalSend(const SOCKET socket, const char* buf, int len, const int flags,  const sockaddr* to, const int toLen, const gamelib::DeltaTime* deltaTime)
 	{		
 		return InternalSend(socket, buf, len, flags, to, toLen, deltaTime, General);
 	}
 
-	int ReliableUdpGameServerConnection::SendAck(const SOCKET socket, const Message& messageToAck, const int flags, PeerInfo& peerInfo, const cppgamelib::DeltaTime* deltaTime)
+	int ReliableUdpGameServerConnection::SendAck(const SOCKET socket, const Message& messageToAck, const int flags, PeerInfo& peerInfo, const gamelib::DeltaTime* deltaTime)
 	{
 		std::stringstream ackMessage;
 

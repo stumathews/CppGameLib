@@ -4,9 +4,9 @@
 #include "time/DeltaTime.h"
 
 gamelib::FixedStepGameLoop::FixedStepGameLoop(const unsigned int timeStepMs,
-                                              std::function<void(const cppgamelib::DeltaTime* deltaTime)> updateFunc,
+                                              std::function<void(const gamelib::DeltaTime* deltaTime)> updateFunc,
                                               std::function<void()> drawFunc,
-                                              std::function<void(const cppgamelib::DeltaTime* deltaTime)> inputFunc)
+                                              std::function<void(const gamelib::DeltaTime* deltaTime)> inputFunc)
 	: UpdateFunc(std::move(updateFunc)),
       DrawFunc(std::move(drawFunc)),
       InputFunc(std::move(inputFunc)),
@@ -17,7 +17,7 @@ void gamelib::FixedStepGameLoop::Loop(GameWorldData* gameWorldData)
 	// fixed loop strategy: https://gameprogrammingpatterns.com/game-loop.html
 	unsigned long previous = GetTimeNowMs();
 	unsigned long lag = 0;
-	cppgamelib::DeltaTime deltaTime;
+	gamelib::DeltaTime deltaTime;
 	deltaTime.milliseconds = TimeStepMs;
 
 	while (!gameWorldData->IsGameDone)
@@ -47,7 +47,7 @@ inline long gamelib::FixedStepGameLoop::GetTimeNowMs()
 	return static_cast<long>(GetTimeMs());
 }
 
-inline void gamelib::FixedStepGameLoop::Update(const cppgamelib::DeltaTime* deltaTime)
+inline void gamelib::FixedStepGameLoop::Update(const gamelib::DeltaTime* deltaTime)
 {
 	UpdateFunc(deltaTime);
 }

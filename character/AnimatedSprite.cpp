@@ -36,14 +36,14 @@ namespace gamelib
 	}
 
 
-	void AnimatedSprite::Update(const cppgamelib::DeltaTime* deltaTime, const string& animationGroup)
+	void AnimatedSprite::Update(const gamelib::DeltaTime* deltaTime, const string& animationGroup)
 	{
 		SetAnimationFrameGroup(animationGroup);
 		Update(deltaTime);
 	}
 
 
-	void AnimatedSprite::Update(const cppgamelib::DeltaTime* deltaTime)
+	void AnimatedSprite::Update(const gamelib::DeltaTime* deltaTime)
 	{
 		const unsigned long durationSinceLastFrameMs = GetTimeMs() - deltaTime->milliseconds;
 		

@@ -12,8 +12,8 @@ namespace gamelib
 		explicit TcpNetworkSocket(): socket(0) {  }
 
 		bool IsTcp() override;
-		int Send(const char* data, int dataLength, const cppgamelib::DeltaTime* deltaTime) override;
-		int Receive(char* readBuffer, int bufLength, const cppgamelib::DeltaTime* deltaTime) override;
+		int Send(const char* data, int dataLength, const gamelib::DeltaTime* deltaTime) override;
+		int Receive(char* readBuffer, int bufLength, const gamelib::DeltaTime* deltaTime) override;
 		bool IsValid() override;
 		[[nodiscard]] SOCKET GetRawSocket() const override;
 		~TcpNetworkSocket() override = default;

@@ -2,7 +2,7 @@
 
 namespace gamelib
 {
-	Coordinate<int> StatefulMove::GetPosition(const Coordinate<int> currentPosition)
+	Coordinate<float> StatefulMove::GetPosition(const Coordinate<float> currentPosition)
 	{
 		Coordinate newPosition { currentPosition.GetX(), currentPosition.GetY()};
 

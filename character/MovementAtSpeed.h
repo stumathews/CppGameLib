@@ -10,7 +10,7 @@ namespace gamelib
 		MovementAtSpeed(int speed, Direction direction, unsigned deltaMs);
 		Direction GetDirection() override;
 		unsigned short GetPixelsToMove() override;
-		Coordinate<int> GetPosition(Coordinate<int> currentPosition) override;
+		Coordinate<float> GetPosition(Coordinate<float> currentPosition) override;
 		bool SupportsPositionalMovement() override { return true;}
 		int speed;
 		Direction direction;

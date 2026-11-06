@@ -12,7 +12,7 @@ namespace gamelib
 	public:
 		bool HandleEventReceived = false;
 		
-		virtual std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const cppgamelib::DeltaTime* deltaTime) override
+		virtual std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const gamelib::DeltaTime* deltaTime) override
 		{
 			HandleEventReceived = true;
 			return {};

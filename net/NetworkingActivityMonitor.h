@@ -29,7 +29,7 @@ namespace gamelib
 		void AppendStatsToFile(int tSeconds) const;
 		void SaveAndReset(unsigned long deltaMs);
 		void Initialise();
-		ListOfEvents HandleEvent(const std::shared_ptr<Event>& evt, const cppgamelib::DeltaTime* deltaTime) override;
+		ListOfEvents HandleEvent(const std::shared_ptr<Event>& evt, const gamelib::DeltaTime* deltaTime) override;
 		std::string GetSubscriberName() override;
 		void SetSendRateMs(int ms);
 		void SetSendRatePs(int sec);

@@ -5,7 +5,7 @@
 #ifndef CPPGAMELIB_DELTATIME_H
 #define CPPGAMELIB_DELTATIME_H
 
-namespace cppgamelib
+namespace gamelib
 {
     class DeltaTime
     {

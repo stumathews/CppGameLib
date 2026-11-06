@@ -18,12 +18,12 @@ bool gamelib::UdpConnectedNetworkSocket::IsTcp()
 	return false;
 }
 
-int gamelib::UdpConnectedNetworkSocket::Send(const char* data, const int dataLength, const cppgamelib::DeltaTime* deltaTime)
+int gamelib::UdpConnectedNetworkSocket::Send(const char* data, const int dataLength, const gamelib::DeltaTime* deltaTime)
 {
 	return send(socket, data, dataLength, 0);
 }
 
-int gamelib::UdpConnectedNetworkSocket::Receive(char* readBuffer, const int bufLength, const cppgamelib::DeltaTime* deltaTime)
+int gamelib::UdpConnectedNetworkSocket::Receive(char* readBuffer, const int bufLength, const gamelib::DeltaTime* deltaTime)
 {
 	return recv(socket, readBuffer, bufLength, 0); 
 }

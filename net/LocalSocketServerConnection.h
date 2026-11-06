@@ -27,13 +27,13 @@ namespace gamelib
 
         void Create() override;
 
-        void CheckForPlayerTraffic(const cppgamelib::DeltaTime* deltaTime) override;
+        void CheckForPlayerTraffic(const gamelib::DeltaTime* deltaTime) override;
 
         static void RaiseNetworkTrafficReceivedEvent(const char *buffer, int bytesReceived, const PeerInfo &fromClient);
 
         static void ProcessRequestPlayerDetailsMessage(const MessageHeader &messageHeader, const PeerInfo &fromClient);
 
-        void Listen(const cppgamelib::DeltaTime* deltaTime) override;
+        void Listen(const gamelib::DeltaTime* deltaTime) override;
 
         static void ProcessPingMessage(PeerInfo fromClient);
 
@@ -55,7 +55,7 @@ namespace gamelib
         std::string GetSubscriberName() override;
 
         std::vector<std::shared_ptr<Event>>
-        HandleEvent(const std::shared_ptr<Event> &evt, const cppgamelib::DeltaTime* deltaTime) override;
+        HandleEvent(const std::shared_ptr<Event> &evt, const gamelib::DeltaTime* deltaTime) override;
     private:
         SOCKET listeningSocket {};
         EventManager* eventManager {};

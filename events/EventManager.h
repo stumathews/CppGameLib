@@ -31,16 +31,16 @@ namespace gamelib
 		void RaiseEventWithNoLogging(const std::shared_ptr<Event>& event);
 		void LogEventSubscription(const EventId& eventId, IEventSubscriber* pYou) const;
 		void SubscribeToEvent(const EventId& eventId, IEventSubscriber* pYou);
-		void DispatchEventToSubscriber(const std::shared_ptr<Event>& event, const cppgamelib::DeltaTime* deltaTime);
+		void DispatchEventToSubscriber(const std::shared_ptr<Event>& event, const gamelib::DeltaTime* deltaTime);
 		void DispatchEventToSubscriber(const std::shared_ptr<Event>& event, const std::string& target);
 
 		// Goes through all the events on the primary and secondary queues and passes them to their respective event handlers
 		// Primary queue is incremented with event when an event is raised via the RaiseEvent() function. This can be one at any time.
 		// secondary queue is composed automatically of events that happened while processing the primary queue. 
-		void ProcessAllEvents(const cppgamelib::DeltaTime* deltaTime = 0UL);
+		void ProcessAllEvents(const gamelib::DeltaTime* deltaTime = 0UL);
 				
 		bool Initialize();
-		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const cppgamelib::DeltaTime* deltaTime) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const gamelib::DeltaTime* deltaTime) override;
 		std::string GetSubscriberName() override;
 		std::map<const EventId, std::vector<IEventSubscriber*>> GetSubscriptions();
 		[[nodiscard]] size_t CountReady() const;
@@ -48,7 +48,7 @@ namespace gamelib
 		void SetEventTap(const std::function<void(const std::shared_ptr<Event>& event, const IEventSubscriber* pSubscriber)>& tapFn);
 	private:
 		EventManager();		
-		void Send(const std::shared_ptr<Event>& event, IEventSubscriber* pSubscriber, const cppgamelib::DeltaTime* deltaTime = 0);
+		void Send(const std::shared_ptr<Event>& event, IEventSubscriber* pSubscriber, const gamelib::DeltaTime* deltaTime = 0);
 		void AddToSecondaryEventQueue(const std::shared_ptr<Event>& secondaryEvent, IEventSubscriber* originSubscriber);
 		void LogEventRaised(IEventSubscriber* you, const std::shared_ptr<Event>& event) const;
 		

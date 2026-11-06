@@ -18,10 +18,10 @@ namespace gamelib
 
     public:
         void Draw(SDL_Renderer* renderer) override;
-        ListOfEvents HandleEvent(const std::shared_ptr<Event>& event, const cppgamelib::DeltaTime* deltaTime) override;
+        ListOfEvents HandleEvent(const std::shared_ptr<Event>& event, const gamelib::DeltaTime* deltaTime) override;
 
         GameObjectType GetGameObjectType() override;
-        void Update(const cppgamelib::DeltaTime* deltaTime) override {}
+        void Update(const gamelib::DeltaTime* deltaTime) override {}
 
         static std::shared_ptr<StaticSprite> Create(float x, float y, const std::shared_ptr<SpriteAsset>& spriteAsset);
         static std::shared_ptr<StaticSprite> Create(Coordinate<float> coordinate, const std::shared_ptr<SpriteAsset>& spriteAsset);

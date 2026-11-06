@@ -39,7 +39,7 @@ namespace gamelib
 		static SDL_Rect CalculateBounds(Coordinate<float> position, const AbcdRectangle &dimensions);
 
 		// Event functions:
-		ListOfEvents HandleEvent(const std::shared_ptr<Event>& event, const cppgamelib::DeltaTime* deltaTime) override;
+		ListOfEvents HandleEvent(const std::shared_ptr<Event>& event, const gamelib::DeltaTime* deltaTime) override;
 		std::string GetSubscriberName() override;
 		int GetSubscriberId() override;
 
@@ -51,7 +51,7 @@ namespace gamelib
 		virtual void LoadSettings();
 
 		// All game objects must perform Logic
-		virtual void Update(const cppgamelib::DeltaTime* deltaTime) = 0;
+		virtual void Update(const gamelib::DeltaTime* deltaTime) = 0;
 
 		// All game objects must draw
 		virtual void Draw(SDL_Renderer* renderer) = 0;

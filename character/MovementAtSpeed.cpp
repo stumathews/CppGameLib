@@ -41,7 +41,7 @@ namespace gamelib
 		return static_cast<unsigned short>(abs(speed));
 	}
 
-	Coordinate<int> MovementAtSpeed::GetPosition(const Coordinate<int> currentPosition)
+	Coordinate<float> MovementAtSpeed::GetPosition(const Coordinate<float> currentPosition)
 	{
 		Coordinate newPosition { currentPosition.GetX(), currentPosition.GetY()};
 

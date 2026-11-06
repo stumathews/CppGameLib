@@ -13,8 +13,8 @@ namespace gamelib
 		virtual ~IGameClientConnection() = default;
 		virtual void Connect(const char* address, const char* port) = 0;
 		virtual bool IsTcp() = 0;
-		virtual int Send(const char* data, int dataLength, const cppgamelib::DeltaTime* deltaTime = 0) = 0;
-		virtual int Receive(char* readBuffer, int bufLength, const cppgamelib::DeltaTime* deltaTime = 0) = 0;
+		virtual int Send(const char* data, int dataLength, const gamelib::DeltaTime* deltaTime = 0) = 0;
+		virtual int Receive(char* readBuffer, int bufLength, const gamelib::DeltaTime* deltaTime = 0) = 0;
 		[[nodiscard]] virtual SOCKET GetRawSocket() const = 0;
 		virtual bool IsValid() = 0;
 	};

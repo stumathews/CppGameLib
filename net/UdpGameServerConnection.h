@@ -36,16 +36,16 @@ namespace gamelib
 		EventFactory* eventFactory;
 
 		// Inherited via IGameServerConnection
-		void CheckForPlayerTraffic(const cppgamelib::DeltaTime* deltaTime) override;
+		void CheckForPlayerTraffic(const gamelib::DeltaTime* deltaTime) override;
 		
-		virtual int InternalSend(SOCKET socket, const char* buf, int len, int flags, const sockaddr* to, int toLen, const cppgamelib::DeltaTime* deltaTime = 0);
+		virtual int InternalSend(SOCKET socket, const char* buf, int len, int flags, const sockaddr* to, int toLen, const gamelib::DeltaTime* deltaTime = 0);
 		void SendToConnectedPlayersExceptToSender(const std::string& senderNickname, const std::string&
 		                                          serializedMessage);
 		timeval timeout{};
 		fd_set readfds{};
 
 		// Inherited via IGameServerConnection
-		void Listen(const cppgamelib::DeltaTime* deltaTime) override;
+		void Listen(const gamelib::DeltaTime* deltaTime) override;
 
 		// Inherited via IGameServerConnection
 		void ProcessPingMessage(PeerInfo fromClient);
@@ -57,7 +57,7 @@ namespace gamelib
 		void SendEventToAllPlayers(std::string serializedEvent) override;
 
 		// Inherited via EventSubscriber
-		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const cppgamelib::DeltaTime* deltaTime) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const gamelib::DeltaTime* deltaTime) override;
 		std::string GetSubscriberName() override;
 
 		// Inherited via IGameServerConnection

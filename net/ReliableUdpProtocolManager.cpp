@@ -43,7 +43,7 @@ namespace gamelib
 		}
 	}
 
-	int ReliableUdpProtocolManager::Send(const char* callersSendBuffer, const int dataLength, const cppgamelib::DeltaTime* deltaTime)
+	int ReliableUdpProtocolManager::Send(const char* callersSendBuffer, const int dataLength, const gamelib::DeltaTime* deltaTime)
 	{
 		if(!sessionEstablished)
 		{
@@ -61,7 +61,7 @@ namespace gamelib
 		return SendInternal(callersSendBuffer, dataLength, deltaTime, General);
 	}	
 
-	int ReliableUdpProtocolManager::SendInternal(const char* callersSendBuffer, const int dataLength, const cppgamelib::DeltaTime* deltaTime, const MessageType messageType)
+	int ReliableUdpProtocolManager::SendInternal(const char* callersSendBuffer, const int dataLength, const gamelib::DeltaTime* deltaTime, const MessageType messageType)
 	{
 		BitPacker packer(packingBuffer, PackingBufferElements);
 
@@ -109,7 +109,7 @@ namespace gamelib
 		return sendResult;
 	}
 
-	int ReliableUdpProtocolManager::ReceiveInternal(char* callersReceiveBuffer, const int bufLength, const cppgamelib::DeltaTime* deltaTime)
+	int ReliableUdpProtocolManager::ReceiveInternal(char* callersReceiveBuffer, const int bufLength, const gamelib::DeltaTime* deltaTime)
 	{
 		// Read the payload off the network, wait for all the data
 		const int bytesReceived = gameClientConnection->Receive(callersReceiveBuffer, bufLength, deltaTime);
@@ -209,7 +209,7 @@ namespace gamelib
 		return bytesReceived;
 	}
 
-	int ReliableUdpProtocolManager::Receive(char* callersReceiveBuffer, const int bufLength, const cppgamelib::DeltaTime* deltaTime)
+	int ReliableUdpProtocolManager::Receive(char* callersReceiveBuffer, const int bufLength, const gamelib::DeltaTime* deltaTime)
 	{
 
 		const auto bytesReceived = ReceiveInternal(callersReceiveBuffer, bufLength, deltaTime);
@@ -241,7 +241,7 @@ namespace gamelib
 		return SendInternal(reinterpret_cast<char*>(readBuffer), countBytesToSend, 0, Ack);
 	}
 
-	void ReliableUdpProtocolManager::Update(const cppgamelib::DeltaTime* deltaTime)
+	void ReliableUdpProtocolManager::Update(const gamelib::DeltaTime* deltaTime)
 	{
 		// do nothing
 	}
@@ -256,7 +256,7 @@ namespace gamelib
 		return "ReliableUdpProtocolManager";
 	}
 
-	std::vector<std::shared_ptr<Event>> ReliableUdpProtocolManager::HandleEvent(const std::shared_ptr<Event>& evt, const cppgamelib::DeltaTime* deltaTime)
+	std::vector<std::shared_ptr<Event>> ReliableUdpProtocolManager::HandleEvent(const std::shared_ptr<Event>& evt, const gamelib::DeltaTime* deltaTime)
 	{
 		return {};
 	}

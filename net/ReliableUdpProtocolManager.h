@@ -39,8 +39,8 @@ namespace gamelib
 
 			bool sessionEstablished {false};
 		    bool useEncryption {true}; 
-			int SendInternal(const char* callersSendBuffer, int dataLength, const cppgamelib::DeltaTime* deltaTime, MessageType messageType);
-			int ReceiveInternal(char* callersReceiveBuffer, int bufLength, const cppgamelib::DeltaTime* deltaTime);
+			int SendInternal(const char* callersSendBuffer, int dataLength, const gamelib::DeltaTime* deltaTime, MessageType messageType);
+			int ReceiveInternal(char* callersReceiveBuffer, int bufLength, const gamelib::DeltaTime* deltaTime);
 		
 
 		public:
@@ -57,12 +57,12 @@ namespace gamelib
 			std::shared_ptr<IGameClientConnection> GetConnection() override;
 			void Connect(const char* address, const char* port) override;
 
-			int Send(const char* callersSendBuffer, int dataLength, const cppgamelib::DeltaTime* deltaTime = 0) override;
-			int Receive(char* callersReceiveBuffer, int bufLength, const cppgamelib::DeltaTime* deltaTime = 0) override;
+			int Send(const char* callersSendBuffer, int dataLength, const gamelib::DeltaTime* deltaTime = 0) override;
+			int Receive(char* callersReceiveBuffer, int bufLength, const gamelib::DeltaTime* deltaTime = 0) override;
 			int SendAck(const Message& messageToAck, unsigned long sendTimeMs) override;
-			static void Update(const cppgamelib::DeltaTime* deltaTime);
+			static void Update(const gamelib::DeltaTime* deltaTime);
 			std::string GetSubscriberName() override;
-			std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const cppgamelib::DeltaTime* deltaTime) override;
+			std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const gamelib::DeltaTime* deltaTime) override;
 			~ReliableUdpProtocolManager() override;
 			int GetSubscriberId() override;
 	};

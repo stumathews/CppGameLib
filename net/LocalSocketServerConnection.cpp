@@ -30,7 +30,7 @@ void gamelib::LocalSocketGameServerConnection::Create()
     listeningSocket = networking->netLocalSocketServer(socketPath);
 }
 
-void gamelib::LocalSocketGameServerConnection::CheckForPlayerTraffic(const cppgamelib::DeltaTime* deltaTime)
+void gamelib::LocalSocketGameServerConnection::CheckForPlayerTraffic(const gamelib::DeltaTime* deltaTime)
 {
     if (FD_ISSET(listeningSocket, &readfds))
     {
@@ -75,7 +75,7 @@ void gamelib::LocalSocketGameServerConnection::ProcessRequestPlayerDetailsMessag
 
 }
 
-void gamelib::LocalSocketGameServerConnection::Listen(const cppgamelib::DeltaTime* deltaTime)
+void gamelib::LocalSocketGameServerConnection::Listen(const gamelib::DeltaTime* deltaTime)
 {
     constexpr auto maxSockets = 5; // Number of pending connections to have in the queue at any one moment
 
@@ -140,7 +140,7 @@ std::string gamelib::LocalSocketGameServerConnection::GetSubscriberName()
 }
 
 std::vector<std::shared_ptr<gamelib::Event>> gamelib::LocalSocketGameServerConnection::HandleEvent(
-    const std::shared_ptr<Event> &evt, const cppgamelib::DeltaTime* deltaTime)
+    const std::shared_ptr<Event> &evt, const gamelib::DeltaTime* deltaTime)
 {
     return {};
 }

@@ -5,7 +5,7 @@
 #include "file/SerializationManager.h"
 
 
-namespace cppgamelib {
+namespace gamelib {
 	class DeltaTime;
 }
 
@@ -49,10 +49,10 @@ namespace gamelib
 		void operator=(NetworkManager const&) = delete;
 
 		// Listen for network traffic destined for this this game server or this client
-		void Listen(const cppgamelib::DeltaTime* deltaTime) const;
+		void Listen(const gamelib::DeltaTime* deltaTime) const;
 
 		// Ping game server if NetworkManager is operating in a game client
-		void PingGameServer(const cppgamelib::DeltaTime* deltaTime) const;
+		void PingGameServer(const gamelib::DeltaTime* deltaTime) const;
 
 		// Represents the client if NetworkManager is operating as a client
 		std::shared_ptr<GameClient> Client = nullptr;

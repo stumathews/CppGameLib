@@ -43,10 +43,10 @@ namespace gamelib
 
 		// Game client operations:
 			
-		void PingGameServer(const cppgamelib::DeltaTime* deltaTime) const;
+		void PingGameServer(const gamelib::DeltaTime* deltaTime) const;
 
 		// Listen for incoming traffic from the game server - see NetworkManager
-		bool Read(const cppgamelib::DeltaTime* deltaTime = 0);
+		bool Read(const gamelib::DeltaTime* deltaTime = 0);
 		
 	private:
 		FRIEND_TEST(NetworkingTests, TestCustomBinarySend);
@@ -95,7 +95,7 @@ namespace gamelib
 		void SubscribeToGameEvents();
 		
 		// Here is where we handle subscribed events
-		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const cppgamelib::DeltaTime* deltaTime) override;
+		std::vector<std::shared_ptr<Event>> HandleEvent(const std::shared_ptr<Event>& evt, const gamelib::DeltaTime* deltaTime) override;
 				
 		std::string GetSubscriberName() override;
 
@@ -104,17 +104,17 @@ namespace gamelib
 		uint32_t readBuffer[ReceiveBufferMaxElements]{}; // 300 x 32bits = 150kb
 
 		// Check if there is any data sent by the game server waiting for client to read
-		void CheckSocketForTraffic(const cppgamelib::DeltaTime* deltaTime);
+		void CheckSocketForTraffic(const gamelib::DeltaTime* deltaTime);
 
 		// Raise traffic received event
 		void RaiseNetworkTrafficReceivedEvent(const char* buffer, int bytesReceived);
 
 		// Internal send
-		int InternalSend(const char* array, size_t size, const cppgamelib::DeltaTime* deltaTime) const;
-		[[nodiscard]] int InternalSend(const std::string& message, const cppgamelib::DeltaTime* deltaTime) const;
+		int InternalSend(const char* array, size_t size, const gamelib::DeltaTime* deltaTime) const;
+		[[nodiscard]] int InternalSend(const std::string& message, const gamelib::DeltaTime* deltaTime) const;
 
 		// Parse the network data sent by the server to the client. Likely using the serialization manager to deserialize data
-		void ParseReceivedServerPayload(const char* buffer, const cppgamelib::DeltaTime* deltaTime) const;
+		void ParseReceivedServerPayload(const char* buffer, const gamelib::DeltaTime* deltaTime) const;
 	};
 }
 

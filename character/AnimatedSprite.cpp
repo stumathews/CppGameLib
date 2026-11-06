@@ -43,17 +43,15 @@ namespace gamelib
 	}
 
 
-	void AnimatedSprite::Update(const gamelib::DeltaTime* deltaTime)
+	void AnimatedSprite::Update(const DeltaTime* deltaTime)
 	{
-		const unsigned long durationSinceLastFrameMs = GetTimeMs() - deltaTime->milliseconds;
-		
+		durationSinceLastFrameMs += deltaTime->milliseconds;
 		// Switch to the next frame if we've been on the current frame too long
-		if (static_cast<float>(durationSinceLastFrameMs) >= frameDurationMs)
+		if (durationSinceLastFrameMs >= frameDurationMs)
 		{
 			AdvanceCurrentFrameNumber();
 			SkipUnsupportedAnimationGroupFrames(); // Only cycle through supported animation groups
-
-			//deltaTime = GetTimeMs();
+			durationSinceLastFrameMs = 0;
 		}
 	}
 

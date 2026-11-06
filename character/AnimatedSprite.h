@@ -46,6 +46,8 @@ namespace gamelib
 
 		AbcdRectangle Dimensions{};
 		std::vector<KeyFrame> KeyFrames;
+
+
 		void SetAnimationFrameGroup(const std::string& group);
 		static std::string GetStdDirectionAnimationFrameGroup(Direction facingDirection);
 		std::shared_ptr<SpriteAsset> Asset;
@@ -56,6 +58,7 @@ namespace gamelib
 		uint currentFrameNumber{};
 		uint startFrameNumber{};
 		float frameDurationMs{};
+		unsigned long durationSinceLastFrameMs {};
 		bool stopped = false;
 		bool debug = false;
 

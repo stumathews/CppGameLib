@@ -16,6 +16,7 @@ namespace gamelib
 			child = children.begin();
 		}
 
+
 		Status Update(const unsigned long deltaMs) override
 		{
 			// Persistently keep running the last successful child
@@ -32,10 +33,9 @@ namespace gamelib
 				++child;
 			}
 
-			// Unexpected loop exit
 			return Status::Failure;
 		}
 		
-		Behaviors::iterator child; // the child selector keeps running its current child until it fails....
+		Behaviors::iterator child	{}; // the child selector keeps running its current child until it fails....
 	};
 }

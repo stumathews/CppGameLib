@@ -21,6 +21,12 @@ public:
 		return *this;
 	}
 
+	BehaviorTreeBuilder& Selector()
+	{
+		AddChildToCurrentNode(new gamelib::Selector());
+		return *this;
+	}
+
 	// Adds a Sequence composite to the behavior tree
 	BehaviorTreeBuilder& Sequence(const char* description = "")
 	{

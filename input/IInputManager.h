@@ -1,6 +1,8 @@
 #pragma once
 #include <list>
 
+#include "time/DeltaTime.h"
+
 namespace gamelib
 {
 	class IInputManager
@@ -13,7 +15,7 @@ namespace gamelib
 		IInputManager& operator=(const IInputManager& other) = delete;
 		IInputManager& operator=(const IInputManager&& other) = delete;
 
-		virtual void Sample(unsigned long deltaMs) = 0;
+		virtual void Sample(const gamelib::DeltaTime* deltaTime) = 0;
 	};
 }
 

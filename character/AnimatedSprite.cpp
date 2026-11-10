@@ -80,10 +80,14 @@ namespace gamelib
 
 	void AnimatedSprite::SkipUnsupportedAnimationGroupFrames()
 	{
-		AssertContainsAValidKeyFrameGroup();
+		if (!containsAValidKeyFrameGroup)
+		{
+			// Can't skip unsupported frame groups because they are all unsupported!
+			return;
+		}
 
 		if (!animationFrameGroup.empty())
-		{			
+		{
 			bool isGroupFrame = IsCurrentFrameInAnimationGroup();
 			while (!isGroupFrame)
 			{
@@ -100,7 +104,20 @@ namespace gamelib
 			THROW(2, "KeyFrames cannot be empty", "AnimatedSprite");
 		}
 
-		AssertContainsAValidKeyFrameGroup();
+		if (!containsAValidKeyFrameGroup)
+		{
+			// This check only runs once
+			for (auto keyFrame: KeyFrames)
+			{
+				if (keyFrame.Group == GetStdDirectionAnimationFrameGroup(Direction::Up) ||
+					keyFrame.Group == GetStdDirectionAnimationFrameGroup(Direction::Down) ||
+					keyFrame.Group == GetStdDirectionAnimationFrameGroup(Direction::Left)||
+					keyFrame.Group == GetStdDirectionAnimationFrameGroup(Direction::Right))
+				{
+					containsAValidKeyFrameGroup = true;
+				}
+			}
+		}
 
 		if (!initialized)
 		{
@@ -148,24 +165,7 @@ namespace gamelib
 
 	void AnimatedSprite::AssertContainsAValidKeyFrameGroup()
 	{
-		if (!containsAValidKeyFrameGroup)
-		{
-			// This check only runs once
-			for (auto keyFrame: KeyFrames)
-			{
-				if (keyFrame.Group == GetStdDirectionAnimationFrameGroup(Direction::Up) ||
-					keyFrame.Group == GetStdDirectionAnimationFrameGroup(Direction::Down) ||
-					keyFrame.Group == GetStdDirectionAnimationFrameGroup(Direction::Left)||
-					keyFrame.Group == GetStdDirectionAnimationFrameGroup(Direction::Right)) {
-					containsAValidKeyFrameGroup = true;
-				}
-			}
 
-			if (!containsAValidKeyFrameGroup)
-			{
-				THROW(1, "AnimatedSprite contains no valid Animation Groups. Must contain at least one of 'up', 'down', 'left or 'right'", "AnimatedSprite");
-			}
-		}
 	}
 
 	void AnimatedSprite::SetAnimationFrameGroup(const std::string& group)

@@ -24,10 +24,8 @@ namespace gamelib
 		AnimatedSprite(const std::string& name, const std::string& type, Coordinate<float> position, float frameDuration,
 		               bool isVisible,
 		               const std::shared_ptr<SpriteAsset>& spriteAsset);
-		AnimatedSprite() = default;
 
 		static std::shared_ptr<AnimatedSprite> Create(Coordinate<float> position, const std::shared_ptr<SpriteAsset>& asset);
-		void Initialize();
 
 		GameObjectType GetGameObjectType() override { return GameObjectType::animated_sprite; }
 		void Draw(SDL_Renderer* renderer) override;	
@@ -59,16 +57,20 @@ namespace gamelib
 		std::shared_ptr<SpriteAsset> Asset;
 
 		int GetCurrentKeyFrameIndex() const;
+
+		void Initialize();
 	private:
 
 		std::string animationFrameGroup;
 		bool containsAValidKeyFrameGroup {};
 		uint currentFrameNumber{};
+		bool initialized {};
 		uint startFrameNumber{};
 		float frameDurationMs{};
 		unsigned long durationSinceLastFrameMs {};
 		bool stopped = false;
 		bool debug = false;
+
 
 	};
 }

@@ -16,6 +16,7 @@ gamelib::Npc::Npc(const std::string& name, const std::string& type, const Coordi
 	TheHotspot = std::make_shared<gamelib::Hotspot>(Position, Dimensions.GetWidth(), Dimensions.GetHeight(), Dimensions.GetWidth() / 2);	
 	Bounds = CalculateBounds(Position, Dimensions.GetWidth(), Dimensions.GetHeight());
 	Status = std::make_shared<DrawableText>(Bounds, "", SDL_Color {255,0,0,0});
+	Sprite->Initialize();
 }
 
 void gamelib::Npc::Draw(SDL_Renderer* renderer)

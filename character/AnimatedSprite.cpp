@@ -18,6 +18,9 @@ namespace gamelib
 		  Asset(spriteAsset), Dimensions(spriteAsset->Dimensions)
 	{
 		LoadSettings();
+		SetGraphic(Asset);
+		KeyFrames = Asset->KeyFrames;
+		Initialize();
 	}
 
 	shared_ptr<AnimatedSprite> AnimatedSprite::Create(const Coordinate<float> position, const std::shared_ptr<SpriteAsset>& asset)
@@ -26,6 +29,8 @@ namespace gamelib
 		
 		sprite->SetGraphic(asset);
 		sprite->KeyFrames = asset->KeyFrames;
+
+		sprite->Initialize();
 
 		return sprite;
 	}
@@ -39,6 +44,11 @@ namespace gamelib
 
 	void AnimatedSprite::Update(const DeltaTime* deltaTime)
 	{
+		if (!initialized)
+		{
+			return; // We won't update until the animated sprite has been initialized
+		}
+
 		durationSinceLastFrameMs += deltaTime->milliseconds;
 
 		if (stopped)
@@ -83,7 +93,20 @@ namespace gamelib
 		}
 	}
 
-	void AnimatedSprite::Initialize() {  }
+	void AnimatedSprite::Initialize()
+	{
+		if (KeyFrames.empty())
+		{
+			THROW(2, "KeyFrames cannot be empty", "AnimatedSprite");
+		}
+
+		AssertContainsAValidKeyFrameGroup();
+
+		if (!initialized)
+		{
+			initialized = true;
+		}
+	}
 	void AnimatedSprite::Draw(SDL_Renderer* renderer)
 	{
 		if (HasGraphic())
@@ -148,9 +171,6 @@ namespace gamelib
 	void AnimatedSprite::SetAnimationFrameGroup(const std::string& group)
 	{
 		// Before setting the animation group, check that we're setting it to a supported value
-
-		AssertContainsAValidKeyFrameGroup();
-
 		animationFrameGroup = group;
 	}
 

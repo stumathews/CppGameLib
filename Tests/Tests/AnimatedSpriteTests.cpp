@@ -5,6 +5,9 @@
 #include <gtest/gtest.h>
 
 #include "character/AnimatedSprite.h"
+#include <memory>
+
+#include "asset/SpriteAsset.h"
 
 namespace gamelib
 {
@@ -16,12 +19,19 @@ namespace gamelib
 
     TEST(AnimatedSpriteTest, DisableEnableAnimation)
     {
+        auto spriteAsset = std::make_shared<SpriteAsset>(0,
+            "",
+            "",
+            "",
+            0,
+            AbcdRectangle{});
+        spriteAsset->KeyFrames.push_back({0,0,0,0,"up"});
+        spriteAsset->KeyFrames.push_back({0,0,0,0,"down"});
+        spriteAsset->KeyFrames.push_back({0,0,0,0,"left"});
+        spriteAsset->KeyFrames.push_back({0,0,0,0,"right"});
+
         // Create simple animated sprite with 4 key frames
-        AnimatedSprite sprite;
-        sprite.AddKeyFrame({0,0,0,0,"up"});
-        sprite.AddKeyFrame({0,0,0,0,"down"});
-        sprite.AddKeyFrame({0,0,0,0,"left"});
-        sprite.AddKeyFrame({0,0,0,0,"right"});
+        AnimatedSprite sprite("", "", Coordinate<float>{0,0}, 100, false, spriteAsset);
 
         // simulate a frame being shown for 10 ms each
         sprite.SetSingleFrameDuration(10);

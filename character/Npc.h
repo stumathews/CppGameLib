@@ -4,6 +4,7 @@
 #include "objects/DrawableGameObject.h"
 #include <memory>
 
+#include "AnimatedSprite.h"
 #include "Direction.h"
 //#include "ai/FSM.h"
 //#include "graphic/DrawableText.h"
@@ -28,6 +29,10 @@ namespace gamelib
 		Npc(const std::string& name, const std::string& type, Coordinate<float> position, bool visible,
 		    AnimatedSpriteSPtr sprite,
 		    GameObjectMoveStrategySPtr moveStrategy = nullptr);
+
+		Npc(const std::string& name, const std::string& type, bool visible,
+			AnimatedSpriteSPtr sprite,
+			GameObjectMoveStrategySPtr moveStrategy = nullptr) : Npc(name, type, sprite->Position, visible, sprite, moveStrategy){}
 
 		// NPCs override certain behavior:
 		void Draw(SDL_Renderer* renderer) override;

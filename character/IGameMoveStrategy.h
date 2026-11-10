@@ -7,7 +7,12 @@ class Movement;
 namespace gamelib
 {
 	class IMovement;
-	// Makes a movement
+
+	// Actually moves or assesses the movement potential GameObject.
+	// Can be used by a NPC to move itself (MoveGameObject) or determine if the potential move is invalid (IsValidMove)
+	// A move is encoded as a Movement which defines the direction and amount of pixels to move.
+	//
+	// In most cases the environment is consulted to determine of the move it possible/valid.
 	class IGameObjectMoveStrategy
 	{
 	public:

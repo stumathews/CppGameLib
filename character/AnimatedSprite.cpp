@@ -56,7 +56,11 @@ namespace gamelib
 	}
 
 	void AnimatedSprite::AdvanceCurrentFrameNumber()
-	{		
+	{
+		if (stopped)
+		{
+			return; // effectively disables animation by not changing key frames
+		}
 		currentFrameNumber++; // Move to the next frame number
 
 		// Need to cycle back to the first frame if we're on the last in the key frames
@@ -106,13 +110,25 @@ namespace gamelib
 	void AnimatedSprite::LoadSettings() { debug = SettingsManager::Get()->GetBool("sprite", "debug"); }
 	void AnimatedSprite::MoveSprite(const float x, const float y) { Position.SetX(x); Position.SetY(y); }
 	void AnimatedSprite::MoveSprite(const Coordinate<float> position) { Position = position; }
-	bool AnimatedSprite::IsCurrentFrameInAnimationGroup() const { return KeyFrames[currentFrameNumber].Group == animationFrameGroup; }
+	bool AnimatedSprite::IsCurrentFrameInAnimationGroup() const
+	{
+		return KeyFrames[currentFrameNumber].Group == animationFrameGroup;
+	}
 	void AnimatedSprite::PlayAnimation() { stopped = false; }
 	void AnimatedSprite::DisableAnimation() { stopped = true; }
 	void AnimatedSprite::EnableAnimation() { stopped = false; }
 	std::string AnimatedSprite::GetName() { return "AnimatedSprite"; }
 	void AnimatedSprite::AddKeyFrame(const KeyFrame& keyFrame) { KeyFrames.push_back(keyFrame); }
-	void AnimatedSprite::SetAnimationFrameGroup(const std::string& group) { animationFrameGroup = group; }
+
+	bool AnimatedSprite::IsStopped()
+	{
+		return stopped;
+	}
+
+	void AnimatedSprite::SetAnimationFrameGroup(const std::string& group)
+	{
+		animationFrameGroup = group;
+	}
 
 	std::string AnimatedSprite::GetStdDirectionAnimationFrameGroup(const Direction facingDirection)
 	{
@@ -125,5 +141,10 @@ namespace gamelib
 			case Direction::None: return "none";
 			default: THROW(0, "Invalid Direction", "Player");  // NOLINT(clang-diagnostic-covered-switch-default)
 		}
+	}
+
+	int AnimatedSprite::GetCurrentKeyFrameIndex() const
+	{
+		return currentFrameNumber;
 	}
 }

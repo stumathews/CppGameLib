@@ -1,4 +1,6 @@
 #pragma once
+#include <gtest/gtest-assertion-result.h>
+
 #include "character/Direction.h"
 #include "common/TypeAliases.h"
 #include "objects/GameObject.h"
@@ -44,6 +46,8 @@ namespace gamelib
 		std::string GetName() override;
 		void AddKeyFrame(const KeyFrame& keyFrame);
 
+		bool IsStopped();
+
 		AbcdRectangle Dimensions{};
 		std::vector<KeyFrame> KeyFrames;
 
@@ -51,6 +55,8 @@ namespace gamelib
 		void SetAnimationFrameGroup(const std::string& group);
 		static std::string GetStdDirectionAnimationFrameGroup(Direction facingDirection);
 		std::shared_ptr<SpriteAsset> Asset;
+
+		int GetCurrentKeyFrameIndex() const;
 	private:
 
 		std::string animationFrameGroup;

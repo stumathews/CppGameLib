@@ -27,7 +27,7 @@ namespace gamelib
 		AnimatedSprite() = default;
 
 		static std::shared_ptr<AnimatedSprite> Create(Coordinate<float> position, const std::shared_ptr<SpriteAsset>& asset);
-		static void Initialize();
+		void Initialize();
 
 		GameObjectType GetGameObjectType() override { return GameObjectType::animated_sprite; }
 		void Draw(SDL_Renderer* renderer) override;	
@@ -52,6 +52,8 @@ namespace gamelib
 		std::vector<KeyFrame> KeyFrames;
 
 
+		void AssertContainsAValidKeyFrameGroup();
+
 		void SetAnimationFrameGroup(const std::string& group);
 		static std::string GetStdDirectionAnimationFrameGroup(Direction facingDirection);
 		std::shared_ptr<SpriteAsset> Asset;
@@ -60,7 +62,7 @@ namespace gamelib
 	private:
 
 		std::string animationFrameGroup;
-		unsigned long deltaTime{};
+		bool containsAValidKeyFrameGroup {};
 		uint currentFrameNumber{};
 		uint startFrameNumber{};
 		float frameDurationMs{};

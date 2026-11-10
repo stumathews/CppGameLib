@@ -14,12 +14,9 @@ namespace gamelib
 	AnimatedSprite::AnimatedSprite(const std::string& name, const std::string& type, const Coordinate<float> position,
 	                               const float frameDuration, const bool isVisible, const shared_ptr<SpriteAsset>&
 	                               spriteAsset) 
-		: DrawableGameObject(name, type, position, isVisible)
+		: DrawableGameObject(name, type, position, isVisible), frameDurationMs(frameDuration),
+		  Asset(spriteAsset), Dimensions(spriteAsset->Dimensions)
 	{
-		Asset = spriteAsset;
-		frameDurationMs = frameDuration;
-		currentFrameNumber = startFrameNumber = deltaTime = 0;
-		Dimensions = spriteAsset->Dimensions;
 		LoadSettings();
 	}
 
@@ -30,11 +27,8 @@ namespace gamelib
 		sprite->SetGraphic(asset);
 		sprite->KeyFrames = asset->KeyFrames;
 
-		Initialize();
-
 		return sprite;
 	}
-
 
 	void AnimatedSprite::Update(const gamelib::DeltaTime* deltaTime, const string& animationGroup)
 	{
@@ -46,6 +40,12 @@ namespace gamelib
 	void AnimatedSprite::Update(const DeltaTime* deltaTime)
 	{
 		durationSinceLastFrameMs += deltaTime->milliseconds;
+
+		if (stopped)
+		{
+			return; // effectively disables animation by not changing key frames
+		}
+
 		// Switch to the next frame if we've been on the current frame too long
 		if (durationSinceLastFrameMs >= frameDurationMs)
 		{
@@ -57,10 +57,6 @@ namespace gamelib
 
 	void AnimatedSprite::AdvanceCurrentFrameNumber()
 	{
-		if (stopped)
-		{
-			return; // effectively disables animation by not changing key frames
-		}
 		currentFrameNumber++; // Move to the next frame number
 
 		// Need to cycle back to the first frame if we're on the last in the key frames
@@ -74,6 +70,8 @@ namespace gamelib
 
 	void AnimatedSprite::SkipUnsupportedAnimationGroupFrames()
 	{
+		AssertContainsAValidKeyFrameGroup();
+
 		if (!animationFrameGroup.empty())
 		{			
 			bool isGroupFrame = IsCurrentFrameInAnimationGroup();
@@ -125,8 +123,34 @@ namespace gamelib
 		return stopped;
 	}
 
+	void AnimatedSprite::AssertContainsAValidKeyFrameGroup()
+	{
+		if (!containsAValidKeyFrameGroup)
+		{
+			// This check only runs once
+			for (auto keyFrame: KeyFrames)
+			{
+				if (keyFrame.Group == GetStdDirectionAnimationFrameGroup(Direction::Up) ||
+					keyFrame.Group == GetStdDirectionAnimationFrameGroup(Direction::Down) ||
+					keyFrame.Group == GetStdDirectionAnimationFrameGroup(Direction::Left)||
+					keyFrame.Group == GetStdDirectionAnimationFrameGroup(Direction::Right)) {
+					containsAValidKeyFrameGroup = true;
+				}
+			}
+
+			if (!containsAValidKeyFrameGroup)
+			{
+				THROW(1, "AnimatedSprite contains no valid Animation Groups. Must contain at least one of 'up', 'down', 'left or 'right'", "AnimatedSprite");
+			}
+		}
+	}
+
 	void AnimatedSprite::SetAnimationFrameGroup(const std::string& group)
 	{
+		// Before setting the animation group, check that we're setting it to a supported value
+
+		AssertContainsAValidKeyFrameGroup();
+
 		animationFrameGroup = group;
 	}
 

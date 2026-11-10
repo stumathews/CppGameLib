@@ -18,10 +18,10 @@ namespace gamelib
     {
         // Create simple animated sprite with 4 key frames
         AnimatedSprite sprite;
-        sprite.AddKeyFrame({0,0,0,0,"Left"});
-        sprite.AddKeyFrame({0,0,0,0,"Right"});
-        sprite.AddKeyFrame({0,0,0,0,"Up"});
-        sprite.AddKeyFrame({0,0,0,0,"Down"});
+        sprite.AddKeyFrame({0,0,0,0,"up"});
+        sprite.AddKeyFrame({0,0,0,0,"down"});
+        sprite.AddKeyFrame({0,0,0,0,"left"});
+        sprite.AddKeyFrame({0,0,0,0,"right"});
 
         // simulate a frame being shown for 10 ms each
         sprite.SetSingleFrameDuration(10);

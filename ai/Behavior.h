@@ -41,7 +41,7 @@ namespace gamelib
 		// Advances the behavior by one tick
 		Status Tick(const unsigned long deltaMs = 0)
 		{
-			// Set ourselves as running
+			// Don't Initialize if still running, otherwise re-initialize if Success or Failure
 			if (status != Status::Running)
 			{
 				OnInitialize();
@@ -84,6 +84,6 @@ namespace gamelib
 		std::string Description;
 
 	private:
-		Status status;
+		Status status; // default is invalid status
 	};
 }

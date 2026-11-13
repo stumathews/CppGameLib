@@ -3,6 +3,12 @@
 
 namespace gamelib
 {
+	// Note any derivative of Behavior
+	// will cause Tick() to run:
+	// 1) OnInitialize() function if (status is non-running)
+	// 2) run update() function
+	// 3) OnTerminate function if (status is non-running)
+
 	// A selector composite runs each child behavior in order of priority until one succeeds
 	class Selector : public Composite
 	{

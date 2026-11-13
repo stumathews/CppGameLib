@@ -3,7 +3,7 @@ namespace gamelib
 {
 	enum class Status
 	{
-		Invalid,
+		Invalid, // default status
 		Success,
 		Failure,
 		Running,

@@ -6,6 +6,7 @@
 #include "file/Logger.h"
 #include <gmock/gmock-more-matchers.h>
 
+#include "ai/BehaviorTreeBuilder.h"
 #include "ai/ScriptedBehavior.h"
 #include "ai/UtilitySelector.h"
 
@@ -61,8 +62,7 @@ namespace gamelib
 		EXPECT_NO_THROW(behavior->Update(0));
 	}
 
-	TEST_F(BehaviorTreeTests, UtilitySelector)
-	{
+	TEST_F(BehaviorTreeTests, UtilitySelector) {
 		UtilitySelector selector;
 
 		constexpr auto behavior1Utility = 0.1f;
@@ -115,6 +115,7 @@ namespace gamelib
 		selector.Update(0);
 
 		ASSERT_EQ(lastRunBehavior, 1);
-
 	}
+
+
 }

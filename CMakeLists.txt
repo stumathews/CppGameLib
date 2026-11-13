@@ -487,6 +487,7 @@ Tests/Tests/BackgroundWorkerTests.cpp
 Tests/Tests/RandomnessTests.cpp
 Tests/Tests/DeterministicEventSchedulerTests.cpp
 Tests/Tests/AnimatedSpriteTests.cpp
+Tests/Tests/BasicBehaviorTreeTests.cpp
 )
 
 # Add an executable for running only the networking tests

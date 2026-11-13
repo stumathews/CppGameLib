@@ -1,12 +1,11 @@
 #pragma once
 #include <memory>
 
-class Room;
-class Movement;
-
 namespace gamelib
 {
 	class IMovement;
+	class Room;
+	class Movement;
 
 	// Actually moves or assesses the movement potential GameObject.
 	// Can be used by a NPC to move itself (MoveGameObject) or determine if the potential move is invalid (IsValidMove)

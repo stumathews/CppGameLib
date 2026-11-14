@@ -28,7 +28,7 @@ namespace gamelib
 			// Persistently keep running the last successful child
 			while(child != children.end())
 			{
-				const auto childStatus = (*child)->Tick();
+				const auto childStatus = (*child)->Tick(deltaMs);
 
 				// If any child succeeds or is running, we do too
 				if(childStatus != Status::Failure)

@@ -24,7 +24,7 @@ namespace gamelib
 				while (currentChild != children.end())
 				{
 					// Run the child behavior
-					const Status childStatus = (*currentChild)->Tick();
+					const Status childStatus = (*currentChild)->Tick(deltaMs);
 
 					// Check what happened 
 					if (childStatus != Status::Success)

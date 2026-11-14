@@ -15,7 +15,7 @@ using namespace std;
 
 namespace gamelib
 {
-    class SelectorTests : public testing::Test
+    class BasicBehaviorTreeTests : public testing::Test
     {
     protected:
 
@@ -28,7 +28,7 @@ namespace gamelib
         }
     };
 
-    TEST(SelectorTests, ActiveSelectorBehaviorTests)
+    TEST(BasicBehaviorTreeTests, ActiveSelectorBehaviorTests)
     {
         auto action1Status = Status::Success;
         auto action2Status = Status::Success;
@@ -135,7 +135,31 @@ namespace gamelib
         // and if all are still failure, they next behavior run in the tick.
     }
 
-    TEST(SelectorTests, SelectorBehaviorTests)
+    TEST(BasicBehaviorTreeTests, DeltaTimeTest)
+    {
+        int elapsedTime = 0.0f;
+        ai::InlineAction action([&](unsigned long deltaMs)
+        {
+            elapsedTime += deltaMs;
+            return Status::Running;
+        });
+
+        std::cout << "SelectorBehaviorTests:\n";
+
+        BehaviorTree* bt = BehaviorTreeBuilder()
+            .Selector()
+                .Action(&action)
+            .Finish()
+        .End();
+
+        bt->Update(16.0f);
+        bt->Update(16.0f);
+
+        EXPECT_EQ(elapsedTime, 32.0f);
+
+    }
+
+    TEST(BasicBehaviorTreeTests, SelectorBehaviorTests)
     {
         auto action1Status = Status::Success;
         auto action2Status = Status::Success;

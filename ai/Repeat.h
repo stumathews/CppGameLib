@@ -27,7 +27,7 @@ namespace gamelib
 	    {
 	        for (;;)
 	        {
-	            child->Tick();
+	            child->Tick(deltaMs);
 
 	            if (child->GetStatus() == Status::Running) 
 					break;

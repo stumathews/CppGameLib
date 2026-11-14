@@ -34,7 +34,7 @@ namespace gamelib
 			{
 				if(!childBehavior->IsTerminated())
 				{
-					childBehavior->Tick();
+					childBehavior->Tick(deltaMs);
 				}
 
 				const auto childResult = childBehavior->GetStatus();
